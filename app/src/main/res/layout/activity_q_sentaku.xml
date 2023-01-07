@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".Q_sentaku_activity">
+
+	<LinearLayout
+		android:id="@+id/linearLayout"
+		android:layout_width="match_parent"
+		android:layout_height="80dp"
+		android:orientation="horizontal"
+		app:layout_constraintBottom_toTopOf="@+id/button1qTest">
+
+		<Button
+			android:id="@+id/button1qword"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:backgroundTint="#08E0FB"
+			android:onClick="onButtonClick"
+			android:text="1Qword" />
+
+		<Button
+			android:id="@+id/button1qphrase"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:backgroundTint="#FF1100"
+			android:onClick="onButtonClick"
+			android:text="1Qphrase"
+			app:backgroundTint="#ED1515" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayout2"
+		android:layout_width="match_parent"
+		android:layout_height="80dp"
+		android:orientation="horizontal"
+		app:layout_constraintTop_toBottomOf="@+id/button1qTest"
+		tools:layout_editor_absoluteX="0dp">
+
+		<Button
+			android:id="@+id/buttonp1qword"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:backgroundTint="#08E0FB"
+			android:onClick="onButtonClick"
+			android:text="p1Qword" />
+
+		<Button
+			android:id="@+id/buttonp1qphrase"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:backgroundTint="#FF1100"
+			android:onClick="onButtonClick"
+			android:text="p1Qphrase"
+			app:backgroundTint="#ED1515" />
+
+	</LinearLayout>
+
+	<Switch
+		android:id="@+id/switchSkipOboe"
+		android:layout_width="wrap_content"
+		android:layout_height="48dp"
+		android:checked="true"
+		android:text="Skip覚え"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/switchHyojiYakuBeforeRead" />
+
+	<TextView
+		android:id="@+id/textViewNowInput"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="now="
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/buttonP1qTest" />
+
+	<EditText
+		android:id="@+id/editTextNumber"
+		android:layout_width="89dp"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:inputType="number"
+		app:layout_constraintStart_toEndOf="@+id/textViewNowInput"
+		app:layout_constraintTop_toBottomOf="@+id/buttonP1qTest" />
+
+	<Button
+		android:id="@+id/buttonP1qTest"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:onClick="onP1qTestButtonClick"
+		android:text="P1qTest"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+		tools:layout_editor_absoluteX="0dp" />
+
+	<Button
+		android:id="@+id/button1qTest"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:onClick="on1qTestButtonClick"
+		android:text="1qTest"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		tools:layout_editor_absoluteX="0dp" />
+
+	<Switch
+		android:id="@+id/switchSkipMaruBatu"
+		android:layout_width="wrap_content"
+		android:layout_height="48dp"
+		android:checked="true"
+		android:text="SkipMarubatu"
+		app:layout_constraintEnd_toStartOf="@+id/switchSkipOboe"
+		app:layout_constraintTop_toBottomOf="@+id/switchHyojiYakuBeforeRead" />
+
+	<LinearLayout
+		android:id="@+id/linearLayout7"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:orientation="horizontal"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<RadioGroup
+			android:id="@+id/radioGroupA"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1">
+
+			<RadioButton
+				android:id="@+id/radioButtonAV"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="A動詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonAN"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="A名詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonAA"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="A形容詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonAM"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="Aまとめ" />
+
+		</RadioGroup>
+
+		<RadioGroup
+			android:id="@+id/radioGroupB"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1">
+
+			<RadioButton
+				android:id="@+id/radioButtonBV"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="B動詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonBN"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="B名詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonBA"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="B形容詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonBM"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="Bまとめ" />
+
+		</RadioGroup>
+
+		<RadioGroup
+			android:id="@+id/radioGroupC"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1">
+
+			<RadioButton
+				android:id="@+id/radioButtonCV"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="C動詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonCN"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="C名詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonCA"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="C形容詞" />
+
+			<RadioButton
+				android:id="@+id/radioButtonCM"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="Cまとめ" />
+
+		</RadioGroup>
+
+		<RadioGroup
+			android:id="@+id/radioGroupOther"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1">
+
+			<RadioButton
+				android:id="@+id/radioButtonJukugo"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="熟語" />
+
+			<RadioButton
+				android:id="@+id/radioButtonAll"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="全て" />
+		</RadioGroup>
+	</LinearLayout>
+
+	<Switch
+		android:id="@+id/switchHyojiYakuBeforeRead"
+		android:layout_width="wrap_content"
+		android:layout_height="48dp"
+		android:checked="false"
+		android:text="読む前に表示"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/buttonP1qTest" />
+
+	<RadioGroup
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/editTextNumber">
+
+		<RadioButton
+			android:id="@+id/radioButtonEtoJ"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="true"
+			android:text="英→日" />
+
+		<RadioButton
+			android:id="@+id/radioButtonJtoE"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="日→英" />
+	</RadioGroup>
+
+	<Button
+		android:id="@+id/buttonAlarm"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="onAlarmset"
+		android:text="alarm"
+		app:layout_constraintEnd_toStartOf="@+id/switchHyojiYakuBeforeRead"
+		app:layout_constraintTop_toBottomOf="@+id/buttonP1qTest" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

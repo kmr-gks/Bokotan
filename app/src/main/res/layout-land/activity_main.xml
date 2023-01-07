@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:keepScreenOn="true"
+	tools:context=".MainActivity">
+
+	<LinearLayout
+		android:id="@+id/linearLayout3"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal"
+		tools:layout_editor_absoluteX="188dp"
+		tools:layout_editor_absoluteY="133dp">
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1">
+
+			<LinearLayout
+				android:id="@+id/linearLayout5"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:orientation="vertical"
+				app:layout_constraintTop_toTopOf="parent"
+				tools:layout_editor_absoluteX="6dp">
+
+				<TextView
+					android:id="@+id/TextViewEng"
+					android:layout_width="match_parent"
+					android:layout_height="0dp"
+					android:layout_weight="1"
+					android:text="default"
+					android:textAlignment="center"
+					android:textSize="36sp"
+					android:textStyle="bold" />
+
+				<TextView
+					android:id="@+id/TextViewJpn"
+					android:layout_width="match_parent"
+					android:layout_height="0dp"
+					android:layout_weight="1"
+					android:text="default"
+					android:textAlignment="center"
+					android:textSize="36sp"
+					android:textStyle="bold" />
+			</LinearLayout>
+
+		</androidx.constraintlayout.widget.ConstraintLayout>
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="1">
+
+			<TextView
+				android:id="@+id/textViewDebug"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="TextView"
+				app:layout_constraintStart_toEndOf="@+id/tvGenzai"
+				app:layout_constraintTop_toTopOf="parent" />
+
+			<Button
+				android:id="@+id/ButtonReset"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:onClick="onResetButtonClick"
+				android:text="reset"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintStart_toStartOf="parent" />
+
+			<Button
+				android:id="@+id/buttonStartStop"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:onClick="onStartButtonClick"
+				android:text="start/stop"
+				app:layout_constraintBottom_toTopOf="@+id/button"
+				app:layout_constraintStart_toStartOf="parent" />
+
+			<TextView
+				android:id="@+id/tvExcept"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="TextView"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/tvGenzai" />
+
+			<TextView
+				android:id="@+id/tvGenzai"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="TextView"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent" />
+
+			<TextView
+				android:id="@+id/tvsubE"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:text="TextView"
+				android:textSize="26sp"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/tvExcept" />
+
+			<TextView
+				android:id="@+id/tvsubJ"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:text="TextView"
+				android:textSize="26sp"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent" />
+
+			<Button
+				android:id="@+id/button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:onClick="onResetButtonClick"
+				android:text="PIP"
+				app:layout_constraintBottom_toTopOf="@+id/ButtonReset"
+				app:layout_constraintStart_toStartOf="parent" />
+
+			<TextView
+				android:id="@+id/textViewNumSeikairitu"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="TextView"
+				app:layout_constraintBottom_toBottomOf="parent"
+				app:layout_constraintStart_toEndOf="@+id/ButtonReset" />
+
+			<SeekBar
+				android:id="@+id/seekBar"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				app:layout_constraintBottom_toTopOf="@+id/textViewNumSeikairitu"
+				app:layout_constraintStart_toEndOf="@+id/ButtonReset" />
+
+			<TextView
+				android:id="@+id/tvSeekBar"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="TextView"
+				app:layout_constraintBottom_toTopOf="@+id/seekBar"
+				app:layout_constraintStart_toStartOf="@+id/seekBar" />
+
+			<Button
+				android:id="@+id/stop"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Button"
+				app:layout_constraintBottom_toBottomOf="@+id/buttonStartStop"
+				app:layout_constraintStart_toEndOf="@+id/buttonStartStop" />
+		</androidx.constraintlayout.widget.ConstraintLayout>
+	</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
