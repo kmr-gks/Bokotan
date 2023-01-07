@@ -9,4 +9,6 @@
 	<color name="white">#FFFFFFFF</color>
 	<color name="gray">#DDDDDD</color>
 	<color name="background">#FF000000</color>
+	<color name="buttontext">#FFB3B3B3</color>
+	<color name="textcolor">#FFB3B3B3</color>
 </resources>

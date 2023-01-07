@@ -18,6 +18,9 @@ public enum q_num {
 	enum shurui{
 		verb,noum,adjective,matome
 	}
+	enum skipjouken{
+		kirokunomi,seikai1, huseikai2
+	}
 
 	private q_num(int id) {}
 }

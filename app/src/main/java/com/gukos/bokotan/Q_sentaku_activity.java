@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
@@ -33,12 +32,12 @@ public class Q_sentaku_activity extends AppCompatActivity {
 	static q_num.shurui sentakuShurui = q_num.shurui.matome;
 	static q_num.strQ strQenum = q_num.strQ.strp1q;
 	static boolean bSort=true;
+	static q_num.skipjouken skipjoken= q_num.skipjouken.kirokunomi;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_q_sentaku);
-		MainActivity.mp = null;
 
 		//new AlertDialog.Builder(this).setTitle("title").setMessage("message").setPositiveButton("ok",null).create().show();
 		swSkipKioku = findViewById(R.id.switchSkipOboe);
@@ -91,11 +90,13 @@ public class Q_sentaku_activity extends AppCompatActivity {
 		switch (nWordPhraseOrTest) {
 			default:
 			case 1: {
+				if (!strQ.equals("1q")&&!strQ.equals("p1q")) return;
 				Log.d(tag, "nWorPoraT=1");
 				startActivity(new Intent(this, MainActivity.class));
 				break;
 			}
 			case 2: {
+				if (!strQ.equals("1q")&&!strQ.equals("p1q")) return;
 				Log.d(tag, "nWorPoraT=2");
 				strQ = "ph" + strQ;
 				startActivity(new Intent(this, MainActivity.class));
@@ -191,14 +192,24 @@ public class Q_sentaku_activity extends AppCompatActivity {
 			case R.id.radioButtonSortTest:{
 				nWordPhraseOrTest=5;
 				WordPhraseOrTest= q_num.mode.sortTest;
+				break;
+			}
+			case R.id.radioButtonOnlyKioku:{
+				Log.d(tag,"radioButtonOnlyKioku");
+				skipjoken= q_num.skipjouken.kirokunomi;
+				break;
+			}
+			case R.id.radioButton1seikai:{
+				Log.d(tag,"radioButton1seikai");
+				skipjoken= q_num.skipjouken.seikai1;
+				break;
+			}
+			case R.id.radioButton2huseikai:{
+				Log.d(tag,"radioButton2seikai");
+				skipjoken= q_num.skipjouken.huseikai2;
+				break;
 			}
 		}
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		MainActivity.ResetMediaPlayer();
 	}
 
 	public void onAlarmset(View v) {

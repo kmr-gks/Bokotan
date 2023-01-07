@@ -13,6 +13,7 @@
 		android:layout_height="48dp"
 		android:checked="true"
 		android:text="Skip覚え"
+		android:textColor="@color/textcolor"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/switchHyojiYakuBeforeRead" />
 
@@ -40,6 +41,7 @@
 		android:layout_height="48dp"
 		android:checked="true"
 		android:text="SkipMarubatu"
+		android:textColor="@color/textcolor"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/switchSkipOboe" />
 
@@ -48,7 +50,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:onClick="onSelectQ"
-		android:text="1q"
+		android:text="1級"
+		android:textColor="@color/buttontext"
 		app:layout_constraintEnd_toStartOf="@+id/buttonP1Q"
 		app:layout_constraintTop_toTopOf="@+id/buttonP1Q" />
 
@@ -57,7 +60,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:onClick="onSelectQ"
-		android:text="p1q"
+		android:text="準1級"
+		android:textColor="@color/buttontext"
 		app:layout_constraintEnd_toStartOf="@+id/button2q"
 		app:layout_constraintTop_toBottomOf="@+id/linearLayout7" />
 
@@ -81,7 +85,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="A" />
+				android:text="A"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonB"
@@ -89,7 +94,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="B" />
+				android:text="B"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonC"
@@ -97,7 +103,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="C" />
+				android:text="C"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonJ"
@@ -105,7 +112,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="熟語" />
+				android:text="熟語"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonAll"
@@ -114,7 +122,8 @@
 				android:layout_weight="1"
 				android:checked="true"
 				android:onClick="onRadioChecked"
-				android:text="全て" />
+				android:text="全て"
+				android:textColor="@color/textcolor" />
 
 		</RadioGroup>
 
@@ -129,7 +138,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="動詞" />
+				android:text="動詞"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonN"
@@ -137,7 +147,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="名詞" />
+				android:text="名詞"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonAj"
@@ -145,7 +156,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="形容詞" />
+				android:text="形容詞"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonM"
@@ -154,7 +166,8 @@
 				android:layout_weight="1"
 				android:checked="true"
 				android:onClick="onRadioChecked"
-				android:text="まとめ" />
+				android:text="まとめ"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButton"
@@ -162,6 +175,7 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:text="RadioButton"
+				android:textColor="@color/textcolor"
 				android:visibility="invisible" />
 
 
@@ -179,7 +193,8 @@
 				android:layout_weight="1"
 				android:checked="true"
 				android:onClick="onRadioChecked"
-				android:text="words" />
+				android:text="words"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonP"
@@ -187,7 +202,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="phrases" />
+				android:text="phrases"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonT"
@@ -195,7 +211,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
-				android:text="乱数テスト" />
+				android:text="乱数テスト"
+				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:id="@+id/radioButtonExclusiveTest"
@@ -204,6 +221,7 @@
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
 				android:text="排他テスト"
+				android:textColor="@color/textcolor"
 				android:visibility="visible" />
 
 			<RadioButton
@@ -213,6 +231,7 @@
 				android:layout_weight="1"
 				android:onClick="onRadioChecked"
 				android:text="順番テスト"
+				android:textColor="@color/textcolor"
 				android:visibility="visible" />
 		</RadioGroup>
 
@@ -224,6 +243,7 @@
 		android:layout_height="48dp"
 		android:checked="false"
 		android:text="読む前に表示"
+		android:textColor="@color/textcolor"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/buttonP1Q" />
 
@@ -239,13 +259,15 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:checked="true"
-			android:text="英→日" />
+			android:text="英→日"
+			android:textColor="@color/textcolor" />
 
 		<RadioButton
 			android:id="@+id/radioButtonJtoE"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="日→英" />
+			android:text="日→英"
+			android:textColor="@color/textcolor" />
 	</RadioGroup>
 
 	<Button
@@ -254,6 +276,7 @@
 		android:layout_height="wrap_content"
 		android:onClick="onAlarmset"
 		android:text="alarm"
+		android:textColor="@color/buttontext"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/buttonP1Q" />
 
@@ -262,6 +285,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="48dp"
 		android:text="ソート反転"
+		android:textColor="@color/textcolor"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/switchSkipMaruBatu" />
 
@@ -270,7 +294,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:onClick="onSelectQ"
-		android:text="2q"
+		android:text="2級"
+		android:textColor="@color/buttontext"
 		app:layout_constraintEnd_toStartOf="@+id/buttonP2q"
 		app:layout_constraintTop_toTopOf="@+id/buttonP1Q" />
 
@@ -279,8 +304,42 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:onClick="onSelectQ"
-		android:text="p2q"
+		android:text="準2級"
+		android:textColor="@color/buttontext"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/linearLayout7" />
+
+	<RadioGroup
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:layout_constraintEnd_toStartOf="@+id/switchSkipMaruBatu"
+		app:layout_constraintStart_toEndOf="@+id/radioGroup"
+		app:layout_constraintTop_toBottomOf="@+id/editTextNumber">
+
+		<RadioButton
+			android:id="@+id/radioButtonOnlyKioku"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checked="true"
+			android:onClick="onRadioChecked"
+			android:text="記録のみ"
+			android:textColor="@color/textcolor" />
+
+		<RadioButton
+			android:id="@+id/radioButton1seikai"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="onRadioChecked"
+			android:text="1回正解を飛ばす"
+			android:textColor="@color/textcolor" />
+
+		<RadioButton
+			android:id="@+id/radioButton2huseikai"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="onRadioChecked"
+			android:text="2回以上不正解のみ"
+			android:textColor="@color/textcolor" />
+	</RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,7 +32,7 @@
 
 	<TextView
 		android:id="@+id/TextViewJpn"
-		android:layout_width="411dp"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:text="default"
 		android:textAlignment="center"
@@ -40,17 +40,18 @@
 		android:textStyle="bold"
 		app:layout_constraintBottom_toTopOf="@+id/buttonOboeta"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent" />
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/TextViewEng" />
 
 	<Button
 		android:id="@+id/buttonStartStop"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:onClick="onStartButtonClick"
+		android:onClick="onStartStopButtonClick"
 		android:text="start"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/buttonOboeta" />
+		android:textColor="@color/buttontext"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
+		app:layout_constraintStart_toStartOf="parent" />
 
 	<TextView
 		android:id="@+id/tvExcept"
@@ -76,7 +77,7 @@
 		android:layout_height="wrap_content"
 		android:text="TextView"
 		android:textSize="26sp"
-		app:layout_constraintBottom_toTopOf="@+id/seekBar"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
 		app:layout_constraintEnd_toEndOf="parent" />
 
 	<TextView
@@ -88,46 +89,25 @@
 		app:layout_constraintBottom_toTopOf="@+id/tvsubJ"
 		app:layout_constraintEnd_toEndOf="parent" />
 
-	<SeekBar
-		android:id="@+id/seekBar"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:max="10"
-		android:onClick="onSpeedSeekBar"
-		android:progress="0"
-		app:layout_constraintBottom_toBottomOf="@+id/buttonStartStop"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/tvSeekBar"
-		app:layout_constraintTop_toTopOf="@+id/buttonStartStop" />
-
-	<TextView
-		android:id="@+id/tvSeekBar"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="Speed:1.0"
-		app:layout_constraintBottom_toBottomOf="@+id/buttonStartStop"
-		app:layout_constraintStart_toEndOf="@+id/buttonStartStop"
-		app:layout_constraintTop_toTopOf="@+id/buttonStartStop" />
-
 	<Button
 		android:id="@+id/buttonOboeta"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:onClick="onOboetaButtonTapped"
 		android:text="覚えた"
-		app:layout_constraintBottom_toBottomOf="parent"
+		android:textColor="@color/buttontext"
+		app:layout_constraintBottom_toTopOf="@+id/tvsubE"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintStart_toStartOf="parent" />
 
 	<LinearLayout
 		android:id="@+id/linearLayout6"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayout"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/buttonStartStop">
+		app:layout_constraintStart_toStartOf="parent">
 
 		<Button
 			android:id="@+id/ButtonReset"
@@ -135,7 +115,8 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:onClick="onResetButtonClick"
-			android:text="最初から" />
+			android:text="最初から"
+			android:textColor="@color/buttontext" />
 
 		<Button
 			android:id="@+id/button4"
@@ -143,7 +124,8 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:onClick="onSelectNowButtonClick"
-			android:text="番号変更" />
+			android:text="番号変更"
+			android:textColor="@color/buttontext" />
 
 		<Button
 			android:id="@+id/button5"
@@ -151,7 +133,8 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:onClick="onPIPButtonClicked"
-			android:text="PIP" />
+			android:text="PIP"
+			android:textColor="@color/buttontext" />
 
 		<Button
 			android:id="@+id/button_sentaku"
@@ -159,7 +142,8 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:onClick="onSentakuButtonClicked"
-			android:text="単語一覧" />
+			android:text="単語一覧"
+			android:textColor="@color/buttontext" />
 	</LinearLayout>
 
 	<TextView
@@ -169,4 +153,66 @@
 		android:text="TextView"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/TextViewEng" />
+
+	<TextView
+		android:id="@+id/textViewSeikaisuu"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<LinearLayout
+		android:id="@+id/linearLayout"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent">
+
+		<SeekBar
+			android:id="@+id/seekBarEng"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="0.5"
+			android:max="10"
+			android:onClick="onSpeedSeekBar"
+			android:progress="10" />
+
+		<SeekBar
+			android:id="@+id/seekBarJpn"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="0.5"
+			android:max="10"
+			android:onClick="onSpeedSeekBar"
+			android:progress="10" />
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayout2"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent">
+
+		<TextView
+			android:id="@+id/tvSeekBarEng"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="0.5"
+			android:text="英語速度:2.0"
+			android:textSize="26sp" />
+
+		<TextView
+			android:id="@+id/tvSeekBarJpn"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_weight="0.5"
+			android:text="日本語速度:2.0"
+			android:textSize="26sp" />
+	</LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

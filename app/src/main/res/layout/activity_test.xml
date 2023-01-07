@@ -20,42 +20,50 @@
 		<Button
 			android:id="@+id/bSentakusi1"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:layout_weight="1"
 			android:onClick="onSentakusiTapped"
-			android:text="Button" />
+			android:text="Button"
+			android:textColor="@color/buttontext"
+			android:textSize="25sp" />
 
 		<Button
 			android:id="@+id/bSentakusi2"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:layout_weight="1"
 			android:onClick="onSentakusiTapped"
-			android:text="Button" />
+			android:text="Button"
+			android:textColor="@color/buttontext"
+			android:textSize="25sp" />
 
 		<Button
 			android:id="@+id/bSentakusi3"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:layout_weight="1"
 			android:onClick="onSentakusiTapped"
-			android:text="Button" />
+			android:text="Button"
+			android:textColor="@color/buttontext"
+			android:textSize="25sp" />
 
 		<Button
 			android:id="@+id/bSentakusi4"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:layout_weight="1"
 			android:onClick="onSentakusiTapped"
-			android:text="Button" />
+			android:text="Button"
+			android:textColor="@color/buttontext"
+			android:textSize="25sp" />
 	</LinearLayout>
 
 	<TextView
 		android:id="@+id/tvMondaibun"
-		android:layout_width="0dp"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="問題文"
-		android:textSize="34sp"
+		android:textSize="40sp"
 		app:layout_constraintBottom_toTopOf="@+id/buttonWakaranai"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent" />
@@ -76,6 +84,7 @@
 		android:layout_height="115dp"
 		android:onClick="onMarubatuTapped"
 		android:text="next"
+		android:textColor="@color/buttontext"
 		android:visibility="invisible"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
@@ -88,6 +97,7 @@
 		android:layout_height="wrap_content"
 		android:onClick="onSentakusiTapped"
 		android:text="わからない"
+		android:textColor="@color/buttontext"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
@@ -125,5 +135,33 @@
 		android:text="debug"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/buttonWakaranai" />
+
+	<TextView
+		android:id="@+id/tvMondaiNum"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		android:textSize="20sp"
+		app:layout_constraintBottom_toTopOf="@+id/tvMondaibun"
+		app:layout_constraintStart_toStartOf="parent" />
+
+	<CheckBox
+		android:id="@+id/chHatsuon"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="発音"
+		android:textColor="@color/textcolor"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+		app:layout_constraintEnd_toEndOf="parent" />
+
+	<Button
+		android:id="@+id/buttonHint"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="onHintButtonTapped"
+		android:text="ヒント"
+		android:textColor="@color/buttontext"
+		app:layout_constraintBottom_toBottomOf="@+id/buttonWakaranai"
+		app:layout_constraintStart_toEndOf="@+id/buttonWakaranai" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

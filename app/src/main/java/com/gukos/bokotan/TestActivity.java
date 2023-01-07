@@ -1,16 +1,17 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MainActivity.kioku_chBox;
-import static com.gukos.bokotan.MainActivity.kioku_file;
 import static com.gukos.bokotan.MainActivity.nHuseikaisuu;
 import static com.gukos.bokotan.MainActivity.nSeikaisuu;
+import static com.gukos.bokotan.MainActivity.strPhraseE;
+import static com.gukos.bokotan.MainActivity.strPhraseJ;
 import static com.gukos.bokotan.MainActivity.strQ;
+import static com.gukos.bokotan.MainActivity.tag;
 import static com.gukos.bokotan.MainActivity.toFindFromAndTo;
-import static com.gukos.bokotan.Q_sentaku_activity.sentakuQ;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
@@ -18,18 +19,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RadioButton;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Random;
 
 class Seikairitsu{
 	int num=0;
 	int seitouritu=0;
-	Seikairitsu(int a,int b){this.num=a;this.seitouritu=b;}
+	int toitakazu =0;
+	Seikairitsu(int num,int seitouritu,int toitakazu){this.num=num;this.seitouritu=seitouritu;this.toitakazu =toitakazu;}
 }
 
 public class TestActivity extends AppCompatActivity {
@@ -52,6 +52,8 @@ public class TestActivity extends AppCompatActivity {
 	static int seikairitsu[]=new int[2500];
 	Seikairitsu numAndSeikairitu[]=new Seikairitsu[2500];
 	int testCount=0;
+	SharedPreferences.Editor spe;
+	int nQuiz=0,nGokaku=0,nSeitou=0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,18 +78,26 @@ public class TestActivity extends AppCompatActivity {
 			MainActivity.lastnum=2400;
 			wordE=WordData1q.e;
 			wordJ=WordData1q.j;
+			strPhraseE = Phrase1q.e;
+			strPhraseJ =Phrase1q.j;
 		} else if (strQ.equals("p1qTest")){
 			MainActivity.lastnum=1850;
 			wordE=WordDatap1q.e;
 			wordJ=WordDatap1q.j;
+			strPhraseE = Phrasep1q.e;
+			strPhraseJ =Phrasep1q.j;
 		} else if (strQ.equals("2qTest")){
 			MainActivity.lastnum=1704;
 			wordE=WordData2q.e;
 			wordJ=WordData2q.j;
+			strPhraseE = Phrase2q.e;
+			strPhraseJ =Phrase2q.j;
 		}else if (strQ.equals("p2qTest")){
 			MainActivity.lastnum=1500;
 			wordE=WordData2q.e;
 			wordJ=WordData2q.j;
+			strPhraseE = Phrasep2q.e;
+			strPhraseJ =Phrasep2q.j;
 		}
 		nGenzaiNanMonme=getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).getInt("nGenzaiNanMonme",1);
 		int unit=5;
@@ -159,35 +169,45 @@ public class TestActivity extends AppCompatActivity {
 			case 5: unit=14; break;
 		}
 		MainActivity.SetNumFromAndTo(MainActivity.lastnum,unit);
-		((TextView)findViewById(R.id.textViewRange)).setText("範囲 No."+MainActivity.from+'-'+MainActivity.to);
 
-		//from MainActivity
-		//if (sentakuQ.equals(q_num.test1q)||sentakuQ.equals(q_num.testp1q)){
-			for (int i=MainActivity.from;i<MainActivity.to;i++){
-				nSeikaisuu[i]=getSharedPreferences("testActivity" + strQ, MODE_PRIVATE).getInt("nWordSeikaisuu" + i, 0);
-				Log.d("com.gukos.bikotanjava",strQ);
-				nHuseikaisuu[i]=getSharedPreferences("testActivity" + strQ, MODE_PRIVATE).getInt("nWordHuseikaisuu" + i, 0);
-				if (nSeikaisuu[i]+nHuseikaisuu[i]>0) seikairitsu[i]=nSeikaisuu[i]*100/(nSeikaisuu[i]+nHuseikaisuu[i]);
-				else seikairitsu[i]=0;
-				numAndSeikairitu[i-MainActivity.from]=new Seikairitsu(i,seikairitsu[i]);
+
+			for (int i=MainActivity.from;i<=MainActivity.to;i++) {
+				nSeikaisuu[i] = getSharedPreferences("testActivity" + strQ, MODE_PRIVATE).getInt("nWordSeikaisuu" + i, 0);
+				Log.d("com.gukos.bikotanjava", strQ);
+				nHuseikaisuu[i] = getSharedPreferences("testActivity" + strQ, MODE_PRIVATE).getInt("nWordHuseikaisuu" + i, 0);
+				if (nSeikaisuu[i] + nHuseikaisuu[i] > 0)
+					seikairitsu[i] = nSeikaisuu[i] * 100 / (nSeikaisuu[i] + nHuseikaisuu[i]);
+				else seikairitsu[i] = 0;
+				numAndSeikairitu[i - MainActivity.from] = new Seikairitsu(i, seikairitsu[i],nSeikaisuu[i]+nHuseikaisuu[i]);
+				nQuiz++;
+				if (nSeikaisuu[i]>1) nGokaku++;
+				if (nSeikaisuu[i]>0) nSeitou++;
 			}
-		//}
-		if (Q_sentaku_activity.bSort) Arrays.sort(numAndSeikairitu,0,MainActivity.to-MainActivity.from,(a,b)->a.seitouritu-b.seitouritu);
-		else Arrays.sort(numAndSeikairitu,0,MainActivity.to-MainActivity.from,(a,b)->b.seitouritu-a.seitouritu);
 
+		if (Q_sentaku_activity.bSort) Arrays.sort(numAndSeikairitu,0,MainActivity.to-MainActivity.from,(a,b)->{if (a.seitouritu==0&&b.seitouritu==0) return a.toitakazu-b.toitakazu;else return a.seitouritu-b.seitouritu;});
+		else Arrays.sort(numAndSeikairitu,0,MainActivity.to-MainActivity.from,(a,b)->{if (a.seitouritu==0&&b.seitouritu==0) return b.toitakazu -a.toitakazu;else return b.seitouritu-a.seitouritu;});
 
+		spe=getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).edit();
 		setMondaiBun();
+		sp.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+			@Override
+			public void onLoadComplete(SoundPool soundPool, int i, int i1) {
+				soundPool.play(i,1f,1f,1,0,1f);
+			}
+		});
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
+	protected void onPause(){
+		super.onPause();
+		Log.d(tag,"onpause");
+		spe.apply();
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).edit().putInt("nGenzaiNanMonme",nGenzaiNanMonme).commit();
+		getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).edit().putInt("nGenzaiNanMonme",nGenzaiNanMonme).apply();
 	}
 
 	public void setMondaiBun(){
@@ -240,76 +260,10 @@ public class TestActivity extends AppCompatActivity {
 			if (Q_sentaku_activity.WordPhraseOrTest.equals(q_num.mode.test))
 				nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			if (Q_sentaku_activity.WordPhraseOrTest.equals(q_num.mode.sortTest)) {
-				if (sentakuQ.equals(q_num.test1q)||sentakuQ.equals(q_num.testp1q))nMondaiTangoNum = numAndSeikairitu[testCount++].num;
-				else nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
-				/*
-				if (Q_sentaku_activity.strQenum.equals(q_num.strQ.str1q)) {
-					if (1 <= nMondaiTangoNum && nMondaiTangoNum <= 233) {
-						nRangeForOptionsFrom = 1;
-						nRangeForOptionsTo = 233;
-					} else if (234 <= nMondaiTangoNum && nMondaiTangoNum <= 472) {
-						nRangeForOptionsFrom = 234;
-						nRangeForOptionsTo = 472;
-					} else if (473 <= nMondaiTangoNum && nMondaiTangoNum <= 700) {
-						nRangeForOptionsFrom = 473;
-						nRangeForOptionsTo = 700;
-					} else if (701 <= nMondaiTangoNum && nMondaiTangoNum <= 919) {
-						nRangeForOptionsFrom = 701;
-						nRangeForOptionsTo = 919;
-					} else if (920 <= nMondaiTangoNum && nMondaiTangoNum <= 1177) {
-						nRangeForOptionsFrom = 920;
-						nRangeForOptionsTo = 1177;
-					} else if (1178 <= nMondaiTangoNum && nMondaiTangoNum <= 1400) {
-						nRangeForOptionsFrom = 1178;
-						nRangeForOptionsTo = 1400;
-					} else if (1401 <= nMondaiTangoNum && nMondaiTangoNum <= 1619) {
-						nRangeForOptionsFrom = 1401;
-						nRangeForOptionsTo = 1619;
-					} else if (1620 <= nMondaiTangoNum && nMondaiTangoNum <= 1861) {
-						nRangeForOptionsFrom = 1620;
-						nRangeForOptionsTo = 1861;
-					} else if (1862 <= nMondaiTangoNum && nMondaiTangoNum <= 2100) {
-						nRangeForOptionsFrom = 1862;
-						nRangeForOptionsTo = 2100;
-					} else if (2101 <= nMondaiTangoNum && nMondaiTangoNum <= 2400) {
-						nRangeForOptionsFrom = 2101;
-						nRangeForOptionsTo = 2400;
-					}
-				}
-				if (Q_sentaku_activity.strQenum.equals(q_num.strQ.strp1q)) {
-					if (1 <= nMondaiTangoNum && nMondaiTangoNum <= 92) {
-						nRangeForOptionsFrom = 1;
-						nRangeForOptionsTo = 92;
-					} else if (93 <= nMondaiTangoNum && nMondaiTangoNum <= 362) {
-						nRangeForOptionsFrom = 93;
-						nRangeForOptionsTo = 362;
-					} else if (363 <= nMondaiTangoNum && nMondaiTangoNum <= 530) {
-						nRangeForOptionsFrom = 363;
-						nRangeForOptionsTo = 530;
-					} else if (531 <= nMondaiTangoNum && nMondaiTangoNum <= 682) {
-						nRangeForOptionsFrom = 531;
-						nRangeForOptionsTo = 682;
-					} else if (683 <= nMondaiTangoNum && nMondaiTangoNum <= 883) {
-						nRangeForOptionsFrom = 683;
-						nRangeForOptionsTo = 883;
-					} else if (884 <= nMondaiTangoNum && nMondaiTangoNum <= 1050) {
-						nRangeForOptionsFrom = 884;
-						nRangeForOptionsTo = 1050;
-					} else if (1051 <= nMondaiTangoNum && nMondaiTangoNum <= 1262) {
-						nRangeForOptionsFrom = 1051;
-						nRangeForOptionsTo = 1262;
-					} else if (1263 <= nMondaiTangoNum && nMondaiTangoNum <= 1411) {
-						nRangeForOptionsFrom = 1263;
-						nRangeForOptionsTo = 1411;
-					} else if (1412 <= nMondaiTangoNum && nMondaiTangoNum <= 1550) {
-						nRangeForOptionsFrom = 1412;
-						nRangeForOptionsTo = 1550;
-					} else if (1551 <= nMondaiTangoNum && nMondaiTangoNum <= 1850) {
-						nRangeForOptionsFrom = 1551;
-						nRangeForOptionsTo = 1850;
-					}
-				}
-				*/
+
+				//if (sentakuQ.equals(q_num.test1q)||sentakuQ.equals(q_num.testp1q))nMondaiTangoNum = numAndSeikairitu[testCount++].num;
+				//else nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
+				nMondaiTangoNum = numAndSeikairitu[testCount++].num;
 				if (Q_sentaku_activity.strQenum.equals(q_num.strQ.str1q)||Q_sentaku_activity.strQenum.equals(q_num.strQ.strp1q)||Q_sentaku_activity.strQenum.equals(q_num.strQ.str2q)||Q_sentaku_activity.strQenum.equals(q_num.strQ.strp2q)){
 					for (int i=0;i<=9;i++){
 						if (toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][i][0]<=nMondaiTangoNum&&nMondaiTangoNum<=toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][i][1]){
@@ -322,7 +276,7 @@ public class TestActivity extends AppCompatActivity {
 			if (Q_sentaku_activity.WordPhraseOrTest.equals(q_num.mode.exTest)) {
 				do {
 					nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
-				} while (nSeikaisuu[nMondaiTangoNum] > 3);
+				} while (nSeikaisuu[nMondaiTangoNum] >= 2);
 			}
 			((TextView) findViewById(R.id.textViewDebugTest)).append("from" + nRangeForOptionsFrom + "to" + nRangeForOptionsTo + "%%" + seikairitsu[nMondaiTangoNum] + ' ' + nSeikaisuu[nMondaiTangoNum] + '/' + (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum]));
 
@@ -337,10 +291,11 @@ public class TestActivity extends AppCompatActivity {
 		nWordSeikaisuu=getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).getInt("nWordSeikaisuu"+nMondaiTangoNum,0);
 		nWordHuseikaisuu=getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).getInt("nWordHuseikaisuu"+nMondaiTangoNum,0);
 		if (nWordSeikaisuu+nWordHuseikaisuu>0) {
-			tvMondai.setText("現在" + nGenzaiNanMonme + "問目 No." + nMondaiTangoNum + '\n' + wordE[nMondaiTangoNum] + '(' + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu) + "% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')');
+			((TextView)findViewById(R.id.tvMondaiNum)).setText(nGenzaiNanMonme + "問目 No." + nMondaiTangoNum+'(' + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu) + "% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')');
 		} else {
-			tvMondai.setText("現在" + nGenzaiNanMonme + "問目 No." + nMondaiTangoNum + '\n' + wordE[nMondaiTangoNum] + "(0% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')');
+			((TextView)findViewById(R.id.tvMondaiNum)).setText(nGenzaiNanMonme + "問目 No." + nMondaiTangoNum +"(0% 0/0)");
 		}
+		tvMondai.setText(wordE[nMondaiTangoNum]);
 		tvSentaku1.setText(wordJ[nTangoNum[1]]);
 		tvSentaku2.setText(wordJ[nTangoNum[2]]);
 		tvSentaku3.setText(wordJ[nTangoNum[3]]);
@@ -350,15 +305,8 @@ public class TestActivity extends AppCompatActivity {
 			tvKaisetsu.setText("");
 			tvMaruBatu.setText("");
 		}
-
-		//Soundpool
-		sp.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-			@Override
-			public void onLoadComplete(SoundPool soundPool, int i, int i1) {
-				soundPool.play(i,1f,1f,1,0,1f);
-			}
-		});
-		nSound=sp.load("/storage/emulated/0/Download/data/" + Q_sentaku_activity.strQenum.getQ + '/' + String.format("%04d", nMondaiTangoNum)  + "英.mp3",1);
+		((TextView)findViewById(R.id.textViewRange)).setText("範囲 No."+MainActivity.from+'-'+MainActivity.to+"\n合格"+nGokaku+'/'+nSeitou+'/'+nQuiz);
+		if (((CheckBox)findViewById(R.id.chHatsuon)).isChecked()) nSound=sp.load("/storage/emulated/0/Download/data/" + Q_sentaku_activity.strQenum.getQ + '/' + String.format("%04d", nMondaiTangoNum)  + "英.mp3",1);
 	}
 
 	public void checkKaitou(int sentaku){
@@ -376,14 +324,18 @@ public class TestActivity extends AppCompatActivity {
 			tvMaruBatu.setText("〇");
 			tvMaruBatu.setTextColor(Color.RED);
 			nWordSeikaisuu++;
+			if (nWordSeikaisuu==1) nSeitou++;
+			else if (nWordSeikaisuu==2) nGokaku++;
 		} else {
 			strSeikaiHuseikai="不正解";
 			tvMaruBatu.setText("×");
 			tvMaruBatu.setTextColor(Color.BLUE);
 			nWordHuseikaisuu++;
 		}
-		getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).edit().putInt("nWordSeikaisuu"+nMondaiTangoNum,nWordSeikaisuu).commit();
-		getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).edit().putInt("nWordHuseikaisuu"+nMondaiTangoNum,nWordHuseikaisuu).commit();
+		//getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).edit().putInt("nWordSeikaisuu"+nMondaiTangoNum,nWordSeikaisuu).commit();
+		//getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).edit().putInt("nWordHuseikaisuu"+nMondaiTangoNum,nWordHuseikaisuu).commit();
+		spe.putInt("nWordSeikaisuu"+nMondaiTangoNum,nWordSeikaisuu);
+		spe.putInt("nWordHuseikaisuu"+nMondaiTangoNum,nWordHuseikaisuu);
 		tvKaitou.setText("解答:" + nSeikaiSentakusi +
 				wordE[nMondaiTangoNum] + wordJ[nMondaiTangoNum]);
 		tvKaisetsu.setText(
@@ -423,5 +375,9 @@ public class TestActivity extends AppCompatActivity {
 		}
 		Log.d(logd,"onSentakusiTapped"+sentaku);
 		checkKaitou(sentaku);
+	}
+
+	public void onHintButtonTapped(View v){
+		new AlertDialog.Builder(this).setTitle("ヒント:例文(No"+nMondaiTangoNum+")").setMessage("\n\n\n\n\n"+strPhraseE[nMondaiTangoNum]+"\n\n\n\n\n"+strPhraseJ[nMondaiTangoNum]).create().show();
 	}
 }

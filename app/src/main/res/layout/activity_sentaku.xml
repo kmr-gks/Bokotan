@@ -13,6 +13,7 @@
 		android:layout_height="wrap_content"
 		android:onClick="onResetButtonClicked"
 		android:text="Reset"
+		android:textColor="@color/buttontext"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 

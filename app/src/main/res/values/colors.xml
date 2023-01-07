@@ -10,4 +10,6 @@
 	<color name="gray">#DDDDDD</color>
 	<color name="orange">#FF9800</color>
 	<color name="background">#FFFFFFFF</color>
+	<color name="buttontext">#FFFFFFFF</color>
+	<color name="textcolor">#FF000000</color>
 </resources>

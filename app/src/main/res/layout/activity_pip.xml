@@ -7,45 +7,50 @@
 	android:background="@color/background"
 	tools:context=".PipActivity">
 
-	<FrameLayout
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_weight="1">
+	<TextView
+		android:id="@+id/tvNum"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		android:textColor="#F44336"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<LinearLayout
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:orientation="vertical"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
 
 		<TextView
-			android:id="@+id/tvNum"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="TextView"
-			android:textColor="#F44336" />
-
-		<LinearLayout
+			android:id="@+id/tvPipE"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:orientation="vertical">
+			android:layout_height="0dp"
+			android:layout_weight="0.5"
+			android:autoSizeMinTextSize="10sp"
+			android:autoSizeTextType="uniform"
+			android:onClick="onClicked"
+			android:text="PIPモード"
+			android:textAlignment="center"
+			android:textSize="30sp"
+			android:textStyle="bold" />
 
-			<TextView
-				android:id="@+id/tvPipE"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:onClick="onClicked"
-				android:text="PIPモード"
-				android:textAlignment="center"
-				android:textSize="30sp"
-				android:textStyle="bold" />
+		<TextView
+			android:id="@+id/tvPipJ"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="0.5"
+			android:autoSizeMinTextSize="10sp"
+			android:autoSizeTextType="uniform"
+			android:onClick="onClicked"
+			android:text="読み込み中"
+			android:textAlignment="center"
+			android:textSize="30sp"
+			android:textStyle="bold" />
 
-			<TextView
-				android:id="@+id/tvPipJ"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:onClick="onClicked"
-				android:text="読み込み中"
-				android:textAlignment="center"
-				android:textSize="30sp"
-				android:textStyle="bold" />
-		</LinearLayout>
-	</FrameLayout>
+	</LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
