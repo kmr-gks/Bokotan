@@ -78,40 +78,40 @@
 		app:layout_constraintStart_toStartOf="parent">
 
 		<Button
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:autoSizeTextType="uniform"
 			android:onClick="onResetButtonClick"
 			android:text="最初から"
-			android:textColor="@color/buttontext" />
+			android:textColor="@color/buttontext"
+			android:textSize="16sp" />
 
 		<Button
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:autoSizeTextType="uniform"
 			android:onClick="onSelectNowButtonClick"
 			android:text="番号変更"
-			android:textColor="@color/buttontext" />
+			android:textColor="@color/buttontext"
+			android:textSize="16sp" />
 
 		<Button
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:autoSizeTextType="uniform"
 			android:onClick="onPIPButtonClicked"
 			android:text="PIP"
-			android:textColor="@color/buttontext" />
+			android:textColor="@color/buttontext"
+			android:textSize="16sp" />
 
 		<Button
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:autoSizeTextType="uniform"
 			android:onClick="onSentakuButtonClicked"
 			android:text="単語一覧"
-			android:textColor="@color/buttontext" />
+			android:textColor="@color/buttontext"
+			android:textSize="16sp" />
 	</LinearLayout>
 
 	<TextView

@@ -32,7 +32,7 @@ import static com.gukos.bokotan.MainActivity.strPhraseJ;
 import static com.gukos.bokotan.MainActivity.strQ;
 import static com.gukos.bokotan.MainActivity.tvGenzai;
 import static com.gukos.bokotan.MainActivity.tvSeikaisu;
-import static com.gukos.bokotan.MainActivity.tvSeikaisuu;
+import static com.gukos.bokotan.MainActivity.tvNumSeikaisuu;
 import static com.gukos.bokotan.MainActivity.tvWordEng;
 import static com.gukos.bokotan.MainActivity.tvWordJpn;
 import static com.gukos.bokotan.MainActivity.tvsubE;
@@ -41,7 +41,6 @@ import static com.gukos.bokotan.MainActivity.tvGogen;
 import static com.gukos.bokotan.MainActivity.wordE;
 import static com.gukos.bokotan.MainActivity.wordJ;
 import static com.gukos.bokotan.MyLibrary.getPath;
-import static com.gukos.bokotan.MyLibrary.puts;
 import static com.gukos.bokotan.Q_sentaku_activity.cbDirTOugou;
 import static com.gukos.bokotan.Q_sentaku_activity.checkBoxHatsuonKigou;
 import static com.gukos.bokotan.Q_sentaku_activity.isWordAndPhraseMode;
@@ -63,12 +62,9 @@ import android.os.PowerManager;
 import androidx.core.app.NotificationCompat;
 
 public class PlaySound extends Service {
-	static MediaPlayer mp;
+	static MediaPlayer mediaPlayerClassStatic;
 	static int nInstance = 0;
 	String path;
-
-	public PlaySound() {
-	}
 
 	void Sleep() {
 		Sleep(500);
@@ -84,42 +80,55 @@ public class PlaySound extends Service {
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
-		resetMediaPlayer(mp);
-		mp = null;
-		nInstance--;
-		puts("onDestroy:" + nInstance);
+		try {
+			super.onDestroy();
+			resetMediaPlayer(mediaPlayerClassStatic);
+			mediaPlayerClassStatic = null;
+			nInstance--;
+		} catch (Exception e) {
+			showException(this, e);
+		}
 	}
 
-	private void resetMediaPlayer(MediaPlayer mp) {
+	private void resetMediaPlayer(MediaPlayer mediaPlayer) {
 		try {
-			if (mp != null) mp.stop();
-		} catch (Exception e) {
-			showException(this, e);
-		}
-		try {
-			if (mp != null) mp.reset();
-		} catch (Exception e) {
-			showException(this, e);
-		}
-		try {
-			if (mp != null) mp.release();
+			if (mediaPlayer != null) {
+				try {
+					if (mediaPlayer.isPlaying()) mediaPlayer.stop();
+				} catch (Exception e) {
+					showException(this, e, ".stop()");
+					return;
+				}
+				try {
+					mediaPlayer.reset();
+				} catch (Exception e) {
+					showException(this, e, ".reset()");
+				}
+				try {
+					mediaPlayer.release();
+				} catch (Exception e) {
+					showException(this, e, ".release()");
+				}
+			}
 		} catch (Exception e) {
 			showException(this, e);
 		}
 	}
 
 	private void playStart(MediaPlayer mediaPlayer) {
-		mediaPlayer.start();
+		try {
+			mediaPlayer.start();
+		} catch (Exception e) {
+			showException(this, e);
+		}
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		try {
-			resetMediaPlayer(mp);
-			mp = null;
+			resetMediaPlayer(mediaPlayerClassStatic);
+			mediaPlayerClassStatic = null;
 			nInstance++;
-			puts("onStartCommand:" + nInstance);
 			NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			String strTutiChannelName = "再生中", strTutiChannelId = "bokotan_foreground", strTutiChannelShosai = "バックグラウンドで再生中";
 			if (nm.getNotificationChannel(strTutiChannelId) == null) {
@@ -128,7 +137,6 @@ public class PlaySound extends Service {
 				nm.createNotificationChannel(nc);
 			}
 
-			Intent pipctrlintent = new Intent(this, PipControlBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			Intent sendStopIntent = new Intent(this, StopPlayBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			Intent sendPipIntent = new Intent(this, StartPipBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			PendingIntent sendStopPendingIntent = PendingIntent.getBroadcast(this, 0, sendStopIntent, FLAG_IMMUTABLE);
@@ -140,6 +148,8 @@ public class PlaySound extends Service {
 					.addAction(R.drawable.ic_launcher_foreground, "停止", sendStopPendingIntent)
 					.addAction(R.mipmap.launcher_new_icon, "小窓で表示", sendPipPendingIntent)
 					.build();
+			//Notification.FLAG_NO_CLEARだと消える(Android13)
+			n.flags |= Notification.FLAG_ONGOING_EVENT;
 			startForeground(1, n);
 
 			SetHatsuonKigou(this);
@@ -230,7 +240,10 @@ public class PlaySound extends Service {
 							break;
 						}
 					}
-					tvSeikaisu.setText("kioku:" + kioku_chBox[now] + "正解" + getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + '/' + (getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + getIntData(this, "testActivity" + strQ + "Test", "nWordHuseikaisuu" + now, 0)));
+					tvSeikaisu.setText(
+							"kioku:" + kioku_chBox[now] +
+									"正解" + getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) +
+									'/' + (getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + getIntData(this, "testActivity" + strQ + "Test", "nWordHuseikaisuu" + now, 0)));
 				}
 
 				if (now <= nFrom) now = nFrom;
@@ -244,8 +257,10 @@ public class PlaySound extends Service {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordSeikaisuu" + now, 0);
 					nWordHuseikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordHuseikaisuu" + now, 0);
 				}
-				if (tvSeikaisuu != null)
-					tvSeikaisuu.setText(" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu + 1) + "% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
+				if (tvNumSeikaisuu != null)
+					tvNumSeikaisuu.setText(
+							" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu > 0 ? nWordSeikaisuu + nWordHuseikaisuu : 1) +
+									"% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
 				if (isWordAndPhraseMode) {
 					switch (strQ) {
 						case "1q": {
@@ -313,13 +328,12 @@ public class PlaySound extends Service {
 			} else path = getPath(passTan, strQPath, word, english, now, cbDirTOugou.isChecked());
 			textViewPath.setText(path);
 			try {
-				mp = MediaPlayer.create(getApplicationContext(), Uri.parse(path));
-				mp.setPlaybackParams(mp.getPlaybackParams().setSpeed((float) dPlaySpeedEng));
-				playStart(mp);
-				mp.setOnCompletionListener(mp -> {
-					//puts("再生終了しました。"+getNowTime());
-					resetMediaPlayer(mp);
-					mp=null;
+				mediaPlayerClassStatic = MediaPlayer.create(getApplicationContext(), Uri.parse(path));
+				mediaPlayerClassStatic.setPlaybackParams(mediaPlayerClassStatic.getPlaybackParams().setSpeed((float) dPlaySpeedEng));
+				playStart(mediaPlayerClassStatic);
+				mediaPlayerClassStatic.setOnCompletionListener(mediaPlayerLamda -> {
+					resetMediaPlayer(mediaPlayerLamda);
+					mediaPlayerLamda = null;
 					if (isPhraseMode || strQ.startsWith("y") || strQ.startsWith("tanjukugo")) {
 						bokotanPlayJapanese();
 					} else {
@@ -371,7 +385,9 @@ public class PlaySound extends Service {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordSeikaisuu" + now, 0);
 					nWordHuseikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordHuseikaisuu" + now, 0);
 				}
-				tvSeikaisuu.setText(" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu + 1) + "% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
+				tvNumSeikaisuu.setText(
+						" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu + 1) +
+								"% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
 
 				if (isPhraseMode) {
 					if (bHyojiYakuBeforeRead) {
@@ -416,13 +432,12 @@ public class PlaySound extends Service {
 			} else path = getPath(passTan, strQPath, word, japanese, now, cbDirTOugou.isChecked());
 			textViewPath.setText(path);
 			try {
-				mp = MediaPlayer.create(this, Uri.parse(path));
-				mp.setPlaybackParams(mp.getPlaybackParams().setSpeed((float) dPlaySpeedJpn));
-				playStart(mp);
-				mp.setOnCompletionListener(mp -> {
-					//puts("再生終了しました。"+getNowTime());
-					resetMediaPlayer(mp);
-					mp=null;
+				mediaPlayerClassStatic = MediaPlayer.create(this, Uri.parse(path));
+				mediaPlayerClassStatic.setPlaybackParams(mediaPlayerClassStatic.getPlaybackParams().setSpeed((float) dPlaySpeedJpn));
+				playStart(mediaPlayerClassStatic);
+				mediaPlayerClassStatic.setOnCompletionListener(mediaPlayerLamda -> {
+					resetMediaPlayer(mediaPlayerLamda);
+					mediaPlayerLamda = null;
 					bokotanPlayEnglish();
 				});
 			} catch (Exception e) {
@@ -442,12 +457,11 @@ public class PlaySound extends Service {
 		}
 	}
 
-
 	public void JosiCheck(int index)//最初は0を指定
 	{
 		try {
-			MediaPlayer mpJosi = new MediaPlayer();
-			mpJosi.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
+			MediaPlayer mediaPlayerJoshi = new MediaPlayer();
+			mediaPlayerJoshi.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
 			String strJosi;
 			int nowForJosiCheck = now;
 			if (!bEnglishToJapaneseOrder) nowForJosiCheck++;
@@ -480,13 +494,12 @@ public class PlaySound extends Service {
 				}
 			}
 			//助詞がある場合
-			mpJosi = MediaPlayer.create(this, Uri.parse(strJosi));
-			mpJosi.setPlaybackParams(mpJosi.getPlaybackParams().setSpeed((float) dPlaySpeedJpn));
-			playStart(mpJosi);
-			mpJosi.setOnCompletionListener(mpJosi1 -> {
-				//puts("再生終了しました。"+getNowTime());
-				resetMediaPlayer(mpJosi1);
-				mpJosi1=null;
+			mediaPlayerJoshi = MediaPlayer.create(this, Uri.parse(strJosi));
+			mediaPlayerJoshi.setPlaybackParams(mediaPlayerJoshi.getPlaybackParams().setSpeed((float) dPlaySpeedJpn));
+			playStart(mediaPlayerJoshi);
+			mediaPlayerJoshi.setOnCompletionListener(mediaPlayerJosiLamda -> {
+				resetMediaPlayer(mediaPlayerJosiLamda);
+				mediaPlayerJosiLamda = null;
 				bokotanPlayJapanese();
 			});
 		} catch (Exception e) {

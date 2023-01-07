@@ -151,6 +151,15 @@
 			android:text="準2級"
 			android:textColor="@color/buttontext" />
 
+		<Button
+			android:id="@+id/buttonAll"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:onClick="onSelectQ"
+			android:text="総合"
+			android:textColor="@color/buttontext" />
+
 	</LinearLayout>
 
 	<LinearLayout
@@ -313,6 +322,32 @@
 			android:layout_weight="1"
 			android:text="イヤホン切断時停止"
 			android:textColor="@color/textcolor" />
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:orientation="horizontal">
+
+			<EditText
+				android:id="@+id/editTextPipYoko"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:ems="10"
+				android:hint="pip横"
+				android:inputType="numberSigned" />
+
+			<EditText
+				android:id="@+id/editTextPipTate"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:ems="10"
+				android:hint="pip縦"
+				android:inputType="numberSigned" />
+		</LinearLayout>
+
 	</LinearLayout>
 
 	<LinearLayout
@@ -399,6 +434,7 @@
 			android:layout_weight="1"
 			android:background="@drawable/border"
 			android:entries="@array/spinner_kuuhaku" />
+
 	</LinearLayout>
 
 	<LinearLayout
