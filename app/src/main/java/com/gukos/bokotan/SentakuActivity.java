@@ -1,10 +1,10 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MainActivity.kioku_chBox;
-import static com.gukos.bokotan.MainActivity.kioku_file;
-import static com.gukos.bokotan.MainActivity.lastnum;
-import static com.gukos.bokotan.MainActivity.now;
-import static com.gukos.bokotan.MyLibrary.showException;
+import static com.gukos.bokotan.CommonVariables.kioku_chBox;
+import static com.gukos.bokotan.CommonVariables.kioku_file;
+import static com.gukos.bokotan.CommonVariables.lastnum;
+import static com.gukos.bokotan.CommonVariables.now;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.AlertDialog;
 import android.content.res.Configuration;
@@ -58,8 +58,8 @@ public class SentakuActivity extends AppCompatActivity {
 					CheckData data = getItem(position);
 					int i = data.num;
 					cb[i] = (convertView instanceof CheckBox) ? (CheckBox) convertView : new CheckBox(getApplicationContext());
-					cb[i].setText(i + ":" + MainActivity.wordE[i] + " " + MainActivity.wordJ[i] + '\n' + MainActivity.nSeikaisuu[i] + '/' + (MainActivity.nSeikaisuu[i] + MainActivity.nHuseikaisuu[i]));
-					cb[i].setText(String.format("%d:%2d%%%s%s", i, (int) MainActivity.nSeikaisuu[i] * 100 / (MainActivity.nSeikaisuu[i] + MainActivity.nHuseikaisuu[i] + 1), MainActivity.wordE[i], MainActivity.wordJ[i]));
+					cb[i].setText(i + ":" + CommonVariables.wordE[i] + " " + CommonVariables.wordJ[i] + '\n' + CommonVariables.nSeikaisuu[i] + '/' + (CommonVariables.nSeikaisuu[i] + CommonVariables.nHuseikaisuu[i]));
+					cb[i].setText(String.format("%d:%2d%%%s%s", i, (int) CommonVariables.nSeikaisuu[i] * 100 / (CommonVariables.nSeikaisuu[i] + CommonVariables.nHuseikaisuu[i] + 1), CommonVariables.wordE[i], CommonVariables.wordJ[i]));
 					cb[i].setChecked(kioku_chBox[i]);
 					cb[i].setId(i);
 					cb[i].setTag(position); // ViewにIndexを紐づけておく
@@ -90,7 +90,7 @@ public class SentakuActivity extends AppCompatActivity {
 			super.onStop();
 			for (int i = 1; i < lastnum; i++) {
 				if (kioku_file[i] != kioku_chBox[i]) {
-					MyLibrary.putBoolData(this, "settings-" + Q_sentaku_activity.strQenum.getQ, Q_sentaku_activity.strQenum.getQ + i, kioku_chBox[i]);
+					MyLibrary.PreferenceManager.putBoolData(this, "settings-" + CommonVariables.strQenum.getQ, CommonVariables.strQenum.getQ + i, kioku_chBox[i]);
 					kioku_file[i] = kioku_chBox[i];
 				}
 			}

@@ -1,6 +1,6 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.showException;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -9,9 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class EarbudsConnectReceiver {
 

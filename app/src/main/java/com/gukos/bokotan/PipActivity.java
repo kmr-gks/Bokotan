@@ -1,26 +1,18 @@
 package com.gukos.bokotan;
 
-import static android.app.PendingIntent.FLAG_IMMUTABLE;
-import static com.gukos.bokotan.MainActivity.now;
-import static com.gukos.bokotan.MainActivity.wordE;
-import static com.gukos.bokotan.MainActivity.wordJ;
-import static com.gukos.bokotan.MyLibrary.showException;
+import static com.gukos.bokotan.CommonVariables.now;
+import static com.gukos.bokotan.CommonVariables.wordE;
+import static com.gukos.bokotan.CommonVariables.wordJ;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
-import android.app.RemoteAction;
 import android.content.BroadcastReceiver;
-import android.content.Intent;
-import android.graphics.Rect;
-import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Rational;
 import android.view.View;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 
 public class PipActivity extends Activity {
 	static TextView tvPipE, tvPipJ, tvNum;
@@ -43,7 +35,6 @@ public class PipActivity extends Activity {
 			}
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_pip);
-			setTheme(R.style.bokotan_NoTitleBar);
 
 			tvPipE = findViewById(R.id.tvPipE);
 			tvPipJ = findViewById(R.id.tvPipJ);

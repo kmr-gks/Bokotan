@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 plugins {
 	id 'com.android.application'
 }
@@ -11,7 +13,11 @@ android {
 		minSdkVersion 26
 		targetSdkVersion 33
 		versionCode 9999999
-		versionName "22.12.19"
+		versionName "23.1.5"
+
+		//https://takusan.negitoro.dev/posts/android_build_date_resource/
+		// ビルド日時を Context#getString で参照できるようにする
+		resValue("string", "buildDate", new SimpleDateFormat("yyyy/MM/dd H:mm").format(Calendar.getInstance(Locale.JAPAN).getTime()))
 
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 	}
@@ -23,8 +29,11 @@ android {
 		}
 	}
 	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_1_8
-		targetCompatibility JavaVersion.VERSION_1_8
+		sourceCompatibility JavaVersion.VERSION_11
+		targetCompatibility JavaVersion.VERSION_11
+	}
+	buildFeatures{
+		viewBinding true
 	}
 	lint {
 		baseline = file("lint-baseline.xml")

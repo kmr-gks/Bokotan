@@ -1,10 +1,8 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.showException;
-import static com.gukos.bokotan.MainActivity.wordE;
-import static com.gukos.bokotan.MyLibrary.showException;
+import static com.gukos.bokotan.CommonVariables.wordE;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
-import android.app.AlertDialog;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -108,7 +106,7 @@ public class GogenYomuFactory {
 			GogenYomu gy = trGogenYomu.get(word);
 			return gy == null ? "" : gy.getGogenString(containsBunrui, containsSankou);
 		} catch (Exception e) {
-			MyLibrary.showException(e);
+			MyLibrary.ExceptionManager.showException(e);
 			return "(null string)";
 		}
 	}

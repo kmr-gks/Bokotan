@@ -1,11 +1,9 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MainActivity.now;
-import static com.gukos.bokotan.MainActivity.playing;
-import static com.gukos.bokotan.MainActivity.strQ;
-import static com.gukos.bokotan.MyLibrary.puts;
-import static com.gukos.bokotan.MyLibrary.showException;
-import static com.gukos.bokotan.PipActivity.ACTION_HOGE;
+import static com.gukos.bokotan.CommonVariables.now;
+import static com.gukos.bokotan.CommonVariables.playing;
+import static com.gukos.bokotan.CommonVariables.strQ;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.PipActivity.CONTROL_TYPE_A;
 import static com.gukos.bokotan.PipActivity.CONTROL_TYPE_B;
 import static com.gukos.bokotan.PipActivity.EXTRA_CONTROL_TYPE;
@@ -29,7 +27,7 @@ public class PipControlBroadcastReceiver extends BroadcastReceiver {
 					//MainActivity.javaのonStartStopButtonClickより
 					context.stopService(intent);
 					playing = false;
-					MyLibrary.putIntData(context, "MainActivity" + "now", strQ + "now", now);
+					MyLibrary.PreferenceManager.putIntData(context, "MainActivity" + "now", strQ + "now", now);
 					break;
 				}
 				case CONTROL_TYPE_B: {

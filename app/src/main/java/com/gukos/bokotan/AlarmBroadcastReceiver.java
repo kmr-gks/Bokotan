@@ -1,6 +1,6 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.showException;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

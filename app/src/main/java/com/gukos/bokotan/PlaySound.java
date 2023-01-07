@@ -1,51 +1,51 @@
 package com.gukos.bokotan;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
-import static com.gukos.bokotan.MainActivity.hashMapKishutu;
-import static com.gukos.bokotan.MainActivity.textViewHatsuonKigou;
-import static com.gukos.bokotan.MainActivity.textViewPath;
-import static com.gukos.bokotan.MyLibrary.DataBook.passTan;
-import static com.gukos.bokotan.MyLibrary.DataBook.tanjukugoEX;
-import static com.gukos.bokotan.MyLibrary.DataBook.yumetan;
-import static com.gukos.bokotan.MyLibrary.DataLang.english;
-import static com.gukos.bokotan.MyLibrary.DataLang.japanese;
-import static com.gukos.bokotan.MyLibrary.DataType.phrase;
-import static com.gukos.bokotan.MyLibrary.DataType.word;
-import static com.gukos.bokotan.MyLibrary.DataName;
-import static com.gukos.bokotan.MyLibrary.HatsuonKigou.SetHatsuonKigou;
-import static com.gukos.bokotan.MyLibrary.HatsuonKigou.getHatsuon;
-import static com.gukos.bokotan.MyLibrary.getIntData;
-import static com.gukos.bokotan.MyLibrary.showException;
+import static android.app.PendingIntent.FLAG_MUTABLE;
+import static com.gukos.bokotan.CommonVariables.bEnglishToJapaneseOrder;
+import static com.gukos.bokotan.CommonVariables.bHyojiYakuBeforeRead;
+import static com.gukos.bokotan.CommonVariables.bSkipOboe;
+import static com.gukos.bokotan.QSentakuFragment.cbDirTOugou;
+import static com.gukos.bokotan.CommonVariables.dPlaySpeedEng;
+import static com.gukos.bokotan.CommonVariables.dPlaySpeedJpn;
+import static com.gukos.bokotan.CommonVariables.hashMapKishutu;
+import static com.gukos.bokotan.CommonVariables.isPhraseMode;
+import static com.gukos.bokotan.CommonVariables.isWordAndPhraseMode;
+import static com.gukos.bokotan.CommonVariables.kioku_chBox;
+import static com.gukos.bokotan.CommonVariables.lastnum;
+import static com.gukos.bokotan.CommonVariables.nFrom;
+import static com.gukos.bokotan.CommonVariables.nTo;
+import static com.gukos.bokotan.CommonVariables.now;
+import static com.gukos.bokotan.CommonVariables.strPhraseE;
+import static com.gukos.bokotan.CommonVariables.strPhraseJ;
+import static com.gukos.bokotan.CommonVariables.strQ;
+import static com.gukos.bokotan.CommonVariables.swOnlyFirst;
+import static com.gukos.bokotan.CommonVariables.textViewHatsuonKigou;
+import static com.gukos.bokotan.CommonVariables.textViewPath;
+import static com.gukos.bokotan.CommonVariables.tvGenzai;
+import static com.gukos.bokotan.CommonVariables.tvGogen;
+import static com.gukos.bokotan.CommonVariables.tvNumSeikaisuu;
+import static com.gukos.bokotan.CommonVariables.tvSeikaisu;
+import static com.gukos.bokotan.CommonVariables.tvWordEng;
+import static com.gukos.bokotan.CommonVariables.tvWordJpn;
+import static com.gukos.bokotan.CommonVariables.tvsubE;
+import static com.gukos.bokotan.CommonVariables.tvsubJ;
+import static com.gukos.bokotan.CommonVariables.wordE;
+import static com.gukos.bokotan.CommonVariables.wordJ;
 import static com.gukos.bokotan.GogenYomuFactory.getGogenString;
-import static com.gukos.bokotan.MainActivity.bEnglishToJapaneseOrder;
-import static com.gukos.bokotan.MainActivity.bHyojiYakuBeforeRead;
-import static com.gukos.bokotan.MainActivity.dPlaySpeedEng;
-import static com.gukos.bokotan.MainActivity.dPlaySpeedJpn;
-import static com.gukos.bokotan.MainActivity.isPhraseMode;
-import static com.gukos.bokotan.MainActivity.kioku_chBox;
-import static com.gukos.bokotan.MainActivity.lastnum;
-import static com.gukos.bokotan.MainActivity.nFrom;
-import static com.gukos.bokotan.MainActivity.nTo;
-import static com.gukos.bokotan.MainActivity.now;
-import static com.gukos.bokotan.MainActivity.strPhraseE;
-import static com.gukos.bokotan.MainActivity.strPhraseJ;
-import static com.gukos.bokotan.MainActivity.strQ;
-import static com.gukos.bokotan.MainActivity.tvGenzai;
-import static com.gukos.bokotan.MainActivity.tvSeikaisu;
-import static com.gukos.bokotan.MainActivity.tvNumSeikaisuu;
-import static com.gukos.bokotan.MainActivity.tvWordEng;
-import static com.gukos.bokotan.MainActivity.tvWordJpn;
-import static com.gukos.bokotan.MainActivity.tvsubE;
-import static com.gukos.bokotan.MainActivity.tvsubJ;
-import static com.gukos.bokotan.MainActivity.tvGogen;
-import static com.gukos.bokotan.MainActivity.wordE;
-import static com.gukos.bokotan.MainActivity.wordJ;
-import static com.gukos.bokotan.MyLibrary.getPath;
-import static com.gukos.bokotan.Q_sentaku_activity.cbDirTOugou;
-import static com.gukos.bokotan.Q_sentaku_activity.checkBoxHatsuonKigou;
-import static com.gukos.bokotan.Q_sentaku_activity.isWordAndPhraseMode;
-import static com.gukos.bokotan.Q_sentaku_activity.bSkipOboe;
-import static com.gukos.bokotan.Q_sentaku_activity.swOnlyFirst;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPath;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
+import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
+import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
+import static com.gukos.bokotan.WordPhraseData.DataLang.english;
+import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
+import static com.gukos.bokotan.WordPhraseData.DataType.phrase;
+import static com.gukos.bokotan.WordPhraseData.DataType.word;
+import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.SetHatsuonKigou;
+import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.getHatsuon;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -65,6 +65,7 @@ public class PlaySound extends Service {
 	static MediaPlayer mediaPlayerClassStatic;
 	static int nInstance = 0;
 	String path;
+	Context context;
 
 	void Sleep() {
 		Sleep(500);
@@ -126,6 +127,7 @@ public class PlaySound extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		try {
+			context=getApplicationContext();
 			resetMediaPlayer(mediaPlayerClassStatic);
 			mediaPlayerClassStatic = null;
 			nInstance++;
@@ -141,31 +143,22 @@ public class PlaySound extends Service {
 			Intent sendPipIntent = new Intent(this, StartPipBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			PendingIntent sendStopPendingIntent = PendingIntent.getBroadcast(this, 0, sendStopIntent, FLAG_IMMUTABLE);
 			PendingIntent sendPipPendingIntent = PendingIntent.getBroadcast(this, 0, sendPipIntent, FLAG_IMMUTABLE);
+			PendingIntent pendingIntentOpenActivity=PendingIntent.getActivity(context,110,
+			                                                                  new Intent(context,
+			                                                                             TabActivity.class).setFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY),FLAG_MUTABLE);
 
 			Notification n = new NotificationCompat.Builder(this, strTutiChannelId)
 					.setContentTitle("再生中").setContentText("バックグラウンドで再生中")
 					.setSmallIcon(R.mipmap.ic_launcher)
 					.addAction(R.drawable.ic_launcher_foreground, "停止", sendStopPendingIntent)
 					.addAction(R.mipmap.launcher_new_icon, "小窓で表示", sendPipPendingIntent)
+					.setContentIntent(pendingIntentOpenActivity)
 					.build();
 			//Notification.FLAG_NO_CLEARだと消える(Android13)
 			n.flags |= Notification.FLAG_ONGOING_EVENT;
 			startForeground(1, n);
 
 			SetHatsuonKigou(this);
-		/*
-		//発音記号のためにSVL読み込み
-		if (checkBoxHatsuonKigou.isChecked()&&hashMapHatsuonKigou.size()==0){
-			textViewHatsuonKigou.setVisibility(View.VISIBLE);
-			WordPhraseData wordPhraseDataSVL=new WordPhraseData(Svl,this);
-			for (int i=1;i<Math.min(wordPhraseDataSVL.e.length, wordPhraseDataSVL.j.length);i++)
-				if (wordPhraseDataSVL.e[i]!=null&&wordPhraseDataSVL.j[i]!=null)
-					hashMapHatsuonKigou.put(wordPhraseDataSVL.e[i],wordPhraseDataSVL.j[i]);
-		}else if(!checkBoxHatsuonKigou.isChecked()) {
-			textViewHatsuonKigou.setText("");
-			textViewHatsuonKigou.setVisibility(GONE);
-		}
-		*/
 
 			bokotanPlayEnglish();
 		} catch (Exception e) {
@@ -184,7 +177,7 @@ public class PlaySound extends Service {
 		try {
 			tvWordEng.setMaxLines(1);
 			tvWordEng.setText(wordE[num]);
-			if (checkBoxHatsuonKigou.isChecked())
+			if (QSentakuFragment.checkBoxHatsuonKigou.isChecked())
 				textViewHatsuonKigou.setText(getHatsuon(wordE[now]));
 		} catch (Exception e) {
 			showException(this, e);
@@ -204,7 +197,7 @@ public class PlaySound extends Service {
 			if (bEnglishToJapaneseOrder) {
 				if (!isWordAndPhraseMode || isPhraseMode) now++;
 				if (bSkipOboe) {
-					switch (Q_sentaku_activity.skipjoken) {
+					switch (CommonVariables.skipjoken) {
 						case seikai1: {
 							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null) || getIntData(this, "testActivity" + strQ_WordPhraseKyoutuu + "Test", "nWordSeikaisuu" + now, 0) > 0 || kioku_chBox[now]) {
 								now++;
@@ -222,13 +215,13 @@ public class PlaySound extends Service {
 							break;
 						}
 						case onlyHugoukaku: {
-							int seikaisu = getIntData(this, DataName.testActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語正解数 + now, 0);
-							int huseikaisu = getIntData(this, DataName.testActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語不正解数 + now, 0);
+							int seikaisu = getIntData(this, DataName.dnTestActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語正解数 + now, 0);
+							int huseikaisu = getIntData(this, DataName.dnTestActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語不正解数 + now, 0);
 							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null)
 									|| TestActivity.isGokaku(seikaisu, huseikaisu)) {
 								now++;
-								seikaisu = getIntData(this, DataName.testActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語正解数 + now, 0);
-								huseikaisu = getIntData(this, DataName.testActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語不正解数 + now, 0);
+								seikaisu = getIntData(this, DataName.dnTestActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語正解数 + now, 0);
+								huseikaisu = getIntData(this, DataName.dnTestActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語不正解数 + now, 0);
 							}
 							break;
 						}
@@ -309,7 +302,8 @@ public class PlaySound extends Service {
 			}
 			PipActivity.ChangeText(wordE[now], wordJ[now], now);
 			String strQPath = strQ;
-			if ((cbDirTOugou.isChecked() && strQPath.startsWith("ph")) || strQPath.startsWith("phy")) {
+			if ((QSentakuFragment.cbDirTOugou.isChecked() && strQPath.startsWith("ph")) || strQPath.startsWith(
+					"phy")) {
 				//フォルダ統合
 				strQPath = strQ.substring(2);
 			}
@@ -471,7 +465,7 @@ public class PlaySound extends Service {
 				case 'に':
 				case 'の':
 				case 'で': {
-					strJosi = MyLibrary.getJosiPath(c);
+					strJosi = MyLibrary.FileDirectoryManager.getJosiPath(c);
 					break;
 				}
 				case '(':

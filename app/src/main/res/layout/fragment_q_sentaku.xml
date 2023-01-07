@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:layout_gravity="center"
+	android:background="@color/background"
+	tools:context=".QSentakuFragment">
+
+	<TextView
+		android:id="@+id/textViewNowInput"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="now="
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutOtherButton" />
+
+	<EditText
+		android:id="@+id/editTextNumber"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:hint="@string/editNumberText"
+		android:inputType="number"
+		android:minHeight="48dp"
+		app:layout_constraintEnd_toStartOf="@+id/linearLayoutSettings"
+		app:layout_constraintStart_toEndOf="@+id/textViewNowInput"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutOtherButton" />
+
+	<LinearLayout
+		android:id="@+id/linearLayoutOption"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<LinearLayout
+			android:id="@+id/linearLayoutSpinnerLabel"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2.5"
+				android:text="範囲"
+				android:textColor="@color/textcolor" />
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2.5"
+				android:text="品詞"
+				android:textColor="@color/textcolor" />
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="4.5"
+				android:text="モード"
+				android:textColor="@color/textcolor" />
+
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/linearLayoutSpinners"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="horizontal">
+
+			<Spinner
+				android:id="@+id/spinnerHanni"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2.5"
+				android:entries="@array/spinner_hanni"/>
+
+			<Spinner
+				android:id="@+id/spinnerHinsi"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2.5"
+				android:entries="@array/spinner_hinsi" />
+
+			<Spinner
+				android:id="@+id/spinnerMode"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="4.5"
+				android:entries="@array/spinner_mode" />
+		</LinearLayout>
+	</LinearLayout>
+
+
+
+	<LinearLayout
+		android:id="@+id/linearLayoutQ"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutYume">
+
+		<Button
+			android:id="@+id/button1q"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="1級"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonP1q"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="準1級"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/button2q"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="2級"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonP2q"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="準2級"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonAll"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="総合"
+			android:textColor="@color/buttontext" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayoutYume"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/linearLayoutOption">
+
+		<Button
+			android:id="@+id/buttonYume0.0"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="ユメタン0基"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonYume0.8"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="ユメタン0本"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonYume1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="ユメタン1"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonYume2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="ユメタン2"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonYume3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="ユメタン3"
+			android:textColor="@color/buttontext" />
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/textViewVersion"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="version:YY.MM.DD"
+		android:textColor="@color/textcolor"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent" />
+
+	<LinearLayout
+		android:id="@+id/linearLayoutSettings"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:orientation="vertical"
+		app:layout_constraintBottom_toTopOf="@+id/textViewVersion"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/linearLayoutOtherButton"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ">
+
+		<LinearLayout
+			android:id="@+id/lineayLayoutAdditional"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:orientation="horizontal">
+
+			<Button
+				android:id="@+id/buttonPrefExport"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:text="設定保存"
+				android:textColor="@color/buttontext" />
+
+			<Button
+				android:id="@+id/buttonWriteTest"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:text="書き込み確認"
+				android:textColor="@color/buttontext"
+				android:textSize="12sp" />
+
+		</LinearLayout>
+
+		<Switch
+			android:id="@+id/switchOnlyFirst"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:checked="true"
+			android:text="既出の単語をスキップ"
+			android:textColor="@color/textcolor" />
+
+		<Switch
+			android:id="@+id/switchHyojiYakuBeforeRead"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:checked="true"
+			android:text="読む前に表示"
+			android:textColor="@color/textcolor" />
+
+		<Switch
+			android:id="@+id/switchSkipOboe"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:checked="true"
+			android:text="覚えた単語を飛ばす"
+			android:textColor="@color/textcolor" />
+
+		<Switch
+			android:id="@+id/switchSkipMaruBatu"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:checked="true"
+			android:text="〇×演出なし"
+			android:textColor="@color/textcolor" />
+
+		<Switch
+			android:id="@+id/switchSortHanten"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="ソート反転"
+			android:textColor="@color/textcolor" />
+
+		<CheckBox
+			android:id="@+id/checkBoxHatsuonkigou"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="発音記号を表示"
+			android:textColor="@color/textcolor" />
+
+		<CheckBox
+			android:id="@+id/checkBoxDirTougou"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="フォルダ統合"
+			android:textColor="@color/textcolor" />
+
+		<CheckBox
+			android:id="@+id/checkBoxDefaultAdapter"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="規定のアダプター"
+			android:textColor="@color/textcolor" />
+
+		<CheckBox
+			android:id="@+id/checkBoxAutoStop"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="イヤホン切断時停止"
+			android:textColor="@color/textcolor" />
+
+		<LinearLayout
+			android:id="@+id/linearLayoutPipHiritsu"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:orientation="horizontal">
+
+			<EditText
+				android:id="@+id/editTextPipYoko"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:ems="10"
+				android:hint="pip横"
+				android:inputType="numberSigned" />
+
+			<EditText
+				android:id="@+id/editTextPipTate"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:ems="10"
+				android:hint="pip縦"
+				android:inputType="numberSigned" />
+		</LinearLayout>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayoutRadioGroups"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:orientation="vertical"
+		app:layout_constraintBottom_toTopOf="@+id/textViewVersion"
+		app:layout_constraintEnd_toEndOf="@+id/linearLayoutTanjukugo"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/editTextNumber">
+
+		<RadioGroup
+			android:id="@+id/radioGroupEngJpn"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="2"
+			android:background="@drawable/border">
+
+			<RadioButton
+				android:id="@+id/radioButtonEtoJ"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:checked="true"
+				android:text="英→日"
+				android:textColor="@color/textcolor" />
+
+			<RadioButton
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:text="日→英"
+				android:textColor="@color/textcolor" />
+		</RadioGroup>
+
+
+		<RadioGroup
+			android:id="@+id/radioGroupSkipOption"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="4"
+			android:background="@drawable/border">
+
+			<RadioButton
+				android:id="@+id/radioButtonOnlyKioku"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:checked="false"
+				android:text="記録のみ"
+				android:textColor="@color/textcolor" />
+
+			<RadioButton
+				android:id="@+id/radioButtonOnlyHugoukaku"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:text="不合格のみ"
+				android:textColor="@color/textcolor" />
+
+			<RadioButton
+				android:id="@+id/radioButton1seikai"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:text="1回正解を飛ばす"
+				android:textColor="@color/textcolor" />
+
+			<RadioButton
+				android:id="@+id/radioButton2huseikai"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:text="2回以上不正解のみ"
+				android:textColor="@color/textcolor" />
+		</RadioGroup>
+
+		<Spinner
+			android:id="@+id/spinnerKuuhaku"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:background="@drawable/border"
+			android:entries="@array/spinner_kuuhaku" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayoutTanjukugo"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ">
+
+		<Button
+			android:id="@+id/button1qEx"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="1級EX"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonP1qEx"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="準1級EX"
+			android:textColor="@color/buttontext" />
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayoutOtherButton"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintEnd_toEndOf="@+id/linearLayoutTanjukugo"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutTanjukugo">
+
+		<Button
+			android:id="@+id/buttonAlarm"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:text="alarm"
+			android:textColor="@color/buttontext"
+			android:textSize="10sp" />
+
+		<Button
+			android:id="@+id/buttonKensaku"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:text="全文検索"
+			android:textColor="@color/buttontext"
+			android:textSize="10sp" />
+
+	</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

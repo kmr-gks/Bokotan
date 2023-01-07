@@ -1,25 +1,22 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.GogenYomuFactory.getGogenString;
-import static com.gukos.bokotan.MainActivity.from;
-import static com.gukos.bokotan.MainActivity.lastnum;
-import static com.gukos.bokotan.MainActivity.nHuseikaisuu;
-import static com.gukos.bokotan.MainActivity.nSeikaisuu;
-import static com.gukos.bokotan.MainActivity.strPhraseE;
-import static com.gukos.bokotan.MainActivity.strPhraseJ;
-import static com.gukos.bokotan.MainActivity.strQ;
-import static com.gukos.bokotan.MainActivity.to;
-import static com.gukos.bokotan.MainActivity.toFindFromAndTo;
-import static com.gukos.bokotan.MainActivity.wordE;
-import static com.gukos.bokotan.MainActivity.wordJ;
-import static com.gukos.bokotan.MyLibrary.DataBook.passTan;
-import static com.gukos.bokotan.MyLibrary.DataBook.tanjukugoEX;
-import static com.gukos.bokotan.MyLibrary.DataBook.yumetan;
-import static com.gukos.bokotan.MyLibrary.DataLang.english;
-import static com.gukos.bokotan.MyLibrary.DataType.word;
+import static com.gukos.bokotan.CommonVariables.lastnum;
+import static com.gukos.bokotan.CommonVariables.nHuseikaisuu;
+import static com.gukos.bokotan.CommonVariables.nSeikaisuu;
+import static com.gukos.bokotan.CommonVariables.strPhraseE;
+import static com.gukos.bokotan.CommonVariables.strPhraseJ;
+import static com.gukos.bokotan.CommonVariables.strQ;
+import static com.gukos.bokotan.CommonVariables.toFindFromAndTo;
+import static com.gukos.bokotan.CommonVariables.wordE;
+import static com.gukos.bokotan.CommonVariables.wordJ;
+import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
+import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
+import static com.gukos.bokotan.WordPhraseData.DataLang.english;
+import static com.gukos.bokotan.WordPhraseData.DataType.word;
 import static com.gukos.bokotan.MyLibrary.*;
-import static com.gukos.bokotan.MyLibrary.HatsuonKigou.SetHatsuonKigou;
-import static com.gukos.bokotan.Q_sentaku_activity.strQenum;
+import static com.gukos.bokotan.CommonVariables.strQenum;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
@@ -100,10 +97,19 @@ public class TestActivity extends AppCompatActivity {
 			checkBoxHatsuon = findViewById(R.id.checkBoxHatsuon);
 			checkBoxKoukaon = findViewById(R.id.checkBoxKoukaon);
 
-			checkBoxHatsuon.setChecked(getBoolData(this, "checkBoxHatsuon", "checked", true));
-			checkBoxHatsuon.setOnClickListener(view -> putBoolData(this, "checkBoxHatsuon", "checked", ((CheckBox) view).isChecked()));
-			checkBoxKoukaon.setChecked(getBoolData(this, "checkBoxKoukaon", "checked", true));
-			checkBoxKoukaon.setOnClickListener(view -> putBoolData(this, "checkBoxKoukaon", "checked", ((CheckBox) view).isChecked()));
+			//TODO ファイル名変更
+			/*
+			checkBoxHatsuon.setChecked(PreferenceManager.getBoolData(this, "checkBoxHatsuon", "checked", true));
+			checkBoxHatsuon.setOnClickListener(view -> PreferenceManager.putBoolData(this, "checkBoxHatsuon", "checked", ((CheckBox) view).isChecked()));
+			checkBoxKoukaon.setChecked(PreferenceManager.getBoolData(this, "checkBoxKoukaon", "checked", true));
+			checkBoxKoukaon.setOnClickListener(view -> PreferenceManager.putBoolData(this, "checkBoxKoukaon", "checked", ((CheckBox) view).isChecked()));
+			*/
+
+			checkBoxHatsuon.setChecked(PreferenceManager.getSetting(this, "checkBoxHatsuon", true));
+			checkBoxHatsuon.setOnClickListener(view -> PreferenceManager.putSetting(this, "checkBoxHatsuon", ((CheckBox) view).isChecked()));
+			checkBoxKoukaon.setChecked(PreferenceManager.getSetting(this, "checkBoxKoukaon", true));
+			checkBoxKoukaon.setOnClickListener(view -> PreferenceManager.putSetting(this, "checkBoxKoukaon", ((CheckBox) view).isChecked()));
+
 
 			switch (strQ) {
 				case "1qTest": {
@@ -165,39 +171,39 @@ public class TestActivity extends AppCompatActivity {
 					break;
 				}
 				case "y08" + "Test": {
-					MainActivity.lastnum = 800;
+					CommonVariables.lastnum = 800;
 					WordPhraseData w = new WordPhraseData(YumeWord + "08", this);
 					strPhraseE = wordE = w.e;
 					strPhraseJ = wordJ = w.j;
 					break;
 				}
 				case "y1" + "Test": {
-					MainActivity.lastnum = 1000;
+					CommonVariables.lastnum = 1000;
 					WordPhraseData w = new WordPhraseData(YumeWord + "1", this);
 					strPhraseE = wordE = w.e;
 					strPhraseJ = wordJ = w.j;
 					break;
 				}
 				case "y2" + "Test": {
-					MainActivity.lastnum = 1000;
+					CommonVariables.lastnum = 1000;
 					WordPhraseData w = new WordPhraseData(YumeWord + "2", this);
 					strPhraseE = wordE = w.e;
 					strPhraseJ = wordJ = w.j;
 					break;
 				}
 				case "y3" + "Test": {
-					MainActivity.lastnum = 800;
+					CommonVariables.lastnum = 800;
 					WordPhraseData w = new WordPhraseData(YumeWord + "3", this);
 					strPhraseE = wordE = w.e;
 					strPhraseJ = wordJ = w.j;
 					break;
 				}
 			}
-			nGenzaiNanMonme = getIntData(this, DataName.testActivity + strQ, DataName.nGenzaiNanMonme, 1);
+			nGenzaiNanMonme = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.現在何問目, 1);
 			int unit = 5;
-			switch (Q_sentaku_activity.nUnit) {
+			switch (CommonVariables.nUnit) {
 				case 1: {//A
-					switch (Q_sentaku_activity.nShurui) {
+					switch (CommonVariables.nShurui) {
 						case 1: {//V
 							unit = 0;
 							break;
@@ -218,7 +224,7 @@ public class TestActivity extends AppCompatActivity {
 					break;
 				}
 				case 2: {//B
-					switch (Q_sentaku_activity.nShurui) {
+					switch (CommonVariables.nShurui) {
 						case 1: {//V
 							unit = 3;
 							break;
@@ -239,7 +245,7 @@ public class TestActivity extends AppCompatActivity {
 					break;
 				}
 				case 3: {//C
-					switch (Q_sentaku_activity.nShurui) {
+					switch (CommonVariables.nShurui) {
 						case 1: {//V
 							unit = 6;
 							break;
@@ -266,27 +272,27 @@ public class TestActivity extends AppCompatActivity {
 					unit = 14;
 					break;
 			}
-			MainActivity.SetNumFromAndTo(MainActivity.lastnum, unit);
+			CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, unit);
 
 			//正解率読み込み
-			for (int i = MainActivity.from; i <= MainActivity.to; i++) {
-				nSeikaisuu[i] = getIntData(this, DataName.testActivity + strQ, DataName.単語正解数 + i, 0);
-				nHuseikaisuu[i] = getIntData(this, DataName.testActivity + strQ, DataName.単語不正解数 + i, 0);
+			for (int i = CommonVariables.from; i <= CommonVariables.to; i++) {
+				nSeikaisuu[i] = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + i, 0);
+				nHuseikaisuu[i] = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + i, 0);
 				if (nSeikaisuu[i] + nHuseikaisuu[i] > 0)
 					seikairitsu[i] = nSeikaisuu[i] * 100 / (nSeikaisuu[i] + nHuseikaisuu[i]);
 				else seikairitsu[i] = 0;
-				numAndSeikairitu[i - MainActivity.from] = new Seikairitsu(i, seikairitsu[i], nSeikaisuu[i] + nHuseikaisuu[i]);
+				numAndSeikairitu[i - CommonVariables.from] = new Seikairitsu(i, seikairitsu[i], nSeikaisuu[i] + nHuseikaisuu[i]);
 				nQuiz++;
 				//合格条件
 				if (isGokaku(nSeikaisuu[i], nHuseikaisuu[i])) nGokaku++;
 				if (nSeikaisuu[i] > 0) nSeitou++;
 			}
 
-			int toIndex = MainActivity.to - MainActivity.from;
-			if (toIndex <= 0) toIndex = MainActivity.lastnum;
+			int toIndex = CommonVariables.to - CommonVariables.from;
+			if (toIndex <= 0) toIndex = CommonVariables.lastnum;
 
 			//ソート
-			if (Q_sentaku_activity.bSort)
+			if (CommonVariables.bSort)
 				Arrays.sort(numAndSeikairitu, 0, toIndex,
 						(a, b) -> {
 							//正答率0のときは解いた数で並び替え
@@ -309,11 +315,11 @@ public class TestActivity extends AppCompatActivity {
 				try {
 					soundPool.play(i, 1f, 1f, 1, 0, 1f);
 				} catch (Exception e) {
-					showException(this, e);
+					ExceptionManager.showException(this, e);
 				}
 			});
 		} catch (Exception e) {
-			showException(this, e);
+			ExceptionManager.showException(this, e);
 		}
 
 	}
@@ -331,9 +337,9 @@ public class TestActivity extends AppCompatActivity {
 	protected void onStop() {
 		try {
 			super.onStop();
-			putIntData(this, DataName.testActivity + strQ, "nGenzaiNanMonme", nGenzaiNanMonme);
+			PreferenceManager.putIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, "nGenzaiNanMonme", nGenzaiNanMonme);
 		} catch (Exception e) {
-			showException(this, e);
+			ExceptionManager.showException(this, e);
 		}
 	}
 
@@ -341,7 +347,7 @@ public class TestActivity extends AppCompatActivity {
 		try {
 			//debug
 			//出題範囲はMainActivity.to-MainActivity.from
-			int nRangeForOptionsFrom = MainActivity.from, nRangeForOptionsTo = MainActivity.to;
+			int nRangeForOptionsFrom = CommonVariables.from, nRangeForOptionsTo = CommonVariables.to;
 			//debug end
 			if (!bSkipMaruBatuButton) {
 				bMarubatu.setVisibility(View.INVISIBLE);
@@ -351,10 +357,10 @@ public class TestActivity extends AppCompatActivity {
 				bSentaku4.setVisibility(View.VISIBLE);
 				findViewById(R.id.buttonWakaranai).setVisibility(View.VISIBLE);
 			}
-			if (Q_sentaku_activity.nShurui == 4 && Q_sentaku_activity.nUnit != 4 && !strQ.contains("y")) {
+			if (CommonVariables.nShurui == 4 && CommonVariables.nUnit != 4 && !strQ.contains("y")) {
 				//まとめの場合
 				int unit;
-				switch (Q_sentaku_activity.nUnit) {
+				switch (CommonVariables.nUnit) {
 					case 1: {
 						unit = random.nextInt(3);
 						break;
@@ -373,33 +379,33 @@ public class TestActivity extends AppCompatActivity {
 						break;
 					}
 				}
-				nRangeForOptionsFrom = MainActivity.toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][unit][0];
-				nRangeForOptionsTo = MainActivity.toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][unit][1];
+				nRangeForOptionsFrom = CommonVariables.toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][unit][0];
+				nRangeForOptionsTo = CommonVariables.toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][unit][1];
 			}
 
 			do {
 				//ランダムテストの場合
-				if (Q_sentaku_activity.WordPhraseOrTest.equals(MyLibrary.q_num.mode.randomTest))
+				if (CommonVariables.WordPhraseOrTest.equals(WordPhraseData.q_num.mode.randomTest))
 					nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 
 				//正答率順テストの場合
-				if (Q_sentaku_activity.WordPhraseOrTest.equals(MyLibrary.q_num.mode.seitouritsujunTest)) {
+				if (CommonVariables.WordPhraseOrTest.equals(WordPhraseData.q_num.mode.seitouritsujunTest)) {
 					nMondaiTangoNum = numAndSeikairitu[testCount].num;
-					if (strQenum.equals(MyLibrary.q_num.strQ.str1q)
-							|| strQenum.equals(MyLibrary.q_num.strQ.strp1q)
-							|| strQenum.equals(MyLibrary.q_num.strQ.str2q)
-							|| strQenum.equals(MyLibrary.q_num.strQ.strp2q)) {
+					if (strQenum.equals(WordPhraseData.q_num.strQ.str1q)
+							|| strQenum.equals(WordPhraseData.q_num.strQ.strp1q)
+							|| strQenum.equals(WordPhraseData.q_num.strQ.str2q)
+							|| strQenum.equals(WordPhraseData.q_num.strQ.strp2q)) {
 						for (int i = 0; i <= 9; i++) {
-							if (toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][i][0] <= nMondaiTangoNum && nMondaiTangoNum <= toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][i][1]) {
-								nRangeForOptionsFrom = toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][i][0];
-								nRangeForOptionsTo = toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][i][1];
+							if (toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][i][0] <= nMondaiTangoNum && nMondaiTangoNum <= toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][i][1]) {
+								nRangeForOptionsFrom = toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][i][0];
+								nRangeForOptionsTo = toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][i][1];
 							}
 						}
 					}
 				}
 
 				//不正解のみテスト
-				if (Q_sentaku_activity.WordPhraseOrTest.equals(MyLibrary.q_num.mode.huseikainomiTest)) {
+				if (CommonVariables.WordPhraseOrTest.equals(WordPhraseData.q_num.mode.huseikainomiTest)) {
 					do {
 						nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 					} while (isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum]));
@@ -413,7 +419,7 @@ public class TestActivity extends AppCompatActivity {
 				nTangoNum[nSeikaiSentakusi] = nMondaiTangoNum;
 
 				//ユメタンのときそれぞれの品詞を調べる
-				if (strQenum.equals(q_num.strQ.stry1) || strQenum.equals(q_num.strQ.stry2) || strQenum.equals(q_num.strQ.stry3)) {
+				if (strQenum.equals(WordPhraseData.q_num.strQ.stry1) || strQenum.equals(WordPhraseData.q_num.strQ.stry2) || strQenum.equals(WordPhraseData.q_num.strQ.stry3)) {
 					//1-35
 					//36-70
 					//71-100
@@ -427,8 +433,8 @@ public class TestActivity extends AppCompatActivity {
 					|| nTangoNum[3] == nTangoNum[4]);
 			testCount++;
 
-			nSeikaisuu[nMondaiTangoNum] = getIntData(this, DataName.testActivity + strQ, DataName.単語正解数 + nMondaiTangoNum, 0);
-			nHuseikaisuu[nMondaiTangoNum] = getIntData(this, DataName.testActivity + strQ, DataName.単語不正解数 + nMondaiTangoNum, 0);
+			nSeikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, 0);
+			nHuseikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, 0);
 
 			TextView textViewMondaiNumber = findViewById(R.id.tvMondaiNum);
 			if (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum] > 0) {
@@ -453,23 +459,23 @@ public class TestActivity extends AppCompatActivity {
 				tvMaruBatu.setText("");
 			}
 
-			tvRange.setText("範囲 No." + MainActivity.from + '-' + MainActivity.to + "\n合格:" + nGokaku + '/' + nQuiz);
+			tvRange.setText("範囲 No." + CommonVariables.from + '-' + CommonVariables.to + "\n合格:" + nGokaku + '/' + nQuiz);
 
 			if (checkBoxHatsuon.isChecked()) {
 				//発音にチェックされている
 				String strLoadPath;
 				if (strQ.startsWith("y")) {
-					strLoadPath = getPath(yumetan, strQenum.getQ, word, english, nMondaiTangoNum);
+					strLoadPath = FileDirectoryManager.getPath(yumetan, strQenum.getQ, word, english, nMondaiTangoNum);
 				} else if (strQ.startsWith("tanjukugo")) {
-					strLoadPath = getPath(tanjukugoEX, strQ.substring(0, strQ.length() - 4), word, english, nMondaiTangoNum);
+					strLoadPath = FileDirectoryManager.getPath(tanjukugoEX, strQ.substring(0, strQ.length() - 4), word, english, nMondaiTangoNum);
 				} else {
-					strLoadPath = getPath(passTan, strQenum.getQ, word, english, nMondaiTangoNum);
+					strLoadPath = FileDirectoryManager.getPath(passTan, strQenum.getQ, word, english, nMondaiTangoNum);
 				}
 				nSound = sp.load(strLoadPath, 1);
 			}
 
 		} catch (Exception e) {
-			showException(this, e);
+			ExceptionManager.showException(this, e);
 		}
 	}
 
@@ -495,7 +501,7 @@ public class TestActivity extends AppCompatActivity {
 				if (isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
 						&& !isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku++;
-				putIntData(this, DataName.testActivity + strQ, DataName.単語正解数 + nMondaiTangoNum, nSeikaisuu[nMondaiTangoNum]);
+				PreferenceManager.putIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, nSeikaisuu[nMondaiTangoNum]);
 
 			} else {
 				//不正解
@@ -508,7 +514,7 @@ public class TestActivity extends AppCompatActivity {
 				if (!isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
 						&& isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku--;
-				putIntData(this, DataName.testActivity + strQ, DataName.単語不正解数 + nMondaiTangoNum, nHuseikaisuu[nMondaiTangoNum]);
+				PreferenceManager.putIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, nHuseikaisuu[nMondaiTangoNum]);
 			}
 
 			tvKaitou.setText("解答:" + wordE[nMondaiTangoNum] + wordJ[nMondaiTangoNum] + "\n" + getGogenString(nMondaiTangoNum, false, false));
@@ -520,7 +526,7 @@ public class TestActivity extends AppCompatActivity {
 			nGenzaiNanMonme++;
 			if (bSkipMaruBatuButton) setMondaiBun();
 		} catch (Exception e) {
-			showException(this, e);
+			ExceptionManager.showException(this, e);
 		}
 	}
 
@@ -528,7 +534,7 @@ public class TestActivity extends AppCompatActivity {
 		try {
 			setMondaiBun();
 		} catch (Exception e) {
-			showException(this, e);
+			ExceptionManager.showException(this, e);
 		}
 	}
 
@@ -557,7 +563,7 @@ public class TestActivity extends AppCompatActivity {
 			}
 			checkKaitou(sentaku);
 		} catch (Exception e) {
-			showException(this, e);
+			ExceptionManager.showException(this, e);
 		}
 	}
 
@@ -569,7 +575,7 @@ public class TestActivity extends AppCompatActivity {
 					.setPositiveButton("OK", null)
 					.show();
 		} catch (Exception e) {
-			showException(this, e);
+			ExceptionManager.showException(this, e);
 		}
 	}
 }

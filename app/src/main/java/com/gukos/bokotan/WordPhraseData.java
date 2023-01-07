@@ -1,7 +1,6 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.puts;
-import static com.gukos.bokotan.MyLibrary.showException;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,6 +8,7 @@ import android.content.Context;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 public class WordPhraseData {
 	public final String[] e = new String[20000];
@@ -48,6 +48,94 @@ public class WordPhraseData {
 		} catch (Exception e) {
 			showException(context, e);
 			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
+		}
+	}
+
+	enum DataBook {
+		passTan, tanjukugoEX, yumetan, gogengaku, eigoduke
+	}
+
+	enum DataQ {
+		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3, toefl, toeic
+	}
+
+	enum DataType {word, phrase, gogengaku, eigoduke_com}
+
+	enum DataLang {english, japanese}
+
+	public enum q_num {
+		test1q(), testp1q(), test2q(), testp2q(), test3q(), test4q(), test5q(), testy00(), testy08(), testy1(), testy2(), testy3(), test1qEx, testp1qEx;
+
+		enum strQ {
+			str1q("1q"), strp1q("p1q"), str2q("2q"), strp2q("p2q"), str3q("3q"), str4q("4q"), str5q("5q"), stry00("y00"), stry08("y08"), stry1("y1"), stry2("y2"), stry3("y3"), ex1q("tanjukugo1q");
+
+			strQ(String s) {
+				getQ = s;
+			}
+
+			final String getQ;
+		}
+
+		enum mode {
+			word, phrase, randomTest, huseikainomiTest, seitouritsujunTest, wordPlusPhrase
+		}
+
+		enum unit {
+			deruA, deruB, deruC, Jukugo, all
+		}
+
+		enum shurui {
+			verb, noum, adjective, matome
+		}
+
+		enum skipjouken {
+			kirokunomi, seikai1, huseikai2, onlyHugoukaku
+		}
+
+		q_num() {
+		}
+	}
+
+	public static class HatsuonKigou {
+
+		private static final HashMap<String, String> hashMapHatsuonKigou = new HashMap<>();
+
+		public static void SetHatsuonKigou(Context context) {
+			try {
+				//発音記号のためにSVL読み込み
+				if (hashMapHatsuonKigou.size() == 0) {
+					WordPhraseData wordPhraseDataSVL = new WordPhraseData(Svl, context);
+					for (int i = 1; i < Math.min(wordPhraseDataSVL.e.length, wordPhraseDataSVL.j.length); i++)
+						if (wordPhraseDataSVL.e[i] != null && wordPhraseDataSVL.j[i] != null)
+							hashMapHatsuonKigou.put(wordPhraseDataSVL.e[i], wordPhraseDataSVL.j[i]);
+				}
+			} catch (Exception e) {
+				showException(e);
+			}
+		}
+
+		public static String getHatsuon(String strEnglishWord) {
+			try {
+				String strDictionary = hashMapHatsuonKigou.get(strEnglishWord);
+				String ans = "";
+				if (strDictionary != null) {
+					int start;
+					int result = strDictionary.indexOf("【発音】");
+					if (result != -1) {
+						start = result + 4;
+					} else {
+						result = strDictionary.indexOf("【発音！】");
+						start = result + 5;
+					}
+					int end = strDictionary.indexOf("、", start);
+					if (end == -1) end = strDictionary.length() - 1;
+					ans = strDictionary.substring(start, end);
+				}
+				return ans;
+			} catch (Exception e) {
+				showException(e);
+				return "<不明>";
+			}
 		}
 	}
 }

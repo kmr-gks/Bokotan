@@ -1,5 +1,5 @@
 <resources>
-	<string name="app_name">bokotan</string>
+	<string name="app_name">Bokotan</string>
 	<string name="editNumberText">開始位置を指定</string>
 	<string name="seekBarStrEng">英語の読み上げの速さを指定します</string>
 	<string name="seekBarStrJpn">日本語の読み上げ速さを指定します。</string>
@@ -11,7 +11,6 @@
 		<item>熟語</item>
 		<item>全て</item>
 	</string-array>
-
 
 	<string-array name="spinner_hinsi">
 		<item>動詞</item>
