@@ -15,15 +15,17 @@
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewDebugTest">
+		app:layout_constraintTop_toBottomOf="@+id/buttonWakaranai">
 
 		<Button
 			android:id="@+id/bSentakusi1"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
+			android:autoSizeTextType="uniform"
 			android:onClick="onSentakusiTapped"
-			android:text="Button"
+			android:text="選択肢1"
+			android:textAlignment="center"
 			android:textColor="@color/buttontext"
 			android:textSize="25sp" />
 
@@ -32,8 +34,10 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
+			android:autoSizeTextType="uniform"
 			android:onClick="onSentakusiTapped"
-			android:text="Button"
+			android:text="選択肢2"
+			android:textAlignment="center"
 			android:textColor="@color/buttontext"
 			android:textSize="25sp" />
 
@@ -42,8 +46,10 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
+			android:autoSizeTextType="uniform"
 			android:onClick="onSentakusiTapped"
-			android:text="Button"
+			android:text="選択肢3"
+			android:textAlignment="center"
 			android:textColor="@color/buttontext"
 			android:textSize="25sp" />
 
@@ -52,8 +58,10 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
+			android:autoSizeTextType="uniform"
 			android:onClick="onSentakusiTapped"
-			android:text="Button"
+			android:text="選択肢4"
+			android:textAlignment="center"
 			android:textColor="@color/buttontext"
 			android:textSize="25sp" />
 	</LinearLayout>
@@ -70,11 +78,13 @@
 
 	<TextView
 		android:id="@+id/tvTorfKaitou"
-		android:layout_width="wrap_content"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:autoSizeTextType="uniform"
 		android:text="前問の解答"
 		android:textColor="#FF0000"
 		android:textSize="24sp"
+		app:layout_constraintEnd_toStartOf="@+id/chHatsuon"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
@@ -105,9 +115,11 @@
 
 	<TextView
 		android:id="@+id/tvKaisetsu"
-		android:layout_width="wrap_content"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:autoSizeTextType="uniform"
 		android:text="解説"
+		app:layout_constraintEnd_toStartOf="@+id/chHatsuon"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/tvTorfKaitou" />
 
@@ -129,14 +141,6 @@
 		app:layout_constraintTop_toBottomOf="@+id/tvMondaibun" />
 
 	<TextView
-		android:id="@+id/textViewDebugTest"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="debug"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/buttonWakaranai" />
-
-	<TextView
 		android:id="@+id/tvMondaiNum"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -149,10 +153,11 @@
 		android:id="@+id/chHatsuon"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:checked="true"
 		android:text="発音"
 		android:textColor="@color/textcolor"
-		app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
-		app:layout_constraintEnd_toEndOf="parent" />
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
 	<Button
 		android:id="@+id/buttonHint"

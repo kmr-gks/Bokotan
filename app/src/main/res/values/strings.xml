@@ -1,3 +1,32 @@
 <resources>
 	<string name="app_name">bokotan</string>
+    <string name="editNumberText">開始位置を指定します</string>
+	<string name="seekBarStrEng">英語の読み上げの速さを指定します</string>
+	<string name="seekBarStrJpn">日本語の読み上げ速さを指定します。</string>
+
+	<string-array name="spinner_hanni">
+		<item>A</item>
+		<item>B</item>
+		<item>C</item>
+		<item>熟語</item>
+		<item>全て</item>
+	</string-array>
+
+
+	<string-array name="spinner_hinsi">
+		<item>動詞</item>
+		<item>名詞</item>
+		<item>形容詞</item>
+		<item>まとめ</item>
+	</string-array>
+
+	<string-array name="spinner_mode">
+		<item>単語</item>
+		<item>文</item>
+		<item>単語+文</item>
+		<item>テスト(ランダム)</item>
+		<item>テスト(正答率)</item>
+		<item>テスト(順番)</item>
+	</string-array>
+
 </resources>

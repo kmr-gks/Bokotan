@@ -1,5 +1,9 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MainActivity.now;
+import static com.gukos.bokotan.MainActivity.wordE;
+import static com.gukos.bokotan.MainActivity.wordJ;
+
 import android.app.Activity;
 import android.app.PictureInPictureParams;
 import android.os.Build;
@@ -28,19 +32,19 @@ public class PipActivity extends Activity {
 		tvPipE=findViewById(R.id.tvPipE);
 		tvPipJ=findViewById(R.id.tvPipJ);
 		tvNum=findViewById(R.id.tvNum);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-			enterPictureInPictureMode(new PictureInPictureParams.Builder().setAspectRatio(new Rational(16,9)).build());
-		}
+
+		PipActivity.ChangeText(wordE[now], wordJ[now], now);
+
+		//pip
+		enterPictureInPictureMode(new PictureInPictureParams.Builder().setAspectRatio(new Rational(16,9)).build());
 	}
 
 	static void ChangeText(String e,String j,int num) {
-		//if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&isInPictureInPictureMode()) {
 		if (tvPipE!=null) {
 			tvPipE.setText(e);
 			tvPipJ.setText(j);
 			tvNum.setText(String.format("%d",num));
 		}
-		//}
 	}
 
 	@Override

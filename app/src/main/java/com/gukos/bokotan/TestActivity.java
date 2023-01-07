@@ -1,11 +1,14 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.GogenYomuFactory.getGogenString;
 import static com.gukos.bokotan.MainActivity.nHuseikaisuu;
 import static com.gukos.bokotan.MainActivity.nSeikaisuu;
 import static com.gukos.bokotan.MainActivity.strPhraseE;
 import static com.gukos.bokotan.MainActivity.strPhraseJ;
 import static com.gukos.bokotan.MainActivity.strQ;
 import static com.gukos.bokotan.MainActivity.tag;
+import static com.gukos.bokotan.MainActivity.wordE;
+import static com.gukos.bokotan.MainActivity.wordJ;
 import static com.gukos.bokotan.MainActivity.toFindFromAndTo;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,8 +46,6 @@ public class TestActivity extends AppCompatActivity {
 	int nGenzaiNanMonme;
 	int nMondaiTangoNum,nSeikaiSentakusi,nTangoNum[]=new int[10];
 	Random random=new Random();
-	static String[] wordE;
-	static String[] wordJ;
 	int nWordSeikaisuu,nWordHuseikaisuu;
 	static boolean bSkipMaruBatuButton=false;
 	static SoundPool sp=new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(1).build();
@@ -74,30 +75,76 @@ public class TestActivity extends AppCompatActivity {
 		bMarubatu=findViewById(R.id.buttonMarubatu);
 		tvRange=findViewById(R.id.textViewRange);
 		Log.d("com.gukos.bokotan","strQ="+ strQ);
-		if (strQ.equals("1qTest")){
-			MainActivity.lastnum=2400;
-			wordE=WordData1q.e;
-			wordJ=WordData1q.j;
-			strPhraseE = Phrase1q.e;
-			strPhraseJ =Phrase1q.j;
-		} else if (strQ.equals("p1qTest")){
-			MainActivity.lastnum=1850;
-			wordE=WordDatap1q.e;
-			wordJ=WordDatap1q.j;
-			strPhraseE = Phrasep1q.e;
-			strPhraseJ =Phrasep1q.j;
-		} else if (strQ.equals("2qTest")){
-			MainActivity.lastnum=1704;
-			wordE=WordData2q.e;
-			wordJ=WordData2q.j;
-			strPhraseE = Phrase2q.e;
-			strPhraseJ =Phrase2q.j;
-		}else if (strQ.equals("p2qTest")){
-			MainActivity.lastnum=1500;
-			wordE=WordData2q.e;
-			wordJ=WordData2q.j;
-			strPhraseE = Phrasep2q.e;
-			strPhraseJ =Phrasep2q.j;
+		switch (strQ) {
+			case "1qTest":
+			{
+				WordPhraseData w = new WordPhraseData("WordData1q", this);
+				wordE = w.e;
+				wordJ = w.j;
+				WordPhraseData p = new WordPhraseData("Phrase1q", this);
+				strPhraseE = p.e;
+				strPhraseJ = p.j;
+				break;
+			}
+			case "p1qTest":
+			{
+				MainActivity.lastnum = 1850;
+				WordPhraseData w = new WordPhraseData("WordDatap1q", this);
+				wordE = w.e;
+				wordJ = w.j;
+				WordPhraseData p = new WordPhraseData("Phrasep1q", this);
+				strPhraseE = p.e;
+				strPhraseJ = p.j;
+				break;
+			}
+			case "2qTest":
+			{
+				WordPhraseData w = new WordPhraseData("WordData2q", this);
+				wordE = w.e;
+				wordJ = w.j;
+				WordPhraseData p = new WordPhraseData("Phrase2q", this);
+				strPhraseE = p.e;
+				strPhraseJ = p.j;
+				break;
+			}
+			case "p2qTest":
+			{
+				WordPhraseData w = new WordPhraseData("WordDatap2q", this);
+				wordE = w.e;
+				wordJ = w.j;
+				WordPhraseData p = new WordPhraseData("Phrasep2q", this);
+				strPhraseE = p.e;
+				strPhraseJ = p.j;
+				break;
+			}
+			case "y08"+"Test": {
+				MainActivity.lastnum = 800;
+				WordPhraseData w = new WordPhraseData("WordDataYume08", this);
+				strPhraseE = wordE = w.e;
+				strPhraseJ = wordJ = w.j;
+				break;
+			}
+			case "y1"+"Test": {
+				MainActivity.lastnum = 1000;
+				WordPhraseData w = new WordPhraseData("WordDataYume1", this);
+				strPhraseE = wordE = w.e;
+				strPhraseJ = wordJ = w.j;
+				break;
+			}
+			case "y2"+"Test": {
+				MainActivity.lastnum = 1000;
+				WordPhraseData w = new WordPhraseData("WordDataYume2", this);
+				strPhraseE = wordE = w.e;
+				strPhraseJ = wordJ = w.j;
+				break;
+			}
+			case "y3"+"Test": {
+				MainActivity.lastnum = 800;
+				WordPhraseData w = new WordPhraseData("WordDataYume3", this);
+				strPhraseE = wordE = w.e;
+				strPhraseJ = wordJ = w.j;
+				break;
+			}
 		}
 		nGenzaiNanMonme=getSharedPreferences("testActivity"+ strQ,MODE_PRIVATE).getInt("nGenzaiNanMonme",1);
 		int unit=5;
@@ -168,6 +215,7 @@ public class TestActivity extends AppCompatActivity {
 			case 4: unit=9; break;
 			case 5: unit=14; break;
 		}
+		Log.d("exception","strQ"+strQ+"to"+MainActivity.to+"from"+MainActivity.from+"lastnum"+MainActivity.lastnum);
 		MainActivity.SetNumFromAndTo(MainActivity.lastnum,unit);
 
 
@@ -183,6 +231,7 @@ public class TestActivity extends AppCompatActivity {
 				if (nSeikaisuu[i]>1) nGokaku++;
 				if (nSeikaisuu[i]>0) nSeitou++;
 			}
+			Log.d("exception","strQ"+strQ+"to"+MainActivity.to+"from"+MainActivity.from+"lastnum"+MainActivity.lastnum);
 
 		if (Q_sentaku_activity.bSort) Arrays.sort(numAndSeikairitu,0,MainActivity.to-MainActivity.from,(a,b)->{if (a.seitouritu==0&&b.seitouritu==0) return a.toitakazu-b.toitakazu;else return a.seitouritu-b.seitouritu;});
 		else Arrays.sort(numAndSeikairitu,0,MainActivity.to-MainActivity.from,(a,b)->{if (a.seitouritu==0&&b.seitouritu==0) return b.toitakazu -a.toitakazu;else return b.seitouritu-a.seitouritu;});
@@ -214,7 +263,6 @@ public class TestActivity extends AppCompatActivity {
 		//debug
 		//出題範囲はMainActivity.to-MainActivity.from
 		int nRangeForOptionsFrom=MainActivity.from,nRangeForOptionsTo=MainActivity.to;
-		((TextView)findViewById(R.id.textViewDebugTest)).setText("nUnit="+Q_sentaku_activity.nUnit+"nShurui"+Q_sentaku_activity.nShurui);
 		Log.d("com.gukos.bokotan","nGenzaiNanMonme"+nGenzaiNanMonme);
 		Log.d("com.gukos.bokotan","nMondaiTangoNum"+nMondaiTangoNum);
 		Log.d("com.gukos.bokotan","wordE[nMondaiTangoNum]"+wordE[nMondaiTangoNum]);
@@ -253,7 +301,6 @@ public class TestActivity extends AppCompatActivity {
 			}
 			nRangeForOptionsFrom=MainActivity.toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][unit][0];
 			nRangeForOptionsTo=MainActivity.toFindFromAndTo[Q_sentaku_activity.sentakuQ.ordinal()][unit][1];
-			((TextView)findViewById(R.id.textViewDebugTest)).append("unit"+unit);
 		}
 
 		do {
@@ -278,8 +325,6 @@ public class TestActivity extends AppCompatActivity {
 					nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 				} while (nSeikaisuu[nMondaiTangoNum] >= 2);
 			}
-			((TextView) findViewById(R.id.textViewDebugTest)).append("from" + nRangeForOptionsFrom + "to" + nRangeForOptionsTo + "%%" + seikairitsu[nMondaiTangoNum] + ' ' + nSeikaisuu[nMondaiTangoNum] + '/' + (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum]));
-
 
 			nTangoNum[1] = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 			nTangoNum[2] = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
@@ -378,6 +423,6 @@ public class TestActivity extends AppCompatActivity {
 	}
 
 	public void onHintButtonTapped(View v){
-		new AlertDialog.Builder(this).setTitle("ヒント:例文(No"+nMondaiTangoNum+")").setMessage("\n\n\n\n\n"+strPhraseE[nMondaiTangoNum]+"\n\n\n\n\n"+strPhraseJ[nMondaiTangoNum]).create().show();
+		new AlertDialog.Builder(this).setTitle("ヒント:例文(No."+nMondaiTangoNum+")").setMessage(getGogenString(nMondaiTangoNum)+"\n\n"+strPhraseE[nMondaiTangoNum]+"\n\n"+strPhraseJ[nMondaiTangoNum]).setPositiveButton("OK",null).show();
 	}
 }

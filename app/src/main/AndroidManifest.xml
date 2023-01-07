@@ -18,7 +18,20 @@
 			android:name=".PlaySound"
 			android:enabled="true"
 			android:exported="true"></service>
-
+		<receiver android:name=".StopPlayBroadcastReceiver"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="com.gukos.bokotan"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+		</receiver>
+		<receiver android:name=".PipPlayBroadcastReceiver"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="com.gukos.bokotan"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+			</intent-filter>
+		</receiver>
 		<activity
 			android:name=".TestActivity"
 			android:exported="false"
@@ -33,7 +46,8 @@
 			android:supportsPictureInPicture="true" />
 		<activity
 			android:name=".Q_sentaku_activity"
-			android:screenOrientation="portrait">
+			android:screenOrientation="portrait"
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 

@@ -8,41 +8,6 @@
 	android:keepScreenOn="true"
 	tools:context=".MainActivity">
 
-	<TextView
-		android:id="@+id/textViewDebug"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="TextView"
-		android:textSize="20sp"
-		app:layout_constraintStart_toEndOf="@+id/tvGenzai"
-		app:layout_constraintTop_toTopOf="parent" />
-
-	<TextView
-		android:id="@+id/TextViewEng"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:text="default"
-		android:textAlignment="center"
-		android:textSize="36sp"
-		android:textStyle="bold"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintHorizontal_bias="0.0"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewDebug" />
-
-	<TextView
-		android:id="@+id/TextViewJpn"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:text="default"
-		android:textAlignment="center"
-		android:textSize="36sp"
-		android:textStyle="bold"
-		app:layout_constraintBottom_toTopOf="@+id/buttonOboeta"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/TextViewEng" />
-
 	<Button
 		android:id="@+id/buttonStartStop"
 		android:layout_width="wrap_content"
@@ -50,16 +15,8 @@
 		android:onClick="onStartStopButtonClick"
 		android:text="start"
 		android:textColor="@color/buttontext"
-		app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayoutButtons"
 		app:layout_constraintStart_toStartOf="parent" />
-
-	<TextView
-		android:id="@+id/tvExcept"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="filepath..."
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/TextViewEng" />
 
 	<TextView
 		android:id="@+id/tvGenzai"
@@ -72,22 +29,42 @@
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
-		android:id="@+id/tvsubJ"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
+		android:id="@+id/tvGogen"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:autoSizeTextType="uniform"
+		android:maxLines="1"
 		android:text="TextView"
+		android:textAlignment="textEnd"
+		android:textSize="20sp"
+		app:layout_constraintBottom_toTopOf="@+id/tvsubE"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/buttonOboeta"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutTextViews" />
+
+	<TextView
+		android:id="@+id/tvsubJ"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:autoSizeTextType="uniform"
+		android:maxLines="1"
+		android:textAlignment="textEnd"
 		android:textSize="26sp"
-		app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
-		app:layout_constraintEnd_toEndOf="parent" />
+		app:layout_constraintBottom_toTopOf="@+id/linearLayoutButtons"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/buttonStartStop" />
 
 	<TextView
 		android:id="@+id/tvsubE"
-		android:layout_width="wrap_content"
+		android:layout_width="0dp"
 		android:layout_height="wrap_content"
-		android:text="TextView"
+		android:autoSizeTextType="uniform"
+		android:maxLines="1"
+		android:textAlignment="textEnd"
 		android:textSize="26sp"
 		app:layout_constraintBottom_toTopOf="@+id/tvsubJ"
-		app:layout_constraintEnd_toEndOf="parent" />
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/buttonStartStop" />
 
 	<Button
 		android:id="@+id/buttonOboeta"
@@ -96,16 +73,15 @@
 		android:onClick="onOboetaButtonTapped"
 		android:text="覚えた"
 		android:textColor="@color/buttontext"
-		app:layout_constraintBottom_toTopOf="@+id/tvsubE"
-		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toTopOf="@+id/buttonStartStop"
 		app:layout_constraintStart_toStartOf="parent" />
 
 	<LinearLayout
-		android:id="@+id/linearLayout6"
+		android:id="@+id/linearLayoutButtons"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
-		app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayoutSeekBars"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent">
 
@@ -150,48 +126,56 @@
 		android:id="@+id/textViewNumSeikairitu"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:autoSizeTextType="uniform"
 		android:text="TextView"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/TextViewEng" />
+		app:layout_constraintBottom_toBottomOf="@+id/tvGenzai"
+		app:layout_constraintStart_toEndOf="@+id/tvGenzai"
+		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
 		android:id="@+id/textViewSeikaisuu"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:autoSizeTextType="uniform"
 		android:text="TextView"
+		app:layout_constraintBottom_toBottomOf="@+id/tvGenzai"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<LinearLayout
-		android:id="@+id/linearLayout"
+		android:id="@+id/linearLayoutSeekBars"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
-		app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayoutTextSeekBar"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent">
 
 		<SeekBar
 			android:id="@+id/seekBarEng"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
 			android:layout_weight="0.5"
+			android:contentDescription="@string/seekBarStrEng"
 			android:max="10"
+			android:minHeight="48dp"
 			android:onClick="onSpeedSeekBar"
-			android:progress="10" />
+			android:progress="5" />
 
 		<SeekBar
 			android:id="@+id/seekBarJpn"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
 			android:layout_weight="0.5"
+			android:contentDescription="@string/seekBarStrJpn"
 			android:max="10"
+			android:minHeight="48dp"
 			android:onClick="onSpeedSeekBar"
 			android:progress="10" />
 	</LinearLayout>
 
 	<LinearLayout
-		android:id="@+id/linearLayout2"
+		android:id="@+id/linearLayoutTextSeekBar"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
@@ -204,7 +188,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="0.5"
-			android:text="英語速度:2.0"
+			android:text="英語速度:"
 			android:textSize="26sp" />
 
 		<TextView
@@ -212,7 +196,42 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="0.5"
-			android:text="日本語速度:2.0"
+			android:text="日本語速度:"
 			android:textSize="26sp" />
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayoutTextViews"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:orientation="vertical"
+		app:layout_constraintBottom_toTopOf="@+id/buttonOboeta"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/tvGenzai">
+
+		<TextView
+			android:id="@+id/TextViewEng"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:autoSizeMaxTextSize="60sp"
+			android:autoSizeTextType="uniform"
+			android:text="英語"
+			android:textAlignment="center"
+			android:textSize="36sp"
+			android:textStyle="bold" />
+
+		<TextView
+			android:id="@+id/TextViewJpn"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:autoSizeMaxTextSize="60sp"
+			android:autoSizeTextType="uniform"
+			android:text="日本語"
+			android:textAlignment="center"
+			android:textSize="36sp"
+			android:textStyle="bold" />
 	</LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
