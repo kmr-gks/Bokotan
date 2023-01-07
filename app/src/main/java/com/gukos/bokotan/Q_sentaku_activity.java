@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,196 +17,182 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import static com.gukos.bokotan.MainActivity.strQ;
+import static com.gukos.bokotan.MainActivity.tag;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class Q_sentaku_activity extends AppCompatActivity {
 	static boolean skipwords;
-	static boolean nowIsDecided =false;
-	Switch swSkipKioku,swMaruBatu,swHyojiBeforeRead;
+	static boolean nowIsDecided = false;
+	Switch swSkipKioku, swMaruBatu, swHyojiBeforeRead;
 	RadioButton radioButtonEtoJ;
 	EditText e;
+	static q_num sentakuQ = q_num.testp1q;
+	static q_num.mode WordPhraseOrTest = q_num.mode.word;
+	static q_num.unit sentakuUnit = q_num.unit.all;
+	static q_num.shurui sentakuShurui = q_num.shurui.matome;
+	static q_num.strQ strQenum = q_num.strQ.strp1q;
+	static boolean bSort=true;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_q_sentaku);
-		MainActivity.mp=null;
+		MainActivity.mp = null;
 
 		//new AlertDialog.Builder(this).setTitle("title").setMessage("message").setPositiveButton("ok",null).create().show();
-		swSkipKioku =findViewById(R.id.switchSkipOboe);
-		swMaruBatu=findViewById(R.id.switchSkipMaruBatu);
-		swHyojiBeforeRead=findViewById(R.id.switchHyojiYakuBeforeRead);
-		e=findViewById(R.id.editTextNumber);
-		radioButtonEtoJ=findViewById(R.id.radioButtonEtoJ);
+		swSkipKioku = findViewById(R.id.switchSkipOboe);
+		swMaruBatu = findViewById(R.id.switchSkipMaruBatu);
+		swHyojiBeforeRead = findViewById(R.id.switchHyojiYakuBeforeRead);
+		e = findViewById(R.id.editTextNumber);
+		radioButtonEtoJ = findViewById(R.id.radioButtonEtoJ);
+
 
 	}
 
-	public void onButtonClick(View v)
-	{
-		String str=null;
-		if (e.length()!=0) {
+	public void onSelectQ(View v) {
+		if (e.length() != 0) {
 			nowIsDecided = true;
 			MainActivity.now = Integer.parseInt(e.getText().toString()) - 1;
 		}
-		switch (((Button)v).getText().toString())
-		{
-			case "1Qword":
-			{
-				strQ="1q";
-				break;
-			}
-			case "1Qphrase":
-			{
-				strQ="ph"+"1q";
-				break;
-			}
-			case "p1Qword":
-			{
-				strQ="p1q";
-				break;
-			}
-			case "p1Qphrase":
-			{
-				strQ="ph"+"p1q";
-				break;
-			}
-		}
-		Log.d(MainActivity.tag,"strQ="+strQ);
-		if (swSkipKioku !=null) {
+		if (swSkipKioku != null) {
 			skipwords = swSkipKioku.isChecked();
-		} else skipwords=false;
-		MainActivity.bHyojiYakuBeforeRead=swHyojiBeforeRead.isChecked();
-		MainActivity.bEtoJ=radioButtonEtoJ.isChecked();
-		startActivity(new Intent(this,MainActivity.class));
-	}
-
-	public void onP1qTestButtonClick(View v)
-	{
-		strQ="p1qTest";
-		TestActivity.bSkipMaruBatuButton=swMaruBatu.isChecked();
-		startActivity(new Intent(this,TestActivity.class));
-	}
-
-	public void on1qTestButtonClick(View v)
-	{
-		strQ="1qTest";
-		TestActivity.bSkipMaruBatuButton=swMaruBatu.isChecked();
-		startActivity(new Intent(this,TestActivity.class));
-	}
-
-	static int idCheckedA=0,idCheckedB=0,idCheckedC=0,idCheckedOther=R.id.radioButtonAll,nRadioIdForRange=R.id.radioButtonAll;
-	public  void onRadioChecked(View v)
-	{
-		((RadioButton)v).setChecked(true);
-		nRadioIdForRange=((RadioButton)v).getId();
-		switch (nRadioIdForRange){
-			case R.id.radioButtonAV:
-			case R.id.radioButtonAN:
-			case R.id.radioButtonAA:
-			case R.id.radioButtonAM:{
-				idCheckedA=nRadioIdForRange;
-				if (idCheckedB!=0) ((RadioButton)findViewById(idCheckedB)).setChecked(false);
-				if (idCheckedC!=0) ((RadioButton)findViewById(idCheckedC)).setChecked(false);
-				if (idCheckedOther!=0) ((RadioButton)findViewById(idCheckedOther)).setChecked(false);
+		} else skipwords = false;
+		MainActivity.bHyojiYakuBeforeRead = swHyojiBeforeRead.isChecked();
+		MainActivity.bEtoJ = radioButtonEtoJ.isChecked();
+		bSort=((Switch) findViewById(R.id.switchSort)).isChecked();
+		switch (v.getId()) {
+			case R.id.button1Q: {
+				strQ = "1q";
+				strQenum = q_num.strQ.str1q;
+				sentakuQ = q_num.test1q;
 				break;
 			}
-			case R.id.radioButtonBV:
-			case R.id.radioButtonBN:
-			case R.id.radioButtonBA:
-			case R.id.radioButtonBM:{
-				idCheckedB=nRadioIdForRange;
-				if (idCheckedA!=0) ((RadioButton)findViewById(idCheckedA)).setChecked(false);
-				if (idCheckedC!=0) ((RadioButton)findViewById(idCheckedC)).setChecked(false);
-				if (idCheckedOther!=0) ((RadioButton)findViewById(idCheckedOther)).setChecked(false);
+			default:
+			case R.id.buttonP1Q: {
+				strQ = "p1q";
+				strQenum = q_num.strQ.strp1q;
+				sentakuQ = q_num.testp1q;
 				break;
 			}
-			case R.id.radioButtonCV:
-			case R.id.radioButtonCN:
-			case R.id.radioButtonCA:
-			case R.id.radioButtonCM:{
-				idCheckedC=nRadioIdForRange;
-				if (idCheckedA!=0) ((RadioButton)findViewById(idCheckedA)).setChecked(false);
-				if (idCheckedB!=0) ((RadioButton)findViewById(idCheckedB)).setChecked(false);
-				if (idCheckedOther!=0) ((RadioButton)findViewById(idCheckedOther)).setChecked(false);
+			case R.id.button2q:{
+				strQ = "2q";
+				strQenum = q_num.strQ.str2q;
+				sentakuQ = q_num.test2q;
 				break;
 			}
-			case R.id.radioButtonJukugo:
-			case R.id.radioButtonAll:
-			default:{
-				idCheckedOther=nRadioIdForRange;
-				if (idCheckedA!=0) ((RadioButton)findViewById(idCheckedA)).setChecked(false);
-				if (idCheckedB!=0) ((RadioButton)findViewById(idCheckedB)).setChecked(false);
-				if (idCheckedC!=0) ((RadioButton)findViewById(idCheckedC)).setChecked(false);
+			case R.id.buttonP2q:{
+				strQ = "p2q";
+				strQenum = q_num.strQ.strp2q;
+				sentakuQ = q_num.testp2q;
 				break;
 			}
 		}
-
-		String str=null;
-		switch (nRadioIdForRange){
-			case R.id.radioButtonAV:{
-				str="radioButtonAV";
+		switch (nWordPhraseOrTest) {
+			default:
+			case 1: {
+				Log.d(tag, "nWorPoraT=1");
+				startActivity(new Intent(this, MainActivity.class));
 				break;
 			}
-			case R.id.radioButtonAN:{
-				str="radioButtonAN";
+			case 2: {
+				Log.d(tag, "nWorPoraT=2");
+				strQ = "ph" + strQ;
+				startActivity(new Intent(this, MainActivity.class));
 				break;
 			}
-			case R.id.radioButtonAA:{
-				str="radioButtonAA";
-				break;
-			}
-			case R.id.radioButtonAM:{
-				str="radioButtonAM";
-				break;
-			}
-			case R.id.radioButtonBV:{
-				str="radioButtonBV";
-				break;
-			}
-			case R.id.radioButtonBN:{
-				str="radioButtonBN";
-				break;
-			}
-			case R.id.radioButtonBA:{
-				str="radioButtonBA";
-				break;
-			}
-			case R.id.radioButtonBM:{
-				str="radioButtonBM";
-				break;
-			}
-			case R.id.radioButtonCV:{
-				str="radioButtonCV";
-				break;
-			}
-			case R.id.radioButtonCN:{
-				str="radioButtonCN";
-				break;
-			}
-			case R.id.radioButtonCA:{
-				str="radioButtonCA";
-				break;
-			}
-			case R.id.radioButtonCM:{
-				str="radioButtonCM";
-				break;
-			}
-			case R.id.radioButtonJukugo:{
-				str="radioButtonJukugo";
-				break;
-			}
-			case R.id.radioButtonAll:{
-				str="radioButtonAll";
-				break;
-			}
-			default:{
-				str="default";
+			case 3:
+			case 4:
+			case 5:{
+				Log.d(tag, "nWorPoraT=3");
+				strQ = strQ + "Test";
+				TestActivity.bSkipMaruBatuButton = swMaruBatu.isChecked();
+				startActivity(new Intent(this, TestActivity.class));
 				break;
 			}
 		}
-		Log.d("com.gukos.bokotan",str+"idnum:"+(nRadioIdForRange-R.id.radioButtonAV));
+		Log.d(tag, "strQ=" + strQ);
+	}
 
+	static int nRadioIdForRange = R.id.radioButtonAll, nUnit = 5, nShurui = 4, nWordPhraseOrTest = 1, nSelectedQ = 2;
+
+	public void onRadioChecked(View v) {
+		switch (v.getId()) {
+			case R.id.radioButtonA: {
+				nUnit = 1;
+				sentakuUnit = q_num.unit.deruA;
+				break;
+			}
+			case R.id.radioButtonB: {
+				nUnit = 2;
+				sentakuUnit = q_num.unit.deruB;
+				break;
+			}
+			case R.id.radioButtonC: {
+				nUnit = 3;
+				sentakuUnit = q_num.unit.deruC;
+				break;
+			}
+			case R.id.radioButtonJ: {
+				nUnit = 4;
+				sentakuUnit = q_num.unit.Jukugo;
+				break;
+			}
+			case R.id.radioButtonAll: {
+				nUnit = 5;
+				sentakuUnit = q_num.unit.all;
+				nShurui = 4;
+				sentakuShurui = q_num.shurui.matome;
+				break;
+			}
+			case R.id.radioButtonV: {
+				nShurui = 1;
+				sentakuShurui = q_num.shurui.verb;
+				break;
+			}
+			case R.id.radioButtonN: {
+				nShurui = 2;
+				sentakuShurui = q_num.shurui.noum;
+				break;
+			}
+			case R.id.radioButtonAj: {
+				nShurui = 3;
+				sentakuShurui = q_num.shurui.adjective;
+				break;
+			}
+			case R.id.radioButtonM: {
+				nShurui = 4;
+				sentakuShurui = q_num.shurui.matome;
+				break;
+			}
+			case R.id.radioButtonW: {
+				nWordPhraseOrTest = 1;
+				WordPhraseOrTest = q_num.mode.word;
+				Log.d(tag, "nWorPorT=1");
+				break;
+			}
+			case R.id.radioButtonP: {
+				nWordPhraseOrTest = 2;
+				WordPhraseOrTest = q_num.mode.phrase;
+				Log.d(tag, "nWorPorT=2");
+				break;
+			}
+			case R.id.radioButtonT: {
+				nWordPhraseOrTest = 3;
+				WordPhraseOrTest = q_num.mode.test;
+				Log.d(tag, "nWorPorT=3");
+				break;
+			}
+			case R.id.radioButtonExclusiveTest:{
+				nWordPhraseOrTest=4;
+				WordPhraseOrTest= q_num.mode.exTest;
+				break;
+			}
+			case R.id.radioButtonSortTest:{
+				nWordPhraseOrTest=5;
+				WordPhraseOrTest= q_num.mode.sortTest;
+			}
+		}
 	}
 
 	@Override
@@ -216,15 +201,15 @@ public class Q_sentaku_activity extends AppCompatActivity {
 		MainActivity.ResetMediaPlayer();
 	}
 
-	public void onAlarmset(View v){
-		int h,m,s;
+	public void onAlarmset(View v) {
+		int h, m, s;
 		// 現在時刻を取得
 		Calendar calendar = Calendar.getInstance();
-		int hour   = calendar.get(Calendar.HOUR_OF_DAY);
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
 		int minute = calendar.get(Calendar.MINUTE);
 
 		// 時間選択ダイアログの生成
-		TimePickerDialog timepick= new TimePickerDialog(this,
+		TimePickerDialog timepick = new TimePickerDialog(this,
 				new TimePickerDialog.OnTimeSetListener() {
 					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 						// 設定 ボタンクリック時の処理
@@ -233,14 +218,14 @@ public class Q_sentaku_activity extends AppCompatActivity {
 						// Calendarを使って現在の時間をミリ秒で取得
 						calendar.setTimeInMillis(System.currentTimeMillis());
 						// 設定
-						calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-						calendar.set(Calendar.MINUTE,minute);
+						calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+						calendar.set(Calendar.MINUTE, minute);
 						//明示的なBroadCast
 						Intent intent = new Intent(getApplicationContext(), AlarmBroadcastReceiver.class);
 						PendingIntent pending = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
 						// アラームをセットする
 						AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-						if(am != null){
+						if (am != null) {
 							am.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending);
 							Toast.makeText(getApplicationContext(), "Set Alarm ", Toast.LENGTH_SHORT).show();
 						}
@@ -249,5 +234,4 @@ public class Q_sentaku_activity extends AppCompatActivity {
 		// 表示
 		timepick.show();
 	}
-
 }

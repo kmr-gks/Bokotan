@@ -25,7 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 
-import static com.gukos.bokotan.Q_sentaku_activity.nRadioIdForRange;
+import static com.gukos.bokotan.Q_sentaku_activity.sentakuQ;
+import static com.gukos.bokotan.Q_sentaku_activity.sentakuUnit;
 import static com.gukos.bokotan.Q_sentaku_activity.skipwords;
 
 
@@ -51,16 +52,23 @@ public class MainActivity extends AppCompatActivity {
 	String chID;
 	Notification notification;
 	NotificationManager notificationManager;
-	double dPlaySpeed=1.0;
+	double dPlaySpeed=2.0;
 	PlaybackParams pp=null;
 	static boolean bHyojiYakuBeforeRead=true,bEtoJ=true;
-	
+	static int toFindFromAndTo[][][]={
+			{{1,233},{234,472},{473,700},	{701,919},{920,1177},{1178,1400},	{1401,1619},{1620,1861},{1862,2100},	{2101,2400},	{1,700},{701,1400},{1401,2100},{1,2400}},
+			{{1,92},{93,362},{363,530},		{531,682},{683,883},{884,1050},		{1051,1262},{1263,1411},{1412,1550},	{1551,1850},	{1,530},{531,1050},{1051,1550},{1,1850}},
+			{{1,158},{159,316},{317,405},	{406,564},{565,719},{720,808},		{809,949},{950,1108},{1109,1179},		{1180,1704},	{1,405},{406,808},{809,1179},{1,1704}},
+			{{1,125},{126,268},{269,373},	{374,484},{485,632},{633,735},		{736,839},{840,988},{989,1085},			{1086,1500},	{1,373},{374,735},{736,1085},{1,1500}}};
+	//1qのunit=8のfrom=0,8,0
+	//p1qunit=5 to=1,5,1
 	//SentakuActivity.javaから
 	static boolean[] kioku_file =new boolean[2500];
 	static boolean[] kioku_chBox =new boolean[2500];
 	static int nSeikaisuu[]=new int[2500],nHuseikaisuu[]=new int[2500];
 	int nFrom,nTo;
-	
+	Intent intent;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,79 +81,169 @@ public class MainActivity extends AppCompatActivity {
 		tvsubE=findViewById(R.id.tvsubE);tvsubE.setText(null);
 		tvsubJ=findViewById(R.id.tvsubJ);tvsubJ.setText(null);
 		tvSeikaisuu=findViewById(R.id.textViewNumSeikairitu);
-		
-		//バグフィックス
-		//isPhraseMode= strQ.charAt(1)=='h';
+
 		if (strQ!=null) isPhraseMode=strQ.charAt(1)=='h';
 		mp=new MediaPlayer();
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		
-		if (strQ==null) strQ="p1q";
-		
+
+		if (strQ==null) {
+			strQ = "p1q";
+			sentakuQ = q_num.testp1q;
+		}
+
+		switch (sentakuQ){
+			case test1q:{
+				lastnum=2400;
+				wordE =WordData1q.e;
+				wordJ=WordData1q.j;
+				strPhraseE =Phrase1q.e;
+				strPhraseJ =Phrase1q.j;
+				break;
+			}
+			case testp1q:{
+				lastnum=1850;
+				wordE =WordDatap1q.e;
+				wordJ=WordDatap1q.j;
+				strPhraseE =Phrasep1q.e;
+				strPhraseJ =Phrasep1q.j;
+				break;
+			}
+			case test2q:{
+				lastnum=1704;
+				wordE =WordData2q.e;
+				wordJ=WordData2q.j;
+				strPhraseE =Phrase2q.e;
+				strPhraseJ =Phrase2q.j;
+				break;
+			}
+			case testp2q:{
+				lastnum=1500;
+				wordE =WordDatap2q.e;
+				wordJ=WordDatap2q.j;
+				strPhraseE =Phrasep2q.e;
+				strPhraseJ =Phrasep2q.j;
+				break;
+			}
+		}/*
 		switch (strQ){
 			case "1q":
 			case "ph1q":{
 				lastnum=2400;
-				wordE = com.gukos.bokotan.WordData1q.e;
-				wordJ= com.gukos.bokotan.WordData1q.j;
-				strPhraseE = com.gukos.bokotan.Phrase1q.e;
-				strPhraseJ = com.gukos.bokotan.Phrase1q.j;
+				wordE =WordData1q.e;
+				wordJ=WordData1q.j;
+				strPhraseE =Phrase1q.e;
+				strPhraseJ =Phrase1q.j;
 				break;
 			}
 			case "p1q":
 			case "php1q":{
 				lastnum=1850;
-				wordE = com.gukos.bokotan.WordDatap1q.e;
-				wordJ= com.gukos.bokotan.WordDatap1q.j;
-				strPhraseE = com.gukos.bokotan.Phrasep1q.e;
-				strPhraseJ = com.gukos.bokotan.Phrasep1q.j;
+				wordE =WordDatap1q.e;
+				wordJ=WordDatap1q.j;
+				strPhraseE =Phrasep1q.e;
+				strPhraseJ =Phrasep1q.j;
 				break;
 			}
-		}
-		
+		}*/
+
 		//保存された単語の番号（級ごと）
-		if (!com.gukos.bokotan.Q_sentaku_activity.nowIsDecided|| nRadioIdForRange==R.id.radioButtonAll){
+		//if (Q_sentaku_activity.nowIsDecided|| Q_sentaku_activity.nUnit==5){]
+		if (Q_sentaku_activity.nowIsDecided|| sentakuUnit.equals(q_num.unit.all)){
 			now=this.getPreferences(MODE_PRIVATE).getInt(strQ+"now",1);
 			nFrom=1;
 			nTo=lastnum;
 		}
-		else if (nRadioIdForRange!=R.id.radioButtonAll) {
+		else if (Q_sentaku_activity.nUnit!=5) {
 			int unit=0;
-			switch (nRadioIdForRange){
-				case R.id.radioButtonAV:unit=0;break;
-				case R.id.radioButtonAN:unit=1;break;
-				case R.id.radioButtonAA:unit=2;break;
-				case R.id.radioButtonBV:unit=3;break;
-				case R.id.radioButtonBN:unit=4;break;
-				case R.id.radioButtonBA:unit=5;break;
-				case R.id.radioButtonCV:unit=6;break;
-				case R.id.radioButtonCN:unit=7;break;
-				case R.id.radioButtonCA:unit=8;break;
-				case R.id.radioButtonJukugo:unit=9;break;
-				case R.id.radioButtonAM:unit=11;break;
-				case R.id.radioButtonBM:unit=12;break;
-				case R.id.radioButtonCM:unit=13;break;
+			switch (Q_sentaku_activity.nUnit){
+				case 1:{//A
+					switch (Q_sentaku_activity.nShurui){
+						case 1:{//V
+							unit=0;
+							break;
+						}
+						case 2:{//N
+							unit=1;
+							break;
+						}
+						case 3:{//Aj
+							unit = 2;
+							break;
+						}
+						case 4:{//M
+							unit=11;
+							break;
+						}
+					}
+					break;
+				}
+				case 2:{//B
+					switch (Q_sentaku_activity.nShurui){
+						case 1:{//V
+							unit=3;
+							break;
+						}
+						case 2:{//N
+							unit=4;
+							break;
+						}
+						case 3:{//Aj
+							unit=5;
+							break;
+						}
+						case 4:{//M
+							unit=12;
+							break;
+						}
+					}
+					break;
+				}
+				case 3:{//C
+					switch (Q_sentaku_activity.nShurui){
+						case 1:{//V
+							unit=6;
+							break;
+						}
+						case 2:{//N
+							unit=7;
+							break;
+						}
+						case 3:{//Aj
+							unit=8;
+							break;
+						}
+						case 4:{//M
+							unit=13;
+							break;
+						}
+					}
+					break;
+				}
+				case 4: unit=9; break;
 			}
+
 			SetNumFromAndTo(lastnum,unit);
 			nFrom=from;
 			nTo=to;
 		}
-		
-		
+		Log.d(tag,"nowisDecided"+Q_sentaku_activity.nowIsDecided+"nUnit"+Q_sentaku_activity.nUnit+"nShurui"+Q_sentaku_activity.nShurui);
+
+
 		//パーミッション
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			requestPermissions(strPermissions,1000);
 		}
-		
+
 		if (tvWordJpn.getText().equals("default")) {//初めてonCreateのとき
 			onStartButtonClick((Button)findViewById(R.id.buttonStartStop));
 			nDebug++;Log.d(tag+nDebug,"onCreate,true");
 		} else {
 			nDebug++;Log.d(tag+nDebug,"onCreate,false:");
 		}
-		
+
 		//1q
-		if (lastnum==2400){
+		//if (lastnum==2400){
+		if (sentakuQ.equals(q_num.test1q)){
 			for (int i=0;i<lastnum;i++){
 				kioku_file[i]=getSharedPreferences("settings-1q",MODE_PRIVATE).getBoolean("1q"+i,false);
 				kioku_chBox[i]=kioku_file[i];
@@ -154,8 +252,9 @@ public class MainActivity extends AppCompatActivity {
 			}
 			kioku_chBox[1568]=kioku_file[1568]=true;
 		}
-		//2q
-		if (lastnum==1850){
+		//p1q
+		//if (lastnum==1850){
+		if (sentakuQ.equals(q_num.testp1q)){
 			for (int i=0;i<lastnum;i++){
 				kioku_file[i]=getSharedPreferences("settings-p1q",MODE_PRIVATE).getBoolean("p1q"+i,false);
 				kioku_chBox[i]=kioku_file[i];
@@ -171,42 +270,7 @@ public class MainActivity extends AppCompatActivity {
 			SetNumFromAndTo(lastnum,i);
 			adapterUnit.add(strUnit[i]+String.format("(%d-%d)",from,to));
 		}
-		
-		//システムから通知マネージャー取得
-		notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-		//アプリ名をチャンネルIDとして利用
-		chID = getString(R.string.app_name);
 
-		/*
-		//アンドロイドのバージョンで振り分け
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {     //APIが「26」以上の場合
-
-			//通知チャンネルIDを生成してインスタンス化
-			NotificationChannel notificationChannel = new NotificationChannel(chID, chID, NotificationManager.IMPORTANCE_DEFAULT);
-			//通知の説明のセット
-			notificationChannel.setDescription(chID);
-			//通知チャンネルの作成
-			notificationManager.createNotificationChannel(notificationChannel);
-			//通知の生成と設定とビルド
-			notification = new Notification.Builder(this, chID)
-					.setContentTitle(getString(R.string.app_name))  //通知タイトル
-					.setContentText("アプリ通知テスト26以上")        //通知内容
-					.setSmallIcon(R.drawable.ic_launcher_background)                  //通知用アイコン
-					.build();                                       //通知のビルド
-		} else {
-			//APIが「25」以下の場合
-			//通知の生成と設定とビルド
-			notification = new Notification.Builder(this)
-					.setContentTitle(getString(R.string.app_name))
-					.setContentText("アプリ通知テスト25まで")
-					.setSmallIcon(R.drawable.ic_launcher_background)
-					.build();
-		}
-		*/
-		//notification.flags=Notification.FLAG_NO_CLEAR;
-		//通知の発行
-		//notificationManager.notify(1, notification);
-		
 		SeekBar sb=findViewById(R.id.seekBar);
 		sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override//ツマミがドラッグされると呼ばれる
@@ -223,19 +287,21 @@ public class MainActivity extends AppCompatActivity {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			pp=new PlaybackParams();
 		}
-		
+
 		Log.d(tag,tvWordJpn.getText().toString());
 		if (tvWordJpn.getText().toString().equals("default")){
 			onStartButtonClick(findViewById(R.id.buttonStartStop));
 		}
-		
+		//intent=new Intent(getApplication(),PlaySound.class);
+		//startForegroundService(intent);
+
 	}
-	
+
 	protected ArrayAdapter<String> adapterUnit,adapterWord;
 	protected int selectedIndex = 0;
 	AlertDialog adWord,adUnit;
 	static int from,to;
-	
+
 	public void onSelectNowButtonClick(View v){
 		//EditText et=findViewById(R.id.editTextNumberSigned);
 		//now=Integer.parseInt(et.getText().toString());
@@ -243,18 +309,18 @@ public class MainActivity extends AppCompatActivity {
 				MainActivity.this);
 		builder.setTitle("選択してください");
 		builder.setSingleChoiceItems(adapterUnit, selectedIndex,
-		                             (dialog, which) -> {
-			                             // AlertDialogで選択された内容を保持
-			                             selectedIndex = which;
-			                             adUnit.dismiss();
-			                             askTangoNumber(selectedIndex);
-		                             });
+				(dialog, which) -> {
+					// AlertDialogで選択された内容を保持
+					selectedIndex = which;
+					adUnit.dismiss();
+					askTangoNumber(selectedIndex);
+				});
 		adUnit = builder.create();
 		adUnit.show();
 	}
 	private void askTangoNumber(int unit){
 		SetNumFromAndTo(lastnum,unit);
-		
+
 		adapterWord=new ArrayAdapter<>(this,android.R.layout.simple_list_item_single_choice);
 		for (int i=from;i<=to;i++){
 			adapterWord.add(i+":"+wordE[i]+'('+wordJ[i]+')');
@@ -265,7 +331,29 @@ public class MainActivity extends AppCompatActivity {
 		adWord = builder.create();
 		adWord.show();
 	}
-	public static void SetNumFromAndTo(int lastnum,int unit)
+	public static void SetNumFromAndTo(int lastnum,int unit){
+		from=1;
+		to=lastnum;
+		if (unit>10) unit--;
+		Log.d(tag,"MainActivity.SetNumFromAndTo"+"lastnum"+lastnum+"unit"+unit);
+		if (lastnum==2400){
+			from=toFindFromAndTo[0][unit][0];
+			to=toFindFromAndTo[0][unit][1];
+		}
+		if (lastnum==1850){
+			from=toFindFromAndTo[1][unit][0];
+			to=toFindFromAndTo[1][unit][1];
+		}
+		if (lastnum==1704){
+			from=toFindFromAndTo[2][unit][0];
+			to=toFindFromAndTo[2][unit][1];
+		}
+		if (lastnum==1500){
+			from=toFindFromAndTo[3][unit][0];
+			to=toFindFromAndTo[3][unit][1];
+		}
+	}
+	public static void SetNumFromAndTo_(int lastnum,int unit)
 	{
 		from=0;to=0;
 		if (lastnum == 2400) {
@@ -333,6 +421,11 @@ public class MainActivity extends AppCompatActivity {
 				case 13:{
 					from=1401;
 					to=2100;
+					break;
+				}
+				case 14:{
+					from=1;
+					to=2400;
 					break;
 				}
 				default: return;
@@ -405,6 +498,11 @@ public class MainActivity extends AppCompatActivity {
 					to=1550;
 					break;
 				}
+				case 14:{
+					from=1;
+					to=1850;
+					break;
+				}
 				default:
 					return;
 			}
@@ -417,11 +515,11 @@ public class MainActivity extends AppCompatActivity {
 		adWord.dismiss();
 		now=from+which-1;
 	}
-	
+
 	void bokotanPlayEnglish(){
-		
+
 		if (now%20==0) this.getPreferences(MODE_PRIVATE).edit().putInt(strQ + "now", now).commit();
-		
+
 		if (bEtoJ) {
 			now++;
 			if (skipwords) {
@@ -454,7 +552,7 @@ public class MainActivity extends AppCompatActivity {
 			notificationManager.notify(1, notification);
 		}
 		*/
-			
+
 			tvGenzai.setText("No." + now);
 			int nWordSeikaisuu = 0, nWordHuseikaisuu = 0;
 			if (lastnum == 2400) {
@@ -465,7 +563,7 @@ public class MainActivity extends AppCompatActivity {
 				nWordHuseikaisuu = getSharedPreferences("testActivity" + "p1qTest", MODE_PRIVATE).getInt("nWordHuseikaisuu" + now, 0);
 			}
 			tvSeikaisuu.setText(" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu + 1) + "% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
-			
+
 			if (isPhraseMode) {
 				if (bHyojiYakuBeforeRead) {
 					tvWordJpn.setText(strPhraseJ[now]);
@@ -484,11 +582,11 @@ public class MainActivity extends AppCompatActivity {
 				tvWordEng.setText(wordE[now]);
 			}
 		}
-		
+
 		//if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O&&isInPictureInPictureMode()){
-		com.gukos.bokotan.PipActivity.ChangeText(wordE[now], wordJ[now], now);
+			PipActivity.ChangeText(wordE[now],wordJ[now],now);
 		//}
-		
+
 		if (isPhraseMode)//フレーズならば
 		{
 			path="/storage/emulated/0/Download/data/"+strQ+'/'+String.format("%04d",now)+"例.mp3";
@@ -529,12 +627,12 @@ public class MainActivity extends AppCompatActivity {
 				tvWordEng.setText(wordE[now]);
 			}
 		}
-		
-		
+
+
 	}
-	
+
 	void bokotanPlayJapanese(){
-		
+
 		if (!bEtoJ) {
 			now++;
 			if (skipwords){
@@ -544,7 +642,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 			if (now<=nFrom) now=nFrom;
 			if (now>=nTo) now=nFrom;
-			
+
 			tvGenzai.setText("No." + now);
 			int nWordSeikaisuu = 0, nWordHuseikaisuu = 0;
 			if (lastnum == 2400) {
@@ -555,7 +653,7 @@ public class MainActivity extends AppCompatActivity {
 				nWordHuseikaisuu = getSharedPreferences("testActivity" + "p1qTest", MODE_PRIVATE).getInt("nWordHuseikaisuu" + now, 0);
 			}
 			tvSeikaisuu.setText(" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu + 1) + "% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
-			
+
 			if (isPhraseMode) {
 				if (bHyojiYakuBeforeRead) {
 					tvWordEng.setText(strPhraseE[now]);
@@ -574,7 +672,7 @@ public class MainActivity extends AppCompatActivity {
 				tvWordJpn.setText(wordJ[now]);
 			}
 		}
-		
+
 		if (isPhraseMode){
 			path = "/storage/emulated/0/Download/data/" + strQ + '/' + String.format("%04d", now)  + "日.mp3";
 		} else {
@@ -584,24 +682,24 @@ public class MainActivity extends AppCompatActivity {
 			tvDebug.setText("succeed");
 			mp=new MediaPlayer();
 			mp.setDataSource(path);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				if (pp!=null) mp.setPlaybackParams(pp.setSpeed((float) dPlaySpeed));
-			}
-			mp.prepare();
-			mp.start();
-			mp.setOnCompletionListener(mp -> {
-				if (mp!=null&&mp.isPlaying()) mp.stop();
-				mp.reset();
-				mp.release();
-				mp=null;
-				bokotanPlayEnglish();
-			});
-		} catch (IOException e) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (pp!=null) mp.setPlaybackParams(pp.setSpeed((float) dPlaySpeed));
+		}
+		mp.prepare();
+		mp.start();
+		mp.setOnCompletionListener(mp -> {
+			if (mp!=null&&mp.isPlaying()) mp.stop();
+			mp.reset();
+			mp.release();
+			mp=null;
+			bokotanPlayEnglish();
+		});
+	} catch (IOException e) {
 			Log.d(tag,"Mediaplayer:erroe"+e.getMessage()+"@bokotanPlayJapanese");
 			tvExcept.setText(path);
 			tvDebug.setText("Error:jpn"+e.getMessage());
-			e.printStackTrace();
-		}
+		e.printStackTrace();
+	}
 		if (bEtoJ&&!bHyojiYakuBeforeRead) {
 			if (isPhraseMode) {
 				tvWordJpn.setText(strPhraseJ[now]);
@@ -610,8 +708,8 @@ public class MainActivity extends AppCompatActivity {
 			}
 		}
 	}
-	
-	
+
+
 	public void JosiCheck(int index)//最初は0を指定
 	{
 		if (langage=='英') return;
@@ -689,11 +787,11 @@ public class MainActivity extends AppCompatActivity {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void onStartButtonClick(View v){
 		Button b=(Button)v;
 		if (playing){
-			onStopButtonClick(findViewById(R.id.stop));
+			onStopButtonClick(null);
 			this.getPreferences(MODE_PRIVATE).edit().putInt(strQ + "now", now).commit();
 			b.setText("start");
 		} else {
@@ -702,7 +800,7 @@ public class MainActivity extends AppCompatActivity {
 			playing=true;
 		}
 	}
-	
+
 	public void onResetButtonClick(View v){
 		new AlertDialog.Builder(this).setTitle( "リセットしますか" ).setMessage( "１から再生し直します" )
 				.setPositiveButton( "yes", (dialog, which) -> {
@@ -719,7 +817,7 @@ public class MainActivity extends AppCompatActivity {
 				})
 				.show();
 	}
-	
+
 	public void onOboetaButtonTapped(View v){
 		//暗記済み
 		if (lastnum==2400) {
@@ -731,25 +829,26 @@ public class MainActivity extends AppCompatActivity {
 			getSharedPreferences("settings-p1q", MODE_PRIVATE).edit().putBoolean("p1q" + now, true).apply();
 		}
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
 		nDebug++;Log.d(tag+nDebug,"onResume");
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
+		//stopService(intent);
 		this.getPreferences(MODE_PRIVATE).edit().putInt(strQ + "now", now).commit();
 		nDebug++;Log.d(tag+nDebug,"onPause");
 	}
-	
+
 	public void onStopButtonClick(View v){
 		playing=false;
 		ResetMediaPlayer();
 	}
-	
+
 	static void ResetMediaPlayer(){
 		if (mp!=null){
 			if (mp.isPlaying()) mp.stop();
@@ -758,7 +857,7 @@ public class MainActivity extends AppCompatActivity {
 			mp=null;
 		}
 	}
-	
+
 	@Override
 	public void onUserLeaveHint(){
 		super.onUserLeaveHint();
@@ -767,6 +866,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
+
 		Log.d(tag, "onStop");
 	}
 
@@ -781,13 +881,13 @@ public class MainActivity extends AppCompatActivity {
 		nDebug++;Log.d(tag+nDebug,"onUserLeaveHint");
 	}
 	*/
-	
+
 	@Override
 	public void onConfigurationChanged(@NonNull Configuration c){
 		super.onConfigurationChanged(c);
 		nDebug++;Log.d(tag+nDebug,"onConfigurationChanged");
 	}
-	
+
 	@Override
 	public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
 		super.onPictureInPictureModeChanged(isInPictureInPictureMode);
@@ -805,21 +905,21 @@ public class MainActivity extends AppCompatActivity {
 		}
 		*/
 	}
-	
+
 	public void onSentakuButtonClicked(View v){
 		onStopButtonClick(null);
-		startActivity(new Intent(this, com.gukos.bokotan.SentakuActivity.class));
+		startActivity(new Intent(this,SentakuActivity.class));
 	}
-	
+
 	public void onPIPButtonClicked(View v){
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			//enterPictureInPictureMode(new PictureInPictureParams.Builder().setAspectRatio(new Rational(16,9)).build());
-			com.gukos.bokotan.PipActivity.startPIP=true;
-			startActivity(new Intent(this, com.gukos.bokotan.PipActivity.class));
+			PipActivity.startPIP=true;
+			startActivity(new Intent(this,PipActivity.class));
 			Log.d(tag,"pip");
 		}
 	}
-	
+
 	public void onSpeedSeekBar(View v){
 		SeekBar sb= (SeekBar) v;
 		TextView tv=findViewById(R.id.tvSeekBar);

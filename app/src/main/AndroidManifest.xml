@@ -4,7 +4,7 @@
 	package="com.gukos.bokotan">
 
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.WAKE_LOCK"/>
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
 	<application
 		android:allowBackup="true"
@@ -12,10 +12,16 @@
 		android:label="@string/app_name"
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:supportsRtl="true"
-		android:theme="@style/Theme.Bokotan">
+		android:theme="@style/Theme.bokotan">
+		<service
+			android:name=".PlaySound"
+			android:enabled="true"
+			android:exported="true"></service>
+
 		<activity
 			android:name=".TestActivity"
-			android:exported="false" />
+			android:exported="false"
+			android:screenOrientation="portrait" />
 		<activity
 			android:name=".SentakuActivity"
 			android:screenOrientation="portrait" />
@@ -26,8 +32,7 @@
 			android:supportsPictureInPicture="true" />
 		<activity
 			android:name=".Q_sentaku_activity"
-			android:screenOrientation="portrait"
-			android:exported="true">
+			android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 
@@ -37,7 +42,8 @@
 		<activity
 			android:name=".MainActivity"
 			android:screenOrientation="portrait" />
-		<receiver android:name=".AlarmBroadcastReceiver"
+		<receiver
+			android:name=".AlarmBroadcastReceiver"
 			android:process=":remote" />
 	</application>
 

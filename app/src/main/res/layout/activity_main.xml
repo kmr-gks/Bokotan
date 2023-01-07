@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/background"
+	android:keepScreenOn="true"
+	tools:context=".MainActivity">
+
+	<TextView
+		android:id="@+id/textViewDebug"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		android:textSize="20sp"
+		app:layout_constraintStart_toEndOf="@+id/tvGenzai"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<TextView
+		android:id="@+id/TextViewEng"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:text="default"
+		android:textAlignment="center"
+		android:textSize="36sp"
+		android:textStyle="bold"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.0"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/textViewDebug" />
+
+	<TextView
+		android:id="@+id/TextViewJpn"
+		android:layout_width="411dp"
+		android:layout_height="wrap_content"
+		android:text="default"
+		android:textAlignment="center"
+		android:textSize="36sp"
+		android:textStyle="bold"
+		app:layout_constraintBottom_toTopOf="@+id/buttonOboeta"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent" />
+
+	<Button
+		android:id="@+id/buttonStartStop"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="onStartButtonClick"
+		android:text="start"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/buttonOboeta" />
+
+	<TextView
+		android:id="@+id/tvExcept"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="filepath..."
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/TextViewEng" />
+
+	<TextView
+		android:id="@+id/tvGenzai"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		android:textColor="#F44336"
+		android:textSize="20sp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<TextView
+		android:id="@+id/tvsubJ"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		android:textSize="26sp"
+		app:layout_constraintBottom_toTopOf="@+id/seekBar"
+		app:layout_constraintEnd_toEndOf="parent" />
+
+	<TextView
+		android:id="@+id/tvsubE"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		android:textSize="26sp"
+		app:layout_constraintBottom_toTopOf="@+id/tvsubJ"
+		app:layout_constraintEnd_toEndOf="parent" />
+
+	<SeekBar
+		android:id="@+id/seekBar"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:max="10"
+		android:onClick="onSpeedSeekBar"
+		android:progress="0"
+		app:layout_constraintBottom_toBottomOf="@+id/buttonStartStop"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/tvSeekBar"
+		app:layout_constraintTop_toTopOf="@+id/buttonStartStop" />
+
+	<TextView
+		android:id="@+id/tvSeekBar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Speed:1.0"
+		app:layout_constraintBottom_toBottomOf="@+id/buttonStartStop"
+		app:layout_constraintStart_toEndOf="@+id/buttonStartStop"
+		app:layout_constraintTop_toTopOf="@+id/buttonStartStop" />
+
+	<Button
+		android:id="@+id/buttonOboeta"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="onOboetaButtonTapped"
+		android:text="覚えた"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<LinearLayout
+		android:id="@+id/linearLayout6"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/buttonStartStop">
+
+		<Button
+			android:id="@+id/ButtonReset"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:onClick="onResetButtonClick"
+			android:text="最初から" />
+
+		<Button
+			android:id="@+id/button4"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:onClick="onSelectNowButtonClick"
+			android:text="番号変更" />
+
+		<Button
+			android:id="@+id/button5"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:onClick="onPIPButtonClicked"
+			android:text="PIP" />
+
+		<Button
+			android:id="@+id/button_sentaku"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:onClick="onSentakuButtonClicked"
+			android:text="単語一覧" />
+	</LinearLayout>
+
+	<TextView
+		android:id="@+id/textViewNumSeikairitu"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="TextView"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/TextViewEng" />
+</androidx.constraintlayout.widget.ConstraintLayout>
