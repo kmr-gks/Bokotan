@@ -5,13 +5,14 @@ plugins {
 android {
 	compileSdkVersion 32
 	buildToolsVersion "30.0.3"
+	namespace 'com.gukos.bokotan'
 
 	defaultConfig {
 		applicationId "com.gukos.bokotan"
 		minSdkVersion 26
 		targetSdkVersion 32
-		versionCode 220927
-		versionName "22.09.27"
+		versionCode 220929
+		versionName "22.09.29"
 
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 	}

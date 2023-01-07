@@ -32,9 +32,10 @@
 			android:layout_weight="0.5"
 			android:autoSizeMinTextSize="10sp"
 			android:autoSizeTextType="uniform"
-			android:onClick="onClicked"
+			android:onClick="exitPIP"
 			android:text="PIPモード"
 			android:textAlignment="center"
+			android:textColor="@color/textcolor"
 			android:textSize="30sp"
 			android:textStyle="bold" />
 
@@ -45,9 +46,10 @@
 			android:layout_weight="0.5"
 			android:autoSizeMinTextSize="10sp"
 			android:autoSizeTextType="uniform"
-			android:onClick="onClicked"
+			android:onClick="exitPIP"
 			android:text="読み込み中"
 			android:textAlignment="center"
+			android:textColor="@color/textcolor"
 			android:textSize="30sp"
 			android:textStyle="bold" />
 

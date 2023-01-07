@@ -1,19 +1,25 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MyLibrary.DataType.word;
+import static com.gukos.bokotan.MyLibrary.ExceptionHandler.showException;
+import static com.gukos.bokotan.MyLibrary.getData;
+import static com.gukos.bokotan.MyLibrary.putData;
+import static com.gukos.bokotan.Q_sentaku_activity.isWordAndPhraseMode;
 import static com.gukos.bokotan.Q_sentaku_activity.sentakuQ;
 import static com.gukos.bokotan.Q_sentaku_activity.sentakuUnit;
+import static com.gukos.bokotan.Q_sentaku_activity.swOnlyFirst;
+import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
+import static com.gukos.bokotan.WordPhraseData.PasstanWord;
+import static com.gukos.bokotan.WordPhraseData.YumeWord;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.PlaybackParams;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -22,10 +28,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity {
 	static TextView tvWordEng,tvWordJpn,tvGenzai,tvsubE,tvsubJ,tvSeikaisuu,tvSeikaisu,tvGogen;
-	//static Button bStart,bStop,bReset,bAdd,bSubtract;
-	String path;
 	static String strQ=null;//開始時には決まっている
 	static boolean playing=false;
 	static final String tag="E/";
@@ -36,17 +42,13 @@ public class MainActivity extends AppCompatActivity {
 	static String[] strPhraseE;
 	static String[] strPhraseJ;
 	static int lastnum;
-	private char langage;
 	public static int now;
 	static boolean isPhraseMode;
-	String chID;
-	Notification notification;
-	NotificationManager notificationManager;
 	static double dPlaySpeedEng =0.1;
 	static double dPlaySpeedJpn =0.1;
 	PlaybackParams pp=null;
 	static boolean bHyojiYakuBeforeRead=true,bEtoJ=true;
-	static int toFindFromAndTo[][][]={
+	static int[][][] toFindFromAndTo ={
 			//1q
 			{{1,233},{234,472},{473,700},	{701,919},{920,1177},{1178,1400},	{1401,1619},{1620,1861},{1862,2100},	{2101,2400},	{1,700},{701,1400},{1401,2100},{1,2400}},
 			//p1q
@@ -76,9 +78,10 @@ public class MainActivity extends AppCompatActivity {
 	//SentakuActivity.javaから
 	static boolean[] kioku_file =new boolean[2500];
 	static boolean[] kioku_chBox =new boolean[2500];
-	static int nSeikaisuu[]=new int[2500],nHuseikaisuu[]=new int[2500];
+	static int[] nSeikaisuu =new int[2500],nHuseikaisuu =new int[2500];
 	static int nFrom,nTo;
 	Intent intent=null;
+	static HashMap<String,String> hashMapKishutu=new HashMap<>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +97,10 @@ public class MainActivity extends AppCompatActivity {
 		tvSeikaisu=findViewById(R.id.textViewSeikaisuu);
 
 		if (strQ!=null) isPhraseMode=strQ.charAt(1)=='h';
-		if (!isPhraseMode){
+		if (isWordAndPhraseMode||isPhraseMode){
+			tvsubE.setVisibility(View.VISIBLE);
+			tvsubJ.setVisibility(View.VISIBLE);
+		}else{
 			//単語の場合は右下の文字は非表示
 			tvsubE.setVisibility(View.GONE);
 			tvsubJ.setVisibility(View.GONE);
@@ -103,81 +109,107 @@ public class MainActivity extends AppCompatActivity {
 
 		if (strQ==null) {
 			strQ = "p1q";
-			sentakuQ = com.gukos.bokotan.q_num.testp1q;
+			sentakuQ = q_num.testp1q;
 		}
 
 		switch (sentakuQ){
 			case test1q: {
 				lastnum = 2400;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordData1q", this);
+				WordPhraseData w = new WordPhraseData(PasstanWord+"1q", this);
 				wordE = w.e;
 				wordJ = w.j;
-				com.gukos.bokotan.WordPhraseData p = new com.gukos.bokotan.WordPhraseData("Phrase1q", this);
+				WordPhraseData p = new WordPhraseData(PasstanPhrase+"1q", this);
 				strPhraseE = p.e;
 				strPhraseJ = p.j;
+				if (swOnlyFirst.isChecked()){
+					//ユメタン単語
+					for (String Q : new String[]{"00", "08", "1", "2", "3"}) {
+						WordPhraseData wpdy = new WordPhraseData(YumeWord + Q, this);
+						for (int i = 1; i < Math.min(wpdy.e.length, wpdy.j.length); i++)
+							if (wpdy.e[i] != null && wpdy.j[i] != null)
+								hashMapKishutu.put(wpdy.e[i],"yume"+Q);
+					}
+					//パス単準1級
+					//パス単単語
+					for (String Q : new String[]{"p1q", "2q", "p2q","3q","4q","5q"}) {
+						WordPhraseData wpdp = new WordPhraseData(PasstanWord + Q, this);
+						for (int i = 1; i < Math.min(wpdp.e.length, wpdp.j.length); i++)
+							if (wpdp.e[i] != null && wpdp.j[i] != null)
+								hashMapKishutu.put(wpdp.e[i],"pass"+Q);
+					}
+				}
 				break;
 			}
 			case testp1q:{
 				lastnum=1850;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordDatap1q", this);
+				WordPhraseData w = new WordPhraseData(PasstanWord+"p1q", this);
 				wordE = w.e;
 				wordJ = w.j;
-				com.gukos.bokotan.WordPhraseData p = new com.gukos.bokotan.WordPhraseData("Phrasep1q", this);
+				WordPhraseData p = new WordPhraseData(PasstanPhrase+"p1q", this);
 				strPhraseE = p.e;
 				strPhraseJ = p.j;
+				if (swOnlyFirst.isChecked()){
+					//ユメタン単語
+					for (String Q : new String[]{"00", "08", "1", "2", "3"}) {
+						WordPhraseData wpd = new WordPhraseData(YumeWord + Q, this);
+						for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
+							if (wpd.e[i] != null && wpd.j[i] != null)
+								hashMapKishutu.put(wpd.e[i],"yume"+Q);
+					}
+				}
 				break;
 			}
 			case test2q:{
 				lastnum=1704;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordData2q", this);
+				WordPhraseData w = new WordPhraseData(PasstanWord+"2q", this);
 				wordE = w.e;
 				wordJ = w.j;
-				com.gukos.bokotan.WordPhraseData p = new com.gukos.bokotan.WordPhraseData("Phrase2q", this);
+				WordPhraseData p = new WordPhraseData(PasstanPhrase+"2q", this);
 				strPhraseE = p.e;
 				strPhraseJ = p.j;
 				break;
 			}
 			case testp2q:{
 				lastnum=1500;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordDatap2q", this);
+				WordPhraseData w = new WordPhraseData(PasstanWord+"p2q", this);
 				wordE = w.e;
 				wordJ = w.j;
-				com.gukos.bokotan.WordPhraseData p = new com.gukos.bokotan.WordPhraseData("Phrasep2q", this);
+				WordPhraseData p = new WordPhraseData(PasstanPhrase+"p2q", this);
 				strPhraseE = p.e;
 				strPhraseJ = p.j;
 				break;
 			}
 			case testy00: {
 				lastnum = 800;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordDataYume00", this);
+				WordPhraseData w = new WordPhraseData(YumeWord+"00", this);
 				strPhraseE = wordE = w.e;
 				strPhraseJ = wordJ = w.j;
 				break;
 			}
 			case testy08:{
 				lastnum=800;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordDataYume08", this);
+				WordPhraseData w = new WordPhraseData(YumeWord+"08", this);
 				strPhraseE = wordE = w.e;
 				strPhraseJ = wordJ = w.j;
 				break;
 			}
 			case testy1:{
 				lastnum=1000;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordDataYume1", this);
+				WordPhraseData w = new WordPhraseData(YumeWord+"1", this);
 				strPhraseE = wordE = w.e;
 				strPhraseJ = wordJ = w.j;
 				break;
 			}
 			case testy2:{
 				lastnum=1000;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordDataYume2", this);
+				WordPhraseData w = new WordPhraseData(YumeWord+"2", this);
 				strPhraseE = wordE = w.e;
 				strPhraseJ = wordJ = w.j;
 				break;
 			}
 			case testy3:{
 				lastnum=800;
-				com.gukos.bokotan.WordPhraseData w = new com.gukos.bokotan.WordPhraseData("WordDataYume3", this);
+				WordPhraseData w = new WordPhraseData(YumeWord+"3", this);
 				strPhraseE = wordE = w.e;
 				strPhraseJ = wordJ = w.j;
 				break;
@@ -185,18 +217,17 @@ public class MainActivity extends AppCompatActivity {
 		}
 		//保存された単語の番号（級ごと）
 		//if (Q_sentaku_activity.nowIsDecided|| Q_sentaku_activity.nUnit==5){]
-		if (com.gukos.bokotan.Q_sentaku_activity.nowIsDecided|| sentakuUnit.equals(com.gukos.bokotan.q_num.unit.all)){
+		if (Q_sentaku_activity.nowIsDecided|| sentakuUnit.equals(q_num.unit.all)){
 			now=getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).getInt(strQ+"now",1);
 			nFrom=1;
 			nTo=lastnum;
 		}
-		else if (com.gukos.bokotan.Q_sentaku_activity.nUnit!=5) {
+		else if (Q_sentaku_activity.nUnit!=5) {
 			int unit=0;
-			switch (com.gukos.bokotan.Q_sentaku_activity.nUnit){
+			switch (Q_sentaku_activity.nUnit){
 				case 1:{//A
-					switch (com.gukos.bokotan.Q_sentaku_activity.nShurui){
+					switch (Q_sentaku_activity.nShurui){
 						case 1:{//V
-							unit=0;
 							break;
 						}
 						case 2:{//N
@@ -215,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
 					break;
 				}
 				case 2:{//B
-					switch (com.gukos.bokotan.Q_sentaku_activity.nShurui){
+					switch (Q_sentaku_activity.nShurui){
 						case 1:{//V
 							unit=3;
 							break;
@@ -236,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
 					break;
 				}
 				case 3:{//C
-					switch (com.gukos.bokotan.Q_sentaku_activity.nShurui){
+					switch (Q_sentaku_activity.nShurui){
 						case 1:{//V
 							unit=6;
 							break;
@@ -263,24 +294,18 @@ public class MainActivity extends AppCompatActivity {
 			nFrom=from;
 			nTo=to;
 		}
-		Log.d(tag,"nowisDecided"+ com.gukos.bokotan.Q_sentaku_activity.nowIsDecided+"nUnit"+ com.gukos.bokotan.Q_sentaku_activity.nUnit+"nShurui"+ com.gukos.bokotan.Q_sentaku_activity.nShurui);
-
 
 		//パーミッション
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			requestPermissions(strPermissions,1000);
-		}
+		requestPermissions(strPermissions,1000);
 
 		if (tvWordJpn.getText().equals("default")) {//初めてonCreateのとき
 			onStartStopButtonClick((Button)findViewById(R.id.buttonStartStop));
-			nDebug++;Log.d(tag+nDebug,"onCreate,true");
-		} else {
-			nDebug++;Log.d(tag+nDebug,"onCreate,false:");
 		}
+		nDebug++;
 
 		//1q
 		//if (lastnum==2400){
-		if (sentakuQ.equals(com.gukos.bokotan.q_num.test1q)){
+		if (sentakuQ.equals(q_num.test1q)){
 			for (int i=0;i<lastnum;i++){
 				kioku_file[i]=getSharedPreferences("settings-1q",MODE_PRIVATE).getBoolean("1q"+i,false);
 				kioku_chBox[i]=kioku_file[i];
@@ -291,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 		//p1q
 		//if (lastnum==1850){
-		if (sentakuQ.equals(com.gukos.bokotan.q_num.testp1q)){
+		if (sentakuQ.equals(q_num.testp1q)){
 			for (int i=0;i<lastnum;i++){
 				kioku_file[i]=getSharedPreferences("settings-p1q",MODE_PRIVATE).getBoolean("p1q"+i,false);
 				kioku_chBox[i]=kioku_file[i];
@@ -302,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
 			kioku_chBox[1799]=kioku_file[1799]=true;
 		}
 		adapterUnit = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice);
-		String strUnit[]={"でる度A動詞","でる度A名詞","でる度A形容詞","でる度B動詞","でる度B名詞","でる度B形容詞","でる度C動詞","でる度C名詞","でる度C形容詞","熟語"};
+		String[] strUnit ={"でる度A動詞","でる度A名詞","でる度A形容詞","でる度B動詞","でる度B名詞","でる度B形容詞","でる度C動詞","でる度C名詞","でる度C形容詞","熟語"};
 		for (int i=0;i<10;i++){
 			SetNumFromAndTo(lastnum,i);
 			adapterUnit.add(strUnit[i]+String.format("(%d-%d)",from,to));
@@ -321,6 +346,7 @@ public class MainActivity extends AppCompatActivity {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
+		sbE.setProgress(getData( this,"SeekBar","english", 5));
 		onSpeedSeekBar(sbE);
 		SeekBar sbJ=findViewById(R.id.seekBarJpn);
 		sbJ.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -335,15 +361,12 @@ public class MainActivity extends AppCompatActivity {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
+		sbJ.setProgress(getData( this,"SeekBar","japanese", 10));
 		onSpeedSeekBar(sbJ);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			pp=new PlaybackParams();
-		}
+		pp=new PlaybackParams();
 		if (intent==null) {
-			Log.d(tag,"newIntentonCreate");
-			intent = new Intent(getApplication(), com.gukos.bokotan.PlaySound.class);
+			intent = new Intent(getApplication(), PlaySound.class);
 			intent.setAction( Intent.ACTION_OPEN_DOCUMENT  );
-			Log.d(tag,"startForegroundServiceonCreate");
 			startForegroundService(intent);
 		}
 
@@ -355,8 +378,6 @@ public class MainActivity extends AppCompatActivity {
 	static int from,to;
 
 	public void onSelectNowButtonClick(View v){
-		//EditText et=findViewById(R.id.editTextNumberSigned);
-		//now=Integer.parseInt(et.getText().toString());
 		AlertDialog.Builder builder = new AlertDialog.Builder(
 				MainActivity.this);
 		builder.setTitle("選択してください");
@@ -370,6 +391,7 @@ public class MainActivity extends AppCompatActivity {
 		adUnit = builder.create();
 		adUnit.show();
 	}
+
 	private void askTangoNumber(int unit){
 		SetNumFromAndTo(lastnum,unit);
 
@@ -383,11 +405,11 @@ public class MainActivity extends AppCompatActivity {
 		adWord = builder.create();
 		adWord.show();
 	}
+
 	public static void SetNumFromAndTo(int lastnum,int unit){
 		from=1;
 		to=lastnum;
 		if (unit>10) unit--;
-		Log.d(tag,"MainActivity.SetNumFromAndTo"+"lastnum"+lastnum+"unit"+unit);
 		if (lastnum==2400){
 			from=toFindFromAndTo[0][unit][0];
 			to=toFindFromAndTo[0][unit][1];
@@ -405,161 +427,7 @@ public class MainActivity extends AppCompatActivity {
 			to=toFindFromAndTo[3][unit][1];
 		}
 	}
-	public static void SetNumFromAndTo_(int lastnum,int unit)
-	{
-		from=0;to=0;
-		if (lastnum == 2400) {
-			switch (unit){
-				case 0:{
-					from=1;
-					to=233;
-					break;
-				}
-				case 1:{
-					from=234;
-					to=472;
-					break;
-				}
-				case 2:{
-					from=473;
-					to=700;
-					break;
-				}
-				case 3:{
-					from=701;
-					to=919;
-					break;
-				}
-				case 4:{
-					from=920;
-					to=1177;
-					break;
-				}
-				case 5:{
-					from=1178;
-					to=1400;
-					break;
-				}
-				case 6:{
-					from=1401;
-					to=1619;
-					break;
-				}
-				case 7:{
-					from=1620;
-					to=1861;
-					break;
-				}
-				case 8:{
-					from=1862;
-					to=2100;
-					break;
-				}
-				case 9:{
-					from=2101;
-					to=2400;
-					break;
-				}
-				case 11:{
-					from=1;
-					to=700;
-					break;
-				}
-				case 12:{
-					from=701;
-					to=1400;
-					break;
-				}
-				case 13:{
-					from=1401;
-					to=2100;
-					break;
-				}
-				case 14:{
-					from=1;
-					to=2400;
-					break;
-				}
-				default: return;
-			}
-		}
-		if (lastnum==1850) {
-			switch (unit) {
-				case 0: {//A-V
-					from = 1;
-					to = 92;
-					break;
-				}
-				case 1: {//A-N
-					from = 93;
-					to = 362;
-					break;
-				}
-				case 2: {//A-A
-					from = 363;
-					to = 530;
-					break;
-				}
-				case 3: {
-					from = 531;
-					to = 682;
-					break;
-				}
-				case 4: {
-					from = 683;
-					to = 883;
-					break;
-				}
-				case 5: {
-					from = 884;
-					to = 1050;
-					break;
-				}
-				case 6: {
-					from = 1051;
-					to = 1262;
-					break;
-				}
-				case 7: {
-					from = 1263;
-					to = 1411;
-					break;
-				}
-				case 8: {
-					from = 1412;
-					to = 1550;
-					break;
-				}
-				case 9: {
-					from = 1551;
-					to = 1850;
-					break;
-				}
-				case 11:{
-					from=1;
-					to=530;
-					break;
-				}
-				case 12:{
-					from=531;
-					to=1050;
-					break;
-				}
-				case 13:{
-					from=1051;
-					to=1550;
-					break;
-				}
-				case 14:{
-					from=1;
-					to=1850;
-					break;
-				}
-				default:
-					return;
-			}
-		}
-	}
+
 	public void onWordSelect(DialogInterface dialog, int which) {
 		//単語を選んだあと
 		adWord.dismiss();
@@ -567,21 +435,22 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void onStartStopButtonClick(View v){
-		Button b=(Button)v;
-		Log.d(tag,"onStartButtonClick");
-		if (playing){
-			saiseiStop();
-			getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).edit().putInt(strQ + "now", now).apply();
-			b.setText("start");
-		} else {
-			if (intent==null) {
-				Log.d(tag,"startService");
-				intent = new Intent(getApplication(), com.gukos.bokotan.PlaySound.class);
-				intent.setAction( Intent.ACTION_OPEN_DOCUMENT  );
+		try {
+			Button b = (Button) v;
+			if (playing) {
+				saiseiStop();
+				getSharedPreferences("MainActivity" + "now", MODE_PRIVATE).edit().putInt(strQ + "now", now).apply();
+				b.setText("start");
+			} else {
+				intent = new Intent(getApplication(), PlaySound.class);
+				intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
 				startForegroundService(intent);
+
+				b.setText("stop");
+				playing = true;
 			}
-			b.setText("stop");
-			playing=true;
+		}catch (Exception e){
+			showException(e);
 		}
 	}
 
@@ -600,19 +469,17 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Log.d(tag,getLocalClassName()+".onDestroy-stopService");
 		if (intent!=null) stopService(intent);
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).edit().putInt(strQ + "now", now).commit();
-		nDebug++;Log.d(tag+nDebug,"onPause");
+		getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).edit().putInt(strQ + "now", now).apply();
+		nDebug++;
 	}
 
 	public void saiseiStop(){
-		Log.d(tag,"saiseiStop");
 		if (intent!=null){
 			stopService(intent);
 			intent=null;
@@ -627,16 +494,13 @@ public class MainActivity extends AppCompatActivity {
 
 	public void onSentakuButtonClicked(View v){
 		saiseiStop();
-		startActivity(new Intent(this, com.gukos.bokotan.SentakuActivity.class));
+		startActivity(new Intent(this, SentakuActivity.class));
 	}
 
 	public void onPIPButtonClicked(View v){
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			//enterPictureInPictureMode(new PictureInPictureParams.Builder().setAspectRatio(new Rational(16,9)).build());
-			com.gukos.bokotan.PipActivity.startPIP=true;
-			startActivity(new Intent(this, com.gukos.bokotan.PipActivity.class));
-			Log.d(tag,"pip");
-		}
+		//enterPictureInPictureMode(new PictureInPictureParams.Builder().setAspectRatio(new Rational(16,9)).build());
+		PipActivity.startPIP=true;
+		startActivity(new Intent(this,PipActivity.class));
 	}
 
 	public void onSpeedSeekBar(View v){
@@ -645,10 +509,12 @@ public class MainActivity extends AppCompatActivity {
 			//英語
 			((TextView)findViewById(R.id.tvSeekBarEng)).setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 			dPlaySpeedEng =1+0.1*sb.getProgress();
-		}else{
+			putData(this,"SeekBar","english",sb.getProgress());
+		}else if(sb.getId()==R.id.seekBarJpn){
 			//日本語
 			((TextView)findViewById(R.id.tvSeekBarJpn)).setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 			dPlaySpeedJpn =1+0.1*sb.getProgress();
+			putData(this,"SeekBar","japanese",sb.getProgress());
 		}
 	}
 }

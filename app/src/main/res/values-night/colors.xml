@@ -8,7 +8,9 @@
 	<color name="black">#FF000000</color>
 	<color name="white">#FFFFFFFF</color>
 	<color name="gray">#DDDDDD</color>
+	<color name="orange">#FF9800</color>
 	<color name="background">#FF000000</color>
 	<color name="buttontext">#FFB3B3B3</color>
 	<color name="textcolor">#FFB3B3B3</color>
+	<color name="red_debug">#FFFF0000</color>
 </resources>

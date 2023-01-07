@@ -12,4 +12,5 @@
 	<color name="background">#FFFFFFFF</color>
 	<color name="buttontext">#FFFFFFFF</color>
 	<color name="textcolor">#FF000000</color>
+	<color name="red_debug">#FFFF0000</color>
 </resources>

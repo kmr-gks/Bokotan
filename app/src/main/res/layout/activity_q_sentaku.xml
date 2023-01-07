@@ -4,18 +4,9 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:layout_gravity="center"
 	android:background="@color/background"
 	tools:context=".Q_sentaku_activity">
-
-	<Switch
-		android:id="@+id/switchSkipOboe"
-		android:layout_width="wrap_content"
-		android:layout_height="48dp"
-		android:checked="true"
-		android:text="Skip覚え"
-		android:textColor="@color/textcolor"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/switchHyojiYakuBeforeRead" />
 
 	<TextView
 		android:id="@+id/textViewNowInput"
@@ -33,19 +24,9 @@
 		android:hint="@string/editNumberText"
 		android:inputType="number"
 		android:minHeight="48dp"
-		app:layout_constraintEnd_toStartOf="@+id/switchHyojiYakuBeforeRead"
+		app:layout_constraintEnd_toStartOf="@+id/linearLayoutSettings"
 		app:layout_constraintStart_toEndOf="@+id/textViewNowInput"
 		app:layout_constraintTop_toBottomOf="@+id/buttonAlarm" />
-
-	<Switch
-		android:id="@+id/switchSkipMaruBatu"
-		android:layout_width="wrap_content"
-		android:layout_height="48dp"
-		android:checked="true"
-		android:text="SkipMarubatu"
-		android:textColor="@color/textcolor"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/switchSkipOboe" />
 
 	<LinearLayout
 		android:id="@+id/linearLayoutOption"
@@ -104,8 +85,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:entries="@array/spinner_hanni"
-				android:textColor="@color/textcolor"
-				android:minHeight="48dp" />
+				android:minHeight="48dp"
+				android:textColor="@color/textcolor" />
 
 			<Spinner
 				android:id="@+id/spinnerHinsi"
@@ -113,8 +94,8 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:entries="@array/spinner_hinsi"
-				android:textColor="@color/textcolor"
-				android:minHeight="48dp" />
+				android:minHeight="48dp"
+				android:textColor="@color/textcolor" />
 
 			<Spinner
 				android:id="@+id/spinnerMode"
@@ -122,44 +103,11 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:entries="@array/spinner_mode"
-				android:textColor="@color/textcolor"
-				android:minHeight="48dp" />
+				android:minHeight="48dp"
+				android:textColor="@color/textcolor" />
 
 		</LinearLayout>
 	</LinearLayout>
-
-	<Switch
-		android:id="@+id/switchHyojiYakuBeforeRead"
-		android:layout_width="wrap_content"
-		android:layout_height="48dp"
-		android:checked="true"
-		android:text="読む前に表示"
-		android:textColor="@color/textcolor"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ" />
-
-	<RadioGroup
-		android:id="@+id/radioGroupLanguage"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/editTextNumber">
-
-		<RadioButton
-			android:id="@+id/radioButtonEtoJ"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:checked="true"
-			android:text="英→日"
-			android:textColor="@color/textcolor" />
-
-		<RadioButton
-			android:id="@+id/radioButtonJtoE"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="日→英"
-			android:textColor="@color/textcolor" />
-	</RadioGroup>
 
 	<Button
 		android:id="@+id/buttonAlarm"
@@ -170,49 +118,6 @@
 		android:textColor="@color/buttontext"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ" />
-
-	<Switch
-		android:id="@+id/switchSort"
-		android:layout_width="wrap_content"
-		android:layout_height="48dp"
-		android:text="ソート反転"
-		android:textColor="@color/textcolor"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/switchSkipMaruBatu" />
-
-	<RadioGroup
-		android:id="@+id/radioGroupTestOrder"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		app:layout_constraintEnd_toStartOf="@+id/switchSkipMaruBatu"
-		app:layout_constraintStart_toEndOf="@+id/radioGroupLanguage"
-		app:layout_constraintTop_toBottomOf="@+id/editTextNumber">
-
-		<RadioButton
-			android:id="@+id/radioButtonOnlyKioku"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:checked="true"
-			android:onClick="onRadioChecked"
-			android:text="記録のみ"
-			android:textColor="@color/textcolor" />
-
-		<RadioButton
-			android:id="@+id/radioButton1seikai"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:onClick="onRadioChecked"
-			android:text="1回正解を飛ばす"
-			android:textColor="@color/textcolor" />
-
-		<RadioButton
-			android:id="@+id/radioButton2huseikai"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:onClick="onRadioChecked"
-			android:text="2回以上不正解のみ"
-			android:textColor="@color/textcolor" />
-	</RadioGroup>
 
 	<LinearLayout
 		android:id="@+id/linearLayoutQ"
@@ -258,6 +163,16 @@
 			android:onClick="onSelectQ"
 			android:text="準2級"
 			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/button1Qex"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:onClick="onSelectQ"
+			android:text="1級EX"
+			android:textColor="@color/buttontext" />
+
 	</LinearLayout>
 
 	<LinearLayout
@@ -315,22 +230,175 @@
 			android:textColor="@color/buttontext" />
 	</LinearLayout>
 
-	<CheckBox
-		android:id="@+id/checkBoxDirTougou"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="フォルダ統合"
-		android:textColor="@color/textcolor"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/switchSort" />
-
 	<TextView
 		android:id="@+id/textViewVersion"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="version..."
+		android:text="version:YY.MM.DD"
 		android:textColor="@color/textcolor"
 		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent" />
+
+	<Button
+		android:id="@+id/buttonKensaku"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="onKensakuButtonClicked"
+		android:text="全文検索"
+		android:textColor="@color/buttontext"
+		app:layout_constraintStart_toEndOf="@+id/buttonAlarm"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ" />
+
+	<LinearLayout
+		android:id="@+id/linearLayoutSettings"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:orientation="vertical"
+		app:layout_constraintBottom_toTopOf="@+id/textViewVersion"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/buttonKensaku"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ">
+
+		<Switch
+			android:id="@+id/switchOnlyFirst"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:checked="true"
+			android:text="既出の単語をスキップ"
+			android:textColor="@color/textcolor" />
+
+		<Switch
+			android:id="@+id/switchHyojiYakuBeforeRead"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:checked="true"
+			android:text="読む前に表示"
+			android:textColor="@color/textcolor" />
+
+		<Switch
+			android:id="@+id/switchSkipOboe"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:checked="true"
+			android:text="Skip覚え"
+			android:textColor="@color/textcolor" />
+
+		<Switch
+			android:id="@+id/switchSkipMaruBatu"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:checked="true"
+			android:text="〇×演出なし"
+			android:textColor="@color/textcolor" />
+
+		<Switch
+			android:id="@+id/switchSort"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="ソート反転"
+			android:textColor="@color/textcolor" />
+
+		<CheckBox
+			android:id="@+id/checkBoxDirTougou"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="フォルダ統合"
+			android:textColor="@color/textcolor" />
+
+		<CheckBox
+			android:id="@+id/checkBoxDefaultAdapter"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="規定のアダプター"
+			android:textColor="@color/textcolor" />
+
+		<CheckBox
+			android:id="@+id/checkBoxAutoStop"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="イヤホン切断時停止"
+			android:textColor="@color/textcolor" />
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayoutOrderAndShuffle"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:orientation="vertical"
+		app:layout_constraintBottom_toTopOf="@+id/textViewVersion"
+		app:layout_constraintEnd_toStartOf="@+id/linearLayoutSettings"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/editTextNumber">
+
+		<RadioGroup
+			android:id="@+id/radioGroupEnglishAndJapan"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="2"
+			android:background="@drawable/border">
+
+			<RadioButton
+				android:id="@+id/radioButtonEtoJ"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:checked="true"
+				android:text="英→日"
+				android:textColor="@color/textcolor" />
+
+			<RadioButton
+				android:id="@+id/radioButtonJtoE"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:text="日→英"
+				android:textColor="@color/textcolor" />
+		</RadioGroup>
+
+		<RadioGroup
+			android:id="@+id/radioGroupTestOrder"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="3"
+			android:background="@drawable/border">
+
+			<RadioButton
+				android:id="@+id/radioButtonOnlyKioku"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:checked="true"
+				android:onClick="onRadioChecked"
+				android:text="記録のみ"
+				android:textColor="@color/textcolor" />
+
+			<RadioButton
+				android:id="@+id/radioButton1seikai"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="1回正解を飛ばす"
+				android:textColor="@color/textcolor" />
+
+			<RadioButton
+				android:id="@+id/radioButton2huseikai"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="2回以上不正解のみ"
+				android:textColor="@color/textcolor" />
+		</RadioGroup>
+	</LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

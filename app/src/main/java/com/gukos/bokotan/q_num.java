@@ -1,13 +1,13 @@
 package com.gukos.bokotan;
 
 public enum q_num {
-	test1q(0), testp1q(1),test2q(2),testp2q(3),test3q(4),test4q(5),test5q(6),testy00(7),testy08(8),testy1(9),testy2(10),testy3(11);
+	test1q(), testp1q(),test2q(),testp2q(),test3q(),test4q(),test5q(),testy00(),testy08(),testy1(),testy2(),testy3();
 	enum strQ{
 		str1q("1q"),strp1q("p1q"),str2q("2q"),strp2q("p2q"),str3q("3q"),str4q("4q"),str5q("5q"),stry00("y00"),stry08("y08"),stry1("y1"),stry2("y2"),stry3("y3");
-		private strQ(String s){
+		strQ(String s){
 			getQ=s;
 		}
-		String getQ;
+		final String getQ;
 	}
 	enum mode{
 		word,phrase,test,exTest,sortTest,wordPlusPhrase
@@ -22,5 +22,5 @@ public enum q_num {
 		kirokunomi,seikai1, huseikai2
 	}
 
-	private q_num(int id) {}
+	q_num() {}
 }

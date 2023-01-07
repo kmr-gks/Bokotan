@@ -1,30 +1,24 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MainActivity.kioku_chBox;
+import static com.gukos.bokotan.MainActivity.kioku_file;
+import static com.gukos.bokotan.MainActivity.lastnum;
+import static com.gukos.bokotan.MainActivity.now;
+
 import android.app.AlertDialog;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static com.gukos.bokotan.MainActivity.kioku_chBox;
-import static com.gukos.bokotan.MainActivity.kioku_file;
-import static com.gukos.bokotan.MainActivity.lastnum;
-import static com.gukos.bokotan.MainActivity.now;
-import static com.gukos.bokotan.MainActivity.tag;
 
 public class SentakuActivity extends AppCompatActivity {
 	static final CheckBox[] cb = new CheckBox[2500];
@@ -47,14 +41,11 @@ public class SentakuActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d(tag, getLocalClassName() + "--onCreate");
 		super.onCreate(savedInstanceState);
 		// 今回は使いません
 		setContentView(R.layout.activity_sentaku);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			mList = IntStream.range(0, lastnum + 1).mapToObj(n -> new CheckData(n + ":番目", false, n)).collect(Collectors.toList());
-		}
+		mList = IntStream.range(0, lastnum + 1).mapToObj(n -> new CheckData(n + ":番目", false, n)).collect(Collectors.toList());
 
 		//ここから軽量リストビュー
 		ListView lv = findViewById(R.id.listView);
@@ -69,7 +60,6 @@ public class SentakuActivity extends AppCompatActivity {
 				cb[i].setText(String.format("%d:%2d%%%s%s", i, (int) MainActivity.nSeikaisuu[i] * 100 / (MainActivity.nSeikaisuu[i] + MainActivity.nHuseikaisuu[i] + 1), MainActivity.wordE[i], MainActivity.wordJ[i]));
 				cb[i].setChecked(kioku_chBox[i]);
 				cb[i].setId(i);
-				if (kioku_chBox[i]) Log.d(tag, "chbox_checked:" + i);
 				cb[i].setTag(position); // ViewにIndexを紐づけておく
 				cb[i].setOnClickListener(v -> kioku_chBox[v.getId()] = ((CheckBox) v).isChecked());
 				int currentNightMode = new Configuration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
@@ -82,7 +72,7 @@ public class SentakuActivity extends AppCompatActivity {
 						//cb[i].setTextColor(Color.WHITE);
 						break;
 				}
-				cb[i].setTextColor(Color.GRAY);
+				cb[i].setTextColor(getColor(R.color.textcolor));
 				return cb[i];
 			}
 		});
@@ -92,10 +82,8 @@ public class SentakuActivity extends AppCompatActivity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		Log.d(tag, getLocalClassName() + "--onStop");
 		for (int i = 1; i < lastnum; i++) {
 			if (kioku_file[i] != kioku_chBox[i]) {
-				Log.d(tag, "modified:" + kioku_chBox[i]);
 				getSharedPreferences("settings-" + Q_sentaku_activity.strQenum.getQ, MODE_PRIVATE).edit().putBoolean(Q_sentaku_activity.strQenum.getQ + i, kioku_chBox[i]).apply();
 				kioku_file[i] = kioku_chBox[i];
 			}
