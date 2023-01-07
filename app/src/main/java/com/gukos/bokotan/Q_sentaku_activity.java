@@ -1,7 +1,21 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.ExceptionHandler.showException;
+import static android.Manifest.permission.BLUETOOTH;
+import static android.Manifest.permission.BLUETOOTH_ADMIN;
+import static android.Manifest.permission.BLUETOOTH_CONNECT;
+import static android.Manifest.permission.BLUETOOTH_SCAN;
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.gukos.bokotan.MyLibrary.getBoolData;
+import static com.gukos.bokotan.MyLibrary.getIntData;
+import static com.gukos.bokotan.MyLibrary.putBoolData;
+import static com.gukos.bokotan.MyLibrary.putIntData;
+import static com.gukos.bokotan.MyLibrary.showException;
 import static com.gukos.bokotan.MainActivity.strQ;
+import static com.gukos.bokotan.MyLibrary.puts;
+import static com.gukos.bokotan.MyLibrary.strDirectoryNameForKuuhaku;
 
 import android.Manifest;
 import android.app.Activity;
@@ -11,7 +25,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,20 +46,20 @@ import java.util.Calendar;
 import java.util.TreeMap;
 
 public class Q_sentaku_activity extends AppCompatActivity {
-	static boolean skipwords;
+	static boolean bSkipOboe;
 	static boolean nowIsDecided = false;
 	static boolean isWordAndPhraseMode =false;
-	static Switch swOnlyFirst,swSkipKioku, swMaruBatu, swHyojiBeforeRead;
+	static Switch swOnlyFirst, switchSkipOboe, swMaruBatu, swHyojiBeforeRead,switchSortHanten;
 	RadioButton radioButtonEtoJ;
 	EditText e;
-	static q_num sentakuQ = q_num.testp1q;
-	static q_num.mode WordPhraseOrTest = q_num.mode.word;
-	static q_num.unit sentakuUnit = q_num.unit.all;
-	static q_num.shurui sentakuShurui = q_num.shurui.matome;
-	static q_num.strQ strQenum = q_num.strQ.strp1q;
+	static MyLibrary.q_num sentakuQ = MyLibrary.q_num.testp1q;
+	static MyLibrary.q_num.mode WordPhraseOrTest = MyLibrary.q_num.mode.word;
+	static MyLibrary.q_num.unit sentakuUnit = MyLibrary.q_num.unit.all;
+	static MyLibrary.q_num.shurui sentakuShurui = MyLibrary.q_num.shurui.matome;
+	static MyLibrary.q_num.strQ strQenum = MyLibrary.q_num.strQ.strp1q;
 	static boolean bSort=true;
-	static q_num.skipjouken skipjoken= q_num.skipjouken.kirokunomi;
-	static CheckBox cbDirTOugou,cbDefaultAdapter,cbAutoStop;
+	static MyLibrary.q_num.skipjouken skipjoken= MyLibrary.q_num.skipjouken.kirokunomi;
+	static CheckBox cbDirTOugou,cbDefaultAdapter,cbAutoStop, checkBoxHatsuonKigou;
 	static int  nUnit = 5, nShurui = 4, nWordPhraseOrTest = 1;
 
 	public static TreeMap<String,GogenYomu> trGogenYomu;
@@ -57,63 +71,79 @@ public class Q_sentaku_activity extends AppCompatActivity {
 
 		//new AlertDialog.Builder(this).setTitle("title").setMessage("message").setPositiveButton("ok",null).create().show();
 		swOnlyFirst=findViewById(R.id.switchOnlyFirst);
-		swOnlyFirst.setChecked(getSharedPreferences("swOnlyFirst", MODE_PRIVATE).getBoolean("checked", false));
-		swOnlyFirst.setOnClickListener(view -> getSharedPreferences("swOnlyFirst", MODE_PRIVATE).edit().putBoolean("checked", ((Switch) view).isChecked()).apply());
-		swSkipKioku = findViewById(R.id.switchSkipOboe);
+		switchSkipOboe = findViewById(R.id.switchSkipOboe);
 		swMaruBatu = findViewById(R.id.switchSkipMaruBatu);
 		swHyojiBeforeRead = findViewById(R.id.switchHyojiYakuBeforeRead);
 		e = findViewById(R.id.editTextNumber);
+		switchSortHanten=findViewById(R.id.switchSortHanten);
+
+		swOnlyFirst.setChecked(getBoolData(this,"swOnlyFirst", "checked", true));
+		swOnlyFirst.setOnClickListener(view -> putBoolData(this,"swOnlyFirst", "checked", ((Switch) view).isChecked()));
+		swHyojiBeforeRead.setChecked(getBoolData(this,"swHyojiBeforeRead", "checked", true));
+		swHyojiBeforeRead.setOnClickListener(view -> putBoolData(this,"swHyojiBeforeRead", "checked", ((Switch) view).isChecked()));
+		switchSkipOboe.setChecked(getBoolData(this,"switchSkipOboe", "checked", true));
+		switchSkipOboe.setOnClickListener(view -> putBoolData(this,"switchSkipOboe", "checked", ((Switch) view).isChecked()));
+		swMaruBatu.setChecked(getBoolData(this,"swMaruBatu", "checked", true));
+		swMaruBatu.setOnClickListener(view -> putBoolData(this,"swMaruBatu", "checked", ((Switch) view).isChecked()));
+		switchSortHanten.setChecked(getBoolData(this,"switchSortHanten", "checked", false));
+		switchSortHanten.setOnClickListener(view -> putBoolData(this,"switchSortHanten", "checked", ((Switch) view).isChecked()));
+
 		radioButtonEtoJ = findViewById(R.id.radioButtonEtoJ);
 
 		cbDirTOugou = findViewById(R.id.checkBoxDirTougou);
 		cbDefaultAdapter = findViewById(R.id.checkBoxDefaultAdapter);
 		cbAutoStop=findViewById(R.id.checkBoxAutoStop);
+		checkBoxHatsuonKigou =findViewById(R.id.checkBoxHatsuonkigou);
 
-		cbDirTOugou.setChecked(getSharedPreferences("cbDirTOugou", MODE_PRIVATE).getBoolean("checked", false));
-		cbDirTOugou.setOnClickListener(view -> getSharedPreferences("cbDirTOugou", MODE_PRIVATE).edit().putBoolean("checked", ((CheckBox) view).isChecked()).apply());
-		cbDefaultAdapter.setChecked(getSharedPreferences("cbDefaultAdapter", MODE_PRIVATE).getBoolean("checked", false));
-		cbDefaultAdapter.setOnClickListener(view -> getSharedPreferences("cbDefaultAdapter", MODE_PRIVATE).edit().putBoolean("checked", ((CheckBox) view).isChecked()).apply());
-		cbAutoStop.setChecked(getSharedPreferences("cbAutoStop",MODE_PRIVATE).getBoolean("checked",false));
-		cbAutoStop.setOnClickListener(view -> getSharedPreferences("cbAutoStop",MODE_PRIVATE).edit().putBoolean("checked",((CheckBox)view).isChecked()).apply());
+		cbDirTOugou.setChecked(getBoolData(this,"cbDirTOugou","checked", false));
+		cbDirTOugou.setOnClickListener(view -> putBoolData(this,"cbDirTOugou", "checked", ((CheckBox) view).isChecked()));
+		cbDefaultAdapter.setChecked(getBoolData(this,"cbDefaultAdapter", "checked", false));
+		cbDefaultAdapter.setOnClickListener(view -> putBoolData(this,"cbDefaultAdapter", "checked", ((CheckBox) view).isChecked()));
+		cbAutoStop.setChecked(getBoolData(this,"cbAutoStop","checked",false));
+		cbAutoStop.setOnClickListener(view -> putBoolData(this,"cbAutoStop","checked",((CheckBox)view).isChecked()));
+		checkBoxHatsuonKigou.setChecked(getBoolData(this,"checkBoxHatsuonKigou","checked",false));
+		checkBoxHatsuonKigou.setOnClickListener(view -> putBoolData(this,"checkBoxHatsuonKigou","checked",((CheckBox)view).isChecked()));
 
 		Spinner spinnerHanni = findViewById(R.id.spinnerHanni);
 		Spinner spinnerHinsi = findViewById(R.id.spinnerHinsi);
 		Spinner spinnerMode = findViewById(R.id.spinnerMode);
+		Spinner spinnerKuuhaku=findViewById(R.id.spinnerKuuhaku);
 
-		spinnerHanni.setSelection(getSharedPreferences("spinnerHanni", MODE_PRIVATE).getInt("selected", 4));
-		spinnerHinsi.setSelection(getSharedPreferences("spinnerHinsi", MODE_PRIVATE).getInt("selected", 3));
-		spinnerMode.setSelection(getSharedPreferences("spinnerMode", MODE_PRIVATE).getInt("selected", 2));
+		spinnerHanni.setSelection(getIntData(this,"spinnerHanni", "selected", 4));
+		spinnerHinsi.setSelection(getIntData(this,"spinnerHinsi", "selected", 3));
+		spinnerMode.setSelection(getIntData(this,"spinnerMode", "selected", 2));
+		spinnerKuuhaku.setSelection(getIntData(this,"spinnerKuuhaku","selected",0));
 
 		spinnerHanni.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-				getSharedPreferences("spinnerHanni", MODE_PRIVATE).edit().putInt("selected",i).apply();
+				MyLibrary.putIntData(getApplicationContext(),"spinnerHanni", "selected",i);
 				switch (i) {
 					case 0: {
 						nUnit = 1;
-						sentakuUnit = q_num.unit.deruA;
+						sentakuUnit = MyLibrary.q_num.unit.deruA;
 						break;
 					}
 					case 1: {
 						nUnit = 2;
-						sentakuUnit = q_num.unit.deruB;
+						sentakuUnit = MyLibrary.q_num.unit.deruB;
 						break;
 					}
 					case 2: {
 						nUnit = 3;
-						sentakuUnit = q_num.unit.deruC;
+						sentakuUnit = MyLibrary.q_num.unit.deruC;
 						break;
 					}
 					case 3: {
 						nUnit = 4;
-						sentakuUnit = q_num.unit.Jukugo;
+						sentakuUnit = MyLibrary.q_num.unit.Jukugo;
 						break;
 					}
 					case 4: {
 						nUnit = 5;
-						sentakuUnit = q_num.unit.all;
+						sentakuUnit = MyLibrary.q_num.unit.all;
 						nShurui = 4;
-						sentakuShurui = q_num.shurui.matome;
+						sentakuShurui = MyLibrary.q_num.shurui.matome;
 						break;
 					}
 				}
@@ -126,26 +156,26 @@ public class Q_sentaku_activity extends AppCompatActivity {
 		spinnerHinsi.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-				getSharedPreferences("spinnerHinsi", MODE_PRIVATE).edit().putInt("selected",i).apply();
+				MyLibrary.putIntData(getApplicationContext(),"spinnerHinsi","selected",i);
 				switch (i) {
 					case 0: {
 						nShurui = 1;
-						sentakuShurui = q_num.shurui.verb;
+						sentakuShurui = MyLibrary.q_num.shurui.verb;
 						break;
 					}
 					case 1: {
 						nShurui = 2;
-						sentakuShurui = q_num.shurui.noum;
+						sentakuShurui = MyLibrary.q_num.shurui.noum;
 						break;
 					}
 					case 2: {
 						nShurui = 3;
-						sentakuShurui = q_num.shurui.adjective;
+						sentakuShurui = MyLibrary.q_num.shurui.adjective;
 						break;
 					}
 					case 3: {
 						nShurui = 4;
-						sentakuShurui = q_num.shurui.matome;
+						sentakuShurui = MyLibrary.q_num.shurui.matome;
 						break;
 					}
 				}
@@ -158,41 +188,70 @@ public class Q_sentaku_activity extends AppCompatActivity {
 		spinnerMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-				getSharedPreferences("spinnerMode", MODE_PRIVATE).edit().putInt("selected",i).apply();
+				MyLibrary.putIntData(getApplicationContext(),"spinnerMode","selected",i);
 				switch (i) {
 					case 0: {
+						//単語
 						nWordPhraseOrTest = 1;
-						WordPhraseOrTest = q_num.mode.word;
+						WordPhraseOrTest = MyLibrary.q_num.mode.word;
 						break;
 					}
 					case 1: {
+						//文
 						nWordPhraseOrTest = 2;
-						WordPhraseOrTest = q_num.mode.phrase;
+						WordPhraseOrTest = MyLibrary.q_num.mode.phrase;
 						break;
 					}
 					case 2: {
+						//単語+文
 						nWordPhraseOrTest = 6;
-						WordPhraseOrTest = q_num.mode.wordPlusPhrase;
+						WordPhraseOrTest = MyLibrary.q_num.mode.wordPlusPhrase;
 						break;
 					}
 					case 3: {
+						//ランダムテスト
 						nWordPhraseOrTest = 3;
-						WordPhraseOrTest = q_num.mode.test;
+						WordPhraseOrTest = MyLibrary.q_num.mode.randomTest;
 						break;
 					}
 					case 4: {
+						//正答率テスト
 						nWordPhraseOrTest = 4;
-						WordPhraseOrTest = q_num.mode.exTest;
+						WordPhraseOrTest = MyLibrary.q_num.mode.huseikainomiTest;
 						break;
 					}
 					case 5: {
+						//順番テスト
 						nWordPhraseOrTest = 5;
-						WordPhraseOrTest = q_num.mode.sortTest;
+						WordPhraseOrTest = MyLibrary.q_num.mode.seitouritsujunTest;
 						break;
 					}
 				}
 			}
-
+			@Override
+			public void onNothingSelected(AdapterView<?> adapterView) {
+			}
+		});
+		spinnerKuuhaku.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+				putIntData(getApplicationContext(),"spinnerKuuhaku","selected",i);
+				switch (i){
+					default:
+					case 0:{
+						strDirectoryNameForKuuhaku="";
+						break;
+					}
+					case 1:{
+						strDirectoryNameForKuuhaku="autocut-";
+						break;
+					}
+					case 2:{
+						strDirectoryNameForKuuhaku="manucut-";
+						break;
+					}
+				}
+			}
 			@Override
 			public void onNothingSelected(AdapterView<?> adapterView) {
 			}
@@ -202,9 +261,18 @@ public class Q_sentaku_activity extends AppCompatActivity {
 
 		((TextView) findViewById(R.id.textViewVersion)).setText("Version:" + getVersionName(this));
 
+		((RadioButton)findViewById(getIntData(this, MyLibrary.DataName.qSentakuActivity,"RadioButton",R.id.radioButtonOnlyKioku))).setChecked(true);
+
 		//権限リクエスト
 		ArrayList<String> permissions=new ArrayList<>();
-		for (String strPermission:new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.BLUETOOTH,Manifest.permission.BLUETOOTH_ADMIN,Manifest.permission.BLUETOOTH_CONNECT,Manifest.permission.BLUETOOTH_SCAN}){
+		for (String strPermission:new String[]{
+				READ_EXTERNAL_STORAGE,
+				READ_MEDIA_AUDIO,
+				POST_NOTIFICATIONS,
+				BLUETOOTH,BLUETOOTH_ADMIN,
+				BLUETOOTH_CONNECT,
+				BLUETOOTH_SCAN,
+		}){
 			if (ContextCompat.checkSelfPermission(this, strPermission)!= PackageManager.PERMISSION_GRANTED){
 				permissions.add(strPermission);
 			}
@@ -234,6 +302,8 @@ public class Q_sentaku_activity extends AppCompatActivity {
 		});
 		registerReceiver(ecr.bluetoothEarPhoneReceiver, ecr.ifBluetooth);
 		registerReceiver(ecr.wiredEarPhoneReceiver, ecr.ifWired);
+
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 	}
 
 	public void onSelectQ(View v) {
@@ -241,65 +311,76 @@ public class Q_sentaku_activity extends AppCompatActivity {
 			nowIsDecided = true;
 			MainActivity.now = Integer.parseInt(e.getText().toString()) - 1;
 		}
-		if (swSkipKioku != null) {
-			skipwords = swSkipKioku.isChecked();
-		} else skipwords = false;
+		if (switchSkipOboe != null) {
+			bSkipOboe = switchSkipOboe.isChecked();
+		} else bSkipOboe = false;
 		MainActivity.bHyojiYakuBeforeRead = swHyojiBeforeRead.isChecked();
-		MainActivity.bEtoJ = radioButtonEtoJ.isChecked();
-		bSort=((Switch) findViewById(R.id.switchSort)).isChecked();
+		MainActivity.bEnglishToJapaneseOrder = radioButtonEtoJ.isChecked();
+		bSort=((Switch) findViewById(R.id.switchSortHanten)).isChecked();
 		switch (v.getId()) {
-			case R.id.button1Q: {
+			case R.id.button1q: {
 				strQ = "1q";
-				strQenum = q_num.strQ.str1q;
-				sentakuQ = q_num.test1q;
+				strQenum = MyLibrary.q_num.strQ.str1q;
+				sentakuQ = MyLibrary.q_num.test1q;
 				break;
 			}
 			default:
-			case R.id.buttonP1Q: {
+			case R.id.buttonP1q: {
 				strQ = "p1q";
-				strQenum = q_num.strQ.strp1q;
-				sentakuQ = q_num.testp1q;
+				strQenum = MyLibrary.q_num.strQ.strp1q;
+				sentakuQ = MyLibrary.q_num.testp1q;
 				break;
 			}
 			case R.id.button2q:{
 				strQ = "2q";
-				strQenum = q_num.strQ.str2q;
-				sentakuQ = q_num.test2q;
+				strQenum = MyLibrary.q_num.strQ.str2q;
+				sentakuQ = MyLibrary.q_num.test2q;
 				break;
 			}
 			case R.id.buttonP2q:{
 				strQ = "p2q";
-				strQenum = q_num.strQ.strp2q;
-				sentakuQ = q_num.testp2q;
+				strQenum = MyLibrary.q_num.strQ.strp2q;
+				sentakuQ = MyLibrary.q_num.testp2q;
+				break;
+			}
+			case R.id.button1qEx:{
+				strQ="tanjukugo1q";
+				sentakuQ=MyLibrary.q_num.test1qEx;
+				break;
+			}
+			case R.id.buttonP1qEx:{
+				strQ="tanjukugop1q";
+				sentakuQ=MyLibrary.q_num.testp1qEx;
 				break;
 			}
 			case R.id.buttonYume0_0:
 			case R.id.buttonYume0_8:{
 				strQ="y08";
-				strQenum=q_num.strQ.stry08;
-				sentakuQ=q_num.testy08;
+				strQenum= MyLibrary.q_num.strQ.stry08;
+				sentakuQ= MyLibrary.q_num.testy08;
 				break;
 			}
 			case R.id.buttonYume1:{
 				strQ="y1";
-				strQenum=q_num.strQ.stry1;
-				sentakuQ=q_num.testy1;
+				strQenum= MyLibrary.q_num.strQ.stry1;
+				sentakuQ= MyLibrary.q_num.testy1;
 				break;
 			}
 			case R.id.buttonYume2:{
 				strQ="y2";
-				strQenum=q_num.strQ.stry2;
-				sentakuQ=q_num.testy2;
+				strQenum= MyLibrary.q_num.strQ.stry2;
+				sentakuQ= MyLibrary.q_num.testy2;
 				break;
 			}
 			case R.id.buttonYume3:{
 				strQ="y3";
-				strQenum=q_num.strQ.stry3;
-				sentakuQ=q_num.testy3;
+				strQenum= MyLibrary.q_num.strQ.stry3;
+				sentakuQ= MyLibrary.q_num.testy3;
 				break;
 			}
 		}
 		isWordAndPhraseMode=false;
+		puts("strq="+strQ);
 		switch (nWordPhraseOrTest) {
 			//単語
 			default:
@@ -313,7 +394,7 @@ public class Q_sentaku_activity extends AppCompatActivity {
 			}
 			//文
 			case 2: {
-				if (!strQ.equals("1q")&&!strQ.equals("p1q")&&!strQ.startsWith("y")){
+				if (!strQ.endsWith("1q")&&!strQ.endsWith("p1q")&&!strQ.startsWith("y")){
 					Toast.makeText(this,"文は1級、準1級、ユメタンのみです。",Toast.LENGTH_SHORT).show();
 					return;
 				}
@@ -324,7 +405,7 @@ public class Q_sentaku_activity extends AppCompatActivity {
 			}
 			//単語+文
 			case 6: {
-				if (!strQ.equals("1q")&&!strQ.equals("p1q")&&!strQ.startsWith("y")){
+				if (!strQ.endsWith("1q")&&!strQ.endsWith("p1q")&&!strQ.startsWith("y")){
 					Toast.makeText(this,"単語+文は1級、準1級、ユメタンのみです。",Toast.LENGTH_SHORT).show();
 					return;
 				}
@@ -350,18 +431,22 @@ public class Q_sentaku_activity extends AppCompatActivity {
 	}
 
 	public void onRadioChecked(View v) {
+		putIntData(this, MyLibrary.DataName.qSentakuActivity,"RadioButton",v.getId());
 		switch (v.getId()) {
 			case R.id.radioButtonOnlyKioku:{
-				skipjoken= q_num.skipjouken.kirokunomi;
+				skipjoken= MyLibrary.q_num.skipjouken.kirokunomi;
 				break;
 			}
 			case R.id.radioButton1seikai:{
-				skipjoken= q_num.skipjouken.seikai1;
+				skipjoken= MyLibrary.q_num.skipjouken.seikai1;
 				break;
 			}
 			case R.id.radioButton2huseikai:{
-				skipjoken= q_num.skipjouken.huseikai2;
+				skipjoken= MyLibrary.q_num.skipjouken.huseikai2;
 				break;
+			}
+			case R.id.radioButtonOnlyHugoukaku:{
+				skipjoken=MyLibrary.q_num.skipjouken.onlyHugoukaku;
 			}
 		}
 	}
@@ -417,7 +502,7 @@ public class Q_sentaku_activity extends AppCompatActivity {
 			return info.versionName;
 
 		} catch (Exception e) {
-			showException(e);
+			showException(this, e);
 			return null;
 		}
 	}

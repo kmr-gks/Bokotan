@@ -12,5 +12,4 @@
 	<color name="background">#FF000000</color>
 	<color name="buttontext">#FFB3B3B3</color>
 	<color name="textcolor">#FFB3B3B3</color>
-	<color name="red_debug">#FFFF0000</color>
 </resources>

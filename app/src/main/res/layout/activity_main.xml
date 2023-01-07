@@ -34,13 +34,12 @@
 		android:layout_height="0dp"
 		android:autoSizeTextType="uniform"
 		android:maxLines="1"
-		android:text="TextView"
 		android:textAlignment="textEnd"
 		android:textColor="@color/textcolor"
 		android:textSize="40sp"
 		app:layout_constraintBottom_toTopOf="@+id/tvsubE"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/buttonOboeta"
+		app:layout_constraintStart_toEndOf="@+id/buttonKensakuFromMainActivity"
 		app:layout_constraintTop_toBottomOf="@+id/linearLayoutTextViews" />
 
 	<TextView
@@ -69,16 +68,6 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toEndOf="@+id/buttonStartStop" />
 
-	<Button
-		android:id="@+id/buttonOboeta"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:onClick="onOboetaButtonTapped"
-		android:text="覚えた"
-		android:textColor="@color/buttontext"
-		app:layout_constraintBottom_toTopOf="@+id/buttonStartStop"
-		app:layout_constraintStart_toStartOf="parent" />
-
 	<LinearLayout
 		android:id="@+id/linearLayoutButtons"
 		android:layout_width="0dp"
@@ -89,37 +78,37 @@
 		app:layout_constraintStart_toStartOf="parent">
 
 		<Button
-			android:id="@+id/ButtonReset"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
+			android:autoSizeTextType="uniform"
 			android:onClick="onResetButtonClick"
 			android:text="最初から"
 			android:textColor="@color/buttontext" />
 
 		<Button
-			android:id="@+id/button4"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
+			android:autoSizeTextType="uniform"
 			android:onClick="onSelectNowButtonClick"
 			android:text="番号変更"
 			android:textColor="@color/buttontext" />
 
 		<Button
-			android:id="@+id/button5"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
+			android:autoSizeTextType="uniform"
 			android:onClick="onPIPButtonClicked"
 			android:text="PIP"
 			android:textColor="@color/buttontext" />
 
 		<Button
-			android:id="@+id/button_sentaku"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
+			android:autoSizeTextType="uniform"
 			android:onClick="onSentakuButtonClicked"
 			android:text="単語一覧"
 			android:textColor="@color/buttontext" />
@@ -184,7 +173,7 @@
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
-		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintBottom_toTopOf="@+id/textViewPath"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent">
 
@@ -212,7 +201,7 @@
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:orientation="vertical"
-		app:layout_constraintBottom_toTopOf="@+id/buttonOboeta"
+		app:layout_constraintBottom_toTopOf="@+id/buttonKensakuFromMainActivity"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/tvGenzai">
@@ -231,6 +220,16 @@
 			android:textStyle="bold" />
 
 		<TextView
+			android:id="@+id/textViewHatsuonKigou"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="0.5"
+			android:autoSizeMaxTextSize="60sp"
+			android:autoSizeTextType="uniform"
+			android:textAlignment="center"
+			android:textColor="@color/textcolor" />
+
+		<TextView
 			android:id="@+id/TextViewJpn"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
@@ -243,4 +242,27 @@
 			android:textSize="36sp"
 			android:textStyle="bold" />
 	</LinearLayout>
+
+	<TextView
+		android:id="@+id/textViewPath"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:autoSizeTextType="uniform"
+		android:lines="1"
+		android:text="TextView"
+		android:textAlignment="viewStart"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent" />
+
+	<Button
+		android:id="@+id/buttonKensakuFromMainActivity"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:onClick="onZenbunKensakuButtonClicked"
+		android:text="全文検索"
+		android:textColor="@color/buttontext"
+		app:layout_constraintBottom_toTopOf="@+id/buttonStartStop"
+		app:layout_constraintEnd_toEndOf="@+id/buttonStartStop"
+		app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

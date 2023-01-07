@@ -31,6 +31,16 @@
             android:text="削除"
             android:textColor="@color/buttontext" />
 
+        <Button
+            android:id="@+id/buttonKensakuHouhou"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:autoSizeTextType="none"
+            android:lines="1"
+            android:text="start"
+            android:textColor="@color/buttontext" />
+
         <TextView
             android:id="@+id/textViewResultCount"
             android:layout_width="0dp"

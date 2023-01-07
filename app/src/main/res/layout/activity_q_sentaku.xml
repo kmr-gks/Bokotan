@@ -28,87 +28,6 @@
 		app:layout_constraintStart_toEndOf="@+id/textViewNowInput"
 		app:layout_constraintTop_toBottomOf="@+id/buttonAlarm" />
 
-	<LinearLayout
-		android:id="@+id/linearLayoutOption"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
-
-		<LinearLayout
-			android:id="@+id/linearLayoutOptionText"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="0.3"
-			android:orientation="vertical">
-
-			<TextView
-				android:id="@+id/textViewHanni"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:text="範囲"
-				android:textColor="@color/textcolor"
-				android:textSize="30sp" />
-
-			<TextView
-				android:id="@+id/textViewHinsi"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:text="品詞"
-				android:textColor="@color/textcolor"
-				android:textSize="30sp" />
-
-			<TextView
-				android:id="@+id/textViewMode"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:text="モード"
-				android:textColor="@color/textcolor"
-				android:textSize="30sp" />
-		</LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/linearLayoutSpinner"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.7"
-			android:orientation="vertical">
-
-			<Spinner
-				android:id="@+id/spinnerHanni"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:entries="@array/spinner_hanni"
-				android:minHeight="48dp"
-				android:textColor="@color/textcolor" />
-
-			<Spinner
-				android:id="@+id/spinnerHinsi"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:entries="@array/spinner_hinsi"
-				android:minHeight="48dp"
-				android:textColor="@color/textcolor" />
-
-			<Spinner
-				android:id="@+id/spinnerMode"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:entries="@array/spinner_mode"
-				android:minHeight="48dp"
-				android:textColor="@color/textcolor" />
-
-		</LinearLayout>
-	</LinearLayout>
-
 	<Button
 		android:id="@+id/buttonAlarm"
 		android:layout_width="wrap_content"
@@ -117,7 +36,75 @@
 		android:text="alarm"
 		android:textColor="@color/buttontext"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ" />
+		app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+	<LinearLayout
+		android:id="@+id/linearLayoutOption"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<LinearLayout
+            android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<TextView
+                android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2.5"
+				android:text="範囲"
+				android:textColor="@color/textcolor" />
+
+			<TextView
+                android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2.5"
+				android:text="品詞"
+				android:textColor="@color/textcolor" />
+
+			<TextView
+                android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="4.5"
+				android:text="モード"
+				android:textColor="@color/textcolor" />
+
+		</LinearLayout>
+
+		<LinearLayout
+            android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="horizontal">
+
+			<Spinner
+				android:id="@+id/spinnerHanni"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2.5"
+				android:entries="@array/spinner_hanni"
+				android:textColor="@color/textcolor" />
+
+			<Spinner
+				android:id="@+id/spinnerHinsi"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="2.5"
+				android:entries="@array/spinner_hinsi" />
+
+			<Spinner
+				android:id="@+id/spinnerMode"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="4.5"
+				android:entries="@array/spinner_mode" />
+		</LinearLayout>
+	</LinearLayout>
+
+
 
 	<LinearLayout
 		android:id="@+id/linearLayoutQ"
@@ -129,7 +116,7 @@
 		app:layout_constraintTop_toBottomOf="@+id/linearLayoutYume">
 
 		<Button
-			android:id="@+id/button1Q"
+			android:id="@+id/button1q"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
@@ -138,7 +125,7 @@
 			android:textColor="@color/buttontext" />
 
 		<Button
-			android:id="@+id/buttonP1Q"
+			android:id="@+id/buttonP1q"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
@@ -162,15 +149,6 @@
 			android:layout_weight="1"
 			android:onClick="onSelectQ"
 			android:text="準2級"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/button1Qex"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:onClick="onSelectQ"
-			android:text="1級EX"
 			android:textColor="@color/buttontext" />
 
 	</LinearLayout>
@@ -248,7 +226,7 @@
 		android:text="全文検索"
 		android:textColor="@color/buttontext"
 		app:layout_constraintStart_toEndOf="@+id/buttonAlarm"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ" />
+		app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
 	<LinearLayout
 		android:id="@+id/linearLayoutSettings"
@@ -284,7 +262,7 @@
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:checked="true"
-			android:text="Skip覚え"
+			android:text="覚えた単語を飛ばす"
 			android:textColor="@color/textcolor" />
 
 		<Switch
@@ -297,11 +275,19 @@
 			android:textColor="@color/textcolor" />
 
 		<Switch
-			android:id="@+id/switchSort"
+			android:id="@+id/switchSortHanten"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:text="ソート反転"
+			android:textColor="@color/textcolor" />
+
+		<CheckBox
+			android:id="@+id/checkBoxHatsuonkigou"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:text="発音記号を表示"
 			android:textColor="@color/textcolor" />
 
 		<CheckBox
@@ -330,8 +316,7 @@
 	</LinearLayout>
 
 	<LinearLayout
-		android:id="@+id/linearLayoutOrderAndShuffle"
-		android:layout_width="0dp"
+        android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:orientation="vertical"
 		app:layout_constraintBottom_toTopOf="@+id/textViewVersion"
@@ -340,7 +325,6 @@
 		app:layout_constraintTop_toBottomOf="@+id/editTextNumber">
 
 		<RadioGroup
-			android:id="@+id/radioGroupEnglishAndJapan"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="2"
@@ -356,7 +340,6 @@
 				android:textColor="@color/textcolor" />
 
 			<RadioButton
-				android:id="@+id/radioButtonJtoE"
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:layout_weight="1"
@@ -364,11 +347,11 @@
 				android:textColor="@color/textcolor" />
 		</RadioGroup>
 
+
 		<RadioGroup
-			android:id="@+id/radioGroupTestOrder"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
-			android:layout_weight="3"
+			android:layout_weight="4"
 			android:background="@drawable/border">
 
 			<RadioButton
@@ -376,9 +359,18 @@
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:layout_weight="1"
-				android:checked="true"
+				android:checked="false"
 				android:onClick="onRadioChecked"
 				android:text="記録のみ"
+				android:textColor="@color/textcolor" />
+
+			<RadioButton
+				android:id="@+id/radioButtonOnlyHugoukaku"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:onClick="onRadioChecked"
+				android:text="不合格のみ"
 				android:textColor="@color/textcolor" />
 
 			<RadioButton
@@ -399,6 +391,41 @@
 				android:text="2回以上不正解のみ"
 				android:textColor="@color/textcolor" />
 		</RadioGroup>
+
+		<Spinner
+			android:id="@+id/spinnerKuuhaku"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:background="@drawable/border"
+			android:entries="@array/spinner_kuuhaku" />
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/linearLayout2"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ">
+
+		<Button
+			android:id="@+id/button1qEx"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:onClick="onSelectQ"
+			android:text="1級EX"
+			android:textColor="@color/buttontext" />
+
+		<Button
+			android:id="@+id/buttonP1qEx"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:onClick="onSelectQ"
+			android:text="準1級EX"
+			android:textColor="@color/buttontext" />
 	</LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

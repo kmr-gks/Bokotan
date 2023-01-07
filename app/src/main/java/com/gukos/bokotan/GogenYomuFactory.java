@@ -1,7 +1,8 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.ExceptionHandler.showException;
+import static com.gukos.bokotan.MyLibrary.showException;
 import static com.gukos.bokotan.MainActivity.wordE;
+import static com.gukos.bokotan.MyLibrary.showException;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,7 +15,13 @@ import java.io.InputStreamReader;
 import java.util.TreeMap;
 
 class GogenYomu{
-	public String wordEng,wordJpn,bunrui,gogen1,gogen2,gogen3,sankou;
+	public final String wordEng;
+	public final String wordJpn;
+	public final String bunrui;
+	public final String gogen1;
+	public final String gogen2;
+	public final String gogen3;
+	public final String sankou;
 	public GogenYomu(String wordEng,String wordJpn,String bunrui,String gogen1,String gogen2,String gogen3,String sankou){
 		this.wordEng=wordEng;
 		this.wordJpn=wordJpn;
@@ -41,12 +48,12 @@ class GogenYomu{
 		return "英"+this.wordEng+"\t日"+this.wordJpn+"\t分類"+this.bunrui+"\t語源1"+this.gogen1+"\t語源2"+this.gogen2+"\t語源3"+this.gogen3+"\t参考"+this.sankou;
 	}
 	private static String tikan(String stringWith_){
-		String ans="";
+		StringBuilder ans= new StringBuilder();
 		for(char ch:stringWith_.toCharArray()){
-			if(ch=='_') ans+=',';
-			else ans+=ch;
+			if(ch=='_') ans.append(',');
+			else ans.append(ch);
 		}
-		return ans;
+		return ans.toString();
 	}
 }
 
@@ -66,7 +73,7 @@ public class GogenYomuFactory {
 			is.close();
 			br.close();
 		}catch (Exception e){
-			showException(e);
+			showException(context, e);
 			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル"+ strFileNameYomuGogenGaku +"が見つかりません。").setPositiveButton("ok",null).create().show();
 		}
 	}
@@ -80,7 +87,7 @@ public class GogenYomuFactory {
 			GogenYomu gy = trGogenYomu.get(word);
 			return gy == null ? "" : gy.getGogenString(containsBunrui,containsSankou);
 		}catch (Exception e){
-			showException(e);
+			MyLibrary.showException(e);
 			return "(null string)";
 		}
 	}

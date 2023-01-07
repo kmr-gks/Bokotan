@@ -1,6 +1,7 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.ExceptionHandler.showException;
+import static com.gukos.bokotan.MyLibrary.puts;
+import static com.gukos.bokotan.MyLibrary.showException;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,14 +11,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class WordPhraseData {
-	public String[]e=new String[5000],j=new String[5000];
-	public String strQName;
+	public final String[]e=new String[20000];
+	public final String[] j=new String[20000];
+	public final String strQName;
 	public final static String
 			PasstanWord="Passtan/WordData",
 			PasstanPhrase="Passtan/Phrase",
+			TanjukugoWord ="TanjukugoEX/Word",
 			TanjukugoEXWord ="TanjukugoEX/EXWord",
-			TanjukugoEXPhrase ="TanjukugoEX/EXPhrase",
-			YumeWord="Yumetan/WordDataYume";
+			TanjukugoPhrase ="TanjukugoEX/Phrase",
+			YumeWord="Yumetan/WordDataYume",
+			Svl="SVL/SVL12000",
+			distinction="distinction/";
 	public WordPhraseData(String strQ, Context context){
 		this.strQName=strQ;
 		String fileName1=strQ+".e.txt",fileName2=strQ+".j.txt";
@@ -40,7 +45,7 @@ public class WordPhraseData {
 			br1.close();
 			br2.close();
 		}catch (Exception e){
-			showException(e);
+			showException(context, e);
 			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル"+fileName1+"または"+fileName2+"が見つかりません。").setPositiveButton("ok",null).create().show();
 		}
 	}

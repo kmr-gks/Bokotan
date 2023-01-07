@@ -1,6 +1,5 @@
 package com.gukos.bokotan;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.gukos.bokotan.MainActivity.now;
 import static com.gukos.bokotan.MainActivity.playing;
 import static com.gukos.bokotan.MainActivity.strQ;
@@ -13,12 +12,10 @@ import static com.gukos.bokotan.PipActivity.EXTRA_CONTROL_TYPE;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 
 public class PipControlBroadcastReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		puts("PipControlBroadcastReceiver");
 		if (intent == null || !ACTION_HOGE.equals(intent.getAction())) {
 			puts("onReceive");
 			//return;
@@ -35,7 +32,7 @@ public class PipControlBroadcastReceiver extends BroadcastReceiver {
 				puts("controltypeA");
 				context.stopService(intent);
 				playing=false;
-				context.getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).edit().putInt(strQ + "now", now).apply();
+				MyLibrary.putIntData(context,"MainActivity"+"now",strQ + "now", now);
 				break;
 			}
 			case CONTROL_TYPE_B:{

@@ -901,7 +901,7 @@ toward
 above
 a few ?
 a glass of ?
-a little too （adj）
+a little too (adj)
 a lot
 a lot of ?
 a pair of ?
@@ -914,9 +914,9 @@ agree with ?
 all over the world
 anything else
 "arrive in [at, on] ?"
-as （副詞/adj） as A can
+as (副詞/adj) as A can
 as usual
-ask （A） for ?
+ask (A) for ?
 ask A to do
 at first
 at last
@@ -956,8 +956,8 @@ do one's homework
 do well
 each other
 enjoy doing
-（adj/副詞） enough for ?
-（adj/副詞） enough to do
+(adj/副詞) enough for ?
+(adj/副詞) enough to do
 exchange A for B
 fall down
 find out ?
@@ -997,7 +997,7 @@ have a chance to do
 have a cold
 have a great time
 have been to ?
-have enough （N） to do
+have enough (N) to do
 have fun
 have lunch
 have never been to ?
@@ -1015,8 +1015,8 @@ in the middle of ?
 "in the morning [afternoon, evening]"
 in the world
 invite A to B
-It is （adj） for A to do
-It takes A （時間） to do
+It is (adj) for A to do
+It takes A (時間) to do
 "last week [month, year]"
 laugh at ?
 leave A at home
@@ -1041,9 +1041,9 @@ on one's [the] right
 on one's [the] way home
 on one's [the] way to ?
 on weekends
-one more （N）
+one more (N)
 one of ?
-one of the＋（adjの最上級）＋（複数N）
+one of the＋(adjの最上級)＋(複数N)
 over there
 pass the [an] exam
 pick up ?
@@ -1056,13 +1056,13 @@ say hello to ?
 shake hands with ?
 shout at ?
 show A how to do
-so （adj/副詞） that ?
-something （adj）
+so (adj/副詞) that ?
+something (adj)
 something to do
 spend A on ?
 stay home
 stay up late
-such a [an] （adj）（N）
+such a [an] (adj)(N)
 take A to B
 take a picture
 take care of ?
@@ -1079,7 +1079,7 @@ think about doing
 think of ?
 this morning
 throw away ?
-too （adj/副詞） to do
+too (adj/副詞) to do
 travel to ?
 try on ?
 turn down ?
@@ -1108,8 +1108,8 @@ all night (long)
 all the time
 all the way
 ? and so on
-another （adj） minute(s)
-as many （N） as ?
+another (adj) minute(s)
+as many (N) as ?
 as much as A can
 as much as possible
 as soon as ?
@@ -1243,7 +1243,7 @@ neither A nor B
 next door
 next time
 next to ?
-no more （N）
+no more (N)
 not A but B
 on foot
 on the other hand
@@ -1267,7 +1267,7 @@ smile at ?
 so far
 so many ?
 some other time
-something （adj） to do
+something (adj) to do
 sound like ?
 speak to ?
 stand for ?
@@ -1286,13 +1286,13 @@ take a trip
 take a walk
 take out ?
 tell a lie
-（比較級） than any other （単数N）
+(比較級) than any other (単数N)
 thank A for ?
 these days
 this is one's first time to do
 this way
 thousands of ?
-? times as （adj） as A
+? times as (adj) as A
 turn ? over
 used to do
 walk around

@@ -8,9 +8,10 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 
 public class EarbudsConnectReceiver {
-	public IntentFilter ifBluetooth,ifWired;
-	public BluetoothEarPhoneReceiver bluetoothEarPhoneReceiver;
-	public WiredEarPhoneReceiver wiredEarPhoneReceiver;
+	public final IntentFilter ifBluetooth;
+	public final IntentFilter ifWired;
+	public final BluetoothEarPhoneReceiver bluetoothEarPhoneReceiver;
+	public final WiredEarPhoneReceiver wiredEarPhoneReceiver;
 
 	//本当はRunnableじゃなくてFunction<void,void>としたい。
 	public EarbudsConnectReceiver(Runnable funcWiredEarPhoneConnected, Runnable funcWiredEarPhoneDisconnected , Runnable funcBluetoothEarPhoneConnected, Runnable funcBluetoothEarPhoneDisconnected){
@@ -25,7 +26,8 @@ public class EarbudsConnectReceiver {
 }
 
 class BluetoothEarPhoneReceiver extends BroadcastReceiver {
-	Runnable funcBluetoothEarPhoneConnected,funcBluetoothEarPhoneDisconnected;
+	final Runnable funcBluetoothEarPhoneConnected;
+	final Runnable funcBluetoothEarPhoneDisconnected;
 	public BluetoothEarPhoneReceiver(Runnable funcBluetoothEarPhoneConnected,Runnable funcBluetoothEarPhoneDisconnected){
 		this.funcBluetoothEarPhoneConnected=funcBluetoothEarPhoneConnected;
 		this.funcBluetoothEarPhoneDisconnected=funcBluetoothEarPhoneDisconnected;
@@ -46,7 +48,8 @@ class BluetoothEarPhoneReceiver extends BroadcastReceiver {
 }
 
 class WiredEarPhoneReceiver extends BroadcastReceiver {
-	Runnable funcWiredEarPhoneConnected,funcWiredEarPhoneDisconnected;
+	final Runnable funcWiredEarPhoneConnected;
+	final Runnable funcWiredEarPhoneDisconnected;
 	//本当はRunnableじゃなくてFunction<void,void>としたい。
 	public WiredEarPhoneReceiver(Runnable funcWiredEarPhoneConnected,Runnable funcWiredEarPhoneDisconnected){
 		this.funcWiredEarPhoneConnected=funcWiredEarPhoneConnected;

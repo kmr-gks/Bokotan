@@ -1,20 +1,24 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.DataType.word;
-import static com.gukos.bokotan.MyLibrary.ExceptionHandler.showException;
-import static com.gukos.bokotan.MyLibrary.getData;
-import static com.gukos.bokotan.MyLibrary.putData;
+import static android.view.View.GONE;
+import static com.gukos.bokotan.MyLibrary.putIntData;
+import static com.gukos.bokotan.MyLibrary.puts;
+import static com.gukos.bokotan.MyLibrary.showException;
+import static com.gukos.bokotan.Q_sentaku_activity.checkBoxHatsuonKigou;
 import static com.gukos.bokotan.Q_sentaku_activity.isWordAndPhraseMode;
 import static com.gukos.bokotan.Q_sentaku_activity.sentakuQ;
 import static com.gukos.bokotan.Q_sentaku_activity.sentakuUnit;
 import static com.gukos.bokotan.Q_sentaku_activity.swOnlyFirst;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
+import static com.gukos.bokotan.WordPhraseData.Svl;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -28,27 +32,32 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-	static TextView tvWordEng,tvWordJpn,tvGenzai,tvsubE,tvsubJ,tvSeikaisuu,tvSeikaisu,tvGogen;
-	static String strQ=null;//開始時には決まっている
+	static TextView tvWordEng,tvWordJpn,tvGenzai,tvsubE,tvsubJ,tvSeikaisuu,tvSeikaisu,tvGogen,textViewPath,textViewHatsuonKigou;
+	static String strQ=null;//開始時には決まっているf
 	static boolean playing=false;
 	static final String tag="E/";
 	int nDebug =0;
 	private final String[] strPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+	//static ArrayList<String> wordE,wordJ,strPhraseE,strPhraseJ;
+
 	static String[] wordE;
 	static String[] wordJ;
 	static String[] strPhraseE;
 	static String[] strPhraseJ;
+
 	static int lastnum;
 	public static int now;
 	static boolean isPhraseMode;
 	static double dPlaySpeedEng =0.1;
 	static double dPlaySpeedJpn =0.1;
 	PlaybackParams pp=null;
-	static boolean bHyojiYakuBeforeRead=true,bEtoJ=true;
-	static int[][][] toFindFromAndTo ={
+	static boolean bHyojiYakuBeforeRead=true, bEnglishToJapaneseOrder =true;
+	static final int[][][] toFindFromAndTo ={
 			//1q
 			{{1,233},{234,472},{473,700},	{701,919},{920,1177},{1178,1400},	{1401,1619},{1620,1861},{1862,2100},	{2101,2400},	{1,700},{701,1400},{1401,2100},{1,2400}},
 			//p1q
@@ -72,16 +81,23 @@ public class MainActivity extends AppCompatActivity {
 			//y2
 			{{1,100},{101,200},{201,300},	{301,400},{401,500},{501,600},		{601,700},{701,800},{801,900},			{1,1000},		{1,1000},{1,1000},{1,1000},{1,1000},},
 			//y3
-			{{1,100},{101,200},{201,300},	{301,400},{401,500},{501,600},		{601,700},{701,800},{1,800},			{1,800},	{1,800},{1,800},{1,800},{1,800}}};
+			{{1,100},{101,200},{201,300},	{301,400},{401,500},{501,600},		{601,700},{701,800},{1,800},			{1,800},	{1,800},{1,800},{1,800},{1,800}},
+			//1qEX
+			{{1,276},{277,588},{589,840},{841,1080},{1081,1320},{1321,1560},{1561,1800},{1801,2040},{2041,2208},{2209,2364},{2365,2811}},
+			//p1qEX
+			{{1,216},{217,432},{433,648},{649,864},{865,1080},{1081,1296},{1297,1488},{1489,1680},{1681,1824},{1825,1920},{1920,2400}},
+	};
 	//1qのunit=8のfrom=0,8,0
 	//p1qunit=5 to=1,5,1
 	//SentakuActivity.javaから
-	static boolean[] kioku_file =new boolean[2500];
-	static boolean[] kioku_chBox =new boolean[2500];
-	static int[] nSeikaisuu =new int[2500],nHuseikaisuu =new int[2500];
+	static final boolean[] kioku_file =new boolean[3000];
+	static final boolean[] kioku_chBox =new boolean[3000];
+	static final int[] nSeikaisuu =new int[3000];
+	static final int[] nHuseikaisuu =new int[3000];
 	static int nFrom,nTo;
 	Intent intent=null;
-	static HashMap<String,String> hashMapKishutu=new HashMap<>();
+	static final HashMap<String,String> hashMapKishutu=new HashMap<>();
+	//static final HashMap<String,String> hashMapHatsuonKigou=new HashMap<>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
 		tvGogen=findViewById(R.id.tvGogen);
 		tvSeikaisuu=findViewById(R.id.textViewNumSeikairitu);
 		tvSeikaisu=findViewById(R.id.textViewSeikaisuu);
+		textViewPath=findViewById(R.id.textViewPath);
+		textViewHatsuonKigou=findViewById(R.id.textViewHatsuonKigou);
 
 		if (strQ!=null) isPhraseMode=strQ.charAt(1)=='h';
 		if (isWordAndPhraseMode||isPhraseMode){
@@ -102,16 +120,30 @@ public class MainActivity extends AppCompatActivity {
 			tvsubJ.setVisibility(View.VISIBLE);
 		}else{
 			//単語の場合は右下の文字は非表示
-			tvsubE.setVisibility(View.GONE);
-			tvsubJ.setVisibility(View.GONE);
+			tvsubE.setVisibility(GONE);
+			tvsubJ.setVisibility(GONE);
 		}
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
 		if (strQ==null) {
 			strQ = "p1q";
-			sentakuQ = q_num.testp1q;
+			sentakuQ = MyLibrary.q_num.testp1q;
 		}
 
+/*
+		//発音記号のためにSVL読み込み
+		if (checkBoxHatsuonKigou.isChecked()&&hashMapHatsuonKigou.size()==0){
+			textViewHatsuonKigou.setVisibility(View.VISIBLE);
+			WordPhraseData wordPhraseDataSVL=new WordPhraseData(Svl,this);
+			for (int i=1;i<Math.min(wordPhraseDataSVL.e.length, wordPhraseDataSVL.j.length);i++)
+				if (wordPhraseDataSVL.e[i]!=null&&wordPhraseDataSVL.j[i]!=null)
+					hashMapHatsuonKigou.put(wordPhraseDataSVL.e[i],wordPhraseDataSVL.j[i]);
+		}else if(!checkBoxHatsuonKigou.isChecked()) {
+			textViewHatsuonKigou.setText("");
+			textViewHatsuonKigou.setVisibility(GONE);
+		}*/
+
+		hashMapKishutu.clear();
 		switch (sentakuQ){
 			case test1q: {
 				lastnum = 2400;
@@ -131,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 					}
 					//パス単準1級
 					//パス単単語
-					for (String Q : new String[]{"p1q", "2q", "p2q","3q","4q","5q"}) {
+					for (String Q : new String[]{"p1q"/*, "2q", "p2q","3q","4q","5q"*/}) {
 						WordPhraseData wpdp = new WordPhraseData(PasstanWord + Q, this);
 						for (int i = 1; i < Math.min(wpdp.e.length, wpdp.j.length); i++)
 							if (wpdp.e[i] != null && wpdp.j[i] != null)
@@ -156,6 +188,15 @@ public class MainActivity extends AppCompatActivity {
 							if (wpd.e[i] != null && wpd.j[i] != null)
 								hashMapKishutu.put(wpd.e[i],"yume"+Q);
 					}
+					/*
+					//パス単単語
+					for (String Q : new String[]{"2q", "p2q","3q","4q","5q"}) {
+						WordPhraseData wpdp = new WordPhraseData(PasstanWord + Q, this);
+						for (int i = 1; i < Math.min(wpdp.e.length, wpdp.j.length); i++)
+							if (wpdp.e[i] != null && wpdp.j[i] != null)
+								hashMapKishutu.put(wpdp.e[i],"pass"+Q);
+					}
+					*/
 				}
 				break;
 			}
@@ -177,6 +218,45 @@ public class MainActivity extends AppCompatActivity {
 				WordPhraseData p = new WordPhraseData(PasstanPhrase+"p2q", this);
 				strPhraseE = p.e;
 				strPhraseJ = p.j;
+				break;
+			}
+			case test1qEx: {
+				lastnum = 2811;
+				WordPhraseData w = new WordPhraseData(TanjukugoWord + "1q", this);
+				WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + "1q", this);
+				//配列を一旦Streamに変換して結合したあと、配列に戻す。
+				ArrayList<String> arrayListE = new ArrayList(), arrayListJ = new ArrayList();
+				arrayListE.add("index");
+				arrayListJ.add("index");
+				for (int i=1;w.e[i]!=null;i++) arrayListE.add(w.e[i]);
+				for (int i=1;wx.e[i]!=null;i++) arrayListE.add(wx.e[i]);
+				for (int i=1;w.j[i]!=null;i++) arrayListJ.add(w.j[i]);
+				for (int i=1;wx.j[i]!=null;i++) arrayListJ.add(wx.j[i]);
+				wordE=arrayListE.toArray(new String[0]);
+				wordJ=arrayListJ.toArray(new String[0]);
+
+				WordPhraseData p = new WordPhraseData(TanjukugoPhrase + "1q", this);
+				strPhraseE = p.e;
+				strPhraseJ = p.j;
+				break;
+			}
+			case testp1qEx:{
+				lastnum=2400;
+				WordPhraseData w = new WordPhraseData(TanjukugoWord + "p1q", this);
+				WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + "p1q", this);
+				ArrayList<String> arrayListE = new ArrayList(), arrayListJ = new ArrayList();
+				arrayListE.add("index");
+				arrayListJ.add("index");
+				for (int i=1;w.e[i]!=null;i++) arrayListE.add(w.e[i]);
+				for (int i=1;wx.e[i]!=null;i++) arrayListE.add(wx.e[i]);
+				for (int i=1;w.j[i]!=null;i++) arrayListJ.add(w.j[i]);
+				for (int i=1;wx.j[i]!=null;i++) arrayListJ.add(wx.j[i]);
+				wordE=arrayListE.toArray(new String[0]);
+				wordJ=arrayListJ.toArray(new String[0]);
+
+				WordPhraseData p = new WordPhraseData(TanjukugoPhrase + "p1q", this);
+				strPhraseE=p.e;
+				strPhraseJ=p.j;
 				break;
 			}
 			case testy00: {
@@ -217,8 +297,9 @@ public class MainActivity extends AppCompatActivity {
 		}
 		//保存された単語の番号（級ごと）
 		//if (Q_sentaku_activity.nowIsDecided|| Q_sentaku_activity.nUnit==5){]
-		if (Q_sentaku_activity.nowIsDecided|| sentakuUnit.equals(q_num.unit.all)){
-			now=getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).getInt(strQ+"now",1);
+		if (Q_sentaku_activity.nowIsDecided|| sentakuUnit.equals(MyLibrary.q_num.unit.all)){
+			//now=getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).getInt(strQ+"now",1);
+			now= MyLibrary.getIntData(this,"MainActivity"+"now",(strQ.startsWith("ph")?strQ.substring(2):strQ)+"now",1);
 			nFrom=1;
 			nTo=lastnum;
 		}
@@ -305,32 +386,60 @@ public class MainActivity extends AppCompatActivity {
 
 		//1q
 		//if (lastnum==2400){
-		if (sentakuQ.equals(q_num.test1q)){
+		if (sentakuQ.equals(MyLibrary.q_num.test1q)){
 			for (int i=0;i<lastnum;i++){
-				kioku_file[i]=getSharedPreferences("settings-1q",MODE_PRIVATE).getBoolean("1q"+i,false);
+				kioku_file[i]= MyLibrary.getBoolData(this,"settings-1q","1q"+i,false);
 				kioku_chBox[i]=kioku_file[i];
-				nSeikaisuu[i]=getSharedPreferences("testActivity" + "1qTest", MODE_PRIVATE).getInt("nWordSeikaisuu" + i, 0);
-				nHuseikaisuu[i]=getSharedPreferences("testActivity" + "1qTest", MODE_PRIVATE).getInt("nWordHuseikaisuu" + i, 0);
+				nSeikaisuu[i]= MyLibrary.getIntData(this,"testActivity" + "1qTest","nWordSeikaisuu" + i, 0);
+				nHuseikaisuu[i]= MyLibrary.getIntData(this,"testActivity" + "1qTest","nWordHuseikaisuu" + i, 0);
 			}
 			kioku_chBox[1568]=kioku_file[1568]=true;
 		}
 		//p1q
 		//if (lastnum==1850){
-		if (sentakuQ.equals(q_num.testp1q)){
+		if (sentakuQ.equals(MyLibrary.q_num.testp1q)){
 			for (int i=0;i<lastnum;i++){
-				kioku_file[i]=getSharedPreferences("settings-p1q",MODE_PRIVATE).getBoolean("p1q"+i,false);
+				kioku_file[i]= MyLibrary.getBoolData(this,"settings-p1q","p1q"+i,false);
 				kioku_chBox[i]=kioku_file[i];
-				nSeikaisuu[i]=getSharedPreferences("testActivity" + "p1qTest", MODE_PRIVATE).getInt("nWordSeikaisuu" + i, 0);
-				nHuseikaisuu[i]=getSharedPreferences("testActivity" + "p1qTest", MODE_PRIVATE).getInt("nWordHuseikaisuu" + i, 0);
+				nSeikaisuu[i]= MyLibrary.getIntData(this,"testActivity" + "p1qTest","nWordSeikaisuu" + i, 0);
+				nHuseikaisuu[i]= MyLibrary.getIntData(this,"testActivity" + "p1qTest","nWordHuseikaisuu" + i, 0);
 			}
 			kioku_chBox[1675]=kioku_file[1675]=true;
 			kioku_chBox[1799]=kioku_file[1799]=true;
 		}
 		adapterUnit = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice);
-		String[] strUnit ={"でる度A動詞","でる度A名詞","でる度A形容詞","でる度B動詞","でる度B名詞","でる度B形容詞","でる度C動詞","でる度C名詞","でる度C形容詞","熟語"};
-		for (int i=0;i<10;i++){
-			SetNumFromAndTo(lastnum,i);
-			adapterUnit.add(strUnit[i]+String.format("(%d-%d)",from,to));
+		if (sentakuQ.equals(MyLibrary.q_num.test1q)||sentakuQ.equals(MyLibrary.q_num.testp1q)) {
+			ArrayList strUnit = new ArrayList(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞", "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
+			for (int i=0;i<10;i++){
+				SetNumFromAndTo(lastnum,i);
+				adapterUnit.add(strUnit.get(i)+String.format(" (%d-%d)",from,to));
+			}
+		}
+		if (sentakuQ.equals(MyLibrary.q_num.test1qEx)){
+			for (int i=0;i<=9;i++){
+				adapterUnit.add("Unit"+(i+1)+" ("+toFindFromAndTo[12][i][0]+"-"+toFindFromAndTo[12][i][1]+")");
+			}
+			adapterUnit.add("UnitEX"+" ("+toFindFromAndTo[12][10][0]+"-"+toFindFromAndTo[12][10][1]+")");
+		}
+		if (sentakuQ.equals(MyLibrary.q_num.testp1qEx)){
+			for (int i=0;i<=9;i++){
+				adapterUnit.add("Unit"+(i+1)+" ("+toFindFromAndTo[13][i][0]+"-"+toFindFromAndTo[13][i][1]+")");
+			}
+			adapterUnit.add("UnitEX"+" ("+toFindFromAndTo[13][10][0]+"-"+toFindFromAndTo[13][10][1]+")");
+		}
+		if (sentakuQ.equals(MyLibrary.q_num.testy08)||sentakuQ.equals(MyLibrary.q_num.testy3)){
+			ArrayList strUnit=new ArrayList<>();
+			for (int i=1;i<=8;i++){
+				strUnit.add("Unit"+i);
+				adapterUnit.add("Unit"+i+" ("+((i-1)*100+1)+"-"+i*100+")");
+			}
+		}
+		if (sentakuQ.equals(MyLibrary.q_num.testy1)||sentakuQ.equals(MyLibrary.q_num.testy2)){
+			ArrayList strUnit=new ArrayList<>();
+			for (int i=1;i<=10;i++){
+				strUnit.add("Unit"+i);
+				adapterUnit.add("Unit"+i+" ("+((i-1)*100+1)+"-"+i*100+")");
+			}
 		}
 
 		SeekBar sbE=findViewById(R.id.seekBarEng);
@@ -346,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
-		sbE.setProgress(getData( this,"SeekBar","english", 5));
+		sbE.setProgress(MyLibrary.getIntData(this,"SeekBar","english", 5));
 		onSpeedSeekBar(sbE);
 		SeekBar sbJ=findViewById(R.id.seekBarJpn);
 		sbJ.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -361,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		});
-		sbJ.setProgress(getData( this,"SeekBar","japanese", 10));
+		sbJ.setProgress(MyLibrary.getIntData(this,"SeekBar","japanese", 10));
 		onSpeedSeekBar(sbJ);
 		pp=new PlaybackParams();
 		if (intent==null) {
@@ -396,11 +505,26 @@ public class MainActivity extends AppCompatActivity {
 		SetNumFromAndTo(lastnum,unit);
 
 		adapterWord=new ArrayAdapter<>(this,android.R.layout.simple_list_item_single_choice);
-		for (int i=from;i<=to;i++){
-			adapterWord.add(i+":"+wordE[i]+'('+wordJ[i]+')');
+		if (sentakuQ.equals(MyLibrary.q_num.testy08)
+				||sentakuQ.equals(MyLibrary.q_num.testy1)
+				||sentakuQ.equals(MyLibrary.q_num.testy2)
+				||sentakuQ.equals(MyLibrary.q_num.testy3)){
+			from=unit*100+1;
+			to=(unit+1)*100;
+		}
+		if (sentakuQ.equals(MyLibrary.q_num.test1qEx)){
+			from=toFindFromAndTo[12][unit][0];
+			to=toFindFromAndTo[12][unit][1];
+		}
+		if (sentakuQ.equals(MyLibrary.q_num.testp1qEx)){
+			from=toFindFromAndTo[13][unit][0];
+			to=toFindFromAndTo[13][unit][1];
+		}
+		for (int i = from; i <= to; i++) {
+			adapterWord.add(i + ":" + wordE[i] + " (" + wordJ[i] + ")");
 		}
 		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-		builder.setTitle("word選択してください");
+		builder.setTitle("単語を選択してください");
 		builder.setSingleChoiceItems(adapterWord, 0, this::onWordSelect);
 		adWord = builder.create();
 		adWord.show();
@@ -439,7 +563,7 @@ public class MainActivity extends AppCompatActivity {
 			Button b = (Button) v;
 			if (playing) {
 				saiseiStop();
-				getSharedPreferences("MainActivity" + "now", MODE_PRIVATE).edit().putInt(strQ + "now", now).apply();
+				putIntData(this,"MainActivity" + "now",(strQ.startsWith("ph")?strQ.substring(2):strQ) + "now", now);
 				b.setText("start");
 			} else {
 				intent = new Intent(getApplication(), PlaySound.class);
@@ -450,20 +574,13 @@ public class MainActivity extends AppCompatActivity {
 				playing = true;
 			}
 		}catch (Exception e){
-			showException(e);
+			showException(this, e);
 		}
 	}
 
-	public void onOboetaButtonTapped(View v){
-		//暗記済み
-		if (lastnum==2400) {
-			kioku_file[now]=kioku_chBox[now]=true;
-			getSharedPreferences("settings-1q", MODE_PRIVATE).edit().putBoolean("1q" + now, true).apply();
-		}
-		if (lastnum==1850) {
-			kioku_file[now]=kioku_chBox[now]=true;
-			getSharedPreferences("settings-p1q", MODE_PRIVATE).edit().putBoolean("p1q" + now, true).apply();
-		}
+	public void onZenbunKensakuButtonClicked(View v){
+		//全文検索のボタン
+		startActivity(new Intent(this,KensakuActivity.class));
 	}
 
 	@Override
@@ -475,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).edit().putInt(strQ + "now", now).apply();
+		putIntData(this,"MainActivity"+"now",(strQ.startsWith("ph")?strQ.substring(2):strQ) + "now", now);
 		nDebug++;
 	}
 
@@ -509,12 +626,12 @@ public class MainActivity extends AppCompatActivity {
 			//英語
 			((TextView)findViewById(R.id.tvSeekBarEng)).setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 			dPlaySpeedEng =1+0.1*sb.getProgress();
-			putData(this,"SeekBar","english",sb.getProgress());
+			putIntData(this,"SeekBar","english",sb.getProgress());
 		}else if(sb.getId()==R.id.seekBarJpn){
 			//日本語
 			((TextView)findViewById(R.id.tvSeekBarJpn)).setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 			dPlaySpeedJpn =1+0.1*sb.getProgress();
-			putData(this,"SeekBar","japanese",sb.getProgress());
+			putIntData(this,"SeekBar","japanese",sb.getProgress());
 		}
 	}
 }

@@ -84,7 +84,7 @@ public class SentakuActivity extends AppCompatActivity {
 		super.onStop();
 		for (int i = 1; i < lastnum; i++) {
 			if (kioku_file[i] != kioku_chBox[i]) {
-				getSharedPreferences("settings-" + Q_sentaku_activity.strQenum.getQ, MODE_PRIVATE).edit().putBoolean(Q_sentaku_activity.strQenum.getQ + i, kioku_chBox[i]).apply();
+				MyLibrary.putBoolData(this,"settings-" + Q_sentaku_activity.strQenum.getQ,Q_sentaku_activity.strQenum.getQ + i, kioku_chBox[i]);
 				kioku_file[i] = kioku_chBox[i];
 			}
 		}
