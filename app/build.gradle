@@ -1,52 +1,51 @@
 import java.text.SimpleDateFormat
-
 plugins {
-	id 'com.android.application'
+    id 'com.android.application'
 }
 
 android {
-	compileSdkVersion 33
-	buildToolsVersion "30.0.3"
-
-	defaultConfig {
-		applicationId "com.gukos.bokotan"
-		minSdkVersion 26
-		targetSdkVersion 33
-		versionCode 9999999
-		versionName "23.1.5"
-
-		//https://takusan.negitoro.dev/posts/android_build_date_resource/
-		// ビルド日時を Context#getString で参照できるようにする
-		resValue("string", "buildDate", new SimpleDateFormat("yyyy/MM/dd H:mm").format(Calendar.getInstance(Locale.JAPAN).getTime()))
-
-		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-	}
-
-	buildTypes {
-		release {
-			minifyEnabled false
-			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-		}
-	}
-	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_11
-		targetCompatibility JavaVersion.VERSION_11
-	}
-	buildFeatures{
-		viewBinding true
-	}
-	lint {
-		baseline = file("lint-baseline.xml")
-	}
     namespace 'com.gukos.bokotan'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.gukos.bokotan"
+        minSdk 26
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        //https://takusan.negitoro.dev/posts/android_build_date_resource/
+        // ビルド日時を Context#getString で参照できるようにする
+        resValue("string", "buildDate", new SimpleDateFormat("yyyy/MM/dd H:mm").format(Calendar.getInstance(Locale.JAPAN).getTime()))
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    //これがないとapkが生成できない
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+    //bindingを使うため
+    buildFeatures{
+        viewBinding true
+    }
 }
 
 dependencies {
-	implementation 'androidx.appcompat:appcompat:1.5.0'
-	implementation 'com.google.android.material:material:1.6.1'
-	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-	implementation 'androidx.work:work-runtime:2.7.1'
-	testImplementation 'junit:junit:4.13.2'
-	androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-	androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }

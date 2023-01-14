@@ -2,6 +2,9 @@ package com.gukos.bokotan;
 
 import static android.view.View.GONE;
 import static com.gukos.bokotan.CommonVariables.hashMapKishutu;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.getClassName;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.getMethodName;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.CommonVariables.isWordAndPhraseMode;
@@ -48,6 +51,11 @@ public class PlayerFragment extends Fragment {
 	protected int selectedIndex = 0;
 	AlertDialog adWord, adUnit;
 	
+	public PlayerFragment(){
+		super();
+		puts(getClassName()+getMethodName());
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_player, container, false);
@@ -60,10 +68,13 @@ public class PlayerFragment extends Fragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
+			puts(getClassName()+getMethodName());
 			context = getContext();
 			activity = getActivity();
 			viewFragment = view;
-			new Thread(() -> activity.runOnUiThread(() -> initialize())).start();
+			//new Thread(() -> activity.runOnUiThread(() -> initialize())).start();
+			initialize();
+			puts(getMethodName()+" ended");
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
@@ -71,6 +82,7 @@ public class PlayerFragment extends Fragment {
 	
 	public void initialize() {
 		try {
+			puts(getClassName()+getMethodName()+" start");
 			//UI設定
 			CommonVariables.tvWordEng = findViewById(R.id.fpTextViewEng);
 			CommonVariables.tvWordJpn = findViewById(R.id.fpTextViewJpn);
@@ -95,10 +107,9 @@ public class PlayerFragment extends Fragment {
 			}
 			
 			findViewById(R.id.fpbuttonStartStop).setOnClickListener(this::onStartStopButtonClick);
-			findViewById(R.id.fpbuttonKensakuFromMainActivity).setOnClickListener(this::onZenbunKensakuButtonClicked);
+			findViewById(R.id.fpbuttonBangouHenkou).setOnClickListener(this::onSelectNowButtonClick);
 			findViewById(R.id.fpbuttonSaisho).setOnClickListener(this::onResetButtonClick);
 			findViewById(R.id.fpbuttonPIP).setOnClickListener(this::onPIPButtonClicked);
-			findViewById(R.id.fpbuttonItiran).setOnClickListener(this::onSentakuButtonClicked);
 			
 			activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 			
@@ -341,24 +352,17 @@ public class PlayerFragment extends Fragment {
 			//if (lastnum==2400){
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q)) {
 				for (int i = 0; i < CommonVariables.lastnum; i++) {
-					CommonVariables.kioku_file[i] = MyLibrary.PreferenceManager.getBoolData(context, "settings-1q", "1q" + i, false);
-					CommonVariables.kioku_chBox[i] = CommonVariables.kioku_file[i];
 					CommonVariables.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordSeikaisuu" + i, 0);
 					CommonVariables.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordHuseikaisuu" + i, 0);
 				}
-				CommonVariables.kioku_chBox[1568] = CommonVariables.kioku_file[1568] = true;
 			}
 			//p1q
 			//if (lastnum==1850){
 			if (sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
 				for (int i = 0; i < CommonVariables.lastnum; i++) {
-					CommonVariables.kioku_file[i] = MyLibrary.PreferenceManager.getBoolData(context, "settings-p1q", "p1q" + i, false);
-					CommonVariables.kioku_chBox[i] = CommonVariables.kioku_file[i];
 					CommonVariables.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordSeikaisuu" + i, 0);
 					CommonVariables.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordHuseikaisuu" + i, 0);
 				}
-				CommonVariables.kioku_chBox[1675] = CommonVariables.kioku_file[1675] = true;
-				CommonVariables.kioku_chBox[1799] = CommonVariables.kioku_file[1799] = true;
 			}
 			adapterUnit = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q) || sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
@@ -404,12 +408,12 @@ public class PlayerFragment extends Fragment {
 			sbJ.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
 			onSpeedSeekBar(sbJ);
 			pp = new PlaybackParams();
+			puts(getClassName()+getMethodName()+" ended");
 		} catch (Exception e) {
 			showException(context, e);
 		}
 		
 	}
-	
 	
 	public void onSelectNowButtonClick(View v) {
 		try {
@@ -489,15 +493,6 @@ public class PlayerFragment extends Fragment {
 		}
 	}
 	
-	public void onZenbunKensakuButtonClicked(View v) {
-		try {
-			//全文検索のボタン
-			startActivity(new Intent(context, KensakuActivity.class));
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
 	@Override
 	public void onDestroy() {
 		try {
@@ -536,15 +531,6 @@ public class PlayerFragment extends Fragment {
 		try {
 			//saiseiStop();
 			CommonVariables.now = 1;
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	public void onSentakuButtonClicked(View v) {
-		try {
-			saiseiStop();
-			startActivity(new Intent(context, SentakuActivity.class));
 		} catch (Exception e) {
 			showException(context, e);
 		}

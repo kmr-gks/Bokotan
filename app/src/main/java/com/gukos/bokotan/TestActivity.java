@@ -10,6 +10,8 @@ import static com.gukos.bokotan.CommonVariables.strQ;
 import static com.gukos.bokotan.CommonVariables.toFindFromAndTo;
 import static com.gukos.bokotan.CommonVariables.wordE;
 import static com.gukos.bokotan.CommonVariables.wordJ;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
@@ -98,12 +100,6 @@ public class TestActivity extends AppCompatActivity {
 			checkBoxKoukaon = findViewById(R.id.checkBoxKoukaon);
 
 			//TODO ファイル名変更
-			/*
-			checkBoxHatsuon.setChecked(PreferenceManager.getBoolData(this, "checkBoxHatsuon", "checked", true));
-			checkBoxHatsuon.setOnClickListener(view -> PreferenceManager.putBoolData(this, "checkBoxHatsuon", "checked", ((CheckBox) view).isChecked()));
-			checkBoxKoukaon.setChecked(PreferenceManager.getBoolData(this, "checkBoxKoukaon", "checked", true));
-			checkBoxKoukaon.setOnClickListener(view -> PreferenceManager.putBoolData(this, "checkBoxKoukaon", "checked", ((CheckBox) view).isChecked()));
-			*/
 
 			checkBoxHatsuon.setChecked(PreferenceManager.getSetting(this, "checkBoxHatsuon", true));
 			checkBoxHatsuon.setOnClickListener(view -> PreferenceManager.putSetting(this, "checkBoxHatsuon", ((CheckBox) view).isChecked()));
@@ -199,7 +195,7 @@ public class TestActivity extends AppCompatActivity {
 					break;
 				}
 			}
-			nGenzaiNanMonme = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.現在何問目, 1);
+			nGenzaiNanMonme = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.現在何問目, 1);
 			int unit = 5;
 			switch (CommonVariables.nUnit) {
 				case 1: {//A
@@ -276,8 +272,8 @@ public class TestActivity extends AppCompatActivity {
 
 			//正解率読み込み
 			for (int i = CommonVariables.from; i <= CommonVariables.to; i++) {
-				nSeikaisuu[i] = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + i, 0);
-				nHuseikaisuu[i] = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + i, 0);
+				nSeikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + i, 0);
+				nHuseikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + i, 0);
 				if (nSeikaisuu[i] + nHuseikaisuu[i] > 0)
 					seikairitsu[i] = nSeikaisuu[i] * 100 / (nSeikaisuu[i] + nHuseikaisuu[i]);
 				else seikairitsu[i] = 0;
@@ -337,7 +333,7 @@ public class TestActivity extends AppCompatActivity {
 	protected void onStop() {
 		try {
 			super.onStop();
-			PreferenceManager.putIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, "nGenzaiNanMonme", nGenzaiNanMonme);
+			PreferenceManager.putIntData(this, dnTestActivity + strQ, "nGenzaiNanMonme", nGenzaiNanMonme);
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}
@@ -433,8 +429,8 @@ public class TestActivity extends AppCompatActivity {
 					|| nTangoNum[3] == nTangoNum[4]);
 			testCount++;
 
-			nSeikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, 0);
-			nHuseikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, 0);
+			nSeikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, 0);
+			nHuseikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, 0);
 
 			TextView textViewMondaiNumber = findViewById(R.id.tvMondaiNum);
 			if (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum] > 0) {
@@ -501,7 +497,7 @@ public class TestActivity extends AppCompatActivity {
 				if (isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
 						&& !isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku++;
-				PreferenceManager.putIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, nSeikaisuu[nMondaiTangoNum]);
+				PreferenceManager.putIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, nSeikaisuu[nMondaiTangoNum]);
 
 			} else {
 				//不正解
@@ -514,8 +510,9 @@ public class TestActivity extends AppCompatActivity {
 				if (!isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
 						&& isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku--;
-				PreferenceManager.putIntData(this, PreferenceManager.DataName.dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, nHuseikaisuu[nMondaiTangoNum]);
+				PreferenceManager.putIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, nHuseikaisuu[nMondaiTangoNum]);
 			}
+			puts("filename:"+dnTestActivity+strQ);
 
 			tvKaitou.setText("解答:" + wordE[nMondaiTangoNum] + wordJ[nMondaiTangoNum] + "\n" + getGogenString(nMondaiTangoNum, false, false));
 			tvKaisetsu.setText(

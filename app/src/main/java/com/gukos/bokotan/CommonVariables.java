@@ -45,8 +45,6 @@ public final class CommonVariables {
 	//1qのunit=8のfrom=0,8,0
 	//p1qunit=5 to=1,5,1
 	//SentakuActivity.javaから
-	public static final boolean[] kioku_file = new boolean[3000];
-	public static final boolean[] kioku_chBox = new boolean[3000];
 	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
 	public static final int[] nSeikaisuu = new int[3000];
 	public static final int[] nHuseikaisuu = new int[3000];

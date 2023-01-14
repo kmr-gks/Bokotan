@@ -14,7 +14,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 		try {
 			// toast で受け取りを確認
 			Toast.makeText(context, "Received ", Toast.LENGTH_LONG).show();
-			context.startActivity(new Intent(context, MainActivity.class));
+			//時間になれば開始する
+			context.startActivity(new Intent(context, PlaySound.class));
 		} catch (Exception e) {
 			showException(context, e);
 		}

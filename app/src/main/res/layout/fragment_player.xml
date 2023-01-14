@@ -7,15 +7,6 @@
 	android:background="@color/background"
 	tools:context=".PlayerFragment">
 
-	<Button
-		android:id="@+id/fpbuttonStartStop"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="start"
-		android:textColor="@color/buttontext"
-		app:layout_constraintBottom_toTopOf="@+id/fplinearLayoutButtons"
-		app:layout_constraintStart_toStartOf="parent" />
-
 	<TextView
 		android:id="@+id/fptvGenzai"
 		android:layout_width="wrap_content"
@@ -36,7 +27,6 @@
 		android:textSize="40sp"
 		app:layout_constraintBottom_toTopOf="@+id/fptvsubE"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/fpbuttonKensakuFromMainActivity"
 		app:layout_constraintTop_toBottomOf="@+id/fplinearLayoutTextViews" />
 
 	<TextView
@@ -50,7 +40,7 @@
 		android:textSize="26sp"
 		app:layout_constraintBottom_toTopOf="@+id/fplinearLayoutButtons"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/fpbuttonStartStop" />
+		app:layout_constraintStart_toStartOf="@+id/fpbuttonStartStop" />
 
 	<TextView
 		android:id="@+id/fptvsubE"
@@ -63,7 +53,7 @@
 		android:textSize="26sp"
 		app:layout_constraintBottom_toTopOf="@+id/fptvsubJ"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/fpbuttonStartStop" />
+		app:layout_constraintStart_toStartOf="parent" />
 
 	<LinearLayout
 		android:id="@+id/fplinearLayoutButtons"
@@ -102,13 +92,12 @@
 			android:textSize="16sp" />
 
 		<Button
-			android:id="@+id/fpbuttonItiran"
-			android:layout_width="0dp"
+			android:id="@+id/fpbuttonStartStop"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="単語一覧"
-			android:textColor="@color/buttontext"
-			android:textSize="16sp" />
+			android:text="start"
+			android:textColor="@color/buttontext" />
+
 	</LinearLayout>
 
 	<TextView
@@ -192,7 +181,7 @@
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:orientation="vertical"
-		app:layout_constraintBottom_toTopOf="@+id/fpbuttonKensakuFromMainActivity"
+		app:layout_constraintBottom_toTopOf="@+id/fptvsubE"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/fptvGenzai">
@@ -243,14 +232,4 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent" />
 
-	<Button
-		android:id="@+id/fpbuttonKensakuFromMainActivity"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="全文検索"
-		android:textColor="@color/buttontext"
-		app:layout_constraintBottom_toTopOf="@+id/fpbuttonStartStop"
-		app:layout_constraintEnd_toEndOf="@+id/fpbuttonStartStop"
-		app:layout_constraintStart_toStartOf="parent" />
-	
 </androidx.constraintlayout.widget.ConstraintLayout>

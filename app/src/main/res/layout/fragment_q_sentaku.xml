@@ -77,21 +77,24 @@
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="2.5"
-				android:entries="@array/spinner_hanni"/>
+				android:entries="@array/spinner_hanni"
+				android:popupBackground="@color/background" />
 
 			<Spinner
 				android:id="@+id/spinnerHinsi"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="2.5"
-				android:entries="@array/spinner_hinsi" />
+				android:entries="@array/spinner_hinsi"
+				android:popupBackground="@color/background" />
 
 			<Spinner
 				android:id="@+id/spinnerMode"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="4.5"
-				android:entries="@array/spinner_mode" />
+				android:entries="@array/spinner_mode"
+				android:popupBackground="@color/background" />
 		</LinearLayout>
 	</LinearLayout>
 
@@ -228,17 +231,18 @@
 			<Button
 				android:id="@+id/buttonPrefExport"
 				android:layout_width="0dp"
-				android:layout_height="match_parent"
+				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:text="設定保存"
-				android:textColor="@color/buttontext" />
+				android:textColor="@color/buttontext"
+				android:textSize="12sp" />
 
 			<Button
-				android:id="@+id/buttonWriteTest"
+				android:id="@+id/buttonPrefImp"
 				android:layout_width="0dp"
-				android:layout_height="match_parent"
+				android:layout_height="wrap_content"
 				android:layout_weight="1"
-				android:text="書き込み確認"
+				android:text="設定読み込み"
 				android:textColor="@color/buttontext"
 				android:textSize="12sp" />
 
@@ -430,7 +434,8 @@
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:background="@drawable/border"
-			android:entries="@array/spinner_kuuhaku" />
+			android:entries="@array/spinner_kuuhaku"
+			android:popupBackground="@color/background" />
 
 	</LinearLayout>
 
@@ -471,20 +476,20 @@
 		<Button
 			android:id="@+id/buttonAlarm"
 			android:layout_width="0dp"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:text="alarm"
 			android:textColor="@color/buttontext"
 			android:textSize="10sp" />
 
 		<Button
-			android:id="@+id/buttonKensaku"
+			android:id="@+id/buttonWriteTest"
 			android:layout_width="0dp"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="全文検索"
+			android:text="書き込み確認"
 			android:textColor="@color/buttontext"
-			android:textSize="10sp" />
+			android:textSize="12sp" />
 
 	</LinearLayout>
 

@@ -3,6 +3,7 @@ package com.gukos.bokotan;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.getClassName;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.putsE;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,16 +20,17 @@ public class TabPagerAdapter extends FragmentStateAdapter {
 	
 	public TabPagerAdapter(FragmentActivity fragmentActivity) {
 		super(fragmentActivity);
+		puts(getClassName()+getMethodName());
 		qSentakuFragment = new QSentakuFragment();
 		playerFragment = new PlayerFragment();
 		kensakuFragment = new KensakuFragment();
-		puts("q_sentaku_activity="+ qSentakuFragment +",playerFragment="+playerFragment+",kensakuFragment="+kensakuFragment);
+		putsE("playerFragment="+playerFragment+",activity="+playerFragment.getActivity());
 	}
 	
 	@NonNull
 	@Override
 	public Fragment createFragment(int position) {
-		puts(getClassName()+getMethodName()+"pos="+position);
+		puts(getClassName()+getMethodName()+",pos="+position);
 		switch (position) {
 			case 0: {
 				fragment = qSentakuFragment;

@@ -13,7 +13,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.gukos.bokotan.databinding.ActivityTabBinding;
 
 public class TabActivity extends AppCompatActivity {
-	public static ActivityTabBinding binding;
+	private static ActivityTabBinding binding;
 	private String toString(Bundle bundle){
 		if (bundle==null) return "null";
 		else return bundle.toString();
@@ -23,10 +23,9 @@ public class TabActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tab);
 		
-		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog
-		// ().build());
+		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
 		
-		puts(getClassName()+getMethodName()+"bundle="+toString(savedInstanceState));
+		puts(getClassName() + getMethodName() + ",bundle=" + toString(savedInstanceState));
 		
 		binding = ActivityTabBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
@@ -35,11 +34,17 @@ public class TabActivity extends AppCompatActivity {
 		ViewPager2 viewPager = binding.viewpagerMain;
 		viewPager.setAdapter(tabPagerAdapter);
 		
-		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain,
-		                      (tab, position) -> {
-								  puts("tab="+tab.toString()+"pos="+position);
-			                      tab.setText(TabPagerAdapter.TAB_NAMES[position]);
-		                      }).attach();
+		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> {
+			tab.setText(TabPagerAdapter.TAB_NAMES[position]);
+		}).attach();
+	}
+	
+	public static void setTabPageNum(int n){
+		try{
+			TabActivity.binding.tabsMain.getTabAt(n).select();
+		}catch (Exception exception){
+			MyLibrary.ExceptionManager.showException(exception);
+		}
 	}
 	
 	@Override

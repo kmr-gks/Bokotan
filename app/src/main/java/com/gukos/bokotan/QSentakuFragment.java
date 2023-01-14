@@ -18,13 +18,17 @@ import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.openWriteFileWithExistCheck;
+import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.readFromFile;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.strDirectoryNameForKuuhaku;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.fnAppSettings;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllPreferenceDate;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllFileNames;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllPreferenceData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.getSetting;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.initializeSettingItem;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.putAllData;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.putAllSetting;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.MyLibrary.getBuildDate;
 import static com.gukos.bokotan.MyLibrary.getNowTime;
@@ -235,9 +239,9 @@ public class QSentakuFragment extends Fragment {
 			
 			
 			findViewById(R.id.buttonPrefExport).setOnClickListener(this::onExportPrefsButton);
+			findViewById(R.id.buttonPrefImp).setOnClickListener(this::onImportPrefsButton);
 			findViewById(R.id.buttonWriteTest).setOnClickListener(this::onWriteText);
 			findViewById(R.id.buttonAlarm).setOnClickListener(this::onAlarmset);
-			findViewById(R.id.buttonKensaku).setOnClickListener(this::onKensakuButtonClicked);
 			
 			for (int id : new int[]{R.id.button1q, R.id.buttonP1q, R.id.button2q, R.id.buttonP2q,
 					R.id.buttonAll, R.id.buttonYume0_0, R.id.buttonYume0_8, R.id.buttonYume1,
@@ -261,28 +265,43 @@ public class QSentakuFragment extends Fragment {
 			showException(context, e);
 		}
 	}
-
-	public void onExportPrefsButton(View view) {
+	
+	private void onExportPrefsButton(View view) {
 		try {
-			for (var fileName : new String[]{
-					dnQSentakuActivity,
-					dnTestActivity+"1q"+"Test",
-					dnTestActivity+"p1q"+"Test",
-					fnAppSettings}) {
-				String strExceptionFIlePath = stringBokotanDirPath + fileName + "(" + getNowTime("yyyy" + ".MM月dd日") + ").txt";
-				FileWriter fileWriter = openWriteFileWithExistCheck(context, strExceptionFIlePath, false);
-				fileWriter.write(getAllPreferenceDate(context, fileName));
+			for (var fileName : getAllFileNames()) {
+				String strFilePath = stringBokotanDirPath + fileName + ".txt";
+				FileWriter fileWriter = openWriteFileWithExistCheck(context, strFilePath, false);
+				fileWriter.write(getAllPreferenceData(context, fileName));
 				fileWriter.close();
 			}
-
+			makeToastForShort(context,"設定の書き込みに成功しました。");
 		} catch (Exception exception) {
 			Log.d(debug_tag + "filewriting", exception.getMessage() + exception.getClass().getTypeName());
-			MyLibrary.DisplayOutput.makeToastForLong(context,"設定の書き込みに失敗");
+			MyLibrary.DisplayOutput.makeToastForLong(context,"設定の書き込みに失敗しました。");
 		}
-		makeToastForShort(context,"設定の書き込みに成功しました。");
 	}
 	
-	public void onWriteText(View view) {
+	private void onImportPrefsButton(View view) {
+		try {
+			putAllSetting(context, readFromFile(context, stringBokotanDirPath + fnAppSettings + ".txt"));
+			for (int id : new int[]{R.id.switchOnlyFirst, R.id.switchHyojiYakuBeforeRead, R.id.switchSkipOboe, R.id.switchSkipMaruBatu, R.id.switchSortHanten}) {
+				((Switch) findViewById(id)).setChecked(getSetting(context, "id" + id, true));
+			}
+			for (int id : new int[]{R.id.checkBoxDirTougou, R.id.checkBoxDefaultAdapter, R.id.checkBoxAutoStop, R.id.checkBoxHatsuonkigou}) {
+				((CheckBox) findViewById(id)).setChecked(getSetting(context, "id" + id, false));
+			}
+			for (var fileName : getAllFileNames()){
+				final String strFilePath = stringBokotanDirPath + fileName + ".txt";
+				putAllData(context,fileName,readFromFile(context,strFilePath));
+			}
+			makeToastForShort(context, "設定の読み込みに成功しました。");
+		} catch (Exception exception) {
+			Log.d(debug_tag + "filewriting", exception.getMessage() + exception.getClass().getTypeName());
+			MyLibrary.DisplayOutput.makeToastForLong(context, "設定の読み込みに失敗しました。");
+		}
+	}
+	
+	private void onWriteText(View view) {
 		try {
 			FileWriter fileWriter = openWriteFileWithExistCheck(context, strExceptionFIlePath, false);
 			fileWriter.write("書き込みテスト: " + MyLibrary.packageName + "(" + getNowTime() + ")");
@@ -295,8 +314,8 @@ public class QSentakuFragment extends Fragment {
 		}
 		MyLibrary.DisplayOutput.makeToastForLong(context, "ファイル書き込みに成功しました。");
 	}
-
-	public void onSelectQ(View v) {
+	
+	private void onSelectQ(View v) {
 		try {
 			EditText editTextNowNumber=findViewById(R.id.editTextNumber);
 			if (editTextNowNumber.length() != 0) {
@@ -423,22 +442,13 @@ public class QSentakuFragment extends Fragment {
 	private void onStartPlaying(){
 		//再生
 		if (intent == null) {
+			TabActivity.setTabPageNum(1);
 			intent = new Intent(context, PlaySound.class);
 			context.startForegroundService(intent);
 		}
-		TabPagerAdapter.playerFragment.initialize();
 	}
-
-	public void onKensakuButtonClicked(View v) {
-		try {
-			//new AlertDialog.Builder(context).setTitle("title").setMessage("message").setPositiveButton("ok",null).create().show();
-			startActivity(new Intent(context, KensakuActivity.class));
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-
-	public void onRadioChecked(View v) {
+	
+	private void onRadioChecked(View v) {
 		try {
 			putIntData(context, dnQSentakuActivity, "RadioButton", v.getId());
 			switch (v.getId()) {
@@ -463,7 +473,7 @@ public class QSentakuFragment extends Fragment {
 		}
 	}
 	
-	public void onAlarmset(View v) {
+	private void onAlarmset(View v) {
 		try {
 			// 現在時刻を取得
 			Calendar calendar = Calendar.getInstance();

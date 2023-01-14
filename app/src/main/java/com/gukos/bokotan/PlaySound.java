@@ -1,17 +1,15 @@
 package com.gukos.bokotan;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
-import static android.app.PendingIntent.FLAG_MUTABLE;
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 import static com.gukos.bokotan.CommonVariables.bEnglishToJapaneseOrder;
 import static com.gukos.bokotan.CommonVariables.bHyojiYakuBeforeRead;
 import static com.gukos.bokotan.CommonVariables.bSkipOboe;
-import static com.gukos.bokotan.QSentakuFragment.cbDirTOugou;
 import static com.gukos.bokotan.CommonVariables.dPlaySpeedEng;
 import static com.gukos.bokotan.CommonVariables.dPlaySpeedJpn;
 import static com.gukos.bokotan.CommonVariables.hashMapKishutu;
 import static com.gukos.bokotan.CommonVariables.isPhraseMode;
 import static com.gukos.bokotan.CommonVariables.isWordAndPhraseMode;
-import static com.gukos.bokotan.CommonVariables.kioku_chBox;
 import static com.gukos.bokotan.CommonVariables.lastnum;
 import static com.gukos.bokotan.CommonVariables.nFrom;
 import static com.gukos.bokotan.CommonVariables.nTo;
@@ -33,10 +31,14 @@ import static com.gukos.bokotan.CommonVariables.tvsubJ;
 import static com.gukos.bokotan.CommonVariables.wordE;
 import static com.gukos.bokotan.CommonVariables.wordJ;
 import static com.gukos.bokotan.GogenYomuFactory.getGogenString;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.getClassName;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.getMethodName;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPath;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
+import static com.gukos.bokotan.QSentakuFragment.cbDirTOugou;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
@@ -127,7 +129,8 @@ public class PlaySound extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		try {
-			context=getApplicationContext();
+			puts(getClassName() + getMethodName() + " start");
+			context = getApplicationContext();
 			resetMediaPlayer(mediaPlayerClassStatic);
 			mediaPlayerClassStatic = null;
 			nInstance++;
@@ -138,16 +141,23 @@ public class PlaySound extends Service {
 				nc.setDescription(strTutiChannelShosai);
 				nm.createNotificationChannel(nc);
 			}
-
+			
 			Intent sendStopIntent = new Intent(this, StopPlayBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			Intent sendPipIntent = new Intent(this, StartPipBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			PendingIntent sendStopPendingIntent = PendingIntent.getBroadcast(this, 0, sendStopIntent, FLAG_IMMUTABLE);
 			PendingIntent sendPipPendingIntent = PendingIntent.getBroadcast(this, 0, sendPipIntent, FLAG_IMMUTABLE);
-			PendingIntent pendingIntentOpenActivity=PendingIntent.getActivity(context,110,
-			                                                                  new Intent(context,
-			                                                                             TabActivity.class).setFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY),FLAG_MUTABLE);
-
-			Notification n = new NotificationCompat.Builder(this, strTutiChannelId)
+			//通知を押したときに表示する画面
+			Intent intent1 = new Intent(context, TabActivity.class).setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
+			puts("FLAG_ACTIVITY_REORDER_TO_FRONT,FLAG_IMMUTABLE");//13o,8x,hwx,g
+			/*
+			Intent intent2 = new Intent(context, TabActivity.class).setFlags(FLAG_ACTIVITY_CLEAR_TOP | FLAG_ACTIVITY_SINGLE_TOP);
+			puts("FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_SINGLE_TOP,FLAG_MUTABLE");//13o,8x,hwx,g
+			Intent intent3 = new Intent(context, TabActivity.class).setFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+			puts("FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY,FLAG_MUTABLE");//13o,8x,hwx,gx
+			 */
+			PendingIntent pendingIntentOpenActivity = PendingIntent.getActivity(context, 110, intent1, FLAG_IMMUTABLE);
+			
+			Notification notification = new NotificationCompat.Builder(this, strTutiChannelId)
 					.setContentTitle("再生中").setContentText("バックグラウンドで再生中")
 					.setSmallIcon(R.mipmap.ic_launcher)
 					.addAction(R.drawable.ic_launcher_foreground, "停止", sendStopPendingIntent)
@@ -155,11 +165,11 @@ public class PlaySound extends Service {
 					.setContentIntent(pendingIntentOpenActivity)
 					.build();
 			//Notification.FLAG_NO_CLEARだと消える(Android13)
-			n.flags |= Notification.FLAG_ONGOING_EVENT;
-			startForeground(1, n);
-
+			notification.flags |= Notification.FLAG_ONGOING_EVENT;
+			startForeground(1, notification);
+			
 			SetHatsuonKigou(this);
-
+			
 			bokotanPlayEnglish();
 		} catch (Exception e) {
 			showException(this, e);
@@ -186,6 +196,10 @@ public class PlaySound extends Service {
 
 	void bokotanPlayEnglish() {
 		try {
+			//停止するバグ
+			if (lastnum==2400&&1560<=now&&now<=1567) now+=10;
+			if (lastnum==1850&&1670<=now&&now<=1679) now+=10;
+			
 			String strQ_WordPhraseKyoutuu = strQ;
 			try {
 				if (strQ.equals("ph1q")) strQ_WordPhraseKyoutuu = "1q";
@@ -195,11 +209,13 @@ public class PlaySound extends Service {
 				strQ = "p1q";
 			}
 			if (bEnglishToJapaneseOrder) {
-				if (!isWordAndPhraseMode || isPhraseMode) now++;
+				if (!isWordAndPhraseMode || isPhraseMode){
+					now++;
+				}
 				if (bSkipOboe) {
 					switch (CommonVariables.skipjoken) {
 						case seikai1: {
-							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null) || getIntData(this, "testActivity" + strQ_WordPhraseKyoutuu + "Test", "nWordSeikaisuu" + now, 0) > 0 || kioku_chBox[now]) {
+							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null) || getIntData(this, "testActivity" + strQ_WordPhraseKyoutuu + "Test", "nWordSeikaisuu" + now, 0) > 0) {
 								now++;
 								if (now >= lastnum) break;
 							}
@@ -207,8 +223,7 @@ public class PlaySound extends Service {
 						}
 						case huseikai2: {
 							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null)
-									|| getIntData(this, "testActivity" + strQ_WordPhraseKyoutuu + "Test", "nWordHuseikaisuu" + now, 0) < 2
-									|| kioku_chBox[now]) {
+									|| getIntData(this, "testActivity" + strQ_WordPhraseKyoutuu + "Test", "nWordHuseikaisuu" + now, 0) < 2) {
 								now++;
 								if (now >= lastnum) break;
 							}
@@ -227,16 +242,13 @@ public class PlaySound extends Service {
 						}
 						case kirokunomi:
 						default: {
-							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null) || kioku_chBox[now]) {
+							while (swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null) {
 								now++;
 							}
 							break;
 						}
 					}
-					tvSeikaisu.setText(
-							"kioku:" + kioku_chBox[now] +
-									"正解" + getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) +
-									'/' + (getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + getIntData(this, "testActivity" + strQ + "Test", "nWordHuseikaisuu" + now, 0)));
+					tvSeikaisu.setText("正解" + getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + '/' + (getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + getIntData(this, "testActivity" + strQ + "Test", "nWordHuseikaisuu" + now, 0)));
 				}
 
 				if (now <= nFrom) now = nFrom;
@@ -354,13 +366,12 @@ public class PlaySound extends Service {
 
 	void bokotanPlayJapanese() {
 		try {
+			//停止するバグ
+			if (lastnum==2400&&1560<=now&&now<=1567) now+=10;
+			if (lastnum==1850&&1670<=now&&now<=1679) now+=10;
+			
 			if (!bEnglishToJapaneseOrder) {
 				now++;
-				if (bSkipOboe) {
-					while (kioku_chBox[now]) {
-						now++;
-					}
-				}
 				try {
 					if (swOnlyFirst.isChecked())
 						while (hashMapKishutu.get(wordE[now]) != null)

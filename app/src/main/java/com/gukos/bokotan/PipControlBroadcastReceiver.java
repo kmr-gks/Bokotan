@@ -17,7 +17,7 @@ public class PipControlBroadcastReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		try {
 
-			new MainActivity().onStartStopButtonClick(null);
+			new PlayerFragment().onStartStopButtonClick(null);
 
 			final int controlType = intent.getIntExtra(EXTRA_CONTROL_TYPE, 0);
 			switch (controlType) {
