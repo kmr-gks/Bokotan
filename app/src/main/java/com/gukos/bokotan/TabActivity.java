@@ -34,9 +34,7 @@ public class TabActivity extends AppCompatActivity {
 		ViewPager2 viewPager = binding.viewpagerMain;
 		viewPager.setAdapter(tabPagerAdapter);
 		
-		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> {
-			tab.setText(TabPagerAdapter.TAB_NAMES[position]);
-		}).attach();
+		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
 	}
 	
 	public static void setTabPageNum(int n){
@@ -45,17 +43,5 @@ public class TabActivity extends AppCompatActivity {
 		}catch (Exception exception){
 			MyLibrary.ExceptionManager.showException(exception);
 		}
-	}
-	
-	@Override
-	protected void onResume(){
-		super.onResume();
-		puts(getClassName()+getMethodName());
-	}
-	
-	@Override
-	protected void onStop(){
-		super.onStop();
-		puts(getClassName()+getMethodName());
 	}
 }

@@ -38,7 +38,6 @@ import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPath;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
-import static com.gukos.bokotan.QSentakuFragment.cbDirTOugou;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
@@ -64,16 +63,16 @@ import android.os.PowerManager;
 import androidx.core.app.NotificationCompat;
 
 public class PlaySound extends Service {
-	static MediaPlayer mediaPlayerClassStatic;
-	static int nInstance = 0;
-	String path;
-	Context context;
-
-	void Sleep() {
+	private static MediaPlayer mediaPlayerClassStatic;
+	private static int nInstance = 0;
+	private String path;
+	private Context context;
+	
+	private void Sleep() {
 		Sleep(500);
 	}
-
-	void Sleep(long mills) {
+	
+	private void Sleep(long mills) {
 		try {
 			Thread.sleep(mills);
 		} catch (Exception e) {
@@ -148,7 +147,6 @@ public class PlaySound extends Service {
 			PendingIntent sendPipPendingIntent = PendingIntent.getBroadcast(this, 0, sendPipIntent, FLAG_IMMUTABLE);
 			//通知を押したときに表示する画面
 			Intent intent1 = new Intent(context, TabActivity.class).setFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
-			puts("FLAG_ACTIVITY_REORDER_TO_FRONT,FLAG_IMMUTABLE");//13o,8x,hwx,g
 			/*
 			Intent intent2 = new Intent(context, TabActivity.class).setFlags(FLAG_ACTIVITY_CLEAR_TOP | FLAG_ACTIVITY_SINGLE_TOP);
 			puts("FLAG_ACTIVITY_CLEAR_TOP|FLAG_ACTIVITY_SINGLE_TOP,FLAG_MUTABLE");//13o,8x,hwx,g
@@ -167,9 +165,7 @@ public class PlaySound extends Service {
 			//Notification.FLAG_NO_CLEARだと消える(Android13)
 			notification.flags |= Notification.FLAG_ONGOING_EVENT;
 			startForeground(1, notification);
-			
 			SetHatsuonKigou(this);
-			
 			bokotanPlayEnglish();
 		} catch (Exception e) {
 			showException(this, e);
@@ -193,13 +189,9 @@ public class PlaySound extends Service {
 			showException(this, e);
 		}
 	}
-
-	void bokotanPlayEnglish() {
+	
+	private void bokotanPlayEnglish() {
 		try {
-			//停止するバグ
-			if (lastnum==2400&&1560<=now&&now<=1567) now+=10;
-			if (lastnum==1850&&1670<=now&&now<=1679) now+=10;
-			
 			String strQ_WordPhraseKyoutuu = strQ;
 			try {
 				if (strQ.equals("ph1q")) strQ_WordPhraseKyoutuu = "1q";
@@ -314,7 +306,7 @@ public class PlaySound extends Service {
 			}
 			PipActivity.ChangeText(wordE[now], wordJ[now], now);
 			String strQPath = strQ;
-			if ((QSentakuFragment.cbDirTOugou.isChecked() && strQPath.startsWith("ph")) || strQPath.startsWith(
+			if ((strQPath.startsWith("ph")) || strQPath.startsWith(
 					"phy")) {
 				//フォルダ統合
 				strQPath = strQ.substring(2);
@@ -322,16 +314,16 @@ public class PlaySound extends Service {
 			//単語のみ
 			if (isPhraseMode)//フレーズならば
 				if (strQPath.startsWith("y"))
-					path = getPath(yumetan, strQPath, phrase, english, now, cbDirTOugou.isChecked());
+					path = getPath(yumetan, strQPath, phrase, english, now);
 				else if (strQPath.startsWith("tanjukugo")) {
-					path = getPath(tanjukugoEX, strQPath, phrase, english, now, cbDirTOugou.isChecked());
+					path = getPath(tanjukugoEX, strQPath, phrase, english, now);
 				} else
-					path = getPath(passTan, strQPath, phrase, english, now, cbDirTOugou.isChecked());
+					path = getPath(passTan, strQPath, phrase, english, now);
 			else if (strQPath.startsWith("y"))
-				path = getPath(yumetan, strQPath, word, english, now, cbDirTOugou.isChecked());
+				path = getPath(yumetan, strQPath, word, english, now);
 			else if (strQPath.startsWith("tanjukugo")) {
-				path = getPath(tanjukugoEX, strQPath, word, english, now, cbDirTOugou.isChecked());
-			} else path = getPath(passTan, strQPath, word, english, now, cbDirTOugou.isChecked());
+				path = getPath(tanjukugoEX, strQPath, word, english, now);
+			} else path = getPath(passTan, strQPath, word, english, now);
 			textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(getApplicationContext(), Uri.parse(path));
@@ -339,7 +331,6 @@ public class PlaySound extends Service {
 				playStart(mediaPlayerClassStatic);
 				mediaPlayerClassStatic.setOnCompletionListener(mediaPlayerLamda -> {
 					resetMediaPlayer(mediaPlayerLamda);
-					mediaPlayerLamda = null;
 					if (isPhraseMode || strQ.startsWith("y") || strQ.startsWith("tanjukugo")) {
 						bokotanPlayJapanese();
 					} else {
@@ -363,13 +354,9 @@ public class PlaySound extends Service {
 			showException(this, e);
 		}
 	}
-
-	void bokotanPlayJapanese() {
+	
+	private void bokotanPlayJapanese() {
 		try {
-			//停止するバグ
-			if (lastnum==2400&&1560<=now&&now<=1567) now+=10;
-			if (lastnum==1850&&1670<=now&&now<=1679) now+=10;
-			
 			if (!bEnglishToJapaneseOrder) {
 				now++;
 				try {
@@ -419,22 +406,22 @@ public class PlaySound extends Service {
 			}
 
 			String strQPath = strQ;
-			if ((cbDirTOugou.isChecked() && strQPath.startsWith("ph")) || strQPath.startsWith("phy")) {
+			if ((strQPath.startsWith("ph")) || strQPath.startsWith("phy")) {
 				//フォルダ統合
 				strQPath = strQ.substring(2);
 			}
 			if (isPhraseMode)
 				if (strQPath.startsWith("y"))
-					path = getPath(yumetan, strQPath, phrase, japanese, now, cbDirTOugou.isChecked());
+					path = getPath(yumetan, strQPath, phrase, japanese, now);
 				else if (strQPath.startsWith("tanjukugo")) {
-					path = getPath(tanjukugoEX, strQPath, phrase, japanese, now, cbDirTOugou.isChecked());
+					path = getPath(tanjukugoEX, strQPath, phrase, japanese, now);
 				} else
-					path = getPath(passTan, strQPath, phrase, japanese, now, cbDirTOugou.isChecked());
+					path = getPath(passTan, strQPath, phrase, japanese, now);
 			else if (strQPath.startsWith("y"))
-				path = getPath(yumetan, strQPath, word, japanese, now, cbDirTOugou.isChecked());
+				path = getPath(yumetan, strQPath, word, japanese, now);
 			else if (strQPath.startsWith("tanjukugo")) {
-				path = getPath(tanjukugoEX, strQPath, word, japanese, now, cbDirTOugou.isChecked());
-			} else path = getPath(passTan, strQPath, word, japanese, now, cbDirTOugou.isChecked());
+				path = getPath(tanjukugoEX, strQPath, word, japanese, now);
+			} else path = getPath(passTan, strQPath, word, japanese, now);
 			textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(this, Uri.parse(path));
@@ -442,7 +429,6 @@ public class PlaySound extends Service {
 				playStart(mediaPlayerClassStatic);
 				mediaPlayerClassStatic.setOnCompletionListener(mediaPlayerLamda -> {
 					resetMediaPlayer(mediaPlayerLamda);
-					mediaPlayerLamda = null;
 					bokotanPlayEnglish();
 				});
 			} catch (Exception e) {
@@ -504,7 +490,6 @@ public class PlaySound extends Service {
 			playStart(mediaPlayerJoshi);
 			mediaPlayerJoshi.setOnCompletionListener(mediaPlayerJosiLamda -> {
 				resetMediaPlayer(mediaPlayerJosiLamda);
-				mediaPlayerJosiLamda = null;
 				bokotanPlayJapanese();
 			});
 		} catch (Exception e) {

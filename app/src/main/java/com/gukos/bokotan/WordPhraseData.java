@@ -13,7 +13,6 @@ import java.util.HashMap;
 public class WordPhraseData {
 	public final String[] e = new String[20000];
 	public final String[] j = new String[20000];
-	public final String strQName;
 	public final static String
 			PasstanWord = "Passtan/WordData",
 			PasstanPhrase = "Passtan/Phrase",
@@ -25,7 +24,6 @@ public class WordPhraseData {
 			distinction = "distinction/";
 
 	public WordPhraseData(String strQ, Context context) {
-		this.strQName = strQ;
 		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
 		try {
 			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
@@ -52,11 +50,11 @@ public class WordPhraseData {
 	}
 
 	enum DataBook {
-		passTan, tanjukugoEX, yumetan, gogengaku, eigoduke
+		passTan, tanjukugoEX, yumetan,
 	}
 
 	enum DataQ {
-		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3, toefl, toeic
+		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3,
 	}
 
 	enum DataType {word, phrase, gogengaku, eigoduke_com}
@@ -64,7 +62,7 @@ public class WordPhraseData {
 	enum DataLang {english, japanese}
 
 	public enum q_num {
-		test1q(), testp1q(), test2q(), testp2q(), test3q(), test4q(), test5q(), testy00(), testy08(), testy1(), testy2(), testy3(), test1qEx, testp1qEx;
+		test1q(), testp1q(), test2q(), testp2q(), testy00(), testy08(), testy1(), testy2(), testy3(), test1qEx, testp1qEx;
 
 		enum strQ {
 			str1q("1q"), strp1q("p1q"), str2q("2q"), strp2q("p2q"), str3q("3q"), str4q("4q"), str5q("5q"), stry00("y00"), stry08("y08"), stry1("y1"), stry2("y2"), stry3("y3"), ex1q("tanjukugo1q");

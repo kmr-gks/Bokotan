@@ -7,7 +7,6 @@ import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.Activity;
 import android.app.PictureInPictureParams;
-import android.content.BroadcastReceiver;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Rational;
@@ -18,11 +17,8 @@ public class PipActivity extends Activity {
 	static TextView tvPipE, tvPipJ, tvNum;
 	static boolean startPIP = false;
 
-	public final int REQUEST_CODE_ACTION_HOGE_A = 0;
 	public static final int CONTROL_TYPE_A = 12, CONTROL_TYPE_B = 103;
-	public static final String ACTION_HOGE = "11";
 	public static final String EXTRA_CONTROL_TYPE = "100";
-	private BroadcastReceiver receiver;
 
 	public static int pipYoko = 16, pipTate = 9;
 

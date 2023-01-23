@@ -66,6 +66,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -73,19 +74,19 @@ import androidx.fragment.app.FragmentActivity;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 //public class Q_sentaku_activity extends AppCompatActivity {
 public class QSentakuFragment extends Fragment {
 	//ほかのクラスからアクセス
 	public static CheckBox checkBoxHatsuonKigou;
-	public static CheckBox cbDirTOugou;
 	
 	//UI
-	Switch switchSkipOboe,swMaruBatu,swHyojiBeforeRead,switchSortHanten;
+	private Switch switchSkipOboe,swMaruBatu,swHyojiBeforeRead,switchSortHanten;
 	
-	Context context;
-	FragmentActivity activity;
-	View viewFragment;
+	private Context context;
+	private FragmentActivity activity;
+	private View viewFragment;
 	
 	private <T extends View> T findViewById(int id){return viewFragment.findViewById(id);}
 	
@@ -96,7 +97,7 @@ public class QSentakuFragment extends Fragment {
 	}
 	
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
 			
@@ -106,7 +107,7 @@ public class QSentakuFragment extends Fragment {
 			context = getContext();
 			activity = getActivity();
 			viewFragment = view;
-			new Thread(() -> activity.runOnUiThread(() -> initialize())).start();
+			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
@@ -152,15 +153,13 @@ public class QSentakuFragment extends Fragment {
 				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
 			}
 			
-			cbDirTOugou = findViewById(R.id.checkBoxDirTougou);
 			CheckBox cbDefaultAdapter = findViewById(R.id.checkBoxDefaultAdapter);
 			CheckBox cbAutoStop = findViewById(R.id.checkBoxAutoStop);
 			checkBoxHatsuonKigou = findViewById(R.id.checkBoxHatsuonkigou);
-			initializeSettingItem(cbDirTOugou, true);
 			initializeSettingItem(cbDefaultAdapter, true);
 			initializeSettingItem(cbAutoStop, false);
 			initializeSettingItem(checkBoxHatsuonKigou, false);
-			for (var v : new CheckBox[]{cbDirTOugou, cbDefaultAdapter, cbAutoStop, checkBoxHatsuonKigou}) {
+			for (var v : new CheckBox[]{cbDefaultAdapter, cbAutoStop, checkBoxHatsuonKigou}) {
 				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
 			}
 			
@@ -188,14 +187,23 @@ public class QSentakuFragment extends Fragment {
 			//権限リクエスト
 			//最前面に表示
 			// https://maku77.github.io/android/ui/always-top.html
-			ArrayList<String> permissions = new ArrayList<>();
-			for (String strPermission : new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_MEDIA_AUDIO, POST_NOTIFICATIONS, BLUETOOTH, BLUETOOTH_ADMIN, BLUETOOTH_CONNECT, BLUETOOTH_SCAN,}) {
-				if (ContextCompat.checkSelfPermission(context, strPermission) != PackageManager.PERMISSION_GRANTED) {
-					permissions.add(strPermission);
+			ArrayList<String> needPermissions = new ArrayList<>();
+			ArrayList<String> allPermissions= new ArrayList<>(List.of(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, BLUETOOTH, BLUETOOTH_ADMIN));
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+				allPermissions.add(BLUETOOTH_CONNECT);
+				allPermissions.add(BLUETOOTH_SCAN);
+			}
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+				allPermissions.add(READ_MEDIA_AUDIO);
+				allPermissions.add(POST_NOTIFICATIONS);
+			}
+			for (var permission:allPermissions){
+				if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+					needPermissions.add(permission);
 				}
 			}
-			if (!permissions.isEmpty()) {
-				activity.requestPermissions(permissions.toArray(new String[0]), 101);
+			if (!needPermissions.isEmpty()) {
+				activity.requestPermissions(needPermissions.toArray(new String[0]), 101);
 			}
 			//権限の確認 SYSTEM_ALERT_WINDOW
 			//https://akira-watson.com/android/windowmanager.html
@@ -287,7 +295,7 @@ public class QSentakuFragment extends Fragment {
 			for (int id : new int[]{R.id.switchOnlyFirst, R.id.switchHyojiYakuBeforeRead, R.id.switchSkipOboe, R.id.switchSkipMaruBatu, R.id.switchSortHanten}) {
 				((Switch) findViewById(id)).setChecked(getSetting(context, "id" + id, true));
 			}
-			for (int id : new int[]{R.id.checkBoxDirTougou, R.id.checkBoxDefaultAdapter, R.id.checkBoxAutoStop, R.id.checkBoxHatsuonkigou}) {
+			for (int id : new int[]{R.id.checkBoxDefaultAdapter, R.id.checkBoxAutoStop, R.id.checkBoxHatsuonkigou}) {
 				((CheckBox) findViewById(id)).setChecked(getSetting(context, "id" + id, false));
 			}
 			for (var fileName : getAllFileNames()){
@@ -437,15 +445,11 @@ public class QSentakuFragment extends Fragment {
 		}
 	}
 	
-	Intent intent=null;
-	
-	private void onStartPlaying(){
+	private void onStartPlaying() {
 		//再生
-		if (intent == null) {
-			TabActivity.setTabPageNum(1);
-			intent = new Intent(context, PlaySound.class);
-			context.startForegroundService(intent);
-		}
+		TabActivity.setTabPageNum(1);
+		PlayerFragment.initialize(getContext());
+		context.startForegroundService(new Intent(context, PlaySound.class));
 	}
 	
 	private void onRadioChecked(View v) {
@@ -493,7 +497,7 @@ public class QSentakuFragment extends Fragment {
 						calendar1.set(Calendar.MINUTE, minute1);
 						//明示的なBroadCast
 						Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-						PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, 0);
+						PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 						// アラームをセットする
 						AlarmManager am =
 								(AlarmManager) context.getSystemService(ALARM_SERVICE);
@@ -611,7 +615,6 @@ public class QSentakuFragment extends Fragment {
 						CommonVariables.nUnit = 5;
 						CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.all;
 						CommonVariables.nShurui = 4;
-						CommonVariables.sentakuShurui = WordPhraseData.q_num.shurui.matome;
 						break;
 					}
 				}
@@ -633,22 +636,18 @@ public class QSentakuFragment extends Fragment {
 				switch (i) {
 					case 0: {
 						CommonVariables.nShurui = 1;
-						CommonVariables.sentakuShurui = WordPhraseData.q_num.shurui.verb;
 						break;
 					}
 					case 1: {
 						CommonVariables.nShurui = 2;
-						CommonVariables.sentakuShurui = WordPhraseData.q_num.shurui.noum;
 						break;
 					}
 					case 2: {
 						CommonVariables.nShurui = 3;
-						CommonVariables.sentakuShurui = WordPhraseData.q_num.shurui.adjective;
 						break;
 					}
 					case 3: {
 						CommonVariables.nShurui = 4;
-						CommonVariables.sentakuShurui = WordPhraseData.q_num.shurui.matome;
 						break;
 					}
 				}

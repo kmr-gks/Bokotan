@@ -19,7 +19,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.8"
-			android:hint="ここに入力して検索"
+			android:hint="@string/kensaku"
 			android:inputType="textEmailAddress"
 			android:textColor="@color/textcolor" />
 
@@ -27,7 +27,7 @@
 			android:id="@+id/fkbuttonClear"
 			android:layout_width="65dp"
 			android:layout_height="wrap_content"
-			android:text="削除"
+			android:text="@string/delete"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -37,7 +37,7 @@
 			android:layout_weight="0"
 			android:autoSizeTextType="none"
 			android:lines="1"
-			android:text="start"
+			android:text="@string/start"
 			android:textColor="@color/buttontext" />
 
 		<TextView

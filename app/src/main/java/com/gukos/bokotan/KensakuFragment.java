@@ -1,6 +1,5 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.CommonVariables.cbDirTOugou;
 import static com.gukos.bokotan.CommonVariables.trGogenYomu;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.contains;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.ends;
@@ -53,6 +52,7 @@ import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 public class KensakuFragment extends Fragment {
@@ -85,18 +85,28 @@ public class KensakuFragment extends Fragment {
 			size++;
 			this.toushiNumber = size;
 			this.category = category;
-			this.subCategory = subCategory;
+			if (Objects.isNull(subCategory)) this.subCategory = "";
+			else this.subCategory = subCategory;
 			this.e = e;
 			this.j = j;
 			this.localNumber = localNumber;
 			this.dataType = dataType;
 		}
 		
+		String[] getAllFieldString() {
+			return new String[]{
+					this.e,
+					this.j,
+					this.category,
+					this.subCategory,
+					String.valueOf(this.localNumber),
+			};
+		}
+		
 		public String toString() {
 			try {
-				String string = category + (subCategory == null ? "" : ("(" + subCategory + ")")) + " " + e + " " + j;
-				String stringHtml = string.substring(0, Math.min(string.length(), 50));
-				return stringHtml;
+				String string = category + " "+subCategory + " " + e + " " + j;
+				return string.substring(0, Math.min(string.length(), 50));
 			} catch (Exception e) {
 				showException(e);
 			}
@@ -107,7 +117,7 @@ public class KensakuFragment extends Fragment {
 			try {
 				return "No. " + this.toushiNumber
 						+ "\nカテゴリ: " + this.category
-						+ (this.subCategory == null ? "" : ("(" + this.subCategory + ")")) + "\n番号:"
+						+ " "+subCategory + "\n番号:"
 						+ this.localNumber
 						+ "\n" + this.e
 						+ "\n発音:" + getHatsuon(this.e)
@@ -190,7 +200,7 @@ public class KensakuFragment extends Fragment {
 			context = getContext();
 			activity = getActivity();
 			viewFragment = view;
-			new Thread(() -> activity.runOnUiThread(() -> initialize())).start();
+			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
@@ -252,7 +262,7 @@ public class KensakuFragment extends Fragment {
 		try {
 			//ファイルを開いて読み込む
 			ListData.size = 0;
-			Map<String, String> mapQName = new HashMap() {{
+			Map<String, String> mapQName = new HashMap<>() {{
 				put("1q", "1級");
 				put("p1q", "準1級");
 				put("2q", "2級");
@@ -422,11 +432,11 @@ public class KensakuFragment extends Fragment {
 			String path;
 			switch (ld.category) {
 				case "パス単1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, english, ld.localNumber, cbDirTOugou.isChecked());
+					path = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, english, ld.localNumber);
 					break;
 				}
 				case "パス単準1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, english, ld.localNumber, cbDirTOugou.isChecked());
+					path = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, english, ld.localNumber);
 					break;
 				}
 				case "単熟語EX1級": {
@@ -464,11 +474,11 @@ public class KensakuFragment extends Fragment {
 				String pathJpn;
 				switch (ld.category) {
 					case "パス単1級": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, japanese, ld.localNumber, cbDirTOugou.isChecked());
+						pathJpn = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, japanese, ld.localNumber);
 						break;
 					}
 					case "パス単準1級": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, japanese, ld.localNumber, cbDirTOugou.isChecked());
+						pathJpn = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, japanese, ld.localNumber);
 						break;
 					}
 					case "単熟語EX1級": {
@@ -516,11 +526,11 @@ public class KensakuFragment extends Fragment {
 			String path;
 			switch (ld.category) {
 				case "パス単1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, english, ld.localNumber, cbDirTOugou.isChecked());
+					path = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, english, ld.localNumber);
 					break;
 				}
 				case "パス単準1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, english, ld.localNumber, cbDirTOugou.isChecked());
+					path = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, english, ld.localNumber);
 					break;
 				}
 				case "単熟語EX1級": {
@@ -580,40 +590,43 @@ public class KensakuFragment extends Fragment {
 					synchronized (this) {
 						//文字入力時
 						ArrayList<ListData> resultListTmp = new ArrayList<>();
-						String key = editable.toString();
+						String key = editable.toString().toLowerCase();//小文字に変換
 						if (key.length() == 0) {
 							resultListTmp = new ArrayList<>(allData);
 						} else {
 							switch (kensakuHouhou) {
 								case starts: {
-									for (ListData ld : allData) {
-										if (ld.category.toLowerCase().startsWith(key.toLowerCase())
-												|| (ld.subCategory != null && ld.subCategory.toLowerCase().startsWith(key.toLowerCase()))
-												|| ld.e.toLowerCase().startsWith(key.toLowerCase())
-												|| ld.j.toLowerCase().startsWith(key.toLowerCase()))
-											resultListTmp.add(ld);
+									for (var listData : allData) {
+										for(var field:listData.getAllFieldString()){
+											if (field.toLowerCase().startsWith(key)){
+												resultListTmp.add(listData);
+												break;
+											}
+										}
 										if (!threadSearchIsRunning) return;
 									}
 									break;
 								}
 								case contains: {
-									for (ListData ld : allData) {
-										if (ld.category.toLowerCase().contains(key.toLowerCase())
-												|| (ld.subCategory != null && ld.subCategory.toLowerCase().contains(key.toLowerCase()))
-												|| ld.e.toLowerCase().contains(key.toLowerCase())
-												|| ld.j.toLowerCase().contains(key.toLowerCase()))
-											resultListTmp.add(ld);
+									for (var listData : allData) {
+										for(var field:listData.getAllFieldString()){
+											if (field.toLowerCase().contains(key)){
+												resultListTmp.add(listData);
+												break;
+											}
+										}
 										if (!threadSearchIsRunning) return;
 									}
 									break;
 								}
 								case ends: {
-									for (ListData ld : allData) {
-										if (ld.category.toLowerCase().endsWith(key.toLowerCase())
-												|| (ld.subCategory != null && ld.subCategory.toLowerCase().endsWith(key.toLowerCase()))
-												|| ld.e.toLowerCase().endsWith(key.toLowerCase())
-												|| ld.j.toLowerCase().endsWith(key.toLowerCase()))
-											resultListTmp.add(ld);
+									for (var listData : allData) {
+										for(var field:listData.getAllFieldString()){
+											if (field.toLowerCase().endsWith(key)){
+												resultListTmp.add(listData);
+												break;
+											}
+										}
 										if (!threadSearchIsRunning) return;
 									}
 									break;

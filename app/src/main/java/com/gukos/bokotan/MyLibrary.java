@@ -229,9 +229,11 @@ public final class MyLibrary {
 		}
 		
 		public static class DataName {
-			public static String dnTestActivity = "testActivity";
-			public static String dnQSentakuActivity = "qSentakuActivity";
-			public static String 現在何問目 = "nGenzaiNanMonme", 単語正解数 = "nWordSeikaisuu", 単語不正解数 = "nWordHuseikaisuu";
+			public static final String dnTestActivity = "testActivity";
+			public static final String dnQSentakuActivity = "qSentakuActivity";
+			public static final String 現在何問目 = "nGenzaiNanMonme";
+			public static final String 単語正解数 = "nWordSeikaisuu";
+			public static final String 単語不正解数 = "nWordHuseikaisuu";
 		}
 	}
 	

@@ -2,8 +2,6 @@ package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
-import android.widget.CheckBox;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -11,7 +9,6 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 public final class CommonVariables {
-	public static final String tag = "E/";
 	public static final int[][][] toFindFromAndTo = {
 			//1q
 			{{1, 233}, {234, 472}, {473, 700}, {701, 919}, {920, 1177}, {1178, 1400}, {1401, 1619}, {1620, 1861}, {1862, 2100}, {2101, 2400}, {1, 700}, {701, 1400}, {1401, 2100}, {1, 2400}},
@@ -78,26 +75,12 @@ public final class CommonVariables {
 	public static TreeMap<String, GogenYomu> trGogenYomu;
 	//ビュー
 	static Switch swOnlyFirst;
-	static Switch switchSkipOboe;
-	static Switch swMaruBatu;
-	static Switch swHyojiBeforeRead;
-	static Switch switchSortHanten;
-	static CheckBox cbDirTOugou;
-	static CheckBox cbDefaultAdapter;
-	static CheckBox cbAutoStop;
-	static CheckBox checkBoxHatsuonKigou;
-	static Spinner spinnerHanni;
-	static Spinner spinnerHinsi;
-	static Spinner spinnerMode;
-	static Spinner spinnerKuuhaku;
-	static TextView textViewVersion;
 	static boolean bSkipOboe;
 	static boolean nowIsDecided = false;
 	static boolean isWordAndPhraseMode = false;
 	static WordPhraseData.q_num sentakuQ = WordPhraseData.q_num.testp1q;
 	static WordPhraseData.q_num.mode WordPhraseOrTest = WordPhraseData.q_num.mode.word;
 	static WordPhraseData.q_num.unit sentakuUnit = WordPhraseData.q_num.unit.all;
-	static WordPhraseData.q_num.shurui sentakuShurui = WordPhraseData.q_num.shurui.matome;
 	static WordPhraseData.q_num.strQ strQenum = WordPhraseData.q_num.strQ.strp1q;
 	static boolean bSort = true;
 	static WordPhraseData.q_num.skipjouken skipjoken = WordPhraseData.q_num.skipjouken.kirokunomi;

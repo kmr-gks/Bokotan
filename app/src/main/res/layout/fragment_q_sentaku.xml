@@ -12,7 +12,7 @@
 		android:id="@+id/textViewNowInput"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="now="
+		android:text="@string/now"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@+id/linearLayoutOtherButton" />
 
@@ -20,6 +20,7 @@
 		android:id="@+id/editTextNumber"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:autofillHints="no"
 		android:ems="10"
 		android:hint="@string/editNumberText"
 		android:inputType="number"
@@ -38,7 +39,6 @@
 		app:layout_constraintTop_toTopOf="parent">
 
 		<LinearLayout
-			android:id="@+id/linearLayoutSpinnerLabel"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
@@ -47,27 +47,26 @@
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="2.5"
-				android:text="範囲"
+				android:text="@string/hanni"
 				android:textColor="@color/textcolor" />
 
 			<TextView
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="2.5"
-				android:text="品詞"
+				android:text="@string/hinsi"
 				android:textColor="@color/textcolor" />
 
 			<TextView
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="4.5"
-				android:text="モード"
+				android:text="@string/mode"
 				android:textColor="@color/textcolor" />
 
 		</LinearLayout>
 
 		<LinearLayout
-			android:id="@+id/linearLayoutSpinners"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:orientation="horizontal">
@@ -114,7 +113,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="1級"
+			android:text="@string/_1q"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -122,7 +121,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="準1級"
+			android:text="@string/_p1q"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -130,7 +129,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="2級"
+			android:text="@string/_2q"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -138,7 +137,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="準2級"
+			android:text="@string/_p2q"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -146,7 +145,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="総合"
+			android:text="@string/sougou"
 			android:textColor="@color/buttontext" />
 
 	</LinearLayout>
@@ -165,7 +164,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="ユメタン0基"
+			android:text="@string/_0y"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -173,7 +172,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="ユメタン0本"
+			android:text="@string/yumetan08"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -181,7 +180,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="ユメタン1"
+			android:text="@string/yumetan1"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -189,7 +188,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="ユメタン2"
+			android:text="@string/yumetan2"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -197,7 +196,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="ユメタン3"
+			android:text="@string/yumetan3"
 			android:textColor="@color/buttontext" />
 	</LinearLayout>
 
@@ -205,7 +204,7 @@
 		android:id="@+id/textViewVersion"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="version:YY.MM.DD"
+		android:text="@string/version_yy_mm_dd"
 		android:textColor="@color/textcolor"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
@@ -222,7 +221,6 @@
 		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ">
 
 		<LinearLayout
-			android:id="@+id/lineayLayoutAdditional"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
@@ -233,7 +231,7 @@
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
-				android:text="設定保存"
+				android:text="@string/settingshozon"
 				android:textColor="@color/buttontext"
 				android:textSize="12sp" />
 
@@ -242,7 +240,7 @@
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
-				android:text="設定読み込み"
+				android:text="@string/readsettingsfromfile"
 				android:textColor="@color/buttontext"
 				android:textSize="12sp" />
 
@@ -254,7 +252,7 @@
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:checked="true"
-			android:text="既出の単語をスキップ"
+			android:text="@string/skipkishutu"
 			android:textColor="@color/textcolor" />
 
 		<Switch
@@ -263,7 +261,7 @@
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:checked="true"
-			android:text="読む前に表示"
+			android:text="@string/printbeforeread"
 			android:textColor="@color/textcolor" />
 
 		<Switch
@@ -272,7 +270,7 @@
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:checked="true"
-			android:text="覚えた単語を飛ばす"
+			android:text="@string/skipoboe"
 			android:textColor="@color/textcolor" />
 
 		<Switch
@@ -281,7 +279,7 @@
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:checked="true"
-			android:text="〇×演出なし"
+			android:text="@string/notox"
 			android:textColor="@color/textcolor" />
 
 		<Switch
@@ -289,7 +287,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
-			android:text="ソート反転"
+			android:text="@string/sortgyaku"
 			android:textColor="@color/textcolor" />
 
 		<CheckBox
@@ -297,15 +295,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
-			android:text="発音記号を表示"
-			android:textColor="@color/textcolor" />
-
-		<CheckBox
-			android:id="@+id/checkBoxDirTougou"
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
-			android:text="フォルダ統合"
+			android:text="@string/printhatuonkigou"
 			android:textColor="@color/textcolor" />
 
 		<CheckBox
@@ -313,7 +303,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
-			android:text="規定のアダプター"
+			android:text="@string/defaultadapter"
 			android:textColor="@color/textcolor" />
 
 		<CheckBox
@@ -321,11 +311,10 @@
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
-			android:text="イヤホン切断時停止"
+			android:text="@string/stopwheneyephone"
 			android:textColor="@color/textcolor" />
 
 		<LinearLayout
-			android:id="@+id/linearLayoutPipHiritsu"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
@@ -337,7 +326,7 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:ems="10"
-				android:hint="pip横"
+				android:hint="@string/pipyoko"
 				android:inputType="numberSigned" />
 
 			<EditText
@@ -346,14 +335,13 @@
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:ems="10"
-				android:hint="pip縦"
+				android:hint="@string/piptate"
 				android:inputType="numberSigned" />
 		</LinearLayout>
 
 	</LinearLayout>
 
 	<LinearLayout
-		android:id="@+id/linearLayoutRadioGroups"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:orientation="vertical"
@@ -363,7 +351,6 @@
 		app:layout_constraintTop_toBottomOf="@+id/editTextNumber">
 
 		<RadioGroup
-			android:id="@+id/radioGroupEngJpn"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="2"
@@ -375,20 +362,19 @@
 				android:layout_height="0dp"
 				android:layout_weight="1"
 				android:checked="true"
-				android:text="英→日"
+				android:text="@string/etoj"
 				android:textColor="@color/textcolor" />
 
 			<RadioButton
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:layout_weight="1"
-				android:text="日→英"
+				android:text="@string/jtoe"
 				android:textColor="@color/textcolor" />
 		</RadioGroup>
 
 
 		<RadioGroup
-			android:id="@+id/radioGroupSkipOption"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="4"
@@ -400,7 +386,7 @@
 				android:layout_height="0dp"
 				android:layout_weight="1"
 				android:checked="false"
-				android:text="記録のみ"
+				android:text="@string/onlykiroku"
 				android:textColor="@color/textcolor" />
 
 			<RadioButton
@@ -408,7 +394,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:layout_weight="1"
-				android:text="不合格のみ"
+				android:text="@string/onlyhugoukaku"
 				android:textColor="@color/textcolor" />
 
 			<RadioButton
@@ -416,7 +402,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:layout_weight="1"
-				android:text="1回正解を飛ばす"
+				android:text="@string/skip1seikai"
 				android:textColor="@color/textcolor" />
 
 			<RadioButton
@@ -424,7 +410,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:layout_weight="1"
-				android:text="2回以上不正解のみ"
+				android:text="@string/only2huseikai"
 				android:textColor="@color/textcolor" />
 		</RadioGroup>
 
@@ -452,7 +438,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="1級EX"
+			android:text="@string/_1_ex"
 			android:textColor="@color/buttontext" />
 
 		<Button
@@ -460,7 +446,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="準1級EX"
+			android:text="@string/p1qex"
 			android:textColor="@color/buttontext" />
 	</LinearLayout>
 
@@ -478,16 +464,16 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="alarm"
+			android:text="@string/alarm"
 			android:textColor="@color/buttontext"
-			android:textSize="10sp" />
+			android:textSize="11sp" />
 
 		<Button
 			android:id="@+id/buttonWriteTest"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="書き込み確認"
+			android:text="@string/writecheck"
 			android:textColor="@color/buttontext"
 			android:textSize="12sp" />
 

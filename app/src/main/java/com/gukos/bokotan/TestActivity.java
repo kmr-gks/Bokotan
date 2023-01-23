@@ -49,7 +49,6 @@ class Seikairitsu{
 public class TestActivity extends AppCompatActivity {
 
 	TextView tvMondai;
-	TextView tvSentaku1, tvSentaku2, tvSentaku3, tvSentaku4;
 	TextView tvKaitou, tvKaisetsu, tvMaruBatu, tvRange;
 	Button bSentaku1, bSentaku2, bSentaku3, bSentaku4;
 	Button bMarubatu;
@@ -68,7 +67,6 @@ public class TestActivity extends AppCompatActivity {
 							.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
 			.setMaxStreams(2)
 			.build();
-	static int nSound;
 	static final int[] seikairitsu = new int[3000];
 	final Seikairitsu[] numAndSeikairitu = new Seikairitsu[3000];
 	int testCount = 0;
@@ -82,10 +80,6 @@ public class TestActivity extends AppCompatActivity {
 			setContentView(R.layout.activity_test);
 
 			tvMondai = findViewById(R.id.tvMondaibun);
-			tvSentaku1 = findViewById(R.id.bSentakusi1);
-			tvSentaku2 = findViewById(R.id.bSentakusi2);
-			tvSentaku3 = findViewById(R.id.bSentakusi3);
-			tvSentaku4 = findViewById(R.id.bSentakusi4);
 			tvKaitou = findViewById(R.id.tvTorfKaitou);
 			tvKaisetsu = findViewById(R.id.tvKaisetsu);
 			tvMaruBatu = findViewById(R.id.tvMaruBatu);
@@ -302,10 +296,6 @@ public class TestActivity extends AppCompatActivity {
 				else return b.seitouritu - a.seitouritu;
 			});
 
-			for (int i = 0; i < toIndex; i++) {
-				Seikairitsu seikairitsu = numAndSeikairitu[i];
-			}
-
 			setMondaiBun();
 			sp.setOnLoadCompleteListener((soundPool, i, i1) -> {
 				try {
@@ -445,10 +435,10 @@ public class TestActivity extends AppCompatActivity {
 			}
 
 			tvMondai.setText(wordE[nMondaiTangoNum]);
-			tvSentaku1.setText(wordJ[nTangoNum[1]]);
-			tvSentaku2.setText(wordJ[nTangoNum[2]]);
-			tvSentaku3.setText(wordJ[nTangoNum[3]]);
-			tvSentaku4.setText(wordJ[nTangoNum[4]]);
+			bSentaku1.setText(wordJ[nTangoNum[1]]);
+			bSentaku2.setText(wordJ[nTangoNum[2]]);
+			bSentaku3.setText(wordJ[nTangoNum[3]]);
+			bSentaku4.setText(wordJ[nTangoNum[4]]);
 			if (!bSkipMaruBatuButton) {
 				tvKaitou.setText("");
 				tvKaisetsu.setText("");
@@ -467,7 +457,7 @@ public class TestActivity extends AppCompatActivity {
 				} else {
 					strLoadPath = FileDirectoryManager.getPath(passTan, strQenum.getQ, word, english, nMondaiTangoNum);
 				}
-				nSound = sp.load(strLoadPath, 1);
+				sp.load(strLoadPath, 1);
 			}
 
 		} catch (Exception e) {

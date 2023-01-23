@@ -40,7 +40,7 @@
 		android:textSize="26sp"
 		app:layout_constraintBottom_toTopOf="@+id/fplinearLayoutButtons"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="@+id/fpbuttonStartStop" />
+		app:layout_constraintStart_toStartOf="parent" />
 
 	<TextView
 		android:id="@+id/fptvsubE"
@@ -69,7 +69,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="最初から"
+			android:text="@string/fromstart"
 			android:textColor="@color/buttontext"
 			android:textSize="16sp" />
 
@@ -78,7 +78,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="番号変更"
+			android:text="@string/bangouhenkou"
 			android:textColor="@color/buttontext"
 			android:textSize="16sp" />
 
@@ -87,15 +87,16 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:text="PIP"
+			android:text="@string/pipb"
 			android:textColor="@color/buttontext"
 			android:textSize="16sp" />
 
 		<Button
 			android:id="@+id/fpbuttonStartStop"
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:text="start"
+			android:layout_weight="1"
+			android:text="@string/start"
 			android:textColor="@color/buttontext" />
 
 	</LinearLayout>

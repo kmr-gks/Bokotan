@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.media.PlaybackParams;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +33,7 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -43,11 +43,7 @@ public class PlayerFragment extends Fragment {
 	Context context;
 	Activity activity;
 	View viewFragment;
-	
-	int nDebug = 0;
-	PlaybackParams pp = null;
-	Intent intent = null;
-	protected ArrayAdapter<String> adapterUnit, adapterWord;
+	private static ArrayAdapter<String> adapterUnit;
 	protected int selectedIndex = 0;
 	AlertDialog adWord, adUnit;
 	
@@ -65,59 +61,83 @@ public class PlayerFragment extends Fragment {
 	
 	//ActivityのonCreateに相当
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
 			puts(getClassName()+getMethodName());
 			context = getContext();
 			activity = getActivity();
 			viewFragment = view;
-			//new Thread(() -> activity.runOnUiThread(() -> initialize())).start();
-			initialize();
+			try {
+				puts(getClassName()+getMethodName()+" start");
+				
+				//UI設定
+				CommonVariables.tvWordEng = findViewById(R.id.fpTextViewEng);
+				CommonVariables.tvWordJpn = findViewById(R.id.fpTextViewJpn);
+				CommonVariables.tvGenzai = findViewById(R.id.fptvGenzai);
+				CommonVariables.tvsubE = findViewById(R.id.fptvsubE);
+				CommonVariables.tvsubJ = findViewById(R.id.fptvsubJ);
+				CommonVariables.tvGogen = findViewById(R.id.fptvGogen);
+				CommonVariables.tvNumSeikaisuu = findViewById(R.id.fptextViewNumSeikairitu);
+				CommonVariables.tvSeikaisu = findViewById(R.id.fptextViewSeikaisuu);
+				CommonVariables.textViewPath = findViewById(R.id.fptextViewPath);
+				CommonVariables.textViewHatsuonKigou = findViewById(R.id.fptextViewHatsuonKigou);
+				if (CommonVariables.strQ != null)
+					CommonVariables.isPhraseMode = CommonVariables.strQ.charAt(1) == 'h';
+				if (isWordAndPhraseMode || CommonVariables.isPhraseMode) {
+					CommonVariables.tvsubE.setVisibility(View.VISIBLE);
+					CommonVariables.tvsubJ.setVisibility(View.VISIBLE);
+				}
+				else {
+					//単語の場合は右下の文字は非表示
+					CommonVariables.tvsubE.setVisibility(GONE);
+					CommonVariables.tvsubJ.setVisibility(GONE);
+				}
+				
+				Button buttonStartStop=findViewById(R.id.fpbuttonStartStop);
+				buttonStartStop.setOnClickListener(this::onStartStopButtonClick);
+				buttonStartStop.setText(CommonVariables.playing?"stop":"start");
+				findViewById(R.id.fpbuttonBangouHenkou).setOnClickListener(this::onSelectNowButtonClick);
+				findViewById(R.id.fpbuttonSaisho).setOnClickListener(this::onResetButtonClick);
+				findViewById(R.id.fpbuttonPIP).setOnClickListener(this::onPIPButtonClicked);
+				
+				activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+				
+				if (CommonVariables.strQ == null) {
+					CommonVariables.strQ = "p1q";
+					sentakuQ = WordPhraseData.q_num.testp1q;
+				}
+				
+				SeekBar sbE = findViewById(R.id.fpseekBarEng);
+				sbE.setOnSeekBarChangeListener(new OnSeekBarChangeListenerEng());
+				sbE.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
+				onSpeedSeekBar(sbE);
+				SeekBar sbJ = findViewById(R.id.fpseekBarJpn);
+				sbJ.setOnSeekBarChangeListener(new OnSeekBarChangeListenerJpn());
+				sbJ.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
+				onSpeedSeekBar(sbJ);
+				puts(getClassName()+getMethodName()+" ended");
+			} catch (Exception e) {
+				showException(context, e);
+			}
+			
 			puts(getMethodName()+" ended");
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
 	}
 	
-	public void initialize() {
+	public static void initialize(Context context) {
 		try {
-			puts(getClassName()+getMethodName()+" start");
-			//UI設定
-			CommonVariables.tvWordEng = findViewById(R.id.fpTextViewEng);
-			CommonVariables.tvWordJpn = findViewById(R.id.fpTextViewJpn);
-			CommonVariables.tvGenzai = findViewById(R.id.fptvGenzai);
-			CommonVariables.tvsubE = findViewById(R.id.fptvsubE);
-			CommonVariables.tvsubJ = findViewById(R.id.fptvsubJ);
-			CommonVariables.tvGogen = findViewById(R.id.fptvGogen);
-			CommonVariables.tvNumSeikaisuu = findViewById(R.id.fptextViewNumSeikairitu);
-			CommonVariables.tvSeikaisu = findViewById(R.id.fptextViewSeikaisuu);
-			CommonVariables.textViewPath = findViewById(R.id.fptextViewPath);
-			CommonVariables.textViewHatsuonKigou = findViewById(R.id.fptextViewHatsuonKigou);
-			if (CommonVariables.strQ != null)
-				CommonVariables.isPhraseMode = CommonVariables.strQ.charAt(1) == 'h';
-			if (isWordAndPhraseMode || CommonVariables.isPhraseMode) {
-				CommonVariables.tvsubE.setVisibility(View.VISIBLE);
-				CommonVariables.tvsubJ.setVisibility(View.VISIBLE);
-			}
-			else {
-				//単語の場合は右下の文字は非表示
-				CommonVariables.tvsubE.setVisibility(GONE);
-				CommonVariables.tvsubJ.setVisibility(GONE);
-			}
+			//再生開始
+			puts(getClassName() + getMethodName() + " start");
+			CommonVariables.playing = true;
 			
-			findViewById(R.id.fpbuttonStartStop).setOnClickListener(this::onStartStopButtonClick);
-			findViewById(R.id.fpbuttonBangouHenkou).setOnClickListener(this::onSelectNowButtonClick);
-			findViewById(R.id.fpbuttonSaisho).setOnClickListener(this::onResetButtonClick);
-			findViewById(R.id.fpbuttonPIP).setOnClickListener(this::onPIPButtonClicked);
-			
-			activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-			
-			if (CommonVariables.strQ == null) {
-				CommonVariables.strQ = "p1q";
-				sentakuQ = WordPhraseData.q_num.testp1q;
-			}
 			hashMapKishutu.clear();
+			//バグ対策
+			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");
+			hashMapKishutu.put("grow into〜", "p1q");
+			hashMapKishutu.put("accrue", "pass" + "1q");
 			
 			switch (sentakuQ) {
 				case test1q: {
@@ -134,7 +154,7 @@ public class PlayerFragment extends Fragment {
 							WordPhraseData wpdy = new WordPhraseData(YumeWord + Q, context);
 							for (int i = 1; i < Math.min(wpdy.e.length, wpdy.j.length); i++)
 								if (wpdy.e[i] != null && wpdy.j[i] != null)
-									CommonVariables.hashMapKishutu.put(wpdy.e[i], "yume" + Q);
+									hashMapKishutu.put(wpdy.e[i], "yume" + Q);
 						}
 						//パス単準1級
 						//パス単単語
@@ -142,7 +162,7 @@ public class PlayerFragment extends Fragment {
 							WordPhraseData wpdp = new WordPhraseData(PasstanWord + Q, context);
 							for (int i = 1; i < Math.min(wpdp.e.length, wpdp.j.length); i++)
 								if (wpdp.e[i] != null && wpdp.j[i] != null)
-									CommonVariables.hashMapKishutu.put(wpdp.e[i], "pass" + Q);
+									hashMapKishutu.put(wpdp.e[i], "pass" + Q);
 						}
 					}
 					break;
@@ -161,7 +181,7 @@ public class PlayerFragment extends Fragment {
 							WordPhraseData wpd = new WordPhraseData(YumeWord + Q, context);
 							for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
 								if (wpd.e[i] != null && wpd.j[i] != null)
-									CommonVariables.hashMapKishutu.put(wpd.e[i], "yume" + Q);
+									hashMapKishutu.put(wpd.e[i], "yume" + Q);
 						}
 					}
 					break;
@@ -191,7 +211,7 @@ public class PlayerFragment extends Fragment {
 					WordPhraseData w = new WordPhraseData(TanjukugoWord + "1q", context);
 					WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + "1q", context);
 					//配列を一旦Streamに変換して結合したあと、配列に戻す。
-					ArrayList<String> arrayListE = new ArrayList(), arrayListJ = new ArrayList();
+					ArrayList<String> arrayListE = new ArrayList<>(), arrayListJ = new ArrayList<>();
 					arrayListE.add("index");
 					arrayListJ.add("index");
 					for (int i = 1; w.e[i] != null; i++) arrayListE.add(w.e[i]);
@@ -210,7 +230,7 @@ public class PlayerFragment extends Fragment {
 					CommonVariables.lastnum = 2400;
 					WordPhraseData w = new WordPhraseData(TanjukugoWord + "p1q", context);
 					WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + "p1q", context);
-					ArrayList<String> arrayListE = new ArrayList(), arrayListJ = new ArrayList();
+					ArrayList<String> arrayListE = new ArrayList<>(), arrayListJ = new ArrayList<>();
 					arrayListE.add("index");
 					arrayListJ.add("index");
 					for (int i = 1; w.e[i] != null; i++) arrayListE.add(w.e[i]);
@@ -344,10 +364,6 @@ public class PlayerFragment extends Fragment {
 				CommonVariables.nTo = CommonVariables.to;
 			}
 			
-			if (CommonVariables.tvWordJpn.getText().equals("default")) {//初めてonCreateのとき
-				onStartStopButtonClick(findViewById(R.id.fpbuttonStartStop));
-			}
-			
 			//1q
 			//if (lastnum==2400){
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q)) {
@@ -364,9 +380,12 @@ public class PlayerFragment extends Fragment {
 					CommonVariables.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordHuseikaisuu" + i, 0);
 				}
 			}
+			
+			
 			adapterUnit = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q) || sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
-				ArrayList strUnit = new ArrayList(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞", "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
+				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞",
+				                                                          "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
 				for (int i = 0; i < 10; i++) {
 					CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, i);
 					adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", CommonVariables.from, CommonVariables.to));
@@ -385,34 +404,18 @@ public class PlayerFragment extends Fragment {
 				adapterUnit.add("UnitEX" + " (" + CommonVariables.toFindFromAndTo[13][10][0] + "-" + CommonVariables.toFindFromAndTo[13][10][1] + ")");
 			}
 			if (sentakuQ.equals(WordPhraseData.q_num.testy08) || sentakuQ.equals(WordPhraseData.q_num.testy3)) {
-				ArrayList strUnit = new ArrayList<>();
 				for (int i = 1; i <= 8; i++) {
-					strUnit.add("Unit" + i);
 					adapterUnit.add("Unit" + i + " (" + ((i - 1) * 100 + 1) + "-" + i * 100 + ")");
 				}
 			}
 			if (sentakuQ.equals(WordPhraseData.q_num.testy1) || sentakuQ.equals(WordPhraseData.q_num.testy2)) {
-				ArrayList strUnit = new ArrayList<>();
 				for (int i = 1; i <= 10; i++) {
-					strUnit.add("Unit" + i);
 					adapterUnit.add("Unit" + i + " (" + ((i - 1) * 100 + 1) + "-" + i * 100 + ")");
 				}
 			}
-			
-			SeekBar sbE = findViewById(R.id.fpseekBarEng);
-			sbE.setOnSeekBarChangeListener(new OnSeekBarChangeListenerEng());
-			sbE.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
-			onSpeedSeekBar(sbE);
-			SeekBar sbJ = findViewById(R.id.fpseekBarJpn);
-			sbJ.setOnSeekBarChangeListener(new OnSeekBarChangeListenerJpn());
-			sbJ.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
-			onSpeedSeekBar(sbJ);
-			pp = new PlaybackParams();
-			puts(getClassName()+getMethodName()+" ended");
 		} catch (Exception e) {
 			showException(context, e);
 		}
-		
 	}
 	
 	public void onSelectNowButtonClick(View v) {
@@ -433,7 +436,7 @@ public class PlayerFragment extends Fragment {
 		try {
 			CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, unit);
 			
-			adapterWord = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
+			ArrayAdapter<String> adapterWord = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.testy08)
 					|| sentakuQ.equals(WordPhraseData.q_num.testy1)
 					|| sentakuQ.equals(WordPhraseData.q_num.testy2)
@@ -472,20 +475,18 @@ public class PlayerFragment extends Fragment {
 		}
 	}
 	
-	public void onStartStopButtonClick(View v) {
+	public void onStartStopButtonClick(View view) {
 		try {
-			Button b = (Button) v;
-			if (CommonVariables.playing) {
+			Button button = (Button) view;
+			if (button.getText().equals("stop")) {
+				//再生中 停止する
 				saiseiStop();
-				putIntData(context, "MainActivity" + "now", (CommonVariables.strQ.startsWith("ph") ?
-						CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", CommonVariables.now);
-				b.setText("start");
+				putIntData(context, "MainActivity" + "now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", CommonVariables.now);
+				button.setText("start");
 			} else {
-				intent = new Intent(context, PlaySound.class);
-				intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-				context.startForegroundService(intent);
-				
-				b.setText("stop");
+				//再生する
+				context.startForegroundService(new Intent(context,PlaySound.class));
+				button.setText("stop");
 				CommonVariables.playing = true;
 			}
 		} catch (Exception e) {
@@ -497,7 +498,7 @@ public class PlayerFragment extends Fragment {
 	public void onDestroy() {
 		try {
 			super.onDestroy();
-			if (intent != null) context.stopService(intent);
+			context.stopService(new Intent(context,PlaySound.class));
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -508,7 +509,6 @@ public class PlayerFragment extends Fragment {
 		try {
 			super.onPause();
 			if(CommonVariables.strQ!=null) putIntData(context, "MainActivity" + "now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", CommonVariables.now);
-			nDebug++;
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -516,10 +516,7 @@ public class PlayerFragment extends Fragment {
 	
 	public void saiseiStop() {
 		try {
-			if (intent != null) {
-				context.stopService(intent);
-				intent = null;
-			}
+			context.stopService(new Intent(context,PlaySound.class));
 			CommonVariables.playing = false;
 			
 		} catch (Exception e) {
@@ -529,7 +526,6 @@ public class PlayerFragment extends Fragment {
 	
 	public void onResetButtonClick(View v) {
 		try {
-			//saiseiStop();
 			CommonVariables.now = 1;
 		} catch (Exception e) {
 			showException(context, e);

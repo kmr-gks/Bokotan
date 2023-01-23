@@ -30,15 +30,14 @@
 		android:label="@string/app_name"
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:supportsRtl="true"
-		android:theme="@style/Theme.Bokotan">
-		<activity
-			android:name=".KensakuActivity"
-			android:exported="false" />
+		android:theme="@style/Theme.Bokotan"
+		tools:targetApi="tiramisu">
 
 		<service
 			android:name=".PlaySound"
 			android:enabled="true"
-			android:exported="true" />
+			android:exported="true"
+			android:permission="TODO" />
 
 		<receiver
 			android:name=".PipControlBroadcastReceiver"

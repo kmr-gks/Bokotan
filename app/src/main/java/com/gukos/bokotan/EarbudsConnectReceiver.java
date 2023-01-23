@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 
+import java.util.Objects;
+
 public class EarbudsConnectReceiver {
 
 	//本当はRunnableじゃなくてFunction<void,void>としたい。
@@ -87,7 +89,7 @@ class WiredEarPhoneReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
-			if (intent == null || intent.getAction() != Intent.ACTION_HEADSET_PLUG) {
+			if (intent == null || !Objects.equals(intent.getAction(), Intent.ACTION_HEADSET_PLUG)) {
 				return;
 			}
 			int state = intent.getIntExtra("state", AudioManager.SCO_AUDIO_STATE_ERROR);
