@@ -2,6 +2,8 @@ package com.gukos.bokotan;
 
 import static android.view.View.GONE;
 import static com.gukos.bokotan.CommonVariables.hashMapKishutu;
+import static com.gukos.bokotan.CommonVariables.now;
+import static com.gukos.bokotan.CommonVariables.nowIsDecided;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.getClassName;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
@@ -135,9 +137,9 @@ public class PlayerFragment extends Fragment {
 			
 			hashMapKishutu.clear();
 			//バグ対策
-			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");
-			hashMapKishutu.put("grow into〜", "p1q");
-			hashMapKishutu.put("accrue", "pass" + "1q");
+			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");	//1799
+			hashMapKishutu.put("grow into 〜", "p1q");				//1675
+			hashMapKishutu.put("accrue", "pass" + "1q");			//1568
 			
 			switch (sentakuQ) {
 				case test1q: {
@@ -282,9 +284,8 @@ public class PlayerFragment extends Fragment {
 				}
 			}
 			
-			if (CommonVariables.nowIsDecided || sentakuUnit.equals(WordPhraseData.q_num.unit.all)) {
-				//now=getSharedPreferences("MainActivity"+"now",MODE_PRIVATE).getInt(strQ+"now",1);
-				CommonVariables.now = MyLibrary.PreferenceManager.getIntData(context, "MainActivity" +
+			if (!nowIsDecided&&sentakuUnit.equals(WordPhraseData.q_num.unit.all)) {
+				now = MyLibrary.PreferenceManager.getIntData(context, "MainActivity" +
 						"now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", 1);
 				CommonVariables.nFrom = 1;
 				CommonVariables.nTo = CommonVariables.lastnum;
@@ -385,7 +386,7 @@ public class PlayerFragment extends Fragment {
 			adapterUnit = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q) || sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
 				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞",
-				                                                          "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
+																		  "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
 				for (int i = 0; i < 10; i++) {
 					CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, i);
 					adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", CommonVariables.from, CommonVariables.to));
@@ -469,7 +470,7 @@ public class PlayerFragment extends Fragment {
 		try {
 			//単語を選んだあと
 			adWord.dismiss();
-			CommonVariables.now = CommonVariables.from + which - 1;
+			now = CommonVariables.from + which - 1;
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -481,7 +482,7 @@ public class PlayerFragment extends Fragment {
 			if (button.getText().equals("stop")) {
 				//再生中 停止する
 				saiseiStop();
-				putIntData(context, "MainActivity" + "now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", CommonVariables.now);
+				saveNow();
 				button.setText("start");
 			} else {
 				//再生する
@@ -508,9 +509,18 @@ public class PlayerFragment extends Fragment {
 	public void onPause() {
 		try {
 			super.onPause();
-			if(CommonVariables.strQ!=null) putIntData(context, "MainActivity" + "now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", CommonVariables.now);
+			saveNow();
 		} catch (Exception e) {
 			showException(context, e);
+		}
+	}
+	
+	private void saveNow() {
+		try {
+			if (CommonVariables.strQ != null)
+				putIntData(context, "MainActivity" + "now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", now);
+		} catch (Exception exception) {
+			showException(context, exception);
 		}
 	}
 	
@@ -526,7 +536,7 @@ public class PlayerFragment extends Fragment {
 	
 	public void onResetButtonClick(View v) {
 		try {
-			CommonVariables.now = 1;
+			now = 1;
 		} catch (Exception e) {
 			showException(context, e);
 		}

@@ -18,7 +18,7 @@ android {
 
         //https://takusan.negitoro.dev/posts/android_build_date_resource/
         // ビルド日時を Context#getString で参照できるようにする
-        resValue("string", "buildDate", new SimpleDateFormat("yyyy/MM/dd H:mm").format(Calendar.getInstance(Locale.JAPAN).getTime()))
+        resValue("string", "buildDate", new SimpleDateFormat("yyMMdd.Hmm").format(Calendar.getInstance(Locale.JAPAN).getTime()))
     }
 
     buildTypes {

@@ -182,7 +182,7 @@ public class QSentakuFragment extends Fragment {
 			CommonVariables.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
 			//バージョン表記
-			this.<TextView>findViewById(R.id.textViewVersion).setText("Version:" + getVersionName(activity) + getBuildDate(context));
+			this.<TextView>findViewById(R.id.textViewVersion).setText(getBuildDate(context));
 			
 			//権限リクエスト
 			//最前面に表示
@@ -329,6 +329,8 @@ public class QSentakuFragment extends Fragment {
 			if (editTextNowNumber.length() != 0) {
 				CommonVariables.nowIsDecided = true;
 				CommonVariables.now = Integer.parseInt(editTextNowNumber.getText().toString()) - 1;
+			}else{
+				CommonVariables.nowIsDecided=false;
 			}
 			if (switchSkipOboe != null) {
 				CommonVariables.bSkipOboe = switchSkipOboe.isChecked();

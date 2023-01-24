@@ -7,6 +7,7 @@ import static com.gukos.bokotan.CommonVariables.bHyojiYakuBeforeRead;
 import static com.gukos.bokotan.CommonVariables.bSkipOboe;
 import static com.gukos.bokotan.CommonVariables.dPlaySpeedEng;
 import static com.gukos.bokotan.CommonVariables.dPlaySpeedJpn;
+import static com.gukos.bokotan.CommonVariables.from;
 import static com.gukos.bokotan.CommonVariables.hashMapKishutu;
 import static com.gukos.bokotan.CommonVariables.isPhraseMode;
 import static com.gukos.bokotan.CommonVariables.isWordAndPhraseMode;
@@ -240,11 +241,15 @@ public class PlaySound extends Service {
 							break;
 						}
 					}
+					//puts("now="+now+",word="+wordE[now]+",hash="+hashMapKishutu.get(wordE[now]));
 					tvSeikaisu.setText("正解" + getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + '/' + (getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + getIntData(this, "testActivity" + strQ + "Test", "nWordHuseikaisuu" + now, 0)));
 				}
 
-				if (now <= nFrom) now = nFrom;
-				if (now >= nTo) now = nFrom;
+				if (nFrom!=0&&nTo!=0) {
+					if (now <= nFrom) now = nFrom;
+					if (now >= nTo) now = nFrom;
+				}
+				
 				if (tvGenzai != null) tvGenzai.setText("No." + now);
 				int nWordSeikaisuu = 0, nWordHuseikaisuu = 0;
 				if (lastnum == 2400) {
@@ -327,6 +332,10 @@ public class PlaySound extends Service {
 			textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(getApplicationContext(), Uri.parse(path));
+				if (mediaPlayerClassStatic==null){
+					puts("null"+",from="+nFrom+"to"+nTo+"now"+now+"uri:"+path);
+					return;
+				}
 				mediaPlayerClassStatic.setPlaybackParams(mediaPlayerClassStatic.getPlaybackParams().setSpeed((float) dPlaySpeedEng));
 				playStart(mediaPlayerClassStatic);
 				mediaPlayerClassStatic.setOnCompletionListener(mediaPlayerLamda -> {
