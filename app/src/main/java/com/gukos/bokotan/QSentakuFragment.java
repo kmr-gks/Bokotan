@@ -58,6 +58,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -82,13 +83,13 @@ public class QSentakuFragment extends Fragment {
 	public static CheckBox checkBoxHatsuonKigou;
 	
 	//UI
-	private Switch switchSkipOboe,swMaruBatu,swHyojiBeforeRead,switchSortHanten;
+	private Switch switchSkipOboe, swMaruBatu, swHyojiBeforeRead, switchSortHanten;
 	
 	private Context context;
 	private FragmentActivity activity;
 	private View viewFragment;
 	
-	private <T extends View> T findViewById(int id){return viewFragment.findViewById(id);}
+	private <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,12 +128,32 @@ public class QSentakuFragment extends Fragment {
 			EditText editTextPipYoko = findViewById(R.id.editTextPipYoko);
 			editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
 			pipYoko = Integer.parseInt(editTextPipYoko.getText().toString());
-			editTextPipYoko.addTextChangedListener(new TextWatcherPipYoko());
+			editTextPipYoko.addTextChangedListener((TextWatcherAfterOnly) editable -> {
+				try {
+					if (editable.length() > 0) {
+						pipYoko = Integer.parseInt(editable.toString());
+						putIntData(context, "editText", "editTextPipYoko", pipYoko);
+					}
+				} catch (Exception e) {
+					showException(context, e);
+				}
+			});
 			
 			EditText editTextPipTate = findViewById(R.id.editTextPipTate);
 			editTextPipTate.setText(String.valueOf(getIntData(context, "editText", "editTextPipTate", 9)));
 			pipTate = Integer.parseInt(editTextPipTate.getText().toString());
-			editTextPipTate.addTextChangedListener(new TextWatcherPipTate());
+			editTextPipTate.addTextChangedListener((TextWatcherAfterOnly) editable -> {
+				{
+					try {
+						if (editable.length() > 0) {
+							pipTate = Integer.parseInt(editable.toString());
+							putIntData(context, "editText", "editTextPipTate", pipTate);
+						}
+					} catch (Exception e) {
+						showException(context, e);
+					}
+				}
+			});
 			
 			swOnlyFirst = findViewById(R.id.switchOnlyFirst);
 			initializeSettingItem(swOnlyFirst, true);
@@ -165,19 +186,19 @@ public class QSentakuFragment extends Fragment {
 			
 			Spinner spinnerHanni = findViewById(R.id.spinnerHanni);
 			spinnerHanni.setSelection(getIntData(context, "spinnerHanni", "selected", 4));
-			spinnerHanni.setOnItemSelectedListener(new SpinnerHanniOnItemSelectedListener());
+			spinnerHanni.setOnItemSelectedListener((AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
 			
 			Spinner spinnerHinsi = findViewById(R.id.spinnerHinsi);
 			spinnerHinsi.setSelection(getIntData(context, "spinnerHinsi", "selected", 3));
-			spinnerHinsi.setOnItemSelectedListener(new SpinnerHinsiOnItemSelectedListener());
+			spinnerHinsi.setOnItemSelectedListener((AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
 			
 			Spinner spinnerMode = findViewById(R.id.spinnerMode);
 			spinnerMode.setSelection(getIntData(context, "spinnerMode", "selected", 2));
-			spinnerMode.setOnItemSelectedListener(new SpinnerModeOnItemSelectedListener());
+			spinnerMode.setOnItemSelectedListener((AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
 			
 			Spinner spinnerKuuhaku = findViewById(R.id.spinnerKuuhaku);
 			spinnerKuuhaku.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
-			spinnerKuuhaku.setOnItemSelectedListener(new SpinnerKuuhakuOnItemSelectedListener());
+			spinnerKuuhaku.setOnItemSelectedListener((AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
 			
 			CommonVariables.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
@@ -188,7 +209,7 @@ public class QSentakuFragment extends Fragment {
 			//最前面に表示
 			// https://maku77.github.io/android/ui/always-top.html
 			ArrayList<String> needPermissions = new ArrayList<>();
-			ArrayList<String> allPermissions= new ArrayList<>(List.of(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, BLUETOOTH, BLUETOOTH_ADMIN));
+			ArrayList<String> allPermissions = new ArrayList<>(List.of(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, BLUETOOTH, BLUETOOTH_ADMIN));
 			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
 				allPermissions.add(BLUETOOTH_CONNECT);
 				allPermissions.add(BLUETOOTH_SCAN);
@@ -197,7 +218,7 @@ public class QSentakuFragment extends Fragment {
 				allPermissions.add(READ_MEDIA_AUDIO);
 				allPermissions.add(POST_NOTIFICATIONS);
 			}
-			for (var permission:allPermissions){
+			for (var permission : allPermissions) {
 				if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
 					needPermissions.add(permission);
 				}
@@ -215,7 +236,7 @@ public class QSentakuFragment extends Fragment {
 			//https://developer.android.com/training/data-storage/manage-all-files?hl=ja
 			//https://takusan23.github.io/Bibouroku/2020/05/04/Android11%E3%81%AEMANAGE-EXTERNAL-STORAGE%E3%82%92%E8%A9%A6%E3%81%99/
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-				if (!Environment.isExternalStorageManager()){
+				if (!Environment.isExternalStorageManager()) {
 					startActivity(new Intent(ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
 				}
 			}
@@ -252,23 +273,14 @@ public class QSentakuFragment extends Fragment {
 			findViewById(R.id.buttonAlarm).setOnClickListener(this::onAlarmset);
 			
 			for (int id : new int[]{R.id.button1q, R.id.buttonP1q, R.id.button2q, R.id.buttonP2q,
-					R.id.buttonAll, R.id.buttonYume0_0, R.id.buttonYume0_8, R.id.buttonYume1,
-					R.id.buttonYume2, R.id.buttonYume3, R.id.button1qEx, R.id.buttonP1qEx}) {
+				R.id.buttonAll, R.id.buttonYume0_0, R.id.buttonYume0_8, R.id.buttonYume1,
+				R.id.buttonYume2, R.id.buttonYume3, R.id.button1qEx, R.id.buttonP1qEx}) {
 				findViewById(id).setOnClickListener(this::onSelectQ);
 			}
 			for (int id : new int[]{R.id.radioButtonOnlyKioku, R.id.radioButtonOnlyHugoukaku,
-					R.id.radioButton1seikai, R.id.radioButton2huseikai}) {
+				R.id.radioButton1seikai, R.id.radioButton2huseikai}) {
 				findViewById(id).setOnClickListener(this::onRadioChecked);
 			}
-			
-			/*
-			sleep();
-			puts("i="+1); binding.tabsMain.getTabAt(1).select();
-			sleep();
-			puts("i="+2); binding.tabsMain.getTabAt(2).select();
-			sleep();
-			puts("i="+0); binding.tabsMain.getTabAt(0).select();
-			*/
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -282,10 +294,10 @@ public class QSentakuFragment extends Fragment {
 				fileWriter.write(getAllPreferenceData(context, fileName));
 				fileWriter.close();
 			}
-			makeToastForShort(context,"設定の書き込みに成功しました。");
+			makeToastForShort(context, "設定の書き込みに成功しました。");
 		} catch (Exception exception) {
 			Log.d(debug_tag + "filewriting", exception.getMessage() + exception.getClass().getTypeName());
-			MyLibrary.DisplayOutput.makeToastForLong(context,"設定の書き込みに失敗しました。");
+			MyLibrary.DisplayOutput.makeToastForLong(context, "設定の書き込みに失敗しました。");
 		}
 	}
 	
@@ -298,9 +310,9 @@ public class QSentakuFragment extends Fragment {
 			for (int id : new int[]{R.id.checkBoxDefaultAdapter, R.id.checkBoxAutoStop, R.id.checkBoxHatsuonkigou}) {
 				((CheckBox) findViewById(id)).setChecked(getSetting(context, "id" + id, false));
 			}
-			for (var fileName : getAllFileNames()){
+			for (var fileName : getAllFileNames()) {
 				final String strFilePath = stringBokotanDirPath + fileName + ".txt";
-				putAllData(context,fileName,readFromFile(context,strFilePath));
+				putAllData(context, fileName, readFromFile(context, strFilePath));
 			}
 			makeToastForShort(context, "設定の読み込みに成功しました。");
 		} catch (Exception exception) {
@@ -325,16 +337,18 @@ public class QSentakuFragment extends Fragment {
 	
 	private void onSelectQ(View v) {
 		try {
-			EditText editTextNowNumber=findViewById(R.id.editTextNumber);
+			EditText editTextNowNumber = findViewById(R.id.editTextNumber);
 			if (editTextNowNumber.length() != 0) {
 				CommonVariables.nowIsDecided = true;
 				CommonVariables.now = Integer.parseInt(editTextNowNumber.getText().toString()) - 1;
-			}else{
-				CommonVariables.nowIsDecided=false;
+			}
+			else {
+				CommonVariables.nowIsDecided = false;
 			}
 			if (switchSkipOboe != null) {
 				CommonVariables.bSkipOboe = switchSkipOboe.isChecked();
-			} else CommonVariables.bSkipOboe = false;
+			}
+			else CommonVariables.bSkipOboe = false;
 			CommonVariables.bHyojiYakuBeforeRead = swHyojiBeforeRead.isChecked();
 			CommonVariables.bEnglishToJapaneseOrder = this.<RadioButton>findViewById(R.id.radioButtonEtoJ).isChecked();
 			CommonVariables.bSort = switchSortHanten.isChecked();
@@ -407,7 +421,8 @@ public class QSentakuFragment extends Fragment {
 				case 1: {
 					if (strQ.endsWith("1q") || strQ.startsWith("y")) {
 						onStartPlaying();
-					} else {
+					}
+					else {
 						Toast.makeText(context, "単語は1級、準1級、ユメタンのみです。", Toast.LENGTH_SHORT).show();
 					}
 					break;
@@ -485,264 +500,189 @@ public class QSentakuFragment extends Fragment {
 			Calendar calendar = Calendar.getInstance();
 			int hour = calendar.get(Calendar.HOUR_OF_DAY);
 			int minute = calendar.get(Calendar.MINUTE);
-
+			
 			// 時間選択ダイアログの生成
 			TimePickerDialog timepick = new TimePickerDialog(context,
-					(view, hourOfDay, minute1) -> {
-						// 設定 ボタンクリック時の処理
-						// 時間をセットする
-						Calendar calendar1 = Calendar.getInstance();
-						// Calendarを使って現在の時間をミリ秒で取得
-						calendar1.setTimeInMillis(System.currentTimeMillis());
-						// 設定
-						calendar1.set(Calendar.HOUR_OF_DAY, hourOfDay);
-						calendar1.set(Calendar.MINUTE, minute1);
-						//明示的なBroadCast
-						Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-						PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-						// アラームをセットする
-						AlarmManager am =
-								(AlarmManager) context.getSystemService(ALARM_SERVICE);
-						if (am != null) {
-							am.setExact(AlarmManager.RTC_WAKEUP, calendar1.getTimeInMillis(), pending);
-							Toast.makeText(context, "Set Alarm ", Toast.LENGTH_SHORT).show();
-						}
-					}, hour, minute, true);
+			                                                 (view, hourOfDay, minute1) -> {
+				                                                 // 設定 ボタンクリック時の処理
+				                                                 // 時間をセットする
+				                                                 Calendar calendar1 = Calendar.getInstance();
+				                                                 // Calendarを使って現在の時間をミリ秒で取得
+				                                                 calendar1.setTimeInMillis(System.currentTimeMillis());
+				                                                 // 設定
+				                                                 calendar1.set(Calendar.HOUR_OF_DAY, hourOfDay);
+				                                                 calendar1.set(Calendar.MINUTE, minute1);
+				                                                 //明示的なBroadCast
+				                                                 Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+				                                                 PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+				                                                 // アラームをセットする
+				                                                 AlarmManager am =
+					                                                 (AlarmManager) context.getSystemService(ALARM_SERVICE);
+				                                                 if (am != null) {
+					                                                 am.setExact(AlarmManager.RTC_WAKEUP, calendar1.getTimeInMillis(), pending);
+					                                                 Toast.makeText(context, "Set Alarm ", Toast.LENGTH_SHORT).show();
+				                                                 }
+			                                                 }, hour, minute, true);
 			// 表示
 			timepick.show();
 		} catch (Exception e) {
 			showException(context, e);
 		}
 	}
-
+	
 	//https://qiita.com/niwasawa/items/c8271f56f058965b318b
 	public String getVersionName(Activity activity) {
 		try {
 			// Java パッケージ名を取得
 			// android.content.Context#getPackageName
 			String name = activity.getPackageName();
-
+			
 			// インストールされているアプリケーションパッケージの
 			// 情報を取得するためのオブジェクトを取得
 			// android.content.Context#getPackageManager
 			PackageManager pm = activity.getPackageManager();
-
+			
 			// アプリケーションパッケージの情報を取得
 			PackageInfo info = pm.getPackageInfo(name, PackageManager.GET_META_DATA);
-
+			
 			// バージョン番号の文字列を返す
 			return info.versionName;
-
+			
 		} catch (Exception e) {
 			showException(context, e);
 			return null;
 		}
 	}
 	
-	private class TextWatcherPipTate implements TextWatcher {
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		
-		}
-		
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-		
-		}
-		
-		@Override
-		public void afterTextChanged(Editable s) {
-			try {
-				if (s.length() > 0) {
-					pipTate = Integer.parseInt(s.toString());
-					putIntData(context, "editText", "editTextPipTate", pipTate);
+	public void SpinnerHanniOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
+		try {
+			MyLibrary.PreferenceManager.putIntData(context, "spinnerHanni", "selected", i);
+			switch (i) {
+				case 0: {
+					CommonVariables.nUnit = 1;
+					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruA;
+					break;
 				}
-			} catch (Exception e) {
-				showException(context, e);
+				case 1: {
+					CommonVariables.nUnit = 2;
+					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruB;
+					break;
+				}
+				case 2: {
+					CommonVariables.nUnit = 3;
+					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruC;
+					break;
+				}
+				case 3: {
+					CommonVariables.nUnit = 4;
+					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.Jukugo;
+					break;
+				}
+				case 4: {
+					CommonVariables.nUnit = 5;
+					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.all;
+					CommonVariables.nShurui = 4;
+					break;
+				}
 			}
+		} catch (Exception e) {
+			showException(context, e);
 		}
 	}
 	
-	private class TextWatcherPipYoko implements TextWatcher {
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		
-		}
-		
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-		
-		}
-		
-		@Override
-		public void afterTextChanged(Editable s) {
-			try {
-				if (s.length() > 0) {
-					pipYoko = Integer.parseInt(s.toString());
-					putIntData(context, "editText", "editTextPipYoko", pipYoko);
+	public void SpinnerHinsiOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
+		try {
+			MyLibrary.PreferenceManager.putIntData(context, "spinnerHinsi", "selected", i);
+			switch (i) {
+				case 0: {
+					CommonVariables.nShurui = 1;
+					break;
 				}
-			} catch (Exception e) {
-				showException(context, e);
+				case 1: {
+					CommonVariables.nShurui = 2;
+					break;
+				}
+				case 2: {
+					CommonVariables.nShurui = 3;
+					break;
+				}
+				case 3: {
+					CommonVariables.nShurui = 4;
+					break;
+				}
 			}
+		} catch (Exception e) {
+			showException(context, e);
 		}
 	}
 	
-	private class SpinnerHanniOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
-		@Override
-		public void onItemSelected(AdapterView<?> adapterView, View view1, int i, long l) {
-			try {
-				MyLibrary.PreferenceManager.putIntData(context, "spinnerHanni", "selected", i);
-				switch (i) {
-					case 0: {
-						CommonVariables.nUnit = 1;
-						CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruA;
-						break;
-					}
-					case 1: {
-						CommonVariables.nUnit = 2;
-						CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruB;
-						break;
-					}
-					case 2: {
-						CommonVariables.nUnit = 3;
-						CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruC;
-						break;
-					}
-					case 3: {
-						CommonVariables.nUnit = 4;
-						CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.Jukugo;
-						break;
-					}
-					case 4: {
-						CommonVariables.nUnit = 5;
-						CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.all;
-						CommonVariables.nShurui = 4;
-						break;
-					}
+	public void SpinnerModeOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
+		try {
+			MyLibrary.PreferenceManager.putIntData(context, "spinnerMode", "selected", i);
+			switch (i) {
+				case 0: {
+					//単語
+					CommonVariables.nWordPhraseOrTest = 1;
+					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.word;
+					break;
 				}
-			} catch (Exception e) {
-				showException(context, e);
+				case 1: {
+					//文
+					CommonVariables.nWordPhraseOrTest = 2;
+					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.phrase;
+					break;
+				}
+				case 2: {
+					//単語+文
+					CommonVariables.nWordPhraseOrTest = 6;
+					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.wordPlusPhrase;
+					break;
+				}
+				case 3: {
+					//ランダムテスト
+					CommonVariables.nWordPhraseOrTest = 3;
+					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.randomTest;
+					break;
+				}
+				case 4: {
+					//正答率テスト
+					CommonVariables.nWordPhraseOrTest = 4;
+					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.huseikainomiTest;
+					break;
+				}
+				case 5: {
+					//順番テスト
+					CommonVariables.nWordPhraseOrTest = 5;
+					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.seitouritsujunTest;
+					break;
+				}
 			}
-		}
-		
-		@Override
-		public void onNothingSelected(AdapterView<?> adapterView) {
+		} catch (Exception e) {
+			showException(context, e);
 		}
 	}
 	
-	private class SpinnerHinsiOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
-		@Override
-		public void onItemSelected(AdapterView<?> adapterView, View view1, int i, long l) {
-			try {
-				MyLibrary.PreferenceManager.putIntData(context, "spinnerHinsi", "selected", i);
-				switch (i) {
-					case 0: {
-						CommonVariables.nShurui = 1;
-						break;
-					}
-					case 1: {
-						CommonVariables.nShurui = 2;
-						break;
-					}
-					case 2: {
-						CommonVariables.nShurui = 3;
-						break;
-					}
-					case 3: {
-						CommonVariables.nShurui = 4;
-						break;
-					}
+	public void SpinnerKuuhakuOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
+		try {
+			putIntData(context, "spinnerKuuhaku", "selected", i);
+			switch (i) {
+				default:
+				case 0: {
+					strDirectoryNameForKuuhaku = "";
+					break;
 				}
-			} catch (Exception e) {
-				showException(context, e);
+				case 1: {
+					strDirectoryNameForKuuhaku = "autocut-";
+					break;
+				}
+				case 2: {
+					strDirectoryNameForKuuhaku = "manucut-";
+					break;
+				}
 			}
-		}
-		
-		@Override
-		public void onNothingSelected(AdapterView<?> adapterView) {
+		} catch (Exception e) {
+			showException(context, e);
 		}
 	}
 	
-	private class SpinnerModeOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
-		@Override
-		public void onItemSelected(AdapterView<?> adapterView, View view1, int i, long l) {
-			try {
-				MyLibrary.PreferenceManager.putIntData(context, "spinnerMode", "selected", i);
-				switch (i) {
-					case 0: {
-						//単語
-						CommonVariables.nWordPhraseOrTest = 1;
-						CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.word;
-						break;
-					}
-					case 1: {
-						//文
-						CommonVariables.nWordPhraseOrTest = 2;
-						CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.phrase;
-						break;
-					}
-					case 2: {
-						//単語+文
-						CommonVariables.nWordPhraseOrTest = 6;
-						CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.wordPlusPhrase;
-						break;
-					}
-					case 3: {
-						//ランダムテスト
-						CommonVariables.nWordPhraseOrTest = 3;
-						CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.randomTest;
-						break;
-					}
-					case 4: {
-						//正答率テスト
-						CommonVariables.nWordPhraseOrTest = 4;
-						CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.huseikainomiTest;
-						break;
-					}
-					case 5: {
-						//順番テスト
-						CommonVariables.nWordPhraseOrTest = 5;
-						CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.seitouritsujunTest;
-						break;
-					}
-				}
-			} catch (Exception e) {
-				showException(context, e);
-			}
-		}
-		
-		@Override
-		public void onNothingSelected(AdapterView<?> adapterView) {
-		}
-	}
-	
-	private class SpinnerKuuhakuOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
-		@Override
-		public void onItemSelected(AdapterView<?> adapterView, View view1, int i, long l) {
-			try {
-				putIntData(context, "spinnerKuuhaku", "selected", i);
-				switch (i) {
-					default:
-					case 0: {
-						strDirectoryNameForKuuhaku = "";
-						break;
-					}
-					case 1: {
-						strDirectoryNameForKuuhaku = "autocut-";
-						break;
-					}
-					case 2: {
-						strDirectoryNameForKuuhaku = "manucut-";
-						break;
-					}
-				}
-			} catch (Exception e) {
-				showException(context, e);
-			}
-		}
-		
-		@Override
-		public void onNothingSelected(AdapterView<?> adapterView) {
-		}
-	}
 }

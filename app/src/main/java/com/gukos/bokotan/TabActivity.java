@@ -4,7 +4,9 @@ import static com.gukos.bokotan.MyLibrary.DisplayOutput.getClassName;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -44,4 +46,22 @@ public class TabActivity extends AppCompatActivity {
 			MyLibrary.ExceptionManager.showException(exception);
 		}
 	}
+	
+	@Override
+	public void onBackPressed(){
+		//戻るボタン
+		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU){
+			super.onBackPressed();
+		}
+		return;
+	}
+	
+	/*
+	//ボタン操作を検出したい。
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		puts("keyCode="+keyCode+"event="+event.toString());
+		return super.onKeyDown(keyCode,event);
+	}
+	*/
 }

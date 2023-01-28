@@ -37,10 +37,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -51,6 +54,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -65,7 +69,9 @@ public class KensakuFragment extends Fragment {
 	Thread threadSearch = null;
 	boolean threadSearchIsRunning = true;
 	
-	private <T extends View> T findViewById(int id){return viewFragment.findViewById(id);}
+	private static final boolean useDefaultAdapter = true;
+	
+	private <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
 	
 	static class ListData {
 		static int size = 0;
@@ -95,17 +101,17 @@ public class KensakuFragment extends Fragment {
 		
 		String[] getAllFieldString() {
 			return new String[]{
-					this.e,
-					this.j,
-					this.category,
-					this.subCategory,
-					String.valueOf(this.localNumber),
+				this.e,
+				this.j,
+				this.category,
+				this.subCategory,
+				String.valueOf(this.localNumber),
 			};
 		}
 		
 		public String toString() {
 			try {
-				String string = category + " "+subCategory + " " + e + " " + j;
+				String string = category + " " + subCategory + " " + e + " " + j;
 				return string.substring(0, Math.min(string.length(), 50));
 			} catch (Exception e) {
 				showException(e);
@@ -116,13 +122,13 @@ public class KensakuFragment extends Fragment {
 		public String toDetailedString() {
 			try {
 				return "No. " + this.toushiNumber
-						+ "\nカテゴリ: " + this.category
-						+ " "+subCategory + "\n番号:"
-						+ this.localNumber
-						+ "\n" + this.e
-						+ "\n発音:" + getHatsuon(this.e)
-						+ "\n" + this.j + "\n"
-						+ GogenYomuFactory.getGogenString(this.e, true, true);
+					+ "\nカテゴリ: " + this.category
+					+ " " + subCategory + "\n番号:"
+					+ this.localNumber
+					+ "\n" + this.e
+					+ "\n発音:" + getHatsuon(this.e)
+					+ "\n" + this.j + "\n"
+					+ GogenYomuFactory.getGogenString(this.e, true, true);
 			} catch (Exception e) {
 				showException(e);
 			}
@@ -214,12 +220,12 @@ public class KensakuFragment extends Fragment {
 			Button buttonCLear = findViewById(R.id.fkbuttonClear);
 			buttonKensakuHouhou = findViewById(R.id.fkbuttonKensakuHouhou);
 			
-			etKey.addTextChangedListener(new EditTextKeyWatcher());
+			etKey.addTextChangedListener((TextWatcherAfterOnly) this::EditTextChanged);
 			
 			buttonCLear.setOnClickListener(v -> etKey.setText(""));
 			
 			kensakuHouhou =
-					kensakuHouhou.toEnumKensakuHouhou(MyLibrary.PreferenceManager.getIntData(context, "enumKensakuHouhou", "kensakuhouhou", kensakuHouhou.toInt()));
+				kensakuHouhou.toEnumKensakuHouhou(MyLibrary.PreferenceManager.getIntData(context, "enumKensakuHouhou", "kensakuhouhou", kensakuHouhou.toInt()));
 			buttonKensakuHouhou.setText(kensakuHouhou.toString());
 			buttonKensakuHouhou.setOnClickListener(v -> {
 				try {
@@ -322,8 +328,8 @@ public class KensakuFragment extends Fragment {
 			
 			//英語漬け.comから読み込み
 			for (String Q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q",
-					"-eiken-jukugo", "-eikenp1-jukugo", "-Toefl-Chokuzen", "-Toeic-500ten", "-Toeic-700ten", "-Toeic-900ten",
-					"-Toeic-Chokuzen", "-Toeic-jukugo",}) {
+				"-eiken-jukugo", "-eikenp1-jukugo", "-Toefl-Chokuzen", "-Toeic-500ten", "-Toeic-700ten", "-Toeic-900ten",
+				"-Toeic-Chokuzen", "-Toeic-jukugo",}) {
 				WordPhraseData wpd = new WordPhraseData("Eigoduke.com/" + "WordDataEigoduke" + Q, context);
 				for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
 					if (wpd.e[i] != null && wpd.j[i] != null)
@@ -380,7 +386,7 @@ public class KensakuFragment extends Fragment {
 			SetHatsuonKigou(context);
 			
 			//別スレッドからUIを変更するときに必要
-			 activity.runOnUiThread(() -> {
+			activity.runOnUiThread(() -> {
 				try {
 					tvResultCount.setText(resultData.size() + "件");
 					setListView(lvResult, resultData, null);
@@ -406,18 +412,39 @@ public class KensakuFragment extends Fragment {
 	
 	private void setListView(ListView lv, ArrayList<ListData> ar, String key) {
 		try {
-			lv.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, ar));
+			//lv.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, ar));
+			if (useDefaultAdapter) {
+				lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1, ar));
+			}
+			else {
+				List<TextView> list = new ArrayList<>();
+				for (ListData ld : ar) {
+					TextView tv = new TextView(getContext());
+					tv.setText(ld.toString());
+					tv.setTextColor(getContext().getColor(R.color.textcolor));
+					tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+					tv.setHeight(120);
+					tv.setGravity(Gravity.CENTER | Gravity.START);
+					list.add(tv);
+				}
+				lv.setAdapter(new ArrayAdapter<>(getContext(), 0, list) {
+					@Override
+					public View getView(int position, View convertView, ViewGroup parent) {
+						return getItem(position);
+					}
+				});
+			}
 			lv.setOnItemClickListener((adapterView, view, i, l) -> {
 				try {
 					ListData ld = ar.get(i);
 					new AlertDialog.Builder(context)
-							.setTitle(MyLibrary.DisplayOutput.setStringColored(ld.toushiNumber + " : " + ld.e, key))
-							.setMessage(MyLibrary.DisplayOutput.setStringColored(ld.toDetailedString(), key))
-							.setPositiveButton("閉じる", null)
-							.setNeutralButton("英→日発音", (dialogInterface, i1) -> playEnglishAndJapanese(ld))
-							.setNegativeButton("英語発音", (dialogInterface, i1) -> playEnglish(ld))
-							.create()
-							.show();
+						.setTitle(MyLibrary.DisplayOutput.setStringColored(ld.toushiNumber + " : " + ld.e, key))
+						.setMessage(MyLibrary.DisplayOutput.setStringColored(ld.toDetailedString(), key))
+						.setPositiveButton("閉じる", null)
+						.setNeutralButton("英→日発音", (dialogInterface, i1) -> playEnglishAndJapanese(ld))
+						.setNegativeButton("英語発音", (dialogInterface, i1) -> playEnglish(ld))
+						.create()
+						.show();
 				} catch (Exception e) {
 					showException(context, e);
 				}
@@ -570,83 +597,73 @@ public class KensakuFragment extends Fragment {
 		}
 	}
 	
-	private class EditTextKeyWatcher implements TextWatcher {
-		@Override
-		public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-		}
-		
-		@Override
-		public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-		}
-		
-		@Override
-		public void afterTextChanged(Editable editable) {
-			try {
-				if (threadSearchIsRunning) {
-					threadSearchIsRunning = false;
-					threadSearch = null;
-				}
-				threadSearch = new Thread(() -> {
-					synchronized (this) {
-						//文字入力時
-						ArrayList<ListData> resultListTmp = new ArrayList<>();
-						String key = editable.toString().toLowerCase();//小文字に変換
-						if (key.length() == 0) {
-							resultListTmp = new ArrayList<>(allData);
-						} else {
-							switch (kensakuHouhou) {
-								case starts: {
-									for (var listData : allData) {
-										for(var field:listData.getAllFieldString()){
-											if (field.toLowerCase().startsWith(key)){
-												resultListTmp.add(listData);
-												break;
-											}
+	public void EditTextChanged(Editable editable) {
+		try {
+			if (threadSearchIsRunning) {
+				threadSearchIsRunning = false;
+				threadSearch = null;
+			}
+			threadSearch = new Thread(() -> {
+				synchronized (this) {
+					//文字入力時
+					ArrayList<ListData> resultListTmp = new ArrayList<>();
+					String key = editable.toString().toLowerCase();//小文字に変換
+					if (key.length() == 0) {
+						resultListTmp = new ArrayList<>(allData);
+					}
+					else {
+						switch (kensakuHouhou) {
+							case starts: {
+								for (var listData : allData) {
+									for (var field : listData.getAllFieldString()) {
+										if (field.toLowerCase().startsWith(key)) {
+											resultListTmp.add(listData);
+											break;
 										}
-										if (!threadSearchIsRunning) return;
 									}
-									break;
+									if (!threadSearchIsRunning) return;
 								}
-								case contains: {
-									for (var listData : allData) {
-										for(var field:listData.getAllFieldString()){
-											if (field.toLowerCase().contains(key)){
-												resultListTmp.add(listData);
-												break;
-											}
+								break;
+							}
+							case contains: {
+								for (var listData : allData) {
+									for (var field : listData.getAllFieldString()) {
+										if (field.toLowerCase().contains(key)) {
+											resultListTmp.add(listData);
+											break;
 										}
-										if (!threadSearchIsRunning) return;
 									}
-									break;
+									if (!threadSearchIsRunning) return;
 								}
-								case ends: {
-									for (var listData : allData) {
-										for(var field:listData.getAllFieldString()){
-											if (field.toLowerCase().endsWith(key)){
-												resultListTmp.add(listData);
-												break;
-											}
+								break;
+							}
+							case ends: {
+								for (var listData : allData) {
+									for (var field : listData.getAllFieldString()) {
+										if (field.toLowerCase().endsWith(key)) {
+											resultListTmp.add(listData);
+											break;
 										}
-										if (!threadSearchIsRunning) return;
 									}
-									break;
+									if (!threadSearchIsRunning) return;
 								}
+								break;
 							}
 						}
-						
-						resultData = (ArrayList<ListData>) resultListTmp.clone();
-						
-						activity.runOnUiThread(() -> {
-							tvResultCount.setText(resultData.size() + "件");
-							setListView(lvResult, resultData, key);
-						});
 					}
-				});
-				threadSearchIsRunning = true;
-				threadSearch.start();
-			} catch (Exception e) {
-				MyLibrary.ExceptionManager.showException(context, e);
-			}
+					
+					resultData = (ArrayList<ListData>) resultListTmp.clone();
+					
+					activity.runOnUiThread(() -> {
+						tvResultCount.setText(resultData.size() + "件");
+						setListView(lvResult, resultData, key);
+					});
+				}
+			});
+			threadSearchIsRunning = true;
+			threadSearch.start();
+		} catch (Exception e) {
+			MyLibrary.ExceptionManager.showException(context, e);
 		}
 	}
 }

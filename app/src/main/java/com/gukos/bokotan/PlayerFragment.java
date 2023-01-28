@@ -49,9 +49,9 @@ public class PlayerFragment extends Fragment {
 	protected int selectedIndex = 0;
 	AlertDialog adWord, adUnit;
 	
-	public PlayerFragment(){
+	public PlayerFragment() {
 		super();
-		puts(getClassName()+getMethodName());
+		puts(getClassName() + getMethodName());
 	}
 	
 	@Override
@@ -59,19 +59,19 @@ public class PlayerFragment extends Fragment {
 		return inflater.inflate(R.layout.fragment_player, container, false);
 	}
 	
-	private <T extends View> T findViewById(int id){return viewFragment.findViewById(id);}
+	private <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
 	
 	//ActivityのonCreateに相当
 	@Override
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			puts(getClassName()+getMethodName());
+			puts(getClassName() + getMethodName());
 			context = getContext();
 			activity = getActivity();
 			viewFragment = view;
 			try {
-				puts(getClassName()+getMethodName()+" start");
+				puts(getClassName() + getMethodName() + " start");
 				
 				//UI設定
 				CommonVariables.tvWordEng = findViewById(R.id.fpTextViewEng);
@@ -96,9 +96,9 @@ public class PlayerFragment extends Fragment {
 					CommonVariables.tvsubJ.setVisibility(GONE);
 				}
 				
-				Button buttonStartStop=findViewById(R.id.fpbuttonStartStop);
+				Button buttonStartStop = findViewById(R.id.fpbuttonStartStop);
 				buttonStartStop.setOnClickListener(this::onStartStopButtonClick);
-				buttonStartStop.setText(CommonVariables.playing?"stop":"start");
+				buttonStartStop.setText(CommonVariables.playing ? "stop" : "start");
 				findViewById(R.id.fpbuttonBangouHenkou).setOnClickListener(this::onSelectNowButtonClick);
 				findViewById(R.id.fpbuttonSaisho).setOnClickListener(this::onResetButtonClick);
 				findViewById(R.id.fpbuttonPIP).setOnClickListener(this::onPIPButtonClicked);
@@ -111,19 +111,19 @@ public class PlayerFragment extends Fragment {
 				}
 				
 				SeekBar sbE = findViewById(R.id.fpseekBarEng);
-				sbE.setOnSeekBarChangeListener(new OnSeekBarChangeListenerEng());
+				sbE.setOnSeekBarChangeListener((OnSeekBarProgressChange) this::onSpeedSeekBar);
 				sbE.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
 				onSpeedSeekBar(sbE);
 				SeekBar sbJ = findViewById(R.id.fpseekBarJpn);
-				sbJ.setOnSeekBarChangeListener(new OnSeekBarChangeListenerJpn());
+				sbJ.setOnSeekBarChangeListener((OnSeekBarProgressChange) this::onSpeedSeekBar);
 				sbJ.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(sbJ);
-				puts(getClassName()+getMethodName()+" ended");
+				puts(getClassName() + getMethodName() + " ended");
 			} catch (Exception e) {
 				showException(context, e);
 			}
 			
-			puts(getMethodName()+" ended");
+			puts(getMethodName() + " ended");
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
@@ -137,9 +137,9 @@ public class PlayerFragment extends Fragment {
 			
 			hashMapKishutu.clear();
 			//バグ対策
-			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");	//1799
-			hashMapKishutu.put("grow into 〜", "p1q");				//1675
-			hashMapKishutu.put("accrue", "pass" + "1q");			//1568
+			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");    //1799
+			hashMapKishutu.put("grow into 〜", "p1q");                //1675
+			hashMapKishutu.put("accrue", "pass" + "1q");            //1568
 			
 			switch (sentakuQ) {
 				case test1q: {
@@ -284,9 +284,9 @@ public class PlayerFragment extends Fragment {
 				}
 			}
 			
-			if (!nowIsDecided&&sentakuUnit.equals(WordPhraseData.q_num.unit.all)) {
+			if (!nowIsDecided && sentakuUnit.equals(WordPhraseData.q_num.unit.all)) {
 				now = MyLibrary.PreferenceManager.getIntData(context, "MainActivity" +
-						"now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", 1);
+					"now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", 1);
 				CommonVariables.nFrom = 1;
 				CommonVariables.nTo = CommonVariables.lastnum;
 			}
@@ -386,7 +386,7 @@ public class PlayerFragment extends Fragment {
 			adapterUnit = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q) || sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
 				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞",
-																		  "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
+				                                                          "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
 				for (int i = 0; i < 10; i++) {
 					CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, i);
 					adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", CommonVariables.from, CommonVariables.to));
@@ -422,10 +422,14 @@ public class PlayerFragment extends Fragment {
 	public void onSelectNowButtonClick(View v) {
 		try {
 			AlertDialog.Builder builder = new AlertDialog.Builder(
-					context);
+				context);
 			builder.setTitle("選択してください");
 			//AlertDialogで選択された内容を保持
-			builder.setSingleChoiceItems(adapterUnit, selectedIndex, (dialog, which) -> {selectedIndex = which;adUnit.dismiss();askTangoNumber(selectedIndex);});
+			builder.setSingleChoiceItems(adapterUnit, selectedIndex, (dialog, which) -> {
+				selectedIndex = which;
+				adUnit.dismiss();
+				askTangoNumber(selectedIndex);
+			});
 			adUnit = builder.create();
 			adUnit.show();
 		} catch (Exception e) {
@@ -439,9 +443,9 @@ public class PlayerFragment extends Fragment {
 			
 			ArrayAdapter<String> adapterWord = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.testy08)
-					|| sentakuQ.equals(WordPhraseData.q_num.testy1)
-					|| sentakuQ.equals(WordPhraseData.q_num.testy2)
-					|| sentakuQ.equals(WordPhraseData.q_num.testy3)) {
+				|| sentakuQ.equals(WordPhraseData.q_num.testy1)
+				|| sentakuQ.equals(WordPhraseData.q_num.testy2)
+				|| sentakuQ.equals(WordPhraseData.q_num.testy3)) {
 				CommonVariables.from = unit * 100 + 1;
 				CommonVariables.to = (unit + 1) * 100;
 			}
@@ -484,9 +488,10 @@ public class PlayerFragment extends Fragment {
 				saiseiStop();
 				saveNow();
 				button.setText("start");
-			} else {
+			}
+			else {
 				//再生する
-				context.startForegroundService(new Intent(context,PlaySound.class));
+				context.startForegroundService(new Intent(context, PlaySound.class));
 				button.setText("stop");
 				CommonVariables.playing = true;
 			}
@@ -499,7 +504,7 @@ public class PlayerFragment extends Fragment {
 	public void onDestroy() {
 		try {
 			super.onDestroy();
-			context.stopService(new Intent(context,PlaySound.class));
+			context.stopService(new Intent(context, PlaySound.class));
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -526,7 +531,7 @@ public class PlayerFragment extends Fragment {
 	
 	public void saiseiStop() {
 		try {
-			context.stopService(new Intent(context,PlaySound.class));
+			context.stopService(new Intent(context, PlaySound.class));
 			CommonVariables.playing = false;
 			
 		} catch (Exception e) {
@@ -546,7 +551,8 @@ public class PlayerFragment extends Fragment {
 		try {
 			if (PipActivity.startPIP) {
 				//PIPを終了したい
-			} else {
+			}
+			else {
 				startActivity(new Intent(context, PipActivity.class));
 			}
 			PipActivity.startPIP = !PipActivity.startPIP;
@@ -563,7 +569,8 @@ public class PlayerFragment extends Fragment {
 				((TextView) findViewById(R.id.fptvSeekBarEng)).setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 				CommonVariables.dPlaySpeedEng = 1 + 0.1 * sb.getProgress();
 				putIntData(context, "SeekBar", "english", sb.getProgress());
-			} else if (sb.getId() == R.id.fpseekBarJpn) {
+			}
+			else if (sb.getId() == R.id.fpseekBarJpn) {
 				//日本語
 				((TextView) findViewById(R.id.fptvSeekBarJpn)).setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 				CommonVariables.dPlaySpeedJpn = 1 + 0.1 * sb.getProgress();
@@ -574,33 +581,7 @@ public class PlayerFragment extends Fragment {
 		}
 	}
 	
-	private class OnSeekBarChangeListenerEng implements SeekBar.OnSeekBarChangeListener {
-		@Override//ツマミがドラッグされると呼ばれる
-		public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-			onSpeedSeekBar(seekBar);
-		}
-		
-		@Override//ツマミがタッチされた時に呼ばれる
-		public void onStartTrackingTouch(SeekBar seekBar) {
-		}
-		
-		@Override//ツマミがリリースされた時に呼ばれる
-		public void onStopTrackingTouch(SeekBar seekBar) {
-		}
-	}
-	
-	private class OnSeekBarChangeListenerJpn implements SeekBar.OnSeekBarChangeListener {
-		@Override//ツマミがドラッグされると呼ばれる
-		public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-			onSpeedSeekBar(seekBar);
-		}
-		
-		@Override//ツマミがタッチされた時に呼ばれる
-		public void onStartTrackingTouch(SeekBar seekBar) {
-		}
-		
-		@Override//ツマミがリリースされた時に呼ばれる
-		public void onStopTrackingTouch(SeekBar seekBar) {
-		}
+	private void onSpeedSeekBar(SeekBar seekBar, int i, boolean b) {
+		onSpeedSeekBar(seekBar);
 	}
 }
