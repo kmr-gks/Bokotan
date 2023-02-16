@@ -212,11 +212,11 @@ public class KensakuFragment extends Fragment {
 	
 	public void initialize() {
 		try {
-			EditText etKey = findViewById(R.id.fkeditTextTextPersonName);
-			lvResult = findViewById(R.id.fklistViewResult);
-			tvResultCount = findViewById(R.id.fktextViewResultCount);
-			Button buttonCLear = findViewById(R.id.fkbuttonClear);
-			buttonKensakuHouhou = findViewById(R.id.fkbuttonKensakuHouhou);
+			EditText etKey = findViewById(R.id.editTextKensakuKey);
+			lvResult = findViewById(R.id.listViewKensakuResult);
+			tvResultCount = findViewById(R.id.textViewKensakuResultCount);
+			Button buttonCLear = findViewById(R.id.buttonClearKey);
+			buttonKensakuHouhou = findViewById(R.id.buttonKensakuHouhou);
 			
 			etKey.addTextChangedListener((MyLibrary.UiInterface.TextWatcherAfterOnly) this::EditTextChanged);
 			
@@ -417,15 +417,15 @@ public class KensakuFragment extends Fragment {
 			else {
 				List<TextView> list = new ArrayList<>();
 				for (ListData ld : ar) {
-					TextView tv = new TextView(getContext());
+					TextView tv = new TextView(context);
 					tv.setText(ld.toString());
-					tv.setTextColor(getContext().getColor(R.color.textcolor));
+					tv.setTextColor(context.getColor(R.color.textcolor));
 					tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 					tv.setHeight(120);
 					tv.setGravity(Gravity.CENTER | Gravity.START);
 					list.add(tv);
 				}
-				lv.setAdapter(new ArrayAdapter<>(getContext(), 0, list) {
+				lv.setAdapter(new ArrayAdapter<>(context, 0, list) {
 					@Override
 					public View getView(int position, View convertView, ViewGroup parent) {
 						return getItem(position);

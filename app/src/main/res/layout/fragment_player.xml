@@ -8,16 +8,17 @@
 	tools:context=".PlayerFragment">
 
 	<TextView
-		android:id="@+id/fptvGenzai"
+		android:id="@+id/textViewGenzai"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:text="No.0000"
 		android:textColor="#F44336"
 		android:textSize="20sp"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
-		android:id="@+id/fptvGogen"
+		android:id="@+id/textViewGogen"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:autoSizeTextType="uniform"
@@ -25,12 +26,12 @@
 		android:textAlignment="textEnd"
 		android:textColor="@color/textcolor"
 		android:textSize="40sp"
-		app:layout_constraintBottom_toTopOf="@+id/fptvsubE"
+		app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleEng"
 		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/fplinearLayoutTextViews" />
+		app:layout_constraintTop_toBottomOf="@+id/linearLayoutWords" />
 
 	<TextView
-		android:id="@+id/fptvsubJ"
+		android:id="@+id/textViewSubtitleJpn"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:autoSizeTextType="uniform"
@@ -38,12 +39,12 @@
 		android:textAlignment="textEnd"
 		android:textColor="@color/textcolor"
 		android:textSize="26sp"
-		app:layout_constraintBottom_toTopOf="@+id/fplinearLayoutButtons"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayoutPlayerButtons"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent" />
 
 	<TextView
-		android:id="@+id/fptvsubE"
+		android:id="@+id/textViewSubtitleEng"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:autoSizeTextType="uniform"
@@ -51,21 +52,21 @@
 		android:textAlignment="textEnd"
 		android:textColor="@color/textcolor"
 		android:textSize="26sp"
-		app:layout_constraintBottom_toTopOf="@+id/fptvsubJ"
+		app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleJpn"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent" />
 
 	<LinearLayout
-		android:id="@+id/fplinearLayoutButtons"
+		android:id="@+id/linearLayoutPlayerButtons"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
-		app:layout_constraintBottom_toTopOf="@+id/fplinearLayoutSeekBars"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayoutSeekBars"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent">
 
 		<Button
-			android:id="@+id/fpbuttonSaisho"
+			android:id="@+id/buttonToBegin"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
@@ -74,7 +75,7 @@
 			android:textSize="16sp" />
 
 		<Button
-			android:id="@+id/fpbuttonBangouHenkou"
+			android:id="@+id/buttonNowChange"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
@@ -83,7 +84,7 @@
 			android:textSize="16sp" />
 
 		<Button
-			android:id="@+id/fpbuttonPIP"
+			android:id="@+id/buttonPip"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
@@ -92,7 +93,7 @@
 			android:textSize="16sp" />
 
 		<Button
-			android:id="@+id/fpbuttonStartStop"
+			android:id="@+id/buttonStartStop"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
@@ -102,36 +103,36 @@
 	</LinearLayout>
 
 	<TextView
-		android:id="@+id/fptextViewNumSeikairitu"
+		android:id="@+id/textViewNumSeikairitu"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:autoSizeTextType="uniform"
 		android:textColor="@color/textcolor"
-		app:layout_constraintBottom_toBottomOf="@+id/fptvGenzai"
-		app:layout_constraintStart_toEndOf="@+id/fptvGenzai"
+		app:layout_constraintBottom_toBottomOf="@+id/textViewGenzai"
+		app:layout_constraintStart_toEndOf="@+id/textViewGenzai"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
-		android:id="@+id/fptextViewSeikaisuu"
+		android:id="@+id/textViewSeikaisuu"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:autoSizeTextType="uniform"
 		android:textColor="@color/textcolor"
-		app:layout_constraintBottom_toBottomOf="@+id/fptvGenzai"
+		app:layout_constraintBottom_toBottomOf="@+id/textViewGenzai"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<LinearLayout
-		android:id="@+id/fplinearLayoutSeekBars"
+		android:id="@+id/linearLayoutSeekBars"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
-		app:layout_constraintBottom_toTopOf="@+id/fplinearLayoutTextSeekBar"
+		app:layout_constraintBottom_toTopOf="@+id/linearLayoutSeekBarTexts"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent">
 
 		<SeekBar
-			android:id="@+id/fpseekBarEng"
+			android:id="@+id/seekBarEng"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.5"
@@ -141,7 +142,7 @@
 			android:progress="5" />
 
 		<SeekBar
-			android:id="@+id/fpseekBarJpn"
+			android:id="@+id/seekBarJpn"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.5"
@@ -152,55 +153,58 @@
 	</LinearLayout>
 
 	<LinearLayout
-		android:id="@+id/fplinearLayoutTextSeekBar"
+		android:id="@+id/linearLayoutSeekBarTexts"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
-		app:layout_constraintBottom_toTopOf="@+id/fptextViewPath"
+		app:layout_constraintBottom_toTopOf="@+id/textViewPath"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent">
 
 		<TextView
-			android:id="@+id/fptvSeekBarEng"
+			android:id="@+id/textViewSeekBarEng"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="0.5"
+			android:text="英語速度:1.5"
 			android:textColor="@color/textcolor"
 			android:textSize="26sp" />
 
 		<TextView
-			android:id="@+id/fptvSeekBarJpn"
+			android:id="@+id/textViewSeekBarJpn"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="0.5"
+			android:text="日本語速度:1.5"
 			android:textColor="@color/textcolor"
 			android:textSize="26sp" />
 	</LinearLayout>
 
 	<LinearLayout
-		android:id="@+id/fplinearLayoutTextViews"
+		android:id="@+id/linearLayoutWords"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:orientation="vertical"
-		app:layout_constraintBottom_toTopOf="@+id/fptvsubE"
+		app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleEng"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/fptvGenzai">
+		app:layout_constraintTop_toBottomOf="@+id/textViewGenzai">
 
 		<TextView
-			android:id="@+id/fpTextViewEng"
+			android:id="@+id/textViewEng"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:autoSizeMaxTextSize="60sp"
 			android:autoSizeTextType="uniform"
+			android:text="再生停止"
 			android:textAlignment="center"
 			android:textColor="@color/textcolor"
 			android:textSize="36sp"
 			android:textStyle="bold" />
 
 		<TextView
-			android:id="@+id/fptextViewHatsuonKigou"
+			android:id="@+id/textViewHatsuonKigou"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="0.5"
@@ -210,12 +214,13 @@
 			android:textColor="@color/textcolor" />
 
 		<TextView
-			android:id="@+id/fpTextViewJpn"
+			android:id="@+id/textViewJpn"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="1"
 			android:autoSizeMaxTextSize="60sp"
 			android:autoSizeTextType="uniform"
+			android:text="再生停止"
 			android:textAlignment="center"
 			android:textColor="@color/textcolor"
 			android:textSize="36sp"
@@ -223,7 +228,7 @@
 	</LinearLayout>
 
 	<TextView
-		android:id="@+id/fptextViewPath"
+		android:id="@+id/textViewPath"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:autoSizeTextType="uniform"

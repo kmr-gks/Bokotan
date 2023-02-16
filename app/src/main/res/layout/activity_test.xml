@@ -8,7 +8,8 @@
 	tools:context=".TestActivity">
 
 	<LinearLayout
-        android:layout_width="match_parent"
+		android:id="@+id/linearLayoutChoice"
+		android:layout_width="match_parent"
 		android:layout_height="0dp"
 		android:orientation="vertical"
 		app:layout_constraintBottom_toBottomOf="parent"
@@ -17,7 +18,7 @@
 		app:layout_constraintTop_toBottomOf="@+id/buttonWakaranai">
 
 		<Button
-			android:id="@+id/bSentakusi1"
+			android:id="@+id/buttonChoice1"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
@@ -29,7 +30,7 @@
 			android:textSize="25sp" />
 
 		<Button
-			android:id="@+id/bSentakusi2"
+			android:id="@+id/buttonChoice2"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
@@ -41,7 +42,7 @@
 			android:textSize="25sp" />
 
 		<Button
-			android:id="@+id/bSentakusi3"
+			android:id="@+id/buttonChoice3"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
@@ -53,7 +54,7 @@
 			android:textSize="25sp" />
 
 		<Button
-			android:id="@+id/bSentakusi4"
+			android:id="@+id/buttonChoice4"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
@@ -66,7 +67,7 @@
 	</LinearLayout>
 
 	<TextView
-		android:id="@+id/tvMondaibun"
+		android:id="@+id/textViewMondaibun"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="@string/mondai"
@@ -77,7 +78,7 @@
 		app:layout_constraintStart_toStartOf="parent" />
 
 	<TextView
-		android:id="@+id/tvTorfKaitou"
+		android:id="@+id/textViewKaitou"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:autoSizeTextType="uniform"
@@ -114,43 +115,43 @@
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
-		android:id="@+id/tvKaisetsu"
+		android:id="@+id/textViewKaisetsu"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:autoSizeTextType="uniform"
 		android:text="@string/kaisetu"
 		android:textColor="@color/textcolor"
 		android:textSize="18sp"
-		app:layout_constraintBottom_toTopOf="@+id/tvMondaiNum"
+		app:layout_constraintBottom_toTopOf="@+id/textViewMondaiNum"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/tvTorfKaitou" />
+		app:layout_constraintTop_toBottomOf="@+id/textViewKaitou" />
 
 	<TextView
-		android:id="@+id/tvMaruBatu"
+		android:id="@+id/textViewMaruBatu"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:textSize="96sp"
-		app:layout_constraintBottom_toTopOf="@+id/tvMondaibun"
+		app:layout_constraintBottom_toTopOf="@+id/textViewMondaibun"
 		app:layout_constraintEnd_toEndOf="parent" />
 
 	<TextView
-		android:id="@+id/textViewRange"
+		android:id="@+id/textViewHanni"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="@string/textview"
 		android:textColor="@color/textcolor"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/tvMondaibun" />
+		app:layout_constraintTop_toBottomOf="@+id/textViewMondaibun" />
 
 	<TextView
-		android:id="@+id/tvMondaiNum"
+		android:id="@+id/textViewMondaiNum"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="@string/textview"
 		android:textColor="@color/textcolor"
 		android:textSize="20sp"
-		app:layout_constraintBottom_toTopOf="@+id/tvMondaibun"
+		app:layout_constraintBottom_toTopOf="@+id/textViewMondaibun"
 		app:layout_constraintStart_toStartOf="parent" />
 
 	<CheckBox
@@ -164,7 +165,8 @@
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<Button
-        android:layout_width="wrap_content"
+		android:id="@+id/buttonHint"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:onClick="onHintButtonTapped"
 		android:text="@string/hint"

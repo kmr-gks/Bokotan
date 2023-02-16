@@ -8,7 +8,7 @@
 	tools:context=".PipActivity">
 
 	<TextView
-		android:id="@+id/tvNum"
+		android:id="@+id/textViewNo"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:textColor="#F44336"
@@ -16,6 +16,7 @@
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<LinearLayout
+		android:id="@+id/linearLayoutPip"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:orientation="vertical"
@@ -25,7 +26,7 @@
 		app:layout_constraintTop_toTopOf="parent">
 
 		<TextView
-			android:id="@+id/tvPipE"
+			android:id="@+id/textViewPipEng"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="0.5"
@@ -39,7 +40,7 @@
 			android:textStyle="bold" />
 
 		<TextView
-			android:id="@+id/tvPipJ"
+			android:id="@+id/textViewPipJpn"
 			android:layout_width="match_parent"
 			android:layout_height="0dp"
 			android:layout_weight="0.5"

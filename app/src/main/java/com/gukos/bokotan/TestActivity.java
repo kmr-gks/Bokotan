@@ -79,16 +79,16 @@ public class TestActivity extends AppCompatActivity {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_test);
 
-			tvMondai = findViewById(R.id.tvMondaibun);
-			tvKaitou = findViewById(R.id.tvTorfKaitou);
-			tvKaisetsu = findViewById(R.id.tvKaisetsu);
-			tvMaruBatu = findViewById(R.id.tvMaruBatu);
-			bSentaku1 = findViewById(R.id.bSentakusi1);
-			bSentaku2 = findViewById(R.id.bSentakusi2);
-			bSentaku3 = findViewById(R.id.bSentakusi3);
-			bSentaku4 = findViewById(R.id.bSentakusi4);
+			tvMondai = findViewById(R.id.textViewMondaibun);
+			tvKaitou = findViewById(R.id.textViewKaitou);
+			tvKaisetsu = findViewById(R.id.textViewKaisetsu);
+			tvMaruBatu = findViewById(R.id.textViewMaruBatu);
+			bSentaku1 = findViewById(R.id.buttonChoice1);
+			bSentaku2 = findViewById(R.id.buttonChoice2);
+			bSentaku3 = findViewById(R.id.buttonChoice3);
+			bSentaku4 = findViewById(R.id.buttonChoice4);
 			bMarubatu = findViewById(R.id.buttonMarubatu);
-			tvRange = findViewById(R.id.textViewRange);
+			tvRange = findViewById(R.id.textViewHanni);
 
 			checkBoxHatsuon = findViewById(R.id.checkBoxHatsuon);
 			checkBoxKoukaon = findViewById(R.id.checkBoxKoukaon);
@@ -422,7 +422,7 @@ public class TestActivity extends AppCompatActivity {
 			nSeikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, 0);
 			nHuseikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, 0);
 
-			TextView textViewMondaiNumber = findViewById(R.id.tvMondaiNum);
+			TextView textViewMondaiNumber = findViewById(R.id.textViewMondaiNum);
 			if (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum] > 0) {
 				textViewMondaiNumber.setText(
 						nGenzaiNanMonme + "問目 No." + nMondaiTangoNum
@@ -530,19 +530,19 @@ public class TestActivity extends AppCompatActivity {
 			Button b = (Button) v;
 			int sentaku = 0;
 			switch (b.getId()) {
-				case R.id.bSentakusi1: {
+				case R.id.buttonChoice1: {
 					sentaku = 1;
 					break;
 				}
-				case R.id.bSentakusi2: {
+				case R.id.buttonChoice2: {
 					sentaku = 2;
 					break;
 				}
-				case R.id.bSentakusi3: {
+				case R.id.buttonChoice3: {
 					sentaku = 3;
 					break;
 				}
-				case R.id.bSentakusi4: {
+				case R.id.buttonChoice4: {
 					sentaku = 4;
 					break;
 				}

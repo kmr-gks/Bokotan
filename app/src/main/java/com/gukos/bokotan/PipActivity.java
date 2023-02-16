@@ -32,9 +32,9 @@ public class PipActivity extends Activity {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_pip);
 
-			tvPipE = findViewById(R.id.tvPipE);
-			tvPipJ = findViewById(R.id.tvPipJ);
-			tvNum = findViewById(R.id.tvNum);
+			tvPipE = findViewById(R.id.textViewPipEng);
+			tvPipJ = findViewById(R.id.textViewPipJpn);
+			tvNum = findViewById(R.id.textViewNo);
 
 			PipActivity.ChangeText(wordE[now], wordJ[now], now);
 

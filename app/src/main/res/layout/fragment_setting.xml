@@ -2,13 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/t"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@color/background">
 
 	<ScrollView
-		android:id="@+id/scrollView2"
+		android:id="@+id/scrollViewSettings"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		app:layout_constraintEnd_toEndOf="parent"
@@ -16,18 +15,19 @@
 		app:layout_constraintTop_toTopOf="parent">
 
 		<LinearLayout
+			android:id="@+id/linearLayoutSettings"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical">
 
 			<TextView
-				android:id="@+id/textView2fs"
+				android:id="@+id/textViewEngAndJpn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="問題出題方法" />
 
 			<RadioGroup
-				android:id="@+id/rg1"
+				android:id="@+id/radioGropuEngAndJpn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:background="@drawable/border"
@@ -53,13 +53,13 @@
 			</RadioGroup>
 
 			<TextView
-				android:id="@+id/textView3"
+				android:id="@+id/textViewSpaceOptions"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="空白" />
 
 			<Spinner
-				android:id="@+id/spinnerKuuhaku"
+				android:id="@+id/spinnerSpace"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="@drawable/border"
@@ -74,6 +74,7 @@
 				android:text="表示順" />
 
 			<RadioGroup
+				android:id="@+id/radioGropuHyojiOrder"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="@drawable/border"
@@ -176,7 +177,7 @@
 				android:textColor="@color/textcolor" />
 
 			<LinearLayout
-				android:id="@+id/ll5"
+				android:id="@+id/linearLayoutPipOptions"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal">

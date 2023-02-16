@@ -1,59 +1,31 @@
 package com.gukos.bokotan;
 
 
-import static android.Manifest.permission.BLUETOOTH;
-import static android.Manifest.permission.BLUETOOTH_ADMIN;
-import static android.Manifest.permission.BLUETOOTH_CONNECT;
-import static android.Manifest.permission.BLUETOOTH_SCAN;
-import static android.Manifest.permission.POST_NOTIFICATIONS;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_MEDIA_AUDIO;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
-import static android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION;
 import static com.gukos.bokotan.CommonVariables.swOnlyFirst;
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.strDirectoryNameForKuuhaku;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.initializeSettingItem;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
-import static com.gukos.bokotan.MyLibrary.getBuildDate;
 import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SettingFragment extends Fragment {
 	//他のクラスからアクセス
@@ -162,7 +134,7 @@ public class SettingFragment extends Fragment {
 			}
 			
 			
-			Spinner spinnerKuuhaku = findViewById(R.id.spinnerKuuhaku);
+			Spinner spinnerKuuhaku = findViewById(R.id.spinnerSpace);
 			spinnerKuuhaku.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
 			spinnerKuuhaku.setOnItemSelectedListener((MyLibrary.UiInterface.AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
 			

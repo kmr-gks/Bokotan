@@ -74,16 +74,16 @@ public class PlayerFragment extends Fragment {
 				puts(getClassName() + getMethodName() + " start");
 				
 				//UI設定
-				CommonVariables.tvWordEng = findViewById(R.id.fpTextViewEng);
-				CommonVariables.tvWordJpn = findViewById(R.id.fpTextViewJpn);
-				CommonVariables.tvGenzai = findViewById(R.id.fptvGenzai);
-				CommonVariables.tvsubE = findViewById(R.id.fptvsubE);
-				CommonVariables.tvsubJ = findViewById(R.id.fptvsubJ);
-				CommonVariables.tvGogen = findViewById(R.id.fptvGogen);
-				CommonVariables.tvNumSeikaisuu = findViewById(R.id.fptextViewNumSeikairitu);
-				CommonVariables.tvSeikaisu = findViewById(R.id.fptextViewSeikaisuu);
-				CommonVariables.textViewPath = findViewById(R.id.fptextViewPath);
-				CommonVariables.textViewHatsuonKigou = findViewById(R.id.fptextViewHatsuonKigou);
+				CommonVariables.tvWordEng = findViewById(R.id.textViewEng);
+				CommonVariables.tvWordJpn = findViewById(R.id.textViewJpn);
+				CommonVariables.tvGenzai = findViewById(R.id.textViewGenzai);
+				CommonVariables.tvsubE = findViewById(R.id.textViewSubtitleEng);
+				CommonVariables.tvsubJ = findViewById(R.id.textViewSubtitleJpn);
+				CommonVariables.tvGogen = findViewById(R.id.textViewGogen);
+				CommonVariables.tvNumSeikaisuu = findViewById(R.id.textViewNumSeikairitu);
+				CommonVariables.tvSeikaisu = findViewById(R.id.textViewSeikaisuu);
+				CommonVariables.textViewPath = findViewById(R.id.textViewPath);
+				CommonVariables.textViewHatsuonKigou = findViewById(R.id.textViewHatsuonKigou);
 				if (CommonVariables.strQ != null)
 					CommonVariables.isPhraseMode = CommonVariables.strQ.charAt(1) == 'h';
 				if (isWordAndPhraseMode || CommonVariables.isPhraseMode) {
@@ -96,12 +96,12 @@ public class PlayerFragment extends Fragment {
 					CommonVariables.tvsubJ.setVisibility(GONE);
 				}
 				
-				Button buttonStartStop = findViewById(R.id.fpbuttonStartStop);
+				Button buttonStartStop = findViewById(R.id.buttonStartStop);
 				buttonStartStop.setOnClickListener(this::onStartStopButtonClick);
 				buttonStartStop.setText(CommonVariables.playing ? "stop" : "start");
-				findViewById(R.id.fpbuttonBangouHenkou).setOnClickListener(this::onSelectNowButtonClick);
-				findViewById(R.id.fpbuttonSaisho).setOnClickListener(this::onResetButtonClick);
-				findViewById(R.id.fpbuttonPIP).setOnClickListener(this::onPIPButtonClicked);
+				findViewById(R.id.buttonNowChange).setOnClickListener(this::onSelectNowButtonClick);
+				findViewById(R.id.buttonToBegin).setOnClickListener(this::onResetButtonClick);
+				findViewById(R.id.buttonPip).setOnClickListener(this::onPIPButtonClicked);
 				
 				activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 				
@@ -110,11 +110,11 @@ public class PlayerFragment extends Fragment {
 					sentakuQ = WordPhraseData.q_num.testp1q;
 				}
 				
-				SeekBar sbE = findViewById(R.id.fpseekBarEng);
+				SeekBar sbE = findViewById(R.id.seekBarEng);
 				sbE.setOnSeekBarChangeListener((MyLibrary.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				sbE.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
 				onSpeedSeekBar(sbE);
-				SeekBar sbJ = findViewById(R.id.fpseekBarJpn);
+				SeekBar sbJ = findViewById(R.id.seekBarJpn);
 				sbJ.setOnSeekBarChangeListener((MyLibrary.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				sbJ.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(sbJ);
@@ -564,15 +564,15 @@ public class PlayerFragment extends Fragment {
 	public void onSpeedSeekBar(View v) {
 		try {
 			SeekBar sb = (SeekBar) v;
-			if (sb.getId() == R.id.fpseekBarEng) {
+			if (sb.getId() == R.id.seekBarEng) {
 				//英語
-				((TextView) findViewById(R.id.fptvSeekBarEng)).setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
+				((TextView) findViewById(R.id.textViewSeekBarEng)).setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 				CommonVariables.dPlaySpeedEng = 1 + 0.1 * sb.getProgress();
 				putIntData(context, "SeekBar", "english", sb.getProgress());
 			}
-			else if (sb.getId() == R.id.fpseekBarJpn) {
+			else if (sb.getId() == R.id.seekBarJpn) {
 				//日本語
-				((TextView) findViewById(R.id.fptvSeekBarJpn)).setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
+				((TextView) findViewById(R.id.textViewSeekBarJpn)).setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 				CommonVariables.dPlaySpeedJpn = 1 + 0.1 * sb.getProgress();
 				putIntData(context, "SeekBar", "japanese", sb.getProgress());
 			}
