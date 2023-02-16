@@ -36,6 +36,11 @@ import static com.gukos.bokotan.MyLibrary.strExceptionFIlePath;
 import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
 import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
+import static com.gukos.bokotan.SettingFragment.cbAutoStop;
+import static com.gukos.bokotan.SettingFragment.swHyojiBeforeRead;
+import static com.gukos.bokotan.SettingFragment.swMaruBatu;
+import static com.gukos.bokotan.SettingFragment.switchSkipOboe;
+import static com.gukos.bokotan.SettingFragment.switchSortHanten;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -51,14 +56,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -77,13 +79,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-//public class Q_sentaku_activity extends AppCompatActivity {
 public class QSentakuFragment extends Fragment {
-	//ほかのクラスからアクセス
-	public static CheckBox checkBoxHatsuonKigou;
-	
-	//UI
-	private Switch switchSkipOboe, swMaruBatu, swHyojiBeforeRead, switchSortHanten;
 	
 	private Context context;
 	private FragmentActivity activity;
@@ -116,89 +112,17 @@ public class QSentakuFragment extends Fragment {
 	
 	public void initialize() {
 		try {
-			puts("view=" + viewFragment + "" + "id=" + viewFragment.getClass().getSimpleName());
-			
-			//ここでnull例外発生
-			RadioButton radioButtonSkipOption = findViewById(getIntData(context, dnQSentakuActivity, "RadioButton", R.id.radioButtonOnlyKioku));
-			if (radioButtonSkipOption == null)
-				radioButtonSkipOption = findViewById(R.id.radioButtonOnlyKioku);
-			radioButtonSkipOption.setChecked(true);
-			
-			
-			EditText editTextPipYoko = findViewById(R.id.editTextPipYoko);
-			editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
-			pipYoko = Integer.parseInt(editTextPipYoko.getText().toString());
-			editTextPipYoko.addTextChangedListener((TextWatcherAfterOnly) editable -> {
-				try {
-					if (editable.length() > 0) {
-						pipYoko = Integer.parseInt(editable.toString());
-						putIntData(context, "editText", "editTextPipYoko", pipYoko);
-					}
-				} catch (Exception e) {
-					showException(context, e);
-				}
-			});
-			
-			EditText editTextPipTate = findViewById(R.id.editTextPipTate);
-			editTextPipTate.setText(String.valueOf(getIntData(context, "editText", "editTextPipTate", 9)));
-			pipTate = Integer.parseInt(editTextPipTate.getText().toString());
-			editTextPipTate.addTextChangedListener((TextWatcherAfterOnly) editable -> {
-				{
-					try {
-						if (editable.length() > 0) {
-							pipTate = Integer.parseInt(editable.toString());
-							putIntData(context, "editText", "editTextPipTate", pipTate);
-						}
-					} catch (Exception e) {
-						showException(context, e);
-					}
-				}
-			});
-			
-			swOnlyFirst = findViewById(R.id.switchOnlyFirst);
-			initializeSettingItem(swOnlyFirst, true);
-			
-			swHyojiBeforeRead = findViewById(R.id.switchHyojiYakuBeforeRead);
-			initializeSettingItem(swHyojiBeforeRead, true);
-			
-			switchSkipOboe = findViewById(R.id.switchSkipOboe);
-			initializeSettingItem(switchSkipOboe, true);
-			
-			swMaruBatu = findViewById(R.id.switchSkipMaruBatu);
-			initializeSettingItem(swMaruBatu, true);
-			
-			switchSortHanten = findViewById(R.id.switchSortHanten);
-			initializeSettingItem(switchSortHanten, false);
-			
-			for (var v : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, swMaruBatu, switchSortHanten}) {
-				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
-			}
-			
-			CheckBox cbDefaultAdapter = findViewById(R.id.checkBoxDefaultAdapter);
-			CheckBox cbAutoStop = findViewById(R.id.checkBoxAutoStop);
-			checkBoxHatsuonKigou = findViewById(R.id.checkBoxHatsuonkigou);
-			initializeSettingItem(cbDefaultAdapter, true);
-			initializeSettingItem(cbAutoStop, false);
-			initializeSettingItem(checkBoxHatsuonKigou, false);
-			for (var v : new CheckBox[]{cbDefaultAdapter, cbAutoStop, checkBoxHatsuonKigou}) {
-				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
-			}
-			
 			Spinner spinnerHanni = findViewById(R.id.spinnerHanni);
 			spinnerHanni.setSelection(getIntData(context, "spinnerHanni", "selected", 4));
-			spinnerHanni.setOnItemSelectedListener((AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
+			spinnerHanni.setOnItemSelectedListener((MyLibrary.UiInterface.AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
 			
 			Spinner spinnerHinsi = findViewById(R.id.spinnerHinsi);
 			spinnerHinsi.setSelection(getIntData(context, "spinnerHinsi", "selected", 3));
-			spinnerHinsi.setOnItemSelectedListener((AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
+			spinnerHinsi.setOnItemSelectedListener((MyLibrary.UiInterface.AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
 			
 			Spinner spinnerMode = findViewById(R.id.spinnerMode);
 			spinnerMode.setSelection(getIntData(context, "spinnerMode", "selected", 2));
-			spinnerMode.setOnItemSelectedListener((AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
-			
-			Spinner spinnerKuuhaku = findViewById(R.id.spinnerKuuhaku);
-			spinnerKuuhaku.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
-			spinnerKuuhaku.setOnItemSelectedListener((AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
+			spinnerMode.setOnItemSelectedListener((MyLibrary.UiInterface.AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
 			
 			CommonVariables.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
@@ -277,10 +201,6 @@ public class QSentakuFragment extends Fragment {
 				R.id.buttonYume2, R.id.buttonYume3, R.id.button1qEx, R.id.buttonP1qEx}) {
 				findViewById(id).setOnClickListener(this::onSelectQ);
 			}
-			for (int id : new int[]{R.id.radioButtonOnlyKioku, R.id.radioButtonOnlyHugoukaku,
-				R.id.radioButton1seikai, R.id.radioButton2huseikai}) {
-				findViewById(id).setOnClickListener(this::onRadioChecked);
-			}
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -350,7 +270,7 @@ public class QSentakuFragment extends Fragment {
 			}
 			else CommonVariables.bSkipOboe = false;
 			CommonVariables.bHyojiYakuBeforeRead = swHyojiBeforeRead.isChecked();
-			CommonVariables.bEnglishToJapaneseOrder = this.<RadioButton>findViewById(R.id.radioButtonEtoJ).isChecked();
+			CommonVariables.bEnglishToJapaneseOrder = SettingFragment.radioButtonEtoJ.isChecked();
 			CommonVariables.bSort = switchSortHanten.isChecked();
 			switch (v.getId()) {
 				case R.id.button1q: {
@@ -464,34 +384,9 @@ public class QSentakuFragment extends Fragment {
 	
 	private void onStartPlaying() {
 		//再生
-		TabActivity.setTabPageNum(1);
+		TabActivity.setTabPageNum(2);
 		PlayerFragment.initialize(getContext());
 		context.startForegroundService(new Intent(context, PlaySound.class));
-	}
-	
-	private void onRadioChecked(View v) {
-		try {
-			putIntData(context, dnQSentakuActivity, "RadioButton", v.getId());
-			switch (v.getId()) {
-				case R.id.radioButtonOnlyKioku: {
-					CommonVariables.skipjoken = WordPhraseData.q_num.skipjouken.kirokunomi;
-					break;
-				}
-				case R.id.radioButton1seikai: {
-					CommonVariables.skipjoken = WordPhraseData.q_num.skipjouken.seikai1;
-					break;
-				}
-				case R.id.radioButton2huseikai: {
-					CommonVariables.skipjoken = WordPhraseData.q_num.skipjouken.huseikai2;
-					break;
-				}
-				case R.id.radioButtonOnlyHugoukaku: {
-					CommonVariables.skipjoken = WordPhraseData.q_num.skipjouken.onlyHugoukaku;
-				}
-			}
-		} catch (Exception e) {
-			showException(context, e);
-		}
 	}
 	
 	private void onAlarmset(View v) {
@@ -654,29 +549,6 @@ public class QSentakuFragment extends Fragment {
 					//順番テスト
 					CommonVariables.nWordPhraseOrTest = 5;
 					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.seitouritsujunTest;
-					break;
-				}
-			}
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	public void SpinnerKuuhakuOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
-		try {
-			putIntData(context, "spinnerKuuhaku", "selected", i);
-			switch (i) {
-				default:
-				case 0: {
-					strDirectoryNameForKuuhaku = "";
-					break;
-				}
-				case 1: {
-					strDirectoryNameForKuuhaku = "autocut-";
-					break;
-				}
-				case 2: {
-					strDirectoryNameForKuuhaku = "manucut-";
 					break;
 				}
 			}

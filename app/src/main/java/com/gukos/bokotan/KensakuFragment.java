@@ -36,14 +36,12 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -220,7 +218,7 @@ public class KensakuFragment extends Fragment {
 			Button buttonCLear = findViewById(R.id.fkbuttonClear);
 			buttonKensakuHouhou = findViewById(R.id.fkbuttonKensakuHouhou);
 			
-			etKey.addTextChangedListener((TextWatcherAfterOnly) this::EditTextChanged);
+			etKey.addTextChangedListener((MyLibrary.UiInterface.TextWatcherAfterOnly) this::EditTextChanged);
 			
 			buttonCLear.setOnClickListener(v -> etKey.setText(""));
 			

@@ -11,14 +11,16 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class TabPagerAdapter extends FragmentStateAdapter {
 	
-	public static final String[] TAB_NAMES = new String[]{"級選択","再生画面","全文検索"};
-	public static Fragment fragment=null;
-	public static QSentakuFragment qSentakuFragment;
-	public static PlayerFragment playerFragment;
-	public static KensakuFragment kensakuFragment;
+	public static final String[] TAB_NAMES = new String[]{"設定", "級選択", "再生画面", "全文検索"};
+	private static Fragment fragment = null;
+	private static SettingFragment settingFragment;
+	private static QSentakuFragment qSentakuFragment;
+	private static PlayerFragment playerFragment;
+	private static KensakuFragment kensakuFragment;
 	
 	public TabPagerAdapter(FragmentActivity fragmentActivity) {
 		super(fragmentActivity);
+		settingFragment = new SettingFragment();
 		qSentakuFragment = new QSentakuFragment();
 		playerFragment = new PlayerFragment();
 		kensakuFragment = new KensakuFragment();
@@ -27,17 +29,21 @@ public class TabPagerAdapter extends FragmentStateAdapter {
 	@NonNull
 	@Override
 	public Fragment createFragment(int position) {
-		puts(getClassName()+getMethodName()+",pos="+position);
+		puts(getClassName() + getMethodName() + ",pos=" + position);
 		switch (position) {
 			case 0: {
-				fragment = qSentakuFragment;
+				fragment = settingFragment;
 				break;
 			}
 			case 1: {
-				fragment = playerFragment;
+				fragment = qSentakuFragment;
 				break;
 			}
 			case 2: {
+				fragment = playerFragment;
+				break;
+			}
+			case 3: {
 				fragment = kensakuFragment;
 				break;
 			}

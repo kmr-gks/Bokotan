@@ -184,7 +184,7 @@ public class PlaySound extends Service {
 		try {
 			tvWordEng.setMaxLines(1);
 			tvWordEng.setText(wordE[num]);
-			if (QSentakuFragment.checkBoxHatsuonKigou.isChecked())
+			if (SettingFragment.checkBoxHatsuonKigou.isChecked())
 				textViewHatsuonKigou.setText(getHatsuon(wordE[now]));
 		} catch (Exception e) {
 			showException(this, e);

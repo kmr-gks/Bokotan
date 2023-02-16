@@ -111,11 +111,11 @@ public class PlayerFragment extends Fragment {
 				}
 				
 				SeekBar sbE = findViewById(R.id.fpseekBarEng);
-				sbE.setOnSeekBarChangeListener((OnSeekBarProgressChange) this::onSpeedSeekBar);
+				sbE.setOnSeekBarChangeListener((MyLibrary.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				sbE.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
 				onSpeedSeekBar(sbE);
 				SeekBar sbJ = findViewById(R.id.fpseekBarJpn);
-				sbJ.setOnSeekBarChangeListener((OnSeekBarProgressChange) this::onSpeedSeekBar);
+				sbJ.setOnSeekBarChangeListener((MyLibrary.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				sbJ.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(sbJ);
 				puts(getClassName() + getMethodName() + " ended");
