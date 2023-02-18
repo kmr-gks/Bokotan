@@ -58,7 +58,7 @@ public final class MyLibrary {
 			e.printStackTrace(new PrintWriter(stringWriter));
 			
 			String strMessage =
-					"例外:" + stringAdditional + "\nメッセージ:" + e.getMessage() + "\n型名(" + e.getClass().getTypeName() + ")\nメソッド名" + MyLibrary.DisplayOutput.getClassName(5) + MyLibrary.DisplayOutput.getMethodName(5) + "\n発生箇所\n" + stringWriter;
+					"例外:" + stringAdditional + "\nメッセージ:" + e.getMessage() + "\n型名(" + e.getClass().getTypeName() + ")\nメソッド名" + DebugManager.getClassName(5) + DebugManager.getMethodName(5) + "\n発生箇所\n" + stringWriter;
 			Log.e(debug_tag, strMessage);
 			if (context != null) DisplayOutput.makeToastForLong(context, strMessage);
 			
@@ -505,42 +505,6 @@ public final class MyLibrary {
 			} catch (Exception e) {}
 		}
 		
-		public static void puts(String str) {
-			try {
-				Log.d(ExceptionManager.debug_tag + " " + DisplayOutput.getDeviceName(), str);
-			} catch (Exception e) {
-				//showException(e);
-			}
-		}
-		
-		public static void putsE(String str) {
-			try {
-				Log.e(ExceptionManager.debug_tag + " " + DisplayOutput.getDeviceName(), str);
-			} catch (Exception e) {
-				//showException(e);
-			}
-		}
-		
-		public static String getClassName(int hierarchyOfStack) {
-			//return new Object(){}.getClass().getEnclosingClass().getSimpleName();
-			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getClassName().substring(packageName.length() + 1) + "#";
-		}
-		
-		public static String getClassName() {
-			return getClassName(4);
-		}
-		
-		public static String getMethodName(int hierarchyOfStack) {
-			//return new Object(){}.getClass().getEnclosingMethod().getName();
-			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
-		}
-		
-		public static String getMethodName() {
-			return getMethodName(4);
-		}
-		
-		public static String getDeviceName() {return Build.PRODUCT + "," + Build.VERSION.RELEASE;}
-		
 		public static CharSequence setStringColored(String stringSource, String stringKey) {
 			try {
 				if (stringKey == null || stringKey.equals("")) return stringSource;
@@ -554,6 +518,64 @@ public final class MyLibrary {
 				return stringSource;
 			}
 		}
+	}
+	
+	public static final class DebugManager {
+		private static final int defaultHierarchy = 4;
+		
+		public static void puts(String str) {
+			try {
+				Log.d(ExceptionManager.debug_tag + " " + getDeviceName(), str);
+			} catch (Exception e) {
+				//showException(e);
+			}
+		}
+		
+		public static void putsE(String str) {
+			try {
+				Log.e(ExceptionManager.debug_tag + " " + getDeviceName(), str);
+			} catch (Exception e) {
+				//showException(e);
+			}
+		}
+		
+		public static String getClassName(int hierarchyOfStack) {
+			//return new Object(){}.getClass().getEnclosingClass().getSimpleName();
+			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getClassName().substring(packageName.length() + 1) + "#";
+		}
+		
+		public static String getClassName() {
+			return getClassName(defaultHierarchy);
+		}
+		
+		public static String getMethodName(int hierarchyOfStack) {
+			//return new Object(){}.getClass().getEnclosingMethod().getName();
+			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
+		}
+		
+		public static String getMethodName() {
+			return getMethodName(defaultHierarchy);
+		}
+		
+		public static String getNowLine(int hierarchyOfStack) {
+			return "@" + Thread.currentThread().getStackTrace()[hierarchyOfStack].getLineNumber();
+		}
+		
+		public static String getNowLine() {
+			return getNowLine(defaultHierarchy);
+		}
+		
+		public static String getCurrentState() {
+			//引数のdefaultHierarchyを省略すると正しく動作しない。
+			return DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy);
+		}
+		
+		public static void printCurrentState() {
+			//引数のdefaultHierarchyを省略すると正しく動作しない。
+			DebugManager.puts(DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy));
+		}
+		
+		public static String getDeviceName() {return Build.PRODUCT + "," + Build.VERSION.RELEASE;}
 	}
 	
 	public static String getNowTime() {

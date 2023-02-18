@@ -10,7 +10,7 @@ import static com.gukos.bokotan.CommonVariables.strQ;
 import static com.gukos.bokotan.CommonVariables.toFindFromAndTo;
 import static com.gukos.bokotan.CommonVariables.wordE;
 import static com.gukos.bokotan.CommonVariables.wordJ;
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;

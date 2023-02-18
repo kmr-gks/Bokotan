@@ -1,8 +1,8 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.getClassName;
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.getMethodName;
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
+import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

@@ -1,12 +1,11 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.getClassName;
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.getMethodName;
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.puts;
+import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.view.KeyEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
