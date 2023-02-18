@@ -36,6 +36,7 @@ public class TabActivity extends AppCompatActivity {
 		TabPagerAdapter tabPagerAdapter = new TabPagerAdapter(this);
 		ViewPager2 viewPager = binding.viewpagerMain;
 		viewPager.setAdapter(tabPagerAdapter);
+		//フラグメント作成できる？
 		//tabPagerAdapter.createFragment()
 		//初期位置
 		viewPager.setCurrentItem(1);

@@ -39,13 +39,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Arrays;
 import java.util.Random;
 
-class Seikairitsu{
-	final int num;
-	final int seitouritu;
-	final int toitakazu;
-	Seikairitsu(int num,int seitouritu,int toitakazu){this.num=num;this.seitouritu=seitouritu;this.toitakazu =toitakazu;}
-}
-
 public class TestActivity extends AppCompatActivity {
 
 	TextView tvMondai;
@@ -564,5 +557,12 @@ public class TestActivity extends AppCompatActivity {
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}
+	}
+	
+	static class Seikairitsu{
+		final int num;
+		final int seitouritu;
+		final int toitakazu;
+		Seikairitsu(int num,int seitouritu,int toitakazu){this.num=num;this.seitouritu=seitouritu;this.toitakazu =toitakazu;}
 	}
 }
