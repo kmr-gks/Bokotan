@@ -36,6 +36,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -56,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.BiFunction;
 
 public class KensakuFragment extends Fragment {
 	
@@ -67,11 +69,9 @@ public class KensakuFragment extends Fragment {
 	Thread threadSearch = null;
 	boolean threadSearchIsRunning = true;
 	
-	private static final boolean useDefaultAdapter = true;
-	
 	private <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
 	
-	static class ListData {
+	static class WordInfo {
 		static int size = 0;
 		final int toushiNumber;
 		final int localNumber;
@@ -81,11 +81,11 @@ public class KensakuFragment extends Fragment {
 		final String subCategory;
 		final WordPhraseData.DataType dataType;
 		
-		ListData(String category, String e, String j, int localNumber, WordPhraseData.DataType dataType) {
+		WordInfo(String category, String e, String j, int localNumber, WordPhraseData.DataType dataType) {
 			this(category, null, e, j, localNumber, dataType);
 		}
 		
-		ListData(String category, String subCategory, String e, String j, int localNumber, WordPhraseData.DataType dataType) {
+		WordInfo(String category, String subCategory, String e, String j, int localNumber, WordPhraseData.DataType dataType) {
 			size++;
 			this.toushiNumber = size;
 			this.category = category;
@@ -184,9 +184,8 @@ public class KensakuFragment extends Fragment {
 		}
 	}
 	
-	//private ArrayList<String> allData=new ArrayList(),resultData=new ArrayList();
-	private final ArrayList<ListData> allData = new ArrayList<>();
-	private ArrayList<ListData> resultData = new ArrayList<>();
+	private final ArrayList<WordInfo> allData = new ArrayList<>();
+	private ArrayList<WordInfo> resultData = new ArrayList<>();
 	private ListView lvResult;
 	private TextView tvResultCount;
 	private Button buttonKensakuHouhou;
@@ -265,7 +264,7 @@ public class KensakuFragment extends Fragment {
 	public void setData() {
 		try {
 			//ファイルを開いて読み込む
-			ListData.size = 0;
+			WordInfo.size = 0;
 			Map<String, String> mapQName = new HashMap<>() {{
 				put("1q", "1級");
 				put("p1q", "準1級");
@@ -296,7 +295,7 @@ public class KensakuFragment extends Fragment {
 				WordPhraseData w = new WordPhraseData(PasstanWord + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new ListData("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
+						allData.add(new WordInfo("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
 			}
 			
 			//単熟語EX単語
@@ -304,11 +303,11 @@ public class KensakuFragment extends Fragment {
 				WordPhraseData w = new WordPhraseData(TanjukugoWord + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new ListData("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
+						allData.add(new WordInfo("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
 				WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + Q, context);
 				for (int i = 1; i < Math.min(wx.e.length, wx.j.length); i++)
 					if (wx.e[i] != null && wx.j[i] != null)
-						allData.add(new ListData("単熟語EX" + mapQName.get(Q), "Unit EX", wx.e[i], wx.j[i], i, word));
+						allData.add(new WordInfo("単熟語EX" + mapQName.get(Q), "Unit EX", wx.e[i], wx.j[i], i, word));
 			}
 			
 			//ユメタン単語
@@ -316,13 +315,13 @@ public class KensakuFragment extends Fragment {
 				WordPhraseData w = new WordPhraseData(YumeWord + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new ListData(mapQName.get(Q), "Unit" + ((i - 1) / 100 + 1), w.e[i], w.j[i], i, word));
+						allData.add(new WordInfo(mapQName.get(Q), "Unit" + ((i - 1) / 100 + 1), w.e[i], w.j[i], i, word));
 			}
 			
 			//語源データも読み込む
 			int gogenNum = 0;
 			for (TreeMap.Entry<String, GogenYomu> map : trGogenYomu.entrySet())
-				allData.add(new ListData("読む語源学", map.getKey(), map.getValue().wordJpn, ++gogenNum, WordPhraseData.DataType.gogengaku));
+				allData.add(new WordInfo("読む語源学", map.getKey(), map.getValue().wordJpn, ++gogenNum, WordPhraseData.DataType.gogengaku));
 			
 			//英語漬け.comから読み込み
 			for (String Q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q",
@@ -331,14 +330,14 @@ public class KensakuFragment extends Fragment {
 				WordPhraseData wpd = new WordPhraseData("Eigoduke.com/" + "WordDataEigoduke" + Q, context);
 				for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
 					if (wpd.e[i] != null && wpd.j[i] != null)
-						allData.add(new ListData("英語漬け" + mapQName.get(Q), wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
+						allData.add(new WordInfo("英語漬け" + mapQName.get(Q), wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
 			}
 			for (int num = 1; num <= 10; num++) {
 				String Q = "-toeic (" + num + ")";
 				WordPhraseData wpd = new WordPhraseData("Eigoduke.com/" + "WordDataEigoduke" + Q, context);
 				for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
 					if (wpd.e[i] != null && wpd.j[i] != null)
-						allData.add(new ListData("英語漬け" + "TOEIC" + num, wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
+						allData.add(new WordInfo("英語漬け" + "TOEIC" + num, wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
 			}
 			
 			//distinction
@@ -346,7 +345,7 @@ public class KensakuFragment extends Fragment {
 				WordPhraseData w = new WordPhraseData(WordPhraseData.distinction + "d" + d + "word", context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new ListData("Distinction" + d, tangoNumToString("Distinction" + d, i), w.e[i], w.j[i], i, word));
+						allData.add(new WordInfo("Distinction" + d, tangoNumToString("Distinction" + d, i), w.e[i], w.j[i], i, word));
 			}
 			
 			//フレーズ
@@ -354,7 +353,7 @@ public class KensakuFragment extends Fragment {
 				WordPhraseData w = new WordPhraseData(PasstanPhrase + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new ListData("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+						allData.add(new WordInfo("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
 			}
 			
 			//単熟語EX単語
@@ -362,7 +361,7 @@ public class KensakuFragment extends Fragment {
 				WordPhraseData w = new WordPhraseData(TanjukugoPhrase + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new ListData("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+						allData.add(new WordInfo("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
 			}
 			
 			//distinction
@@ -370,14 +369,14 @@ public class KensakuFragment extends Fragment {
 				WordPhraseData w = new WordPhraseData(WordPhraseData.distinction + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new ListData("Distinction" + mapQName.get(Q), tangoNumToString("Distinction" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+						allData.add(new WordInfo("Distinction" + mapQName.get(Q), tangoNumToString("Distinction" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
 			}
 			
 			//SVL12000辞書
 			WordPhraseData wordPhraseData = new WordPhraseData(Svl, context);
 			for (int i = 1; i < Math.min(wordPhraseData.e.length, wordPhraseData.j.length); i++)
 				if (wordPhraseData.e[i] != null && wordPhraseData.j[i] != null)
-					allData.add(new ListData("SVL", Integer.toString((i - 1) / 1000 + 1), wordPhraseData.e[i], wordPhraseData.j[i], i, word));
+					allData.add(new WordInfo("SVL", Integer.toString((i - 1) / 1000 + 1), wordPhraseData.e[i], wordPhraseData.j[i], i, word));
 			
 			//コピー
 			resultData = new ArrayList<>(allData);
@@ -387,7 +386,7 @@ public class KensakuFragment extends Fragment {
 			activity.runOnUiThread(() -> {
 				try {
 					tvResultCount.setText(resultData.size() + "件");
-					setListView(lvResult, resultData, null);
+					setListView(lvResult, resultData, null, null);
 				} catch (Exception e) {
 					showException(context, e);
 				}
@@ -408,33 +407,17 @@ public class KensakuFragment extends Fragment {
 		}
 	}
 	
-	private void setListView(ListView lv, ArrayList<ListData> ar, String key) {
+	private void setListView(ListView lv, ArrayList<WordInfo> wordInfoList, ArrayList<CharSequence> titleList, String key) {
 		try {
-			//lv.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, ar));
-			if (useDefaultAdapter) {
-				lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1, ar));
+			if (titleList == null || key.length() == 0) {
+				lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1, wordInfoList));
 			}
 			else {
-				List<TextView> list = new ArrayList<>();
-				for (ListData ld : ar) {
-					TextView tv = new TextView(context);
-					tv.setText(ld.toString());
-					tv.setTextColor(context.getColor(R.color.textcolor));
-					tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-					tv.setHeight(120);
-					tv.setGravity(Gravity.CENTER | Gravity.START);
-					list.add(tv);
-				}
-				lv.setAdapter(new ArrayAdapter<>(context, 0, list) {
-					@Override
-					public View getView(int position, View convertView, ViewGroup parent) {
-						return getItem(position);
-					}
-				});
+				lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1, titleList));
 			}
 			lv.setOnItemClickListener((adapterView, view, i, l) -> {
 				try {
-					ListData ld = ar.get(i);
+					WordInfo ld = wordInfoList.get(i);
 					new AlertDialog.Builder(context)
 						.setTitle(MyLibrary.DisplayOutput.setStringColored(ld.toushiNumber + " : " + ld.e, key))
 						.setMessage(MyLibrary.DisplayOutput.setStringColored(ld.toDetailedString(), key))
@@ -452,7 +435,7 @@ public class KensakuFragment extends Fragment {
 		}
 	}
 	
-	void playEnglishAndJapanese(ListData ld) {
+	void playEnglishAndJapanese(WordInfo ld) {
 		try {
 			String path;
 			switch (ld.category) {
@@ -546,7 +529,7 @@ public class KensakuFragment extends Fragment {
 		}
 	}
 	
-	void playEnglish(ListData ld) {
+	void playEnglish(WordInfo ld) {
 		try {
 			String path;
 			switch (ld.category) {
@@ -604,57 +587,48 @@ public class KensakuFragment extends Fragment {
 			threadSearch = new Thread(() -> {
 				synchronized (this) {
 					//文字入力時
-					ArrayList<ListData> resultListTmp = new ArrayList<>();
+					resultData.clear();
+					ArrayList<CharSequence> titleList = new ArrayList<>();
 					String key = editable.toString().toLowerCase();//小文字に変換
+					//何も検索欄に入力されていないとき
 					if (key.length() == 0) {
-						resultListTmp = new ArrayList<>(allData);
+						resultData = new ArrayList<>(allData);
+						//ラムダ式の制約により実行できない。
+						//titleList=null;
 					}
 					else {
+						BiFunction<String, String, Boolean> biFunction;
+						//Function2<String,String,Boolean>f2=(a,b)->true;
 						switch (kensakuHouhou) {
+							default:
 							case starts: {
-								for (var listData : allData) {
-									for (var field : listData.getAllFieldString()) {
-										if (field.toLowerCase().startsWith(key)) {
-											resultListTmp.add(listData);
-											break;
-										}
-									}
-									if (!threadSearchIsRunning) return;
-								}
+								biFunction = String::startsWith;
 								break;
 							}
 							case contains: {
-								for (var listData : allData) {
-									for (var field : listData.getAllFieldString()) {
-										if (field.toLowerCase().contains(key)) {
-											resultListTmp.add(listData);
-											break;
-										}
-									}
-									if (!threadSearchIsRunning) return;
-								}
+								biFunction = String::contains;
 								break;
 							}
 							case ends: {
-								for (var listData : allData) {
-									for (var field : listData.getAllFieldString()) {
-										if (field.toLowerCase().endsWith(key)) {
-											resultListTmp.add(listData);
-											break;
-										}
-									}
-									if (!threadSearchIsRunning) return;
-								}
+								biFunction = String::endsWith;
 								break;
 							}
 						}
+						for (var wordInfo : allData) {
+							for (var field : wordInfo.getAllFieldString()) {
+								if (biFunction.apply(field, key)) {
+									resultData.add(wordInfo);
+									titleList.add(MyLibrary.DisplayOutput.setStringColored(wordInfo.toString(), key));
+									break;
+								}
+							}
+							if (!threadSearchIsRunning) return;
+						}
 					}
-					
-					resultData = (ArrayList<ListData>) resultListTmp.clone();
 					
 					activity.runOnUiThread(() -> {
 						tvResultCount.setText(resultData.size() + "件");
-						setListView(lvResult, resultData, key);
+						setListView(lvResult, resultData, titleList, key);
 					});
 				}
 			});

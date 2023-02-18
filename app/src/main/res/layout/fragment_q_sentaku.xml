@@ -14,7 +14,7 @@
 		android:layout_height="wrap_content"
 		android:text="単元を選択"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintTop_toBottomOf="@+id/textViewWelcome" />
 
 	<TextView
 		android:id="@+id/textViewNowInput"
@@ -346,5 +346,16 @@
 			android:textColor="@color/buttontext"
 			android:textSize="12sp" />
 	</LinearLayout>
+
+	<TextView
+		android:id="@+id/textViewWelcome"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/app_name"
+		android:textColor="@color/textcolor"
+		android:textSize="30sp"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

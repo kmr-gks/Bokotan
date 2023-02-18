@@ -16,10 +16,12 @@ import com.gukos.bokotan.databinding.ActivityTabBinding;
 
 public class TabActivity extends AppCompatActivity {
 	private static ActivityTabBinding binding;
-	private String toString(Bundle bundle){
-		if (bundle==null) return "null";
+	
+	private String toString(Bundle bundle) {
+		if (bundle == null) return "null";
 		else return bundle.toString();
 	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,22 +37,25 @@ public class TabActivity extends AppCompatActivity {
 		TabPagerAdapter tabPagerAdapter = new TabPagerAdapter(this);
 		ViewPager2 viewPager = binding.viewpagerMain;
 		viewPager.setAdapter(tabPagerAdapter);
+		//tabPagerAdapter.createFragment()
+		//初期位置
+		viewPager.setCurrentItem(1);
 		
 		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
 	}
 	
-	public static void setTabPageNum(int n){
-		try{
+	public static void setTabPageNum(int n) {
+		try {
 			TabActivity.binding.tabsMain.getTabAt(n).select();
-		}catch (Exception exception){
+		} catch (Exception exception) {
 			MyLibrary.ExceptionManager.showException(exception);
 		}
 	}
 	
 	@Override
-	public void onBackPressed(){
+	public void onBackPressed() {
 		//戻るボタン
-		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 			super.onBackPressed();
 		}
 		return;

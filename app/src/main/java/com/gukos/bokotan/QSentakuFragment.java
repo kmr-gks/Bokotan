@@ -150,12 +150,6 @@ public class QSentakuFragment extends Fragment {
 			if (!needPermissions.isEmpty()) {
 				activity.requestPermissions(needPermissions.toArray(new String[0]), 101);
 			}
-			//権限の確認 SYSTEM_ALERT_WINDOW
-			//https://akira-watson.com/android/windowmanager.html
-			if (!Settings.canDrawOverlays(context)) {
-				Intent intent1 = new Intent(ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + context.getPackageName()));
-				startActivity(intent1);
-			}
 			//ファイル読み書きの確認
 			//https://developer.android.com/training/data-storage/manage-all-files?hl=ja
 			//https://takusan23.github.io/Bibouroku/2020/05/04/Android11%E3%81%AEMANAGE-EXTERNAL-STORAGE%E3%82%92%E8%A9%A6%E3%81%99/
