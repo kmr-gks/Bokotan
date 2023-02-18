@@ -614,18 +614,20 @@ public class KensakuFragment extends Fragment {
 								break;
 							}
 						}
-						for (var wordInfo : allData) {
-							for (var field : wordInfo.getAllFieldString()) {
-								if (biFunction.apply(field, key)) {
-									resultData.add(wordInfo);
-									titleList.add(MyLibrary.DisplayOutput.setStringColored(wordInfo.toString(), key));
-									break;
+						activity.runOnUiThread(() -> {
+							for (var wordInfo : allData) {
+								for (var field : wordInfo.getAllFieldString()) {
+									if (biFunction.apply(field, key)) {
+										resultData.add(wordInfo);
+										titleList.add(MyLibrary.DisplayOutput.setStringColored(wordInfo.toString(), key));
+										break;
+									}
 								}
+								if (!threadSearchIsRunning) return;
 							}
-							if (!threadSearchIsRunning) return;
-						}
+						});
+						
 					}
-					
 					activity.runOnUiThread(() -> {
 						tvResultCount.setText(resultData.size() + "件");
 						setListView(lvResult, resultData, titleList, key);
