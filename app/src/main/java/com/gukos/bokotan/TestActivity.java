@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class TestActivity extends AppCompatActivity {
-
+	private static final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
 	TextView tvMondai;
 	TextView tvKaitou, tvKaisetsu, tvMaruBatu, tvRange;
 	Button bSentaku1, bSentaku2, bSentaku3, bSentaku4;
@@ -51,27 +51,20 @@ public class TestActivity extends AppCompatActivity {
 	int nSeikaiSentakusi;
 	final int[] nTangoNum = new int[10];
 	final Random random = new Random();
-	//int nWordSeikaisuu,nWordHuseikaisuu;
 	static boolean bSkipMaruBatuButton = false;
-	static final SoundPool sp = new SoundPool.Builder()
-			.setAudioAttributes(
-					new AudioAttributes.Builder()
-							.setUsage(AudioAttributes.USAGE_GAME)
-							.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
-			.setMaxStreams(2)
-			.build();
+	static final SoundPool sp = new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(2).build();
 	static final int[] seikairitsu = new int[3000];
 	final Seikairitsu[] numAndSeikairitu = new Seikairitsu[3000];
 	int testCount = 0;
 	//問題数、合格数、正解数
 	int nQuiz = 0, nGokaku = 0, nSeitou = 0;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_test);
-
+			
 			tvMondai = findViewById(R.id.textViewMondaibun);
 			tvKaitou = findViewById(R.id.textViewKaitou);
 			tvKaisetsu = findViewById(R.id.textViewKaisetsu);
@@ -82,18 +75,18 @@ public class TestActivity extends AppCompatActivity {
 			bSentaku4 = findViewById(R.id.buttonChoice4);
 			bMarubatu = findViewById(R.id.buttonMarubatu);
 			tvRange = findViewById(R.id.textViewHanni);
-
+			
 			checkBoxHatsuon = findViewById(R.id.checkBoxHatsuon);
 			checkBoxKoukaon = findViewById(R.id.checkBoxKoukaon);
-
+			
 			//TODO ファイル名変更
-
+			
 			checkBoxHatsuon.setChecked(PreferenceManager.getSetting(this, "checkBoxHatsuon", true));
 			checkBoxHatsuon.setOnClickListener(view -> PreferenceManager.putSetting(this, "checkBoxHatsuon", ((CheckBox) view).isChecked()));
 			checkBoxKoukaon.setChecked(PreferenceManager.getSetting(this, "checkBoxKoukaon", true));
 			checkBoxKoukaon.setOnClickListener(view -> PreferenceManager.putSetting(this, "checkBoxKoukaon", ((CheckBox) view).isChecked()));
-
-
+			
+			
 			switch (strQ) {
 				case "1qTest": {
 					lastnum = 2400;
@@ -256,7 +249,7 @@ public class TestActivity extends AppCompatActivity {
 					break;
 			}
 			CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, unit);
-
+			
 			//正解率読み込み
 			for (int i = CommonVariables.from; i <= CommonVariables.to; i++) {
 				nSeikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + i, 0);
@@ -270,25 +263,25 @@ public class TestActivity extends AppCompatActivity {
 				if (isGokaku(nSeikaisuu[i], nHuseikaisuu[i])) nGokaku++;
 				if (nSeikaisuu[i] > 0) nSeitou++;
 			}
-
+			
 			int toIndex = CommonVariables.to - CommonVariables.from;
 			if (toIndex <= 0) toIndex = CommonVariables.lastnum;
-
+			
 			//ソート
 			if (CommonVariables.bSort)
 				Arrays.sort(numAndSeikairitu, 0, toIndex,
-						(a, b) -> {
-							//正答率0のときは解いた数で並び替え
-							if (a.seitouritu == 0 && b.seitouritu == 0)
-								return a.toitakazu - b.toitakazu;
-								//正答率準
-							else return a.seitouritu - b.seitouritu;
-						});
+				            (a, b) -> {
+					            //正答率0のときは解いた数で並び替え
+					            if (a.seitouritu == 0 && b.seitouritu == 0)
+						            return a.toitakazu - b.toitakazu;
+						            //正答率準
+					            else return a.seitouritu - b.seitouritu;
+				            });
 			else Arrays.sort(numAndSeikairitu, 0, toIndex, (a, b) -> {
 				if (a.seitouritu == 0 && b.seitouritu == 0) return b.toitakazu - a.toitakazu;
 				else return b.seitouritu - a.seitouritu;
 			});
-
+			
 			setMondaiBun();
 			sp.setOnLoadCompleteListener((soundPool, i, i1) -> {
 				try {
@@ -300,28 +293,26 @@ public class TestActivity extends AppCompatActivity {
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}
-
+		
 	}
-
+	
 	static boolean isGokaku(int nSeikaisuu, int nHuseikaisuu) {
 		int ans = nSeikaisuu - nHuseikaisuu * 3;
 		return ans > 1;
 	}
-
-	static boolean isGokaku_(int nSeikaisuu, int nHuseikaisuu) {
-		return nSeikaisuu > 0;
-	}
-
+	
 	@Override
 	protected void onStop() {
 		try {
 			super.onStop();
 			PreferenceManager.putIntData(this, dnTestActivity + strQ, "nGenzaiNanMonme", nGenzaiNanMonme);
+			PreferenceManager.putStringData(this, dnTestActivity + strQ, keySeikai, PreferenceManager.intArrayToString(nSeikaisuu));
+			PreferenceManager.putStringData(this, dnTestActivity + strQ, keyHuseikai, PreferenceManager.intArrayToString(nHuseikaisuu));
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}
 	}
-
+	
 	public void setMondaiBun() {
 		try {
 			//debug
@@ -361,19 +352,19 @@ public class TestActivity extends AppCompatActivity {
 				nRangeForOptionsFrom = CommonVariables.toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][unit][0];
 				nRangeForOptionsTo = CommonVariables.toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][unit][1];
 			}
-
+			
 			do {
 				//ランダムテストの場合
 				if (CommonVariables.WordPhraseOrTest.equals(WordPhraseData.q_num.mode.randomTest))
 					nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
-
+				
 				//正答率順テストの場合
 				if (CommonVariables.WordPhraseOrTest.equals(WordPhraseData.q_num.mode.seitouritsujunTest)) {
 					nMondaiTangoNum = numAndSeikairitu[testCount].num;
 					if (strQenum.equals(WordPhraseData.q_num.strQ.str1q)
-							|| strQenum.equals(WordPhraseData.q_num.strQ.strp1q)
-							|| strQenum.equals(WordPhraseData.q_num.strQ.str2q)
-							|| strQenum.equals(WordPhraseData.q_num.strQ.strp2q)) {
+						|| strQenum.equals(WordPhraseData.q_num.strQ.strp1q)
+						|| strQenum.equals(WordPhraseData.q_num.strQ.str2q)
+						|| strQenum.equals(WordPhraseData.q_num.strQ.strp2q)) {
 						for (int i = 0; i <= 9; i++) {
 							if (toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][i][0] <= nMondaiTangoNum && nMondaiTangoNum <= toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][i][1]) {
 								nRangeForOptionsFrom = toFindFromAndTo[CommonVariables.sentakuQ.ordinal()][i][0];
@@ -382,51 +373,52 @@ public class TestActivity extends AppCompatActivity {
 						}
 					}
 				}
-
+				
 				//不正解のみテスト
 				if (CommonVariables.WordPhraseOrTest.equals(WordPhraseData.q_num.mode.huseikainomiTest)) {
 					do {
 						nMondaiTangoNum = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 					} while (isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum]));
 				}
-
+				
 				nTangoNum[1] = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 				nTangoNum[2] = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 				nTangoNum[3] = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 				nTangoNum[4] = random.nextInt(nRangeForOptionsTo - nRangeForOptionsFrom + 1) + nRangeForOptionsFrom;
 				nSeikaiSentakusi = random.nextInt(4) + 1;//1-4
 				nTangoNum[nSeikaiSentakusi] = nMondaiTangoNum;
-
+				
 				//ユメタンのときそれぞれの品詞を調べる
 				if (strQenum.equals(WordPhraseData.q_num.strQ.stry1) || strQenum.equals(WordPhraseData.q_num.strQ.stry2) || strQenum.equals(WordPhraseData.q_num.strQ.stry3)) {
 					//1-35
 					//36-70
 					//71-100
 				}
-
+				
 			} while (nTangoNum[1] == nTangoNum[2]
-					|| nTangoNum[1] == nTangoNum[3]
-					|| nTangoNum[1] == nTangoNum[4]
-					|| nTangoNum[2] == nTangoNum[3]
-					|| nTangoNum[2] == nTangoNum[4]
-					|| nTangoNum[3] == nTangoNum[4]);
+				|| nTangoNum[1] == nTangoNum[3]
+				|| nTangoNum[1] == nTangoNum[4]
+				|| nTangoNum[2] == nTangoNum[3]
+				|| nTangoNum[2] == nTangoNum[4]
+				|| nTangoNum[3] == nTangoNum[4]);
 			testCount++;
-
+			
 			nSeikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, 0);
 			nHuseikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, 0);
-
+			
 			TextView textViewMondaiNumber = findViewById(R.id.textViewMondaiNum);
 			if (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum] > 0) {
 				textViewMondaiNumber.setText(
-						nGenzaiNanMonme + "問目 No." + nMondaiTangoNum
-								+ '(' + (int) nSeikaisuu[nMondaiTangoNum] * 100
-								/ (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum])
-								+ "% " + nSeikaisuu[nMondaiTangoNum]
-								+ '/' + (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum]) + ')');
-			} else {
+					nGenzaiNanMonme + "問目 No." + nMondaiTangoNum
+						+ '(' + (int) nSeikaisuu[nMondaiTangoNum] * 100
+						/ (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum])
+						+ "% " + nSeikaisuu[nMondaiTangoNum]
+						+ '/' + (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum]) + ')');
+			}
+			else {
 				textViewMondaiNumber.setText(nGenzaiNanMonme + "問目 No." + nMondaiTangoNum + "(0% 0/0)");
 			}
-
+			
 			tvMondai.setText(wordE[nMondaiTangoNum]);
 			bSentaku1.setText(wordJ[nTangoNum[1]]);
 			bSentaku2.setText(wordJ[nTangoNum[2]]);
@@ -437,27 +429,29 @@ public class TestActivity extends AppCompatActivity {
 				tvKaisetsu.setText("");
 				tvMaruBatu.setText("");
 			}
-
+			
 			tvRange.setText("範囲 No." + CommonVariables.from + '-' + CommonVariables.to + "\n合格:" + nGokaku + '/' + nQuiz);
-
+			
 			if (checkBoxHatsuon.isChecked()) {
 				//発音にチェックされている
 				String strLoadPath;
 				if (strQ.startsWith("y")) {
 					strLoadPath = FileDirectoryManager.getPath(yumetan, strQenum.getQ, word, english, nMondaiTangoNum);
-				} else if (strQ.startsWith("tanjukugo")) {
+				}
+				else if (strQ.startsWith("tanjukugo")) {
 					strLoadPath = FileDirectoryManager.getPath(tanjukugoEX, strQ.substring(0, strQ.length() - 4), word, english, nMondaiTangoNum);
-				} else {
+				}
+				else {
 					strLoadPath = FileDirectoryManager.getPath(passTan, strQenum.getQ, word, english, nMondaiTangoNum);
 				}
 				sp.load(strLoadPath, 1);
 			}
-
+			
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}
 	}
-
+	
 	public void checkKaitou(int sentaku) {
 		try {
 			if (!bSkipMaruBatuButton) {
@@ -478,11 +472,12 @@ public class TestActivity extends AppCompatActivity {
 				//正解が増えることにより合格数が増えた場合更新
 				//今回合格、正解する前は不合格のとき合格数を増やす
 				if (isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
-						&& !isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
+					&& !isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku++;
 				PreferenceManager.putIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, nSeikaisuu[nMondaiTangoNum]);
-
-			} else {
+				
+			}
+			else {
 				//不正解
 				if (checkBoxKoukaon.isChecked()) sp.load(this, R.raw.huseikai, 1);
 				tvMaruBatu.setText("×");
@@ -491,25 +486,25 @@ public class TestActivity extends AppCompatActivity {
 				//正解が増えることにより合格数が増えた場合更新
 				//今回合格、正解する前は不合格のとき合格数を増やす
 				if (!isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
-						&& isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
+					&& isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku--;
 				PreferenceManager.putIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, nHuseikaisuu[nMondaiTangoNum]);
 			}
-			puts("filename:"+dnTestActivity+strQ);
-
+			puts("filename:" + dnTestActivity + strQ);
+			
 			tvKaitou.setText("解答:" + wordE[nMondaiTangoNum] + wordJ[nMondaiTangoNum] + "\n" + getGogenString(nMondaiTangoNum, false, false));
 			tvKaisetsu.setText(
-					"\n1 No." + nTangoNum[1] + '	' + wordE[nTangoNum[1]] + '	' + wordJ[nTangoNum[1]] +
-							"\n2 No." + nTangoNum[2] + '	' + wordE[nTangoNum[2]] + '	' + wordJ[nTangoNum[2]] +
-							"\n3 No." + nTangoNum[3] + '	' + wordE[nTangoNum[3]] + '	' + wordJ[nTangoNum[3]] +
-							"\n4 No." + nTangoNum[4] + '	' + wordE[nTangoNum[4]] + '	' + wordJ[nTangoNum[4]]);
+				"\n1 No." + nTangoNum[1] + '	' + wordE[nTangoNum[1]] + '	' + wordJ[nTangoNum[1]] +
+					"\n2 No." + nTangoNum[2] + '	' + wordE[nTangoNum[2]] + '	' + wordJ[nTangoNum[2]] +
+					"\n3 No." + nTangoNum[3] + '	' + wordE[nTangoNum[3]] + '	' + wordJ[nTangoNum[3]] +
+					"\n4 No." + nTangoNum[4] + '	' + wordE[nTangoNum[4]] + '	' + wordJ[nTangoNum[4]]);
 			nGenzaiNanMonme++;
 			if (bSkipMaruBatuButton) setMondaiBun();
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}
 	}
-
+	
 	public void onMarubatuTapped(View v) {
 		try {
 			setMondaiBun();
@@ -517,7 +512,7 @@ public class TestActivity extends AppCompatActivity {
 			ExceptionManager.showException(this, e);
 		}
 	}
-
+	
 	public void onSentakusiTapped(View v) {
 		try {
 			Button b = (Button) v;
@@ -546,23 +541,28 @@ public class TestActivity extends AppCompatActivity {
 			ExceptionManager.showException(this, e);
 		}
 	}
-
+	
 	public void onHintButtonTapped(View v) {
 		try {
 			new AlertDialog.Builder(this)
-					.setTitle("ヒント:例文(No." + nMondaiTangoNum + ")")
-					.setMessage(getGogenString(nMondaiTangoNum, true, true) + "\n\n" + strPhraseE[nMondaiTangoNum] + "\n\n\n\n\n" + strPhraseJ[nMondaiTangoNum])
-					.setPositiveButton("OK", null)
-					.show();
+				.setTitle("ヒント:例文(No." + nMondaiTangoNum + ")")
+				.setMessage(getGogenString(nMondaiTangoNum, true, true) + "\n\n" + strPhraseE[nMondaiTangoNum] + "\n\n\n\n\n" + strPhraseJ[nMondaiTangoNum])
+				.setPositiveButton("OK", null)
+				.show();
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}
 	}
 	
-	static class Seikairitsu{
+	static class Seikairitsu {
 		final int num;
 		final int seitouritu;
 		final int toitakazu;
-		Seikairitsu(int num,int seitouritu,int toitakazu){this.num=num;this.seitouritu=seitouritu;this.toitakazu =toitakazu;}
+		
+		Seikairitsu(int num, int seitouritu, int toitakazu) {
+			this.num = num;
+			this.seitouritu = seitouritu;
+			this.toitakazu = toitakazu;
+		}
 	}
 }

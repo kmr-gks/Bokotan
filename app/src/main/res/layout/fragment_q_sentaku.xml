@@ -345,6 +345,14 @@
 			android:text="@string/readsettingsfromfile"
 			android:textColor="@color/buttontext"
 			android:textSize="12sp" />
+
+		<Button
+			android:id="@+id/buttonShowSettingNew"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:text="設定を表示(新)"
+			android:textColor="@color/buttontext" />
 	</LinearLayout>
 
 	<TextView

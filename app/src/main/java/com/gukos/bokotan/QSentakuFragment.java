@@ -21,7 +21,6 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllFileNames;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllPreferenceData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getSetting;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.initializeSettingItem;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putAllData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putAllSetting;
 import static com.gukos.bokotan.MyLibrary.getBuildDate;
@@ -36,6 +35,7 @@ import static com.gukos.bokotan.SettingFragment.switchSortHanten;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -51,6 +51,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -178,6 +179,7 @@ public class QSentakuFragment extends Fragment {
 			findViewById(R.id.buttonPrefImp).setOnClickListener(this::onImportPrefsButton);
 			findViewById(R.id.buttonWriteTest).setOnClickListener(this::onWriteText);
 			findViewById(R.id.buttonAlarm).setOnClickListener(this::onAlarmset);
+			findViewById(R.id.buttonShowSettingNew).setOnClickListener(this::onShowSettingNew);
 			
 			for (int id : new int[]{R.id.button1q, R.id.buttonP1q, R.id.button2q, R.id.buttonP2q,
 				R.id.buttonAll, R.id.buttonYume0_0, R.id.buttonYume0_8, R.id.buttonYume1,
@@ -186,6 +188,22 @@ public class QSentakuFragment extends Fragment {
 			}
 		} catch (Exception e) {
 			showException(context, e);
+		}
+	}
+	
+	private void onShowSettingNew(View view) {
+		try {
+			String content = "";
+			for (var fileName : getAllFileNames()) {
+				content += fileName + "\n" + getAllPreferenceData(context, fileName) + "\n";
+			}
+			new AlertDialog.Builder(context)
+				.setTitle(((Button) view).getText())
+				.setMessage(content)
+				.create()
+				.show();
+		} catch (Exception exception) {
+			showException(context, exception);
 		}
 	}
 	

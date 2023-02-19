@@ -58,7 +58,7 @@ public final class MyLibrary {
 			e.printStackTrace(new PrintWriter(stringWriter));
 			
 			String strMessage =
-					"例外:" + stringAdditional + "\nメッセージ:" + e.getMessage() + "\n型名(" + e.getClass().getTypeName() + ")\nメソッド名" + DebugManager.getClassName(5) + DebugManager.getMethodName(5) + "\n発生箇所\n" + stringWriter;
+				"例外:" + stringAdditional + "\nメッセージ:" + e.getMessage() + "\n型名(" + e.getClass().getTypeName() + ")\nメソッド名" + DebugManager.getClassName(5) + DebugManager.getMethodName(5) + "\n発生箇所\n" + stringWriter;
 			Log.e(debug_tag, strMessage);
 			if (context != null) DisplayOutput.makeToastForLong(context, strMessage);
 			
@@ -94,25 +94,59 @@ public final class MyLibrary {
 	public static final class PreferenceManager {
 		
 		public static final String fnAppSettings = "appsettings";
+		private static final String delimiter = ",";
+		
+		public static String intArrayToString(int[] array) {
+			String data = "";
+			if (array == null || array.length == 0) return null;
+			for (int i = 0; i < array.length - 1; i++) {
+				data += array[i] + delimiter;
+			}
+			data += array[array.length - 1];
+			return data;
+		}
+		
+		public static int[] stringToIntArray(String string) {
+			if (string == null || string.length() == 0) return null;
+			ArrayList<Integer> arrayList = new ArrayList<>();
+			for (String value : string.split(delimiter)) {
+				arrayList.add(Integer.parseInt(value));
+			}
+			int[] data = new int[arrayList.size()];
+			for (int i = 0; i < arrayList.size(); i++) {
+				data[i] = arrayList.get(i);
+			}
+			return data;
+		}
 		
 		public static String[] getAllFileNames() {
-			var arrayList= new ArrayList<>(Arrays.asList(dnQSentakuActivity,fnAppSettings));
-			for(var q:new String[]{"y08","y1","y2","y3","1q","p1q","2q","p2q","tanjukugo1q", "tanjukugop1q"}){
-				arrayList.add(dnTestActivity+q+"Test");
+			var arrayList = new ArrayList<>(Arrays.asList(dnQSentakuActivity, fnAppSettings));
+			for (var q : new String[]{"y08", "y1", "y2", "y3", "1q", "p1q", "2q", "p2q", "tanjukugo1q", "tanjukugop1q"}) {
+				arrayList.add(dnTestActivity + q + "Test");
 			}
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 				return arrayList.toArray(String[]::new);
-			}else return arrayList.toArray(new String[0]);
+			}
+			else return arrayList.toArray(new String[0]);
 		}
 		
-		public static String getAllPreferenceData(Context context, String strFileName) {
+		public static JSONObject getAllPreferenceJson(Context context, String strFileName) {
 			try {
 				var data = context.getSharedPreferences(strFileName, MODE_PRIVATE).getAll();
 				JSONObject jsonObject = new JSONObject();
 				for (var entry : data.entrySet()) {
 					jsonObject.put(entry.getKey(), entry.getValue());
 				}
-				return jsonObject.toString(4);
+				return jsonObject;
+			} catch (Exception e) {
+				ExceptionManager.showException(e);
+				return null;
+			}
+		}
+		
+		public static String getAllPreferenceData(Context context, String strFileName) {
+			try {
+				return MyLibrary.PreferenceManager.getAllPreferenceJson(context, strFileName).toString(4);
 			} catch (Exception e) {
 				ExceptionManager.showException(e);
 				return "共有プリファレンスのデータの取得に失敗";
@@ -172,6 +206,18 @@ public final class MyLibrary {
 		
 		public static int getIntData(Context context, String strFileName, String strKey, int defaultvalue) {
 			return context.getSharedPreferences(strFileName, MODE_PRIVATE).getInt(strKey, defaultvalue);
+		}
+		
+		public static void putStringData(Context context, String strFileName, String strKey, String value) {
+			try {
+				context.getSharedPreferences(strFileName, MODE_PRIVATE).edit().putString(strKey, value).apply();
+			} catch (Exception e) {
+				ExceptionManager.showException(context, e);
+			}
+		}
+		
+		public static String getStringData(Context context, String strFileName, String strKey, String defaultvalue) {
+			return context.getSharedPreferences(strFileName, MODE_PRIVATE).getString(strKey, defaultvalue);
 		}
 		
 		public static void putAllData(Context context, String strFileName, String stringJson) {
@@ -261,15 +307,15 @@ public final class MyLibrary {
 			}
 		}
 		
-		public static String readFromFile(Context context,String strFileName){
-			String content="";
+		public static String readFromFile(Context context, String strFileName) {
+			String content = "";
 			try {
-				BufferedReader bufferedReader=new BufferedReader(new FileReader(strFileName));
+				BufferedReader bufferedReader = new BufferedReader(new FileReader(strFileName));
 				String line;
-				while((line=bufferedReader.readLine())!=null){
-					content+=line+'\n';
+				while ((line = bufferedReader.readLine()) != null) {
+					content += line + '\n';
 				}
-			}catch (Exception exception){
+			} catch (Exception exception) {
 				ExceptionManager.showException(context, exception);
 			}
 			return content;
@@ -436,8 +482,8 @@ public final class MyLibrary {
 			try {
 				String ans = null;
 				final int[][] dfNum = {
-						{46, 47, 49, 44, 39, 39, 43, 44, 49, 47},
-						{57, 56, 56, 48, 40, 45, 48, 45, 38, 47},};
+					{46, 47, 49, 44, 39, 39, 43, 44, 49, 47},
+					{57, 56, 56, 48, 40, 45, 48, 45, 38, 47},};
 				switch (strQTanjukugo) {
 					case "tanjukugo" + "1q": {
 						if (num <= 2364) {
@@ -686,7 +732,7 @@ public final class MyLibrary {
 		}
 	}
 	
-	public static final class UiInterface{
+	public static final class UiInterface {
 		public interface AdapterViewItemSelected extends AdapterView.OnItemSelectedListener {
 			@Override
 			abstract void onItemSelected(AdapterView<?> adapterView, View view1, int i, long l);
@@ -696,7 +742,7 @@ public final class MyLibrary {
 			}
 		}
 		
-		public interface OnSeekBarProgressChange extends SeekBar.OnSeekBarChangeListener{
+		public interface OnSeekBarProgressChange extends SeekBar.OnSeekBarChangeListener {
 			@Override//ツマミがドラッグされると呼ばれる
 			abstract void onProgressChanged(SeekBar seekBar, int i, boolean b);
 			
