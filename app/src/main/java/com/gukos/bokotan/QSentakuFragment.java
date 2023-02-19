@@ -184,7 +184,6 @@ public class QSentakuFragment extends Fragment {
 			findViewById(R.id.buttonWriteTest).setOnClickListener(this::onWriteText);
 			findViewById(R.id.buttonAlarm).setOnClickListener(this::onAlarmset);
 			findViewById(R.id.buttonShowSettingNew).setOnClickListener(this::onShowSettingNew);
-			findViewById(R.id.buttosavestring).setOnClickListener(this::onSavestring);
 			
 			for (int id : new int[]{R.id.button1q, R.id.buttonP1q, R.id.button2q, R.id.buttonP2q,
 				R.id.buttonAll, R.id.buttonYume0_0, R.id.buttonYume0_8, R.id.buttonYume1,

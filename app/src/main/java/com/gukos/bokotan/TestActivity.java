@@ -251,12 +251,11 @@ public class TestActivity extends AppCompatActivity {
 			CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, unit);
 			
 			//正解率読み込み
-			nSeikaisuu=
-					MyLibrary.PreferenceManager.stringToIntArray(MyLibrary.PreferenceManager.getStringData(this,dnTestActivity+strQ,keySeikai,""));
+			nSeikaisuu= MyLibrary.PreferenceManager.stringToIntArray(MyLibrary.PreferenceManager.getStringData(this,dnTestActivity+strQ,keySeikai,""));
 			nHuseikaisuu= MyLibrary.PreferenceManager.stringToIntArray(MyLibrary.PreferenceManager.getStringData(this,dnTestActivity+strQ,keyHuseikai,""));
+			if (nSeikaisuu==null) nSeikaisuu=new int[3000];
+			if (nHuseikaisuu==null) nHuseikaisuu=new int[3000];
 			for (int i = CommonVariables.from; i <= CommonVariables.to; i++) {
-				//nSeikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ,PreferenceManager.DataName.単語正解数 + i, 0);
-				//nHuseikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ,PreferenceManager.DataName.単語不正解数 + i, 0);
 				if (nSeikaisuu[i] + nHuseikaisuu[i] > 0)
 					seikairitsu[i] = nSeikaisuu[i] * 100 / (nSeikaisuu[i] + nHuseikaisuu[i]);
 				else seikairitsu[i] = 0;
@@ -406,9 +405,6 @@ public class TestActivity extends AppCompatActivity {
 				|| nTangoNum[3] == nTangoNum[4]);
 			testCount++;
 			
-			nSeikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, 0);
-			nHuseikaisuu[nMondaiTangoNum] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, 0);
-			
 			TextView textViewMondaiNumber = findViewById(R.id.textViewMondaiNum);
 			if (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum] > 0) {
 				textViewMondaiNumber.setText(
@@ -477,7 +473,6 @@ public class TestActivity extends AppCompatActivity {
 				if (isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
 					&& !isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku++;
-				PreferenceManager.putIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + nMondaiTangoNum, nSeikaisuu[nMondaiTangoNum]);
 				
 			}
 			else {
@@ -491,7 +486,6 @@ public class TestActivity extends AppCompatActivity {
 				if (!isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
 					&& isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku--;
-				PreferenceManager.putIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + nMondaiTangoNum, nHuseikaisuu[nMondaiTangoNum]);
 			}
 			puts("filename:" + dnTestActivity + strQ);
 			
