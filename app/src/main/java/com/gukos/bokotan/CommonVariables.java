@@ -43,8 +43,8 @@ public final class CommonVariables {
 	//p1qunit=5 to=1,5,1
 	//SentakuActivity.javaから
 	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
-	public static final int[] nSeikaisuu = new int[3000];
-	public static final int[] nHuseikaisuu = new int[3000];
+	public static int[] nSeikaisuu = new int[3000];
+	public static int[] nHuseikaisuu = new int[3000];
 	public static int now;
 	public static TextView tvWordEng;
 	public static TextView tvWordJpn;

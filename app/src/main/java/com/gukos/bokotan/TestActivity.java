@@ -251,9 +251,12 @@ public class TestActivity extends AppCompatActivity {
 			CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, unit);
 			
 			//正解率読み込み
+			nSeikaisuu=
+					MyLibrary.PreferenceManager.stringToIntArray(MyLibrary.PreferenceManager.getStringData(this,dnTestActivity+strQ,keySeikai,""));
+			nHuseikaisuu= MyLibrary.PreferenceManager.stringToIntArray(MyLibrary.PreferenceManager.getStringData(this,dnTestActivity+strQ,keyHuseikai,""));
 			for (int i = CommonVariables.from; i <= CommonVariables.to; i++) {
-				nSeikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語正解数 + i, 0);
-				nHuseikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ, PreferenceManager.DataName.単語不正解数 + i, 0);
+				//nSeikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ,PreferenceManager.DataName.単語正解数 + i, 0);
+				//nHuseikaisuu[i] = PreferenceManager.getIntData(this, dnTestActivity + strQ,PreferenceManager.DataName.単語不正解数 + i, 0);
 				if (nSeikaisuu[i] + nHuseikaisuu[i] > 0)
 					seikairitsu[i] = nSeikaisuu[i] * 100 / (nSeikaisuu[i] + nHuseikaisuu[i]);
 				else seikairitsu[i] = 0;

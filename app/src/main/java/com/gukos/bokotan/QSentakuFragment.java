@@ -10,12 +10,16 @@ import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.Context.ALARM_SERVICE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
+import static com.gukos.bokotan.CommonVariables.nHuseikaisuu;
+import static com.gukos.bokotan.CommonVariables.nSeikaisuu;
 import static com.gukos.bokotan.CommonVariables.strQ;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.openWriteFileWithExistCheck;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.readFromFile;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.fnAppSettings;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllFileNames;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllPreferenceData;
@@ -180,6 +184,7 @@ public class QSentakuFragment extends Fragment {
 			findViewById(R.id.buttonWriteTest).setOnClickListener(this::onWriteText);
 			findViewById(R.id.buttonAlarm).setOnClickListener(this::onAlarmset);
 			findViewById(R.id.buttonShowSettingNew).setOnClickListener(this::onShowSettingNew);
+			findViewById(R.id.buttosavestring).setOnClickListener(this::onSavestring);
 			
 			for (int id : new int[]{R.id.button1q, R.id.buttonP1q, R.id.button2q, R.id.buttonP2q,
 				R.id.buttonAll, R.id.buttonYume0_0, R.id.buttonYume0_8, R.id.buttonYume1,
@@ -204,6 +209,26 @@ public class QSentakuFragment extends Fragment {
 				.show();
 		} catch (Exception exception) {
 			showException(context, exception);
+		}
+	}
+	
+	private void onSavestring(View view) {
+		try {
+			for (var nowq : new String[]{"y08", "y1", "y2", "y3", "1q", "p1q", "2q", "p2q", "tanjukugo1q", "tanjukugop1q"}) {
+				puts("nowq=" + nowq);
+				nSeikaisuu = new int[3000];
+				nHuseikaisuu = new int[3000];
+				for (int i = 0; i < 3000; i++) {
+					nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, dnTestActivity + nowq+"Test", MyLibrary.PreferenceManager.DataName.単語正解数 + i, 0);
+					nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, dnTestActivity + nowq+"Test", MyLibrary.PreferenceManager.DataName.単語不正解数 + i, 0);
+				}
+				MyLibrary.PreferenceManager.putStringData(context, dnTestActivity + nowq+"Test", "keySeikai", MyLibrary.PreferenceManager.intArrayToString(nSeikaisuu));
+				MyLibrary.PreferenceManager.putStringData(context, dnTestActivity + nowq+"Test", "keyHuseikai", MyLibrary.PreferenceManager.intArrayToString(nHuseikaisuu));
+			}
+			makeToastForShort(context, "stringの書き込みに成功しました。");
+		} catch (Exception exception) {
+			Log.d(debug_tag + "string", exception.getMessage() + exception.getClass().getTypeName());
+			MyLibrary.DisplayOutput.makeToastForLong(context, "stringの書き込みに失敗しました。");
 		}
 	}
 	
