@@ -1,12 +1,24 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+
+import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.Fragment;
+
+import kotlin.jvm.functions.Function3;
 
 public class UiManager {
 	
@@ -54,6 +66,44 @@ public class UiManager {
 			//これをオーバーロードする
 			@Override
 			abstract void afterTextChanged(Editable editable);
+		}
+	}
+	
+	public static abstract class FragmentBingding<TBinding extends ViewDataBinding> extends Fragment {
+		public TBinding binding;
+		public Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate;
+		
+		Context context;
+		Activity activity;
+		View viewFragment;
+		
+		public FragmentBingding(Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate) {
+			this.methodInflate = methodInflate;
+		}
+		
+		@Override
+		public final View onCreateView(LayoutInflater inflater, ViewGroup container,
+		                               Bundle savedInstanceState) {
+			//こう書きたいが、javaではできない？
+			//binding= Binding.inflate(inflater, container, false);
+			binding = methodInflate.invoke(inflater, container, false);
+			binding.setLifecycleOwner(this);
+			return binding.getRoot();
+		}
+		
+		final <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
+		
+		//ActivityのonCreateに相当
+		@Override
+		public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+			try {
+				super.onViewCreated(view, savedInstanceState);
+				context = getContext();
+				activity = getActivity();
+				viewFragment = view;
+			} catch (Exception e) {
+				showException(getContext(), e);
+			}
 		}
 	}
 }

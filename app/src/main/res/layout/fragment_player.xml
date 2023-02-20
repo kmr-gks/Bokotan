@@ -1,241 +1,248 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@color/background"
-	tools:context=".PlayerFragment">
+	xmlns:tools="http://schemas.android.com/tools">
 
-	<TextView
-		android:id="@+id/textViewGenzai"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="No.0000"
-		android:textColor="#F44336"
-		android:textSize="20sp"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+	<data>
 
-	<TextView
-		android:id="@+id/textViewGogen"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:autoSizeTextType="uniform"
-		android:maxLines="1"
-		android:textAlignment="textEnd"
-		android:textColor="@color/textcolor"
-		android:textSize="40sp"
-		app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleEng"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutWords" />
+	</data>
 
-	<TextView
-		android:id="@+id/textViewSubtitleJpn"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:autoSizeTextType="uniform"
-		android:maxLines="1"
-		android:textAlignment="textEnd"
-		android:textColor="@color/textcolor"
-		android:textSize="26sp"
-		app:layout_constraintBottom_toTopOf="@+id/linearLayoutPlayerButtons"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<TextView
-		android:id="@+id/textViewSubtitleEng"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:autoSizeTextType="uniform"
-		android:maxLines="1"
-		android:textAlignment="textEnd"
-		android:textColor="@color/textcolor"
-		android:textSize="26sp"
-		app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleJpn"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<LinearLayout
-		android:id="@+id/linearLayoutPlayerButtons"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintBottom_toTopOf="@+id/linearLayoutSeekBars"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent">
-
-		<Button
-			android:id="@+id/buttonToBegin"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/fromstart"
-			android:textColor="@color/buttontext"
-			android:textSize="16sp" />
-
-		<Button
-			android:id="@+id/buttonNowChange"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/bangouhenkou"
-			android:textColor="@color/buttontext"
-			android:textSize="16sp" />
-
-		<Button
-			android:id="@+id/buttonPip"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/pipb"
-			android:textColor="@color/buttontext"
-			android:textSize="16sp" />
-
-		<Button
-			android:id="@+id/buttonStartStop"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/start"
-			android:textColor="@color/buttontext" />
-
-	</LinearLayout>
-
-	<TextView
-		android:id="@+id/textViewNumSeikairitu"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:autoSizeTextType="uniform"
-		android:textColor="@color/textcolor"
-		app:layout_constraintBottom_toBottomOf="@+id/textViewGenzai"
-		app:layout_constraintStart_toEndOf="@+id/textViewGenzai"
-		app:layout_constraintTop_toTopOf="parent" />
-
-	<TextView
-		android:id="@+id/textViewSeikaisuu"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:autoSizeTextType="uniform"
-		android:textColor="@color/textcolor"
-		app:layout_constraintBottom_toBottomOf="@+id/textViewGenzai"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
-
-	<LinearLayout
-		android:id="@+id/linearLayoutSeekBars"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintBottom_toTopOf="@+id/linearLayoutSeekBarTexts"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent">
-
-		<SeekBar
-			android:id="@+id/seekBarEng"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:contentDescription="@string/seekBarStrEng"
-			android:max="10"
-			android:minHeight="48dp"
-			android:progress="5" />
-
-		<SeekBar
-			android:id="@+id/seekBarJpn"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.5"
-			android:contentDescription="@string/seekBarStrJpn"
-			android:max="10"
-			android:minHeight="48dp"
-			android:progress="10" />
-	</LinearLayout>
-
-	<LinearLayout
-		android:id="@+id/linearLayoutSeekBarTexts"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintBottom_toTopOf="@+id/textViewPath"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent">
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@color/background"
+		tools:context=".PlayerFragment">
 
 		<TextView
-			android:id="@+id/textViewSeekBarEng"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_weight="0.5"
-			android:text="英語速度:1.5"
-			android:textColor="@color/textcolor"
-			android:textSize="26sp" />
+			android:id="@+id/textViewGenzai"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="No.0000"
+			android:textColor="#F44336"
+			android:textSize="20sp"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
 
 		<TextView
-			android:id="@+id/textViewSeekBarJpn"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_weight="0.5"
-			android:text="日本語速度:1.5"
-			android:textColor="@color/textcolor"
-			android:textSize="26sp" />
-	</LinearLayout>
-
-	<LinearLayout
-		android:id="@+id/linearLayoutWords"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:orientation="vertical"
-		app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleEng"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewGenzai">
-
-		<TextView
-			android:id="@+id/textViewEng"
-			android:layout_width="match_parent"
+			android:id="@+id/textViewGogen"
+			android:layout_width="0dp"
 			android:layout_height="0dp"
-			android:layout_weight="1"
-			android:autoSizeMaxTextSize="60sp"
 			android:autoSizeTextType="uniform"
-			android:text="再生停止"
-			android:textAlignment="center"
+			android:maxLines="1"
+			android:textAlignment="textEnd"
 			android:textColor="@color/textcolor"
-			android:textSize="36sp"
-			android:textStyle="bold" />
+			android:textSize="40sp"
+			app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleEng"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/linearLayoutWords" />
 
 		<TextView
-			android:id="@+id/textViewHatsuonKigou"
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="0.5"
-			android:autoSizeMaxTextSize="60sp"
+			android:id="@+id/textViewSubtitleJpn"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
 			android:autoSizeTextType="uniform"
-			android:textAlignment="center"
-			android:textColor="@color/textcolor" />
+			android:maxLines="1"
+			android:textAlignment="textEnd"
+			android:textColor="@color/textcolor"
+			android:textSize="26sp"
+			app:layout_constraintBottom_toTopOf="@+id/linearLayoutPlayerButtons"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent" />
 
 		<TextView
-			android:id="@+id/textViewJpn"
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
-			android:autoSizeMaxTextSize="60sp"
+			android:id="@+id/textViewSubtitleEng"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
 			android:autoSizeTextType="uniform"
-			android:text="再生停止"
-			android:textAlignment="center"
+			android:maxLines="1"
+			android:textAlignment="textEnd"
 			android:textColor="@color/textcolor"
-			android:textSize="36sp"
-			android:textStyle="bold" />
-	</LinearLayout>
+			android:textSize="26sp"
+			app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleJpn"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent" />
 
-	<TextView
-		android:id="@+id/textViewPath"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:autoSizeTextType="uniform"
-		android:lines="1"
-		android:textAlignment="viewStart"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent" />
+		<LinearLayout
+			android:id="@+id/linearLayoutPlayerButtons"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			app:layout_constraintBottom_toTopOf="@+id/linearLayoutSeekBars"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+			<Button
+				android:id="@+id/buttonToBegin"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@string/fromstart"
+				android:textColor="@color/buttontext"
+				android:textSize="16sp" />
+
+			<Button
+				android:id="@+id/buttonNowChange"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@string/bangouhenkou"
+				android:textColor="@color/buttontext"
+				android:textSize="16sp" />
+
+			<Button
+				android:id="@+id/buttonPip"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@string/pipb"
+				android:textColor="@color/buttontext"
+				android:textSize="16sp" />
+
+			<Button
+				android:id="@+id/buttonStartStop"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@string/start"
+				android:textColor="@color/buttontext" />
+
+		</LinearLayout>
+
+		<TextView
+			android:id="@+id/textViewNumSeikairitu"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:autoSizeTextType="uniform"
+			android:textColor="@color/textcolor"
+			app:layout_constraintBottom_toBottomOf="@+id/textViewGenzai"
+			app:layout_constraintStart_toEndOf="@+id/textViewGenzai"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<TextView
+			android:id="@+id/textViewSeikaisuu"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:autoSizeTextType="uniform"
+			android:textColor="@color/textcolor"
+			app:layout_constraintBottom_toBottomOf="@+id/textViewGenzai"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<LinearLayout
+			android:id="@+id/linearLayoutSeekBars"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			app:layout_constraintBottom_toTopOf="@+id/linearLayoutSeekBarTexts"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent">
+
+			<SeekBar
+				android:id="@+id/seekBarEng"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.5"
+				android:contentDescription="@string/seekBarStrEng"
+				android:max="10"
+				android:minHeight="48dp"
+				android:progress="5" />
+
+			<SeekBar
+				android:id="@+id/seekBarJpn"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.5"
+				android:contentDescription="@string/seekBarStrJpn"
+				android:max="10"
+				android:minHeight="48dp"
+				android:progress="10" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/linearLayoutSeekBarTexts"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			app:layout_constraintBottom_toTopOf="@+id/textViewPath"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent">
+
+			<TextView
+				android:id="@+id/textViewSeekBarEng"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="0.5"
+				android:text="英語速度:1.5"
+				android:textColor="@color/textcolor"
+				android:textSize="26sp" />
+
+			<TextView
+				android:id="@+id/textViewSeekBarJpn"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_weight="0.5"
+				android:text="日本語速度:1.5"
+				android:textColor="@color/textcolor"
+				android:textSize="26sp" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/linearLayoutWords"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:orientation="vertical"
+			app:layout_constraintBottom_toTopOf="@+id/textViewSubtitleEng"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/textViewGenzai">
+
+			<TextView
+				android:id="@+id/textViewEng"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:autoSizeMaxTextSize="60sp"
+				android:autoSizeTextType="uniform"
+				android:text="再生停止"
+				android:textAlignment="center"
+				android:textColor="@color/textcolor"
+				android:textSize="36sp"
+				android:textStyle="bold" />
+
+			<TextView
+				android:id="@+id/textViewHatsuonKigou"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="0.5"
+				android:autoSizeMaxTextSize="60sp"
+				android:autoSizeTextType="uniform"
+				android:textAlignment="center"
+				android:textColor="@color/textcolor" />
+
+			<TextView
+				android:id="@+id/textViewJpn"
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:layout_weight="1"
+				android:autoSizeMaxTextSize="60sp"
+				android:autoSizeTextType="uniform"
+				android:text="再生停止"
+				android:textAlignment="center"
+				android:textColor="@color/textcolor"
+				android:textSize="36sp"
+				android:textStyle="bold" />
+		</LinearLayout>
+
+		<TextView
+			android:id="@+id/textViewPath"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:autoSizeTextType="uniform"
+			android:lines="1"
+			android:textAlignment="viewStart"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent" />
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

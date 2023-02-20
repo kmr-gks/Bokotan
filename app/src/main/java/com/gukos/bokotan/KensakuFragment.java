@@ -28,16 +28,12 @@ import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,7 +41,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+
+import com.gukos.bokotan.databinding.FragmentKensakuBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,17 +51,16 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 
-public class KensakuFragment extends Fragment {
+public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuBinding> {
 	
 	public static TreeMap<String, GogenYomu> trGogenYomu;
-	Context context;
-	Activity activity;
-	View viewFragment;
-	
 	Thread threadInitial = null, threadSearch = null;
 	boolean threadSearchIsRunning = true;
 	
-	private <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
+	KensakuFragment() {
+		super(FragmentKensakuBinding::inflate);
+	}
+	
 	
 	static class WordInfo {
 		static int size = 0;
@@ -182,18 +178,11 @@ public class KensakuFragment extends Fragment {
 	private Button buttonKensakuHouhou;
 	enumKensakuHouhou kensakuHouhou = starts;
 	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_kensaku, container, false);
-	}
 	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			context = getContext();
-			activity = getActivity();
-			viewFragment = view;
 			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 		} catch (Exception e) {
 			showException(getContext(), e);

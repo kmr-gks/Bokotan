@@ -1,61 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@color/background">
+	xmlns:tools="http://schemas.android.com/tools">
 
-	<LinearLayout
-		android:id="@+id/linearLayoutKensakuOption"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
+	<data>
 
-		<com.google.android.material.textfield.TextInputEditText
-			android:id="@+id/editTextKensakuKey"
+	</data>
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@color/background">
+
+		<LinearLayout
+			android:id="@+id/linearLayoutKensakuOption"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:layout_weight="0.8"
-			android:hint="@string/kensaku"
-			android:inputType="textEmailAddress"
-			android:textColor="@color/textcolor" />
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent">
 
-		<Button
-			android:id="@+id/buttonClearKey"
-			android:layout_width="65dp"
-			android:layout_height="wrap_content"
-			android:text="@string/delete"
-			android:textColor="@color/buttontext" />
+			<com.google.android.material.textfield.TextInputEditText
+				android:id="@+id/editTextKensakuKey"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.8"
+				android:hint="@string/kensaku"
+				android:inputType="textEmailAddress"
+				android:textColor="@color/textcolor" />
 
-		<Button
-			android:id="@+id/buttonKensakuHouhou"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="0"
-			android:autoSizeTextType="none"
-			android:lines="1"
-			android:text="@string/start"
-			android:textColor="@color/buttontext" />
+			<Button
+				android:id="@+id/buttonClearKey"
+				android:layout_width="65dp"
+				android:layout_height="wrap_content"
+				android:text="@string/delete"
+				android:textColor="@color/buttontext" />
 
-		<TextView
-			android:id="@+id/textViewKensakuResultCount"
+			<Button
+				android:id="@+id/buttonKensakuHouhou"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_weight="0"
+				android:autoSizeTextType="none"
+				android:lines="1"
+				android:text="@string/start"
+				android:textColor="@color/buttontext" />
+
+			<TextView
+				android:id="@+id/textViewKensakuResultCount"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.2"
+				android:textAlignment="center"
+				android:textColor="@color/textcolor" />
+		</LinearLayout>
+
+		<ListView
+			android:id="@+id/listViewKensakuResult"
 			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="0.2"
-			android:textAlignment="center"
-			android:textColor="@color/textcolor" />
-	</LinearLayout>
+			android:layout_height="0dp"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/linearLayoutKensakuOption" />
 
-	<ListView
-		android:id="@+id/listViewKensakuResult"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutKensakuOption" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

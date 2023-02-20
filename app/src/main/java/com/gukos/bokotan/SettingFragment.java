@@ -11,12 +11,8 @@ import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
 import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -25,9 +21,10 @@ import android.widget.Spinner;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
-public class SettingFragment extends Fragment {
+import com.gukos.bokotan.databinding.FragmentSettingBinding;
+
+public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingBinding> {
 	//他のクラスからアクセス
 	public static CheckBox cbAutoStop, checkBoxHatsuonKigou;
 	public static Switch switchSkipOboe, swHyojiBeforeRead, switchSortHanten, swMaruBatu;
@@ -35,17 +32,8 @@ public class SettingFragment extends Fragment {
 	//ビュー
 	static Switch swOnlyFirst;
 	
-	Context context;
-	Activity activity;
-	View viewFragment;
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_setting, container, false);
-	}
-	
-	private <T extends View> T findViewById(int id) {
-		return viewFragment.findViewById(id);
+	public SettingFragment() {
+		super(FragmentSettingBinding::inflate);
 	}
 	
 	//ActivityのonCreateに相当
@@ -53,14 +41,7 @@ public class SettingFragment extends Fragment {
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			context = getContext();
-			activity = getActivity();
-			viewFragment = view;
-			try {
-				new Thread(() -> activity.runOnUiThread(this::initialize)).start();
-			} catch (Exception e) {
-				showException(context, e);
-			}
+			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}

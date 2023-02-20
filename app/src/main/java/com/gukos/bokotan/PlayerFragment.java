@@ -1,15 +1,13 @@
 package com.gukos.bokotan;
 
 import static android.view.View.GONE;
-import static com.gukos.bokotan.PlaySound.now;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.PlaySound.isWordAndPhraseMode;
-import static com.gukos.bokotan.WordPhraseData.sentakuQ;
-import static com.gukos.bokotan.WordPhraseData.sentakuUnit;
+import static com.gukos.bokotan.PlaySound.now;
 import static com.gukos.bokotan.SettingFragment.swOnlyFirst;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
@@ -17,63 +15,48 @@ import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
+import static com.gukos.bokotan.WordPhraseData.sentakuQ;
+import static com.gukos.bokotan.WordPhraseData.sentakuUnit;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+
+import com.gukos.bokotan.databinding.FragmentPlayerBinding;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class PlayerFragment extends Fragment {
+public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBinding> {
 	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
 	
 	public static int lastnum;
 	public static boolean playing = false;
 	static boolean nowIsDecided = false;
-	Context context;
-	Activity activity;
-	View viewFragment;
 	private static ArrayAdapter<String> adapterUnit;
 	protected int selectedIndex = 0;
 	AlertDialog adWord, adUnit;
 	
 	public PlayerFragment() {
-		super();
-		puts(getClassName() + getMethodName());
+		super(FragmentPlayerBinding::inflate);
 	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_player, container, false);
-	}
-	
-	private <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
 	
 	//ActivityのonCreateに相当
 	@Override
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			puts(getClassName() + getMethodName());
-			context = getContext();
-			activity = getActivity();
-			viewFragment = view;
 			try {
 				puts(getClassName() + getMethodName() + " start");
 				

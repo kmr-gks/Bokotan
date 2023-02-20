@@ -10,7 +10,6 @@ import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.Context.ALARM_SERVICE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
-import static com.gukos.bokotan.PlaySound.strQ;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -27,6 +26,7 @@ import static com.gukos.bokotan.MyLibrary.getBuildDate;
 import static com.gukos.bokotan.MyLibrary.getNowTime;
 import static com.gukos.bokotan.MyLibrary.strExceptionFIlePath;
 import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
+import static com.gukos.bokotan.PlaySound.strQ;
 import static com.gukos.bokotan.SettingFragment.cbAutoStop;
 import static com.gukos.bokotan.SettingFragment.swHyojiBeforeRead;
 import static com.gukos.bokotan.SettingFragment.swMaruBatu;
@@ -38,7 +38,6 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -47,9 +46,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -61,27 +58,20 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+
+import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class QSentakuFragment extends Fragment {
+public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentakuBinding> {
 	
 	static int nWordPhraseOrTest = 1;
-	private Context context;
-	private FragmentActivity activity;
-	private View viewFragment;
 	
-	private <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		//スーパーメソッド呼び出しは不要、ここに処理は書かない
-		return inflater.inflate(R.layout.fragment_q_sentaku, container, false);
+	public QSentakuFragment() {
+		super(FragmentQSentakuBinding::inflate);
 	}
 	
 	@Override
@@ -92,9 +82,6 @@ public class QSentakuFragment extends Fragment {
 			//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
 			// .penaltyLog().build());
 			
-			context = getContext();
-			activity = getActivity();
-			viewFragment = view;
 			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 		} catch (Exception e) {
 			showException(getContext(), e);
