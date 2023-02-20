@@ -36,6 +36,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +53,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -213,7 +217,7 @@ public class KensakuFragment extends Fragment {
 			Button buttonCLear = findViewById(R.id.buttonClearKey);
 			buttonKensakuHouhou = findViewById(R.id.buttonKensakuHouhou);
 			
-			etKey.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) this::EditTextChanged);
+			etKey.addTextChangedListener((MyLibrary.UiInterface.TextWatcherAfterOnly) this::EditTextChanged);
 			
 			buttonCLear.setOnClickListener(v -> etKey.setText(""));
 			
