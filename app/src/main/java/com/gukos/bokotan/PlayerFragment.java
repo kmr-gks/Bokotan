@@ -43,6 +43,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	
 	public static int lastnum;
 	public static boolean playing = false;
+	public static TextView tvWordEng, tvWordJpn, tvGenzai, tvsubE, tvsubJ, tvNumSeikaisuu, tvSeikaisu, tvGogen, textViewPath, textViewHatsuonKigou;
 	static boolean nowIsDecided = false;
 	private static ArrayAdapter<String> adapterUnit;
 	protected int selectedIndex = 0;
@@ -58,37 +59,35 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		try {
 			super.onViewCreated(view, savedInstanceState);
 			try {
-				puts(getClassName() + getMethodName() + " start");
-				
 				//UI設定
-				PlaySound.tvWordEng = findViewById(R.id.textViewEng);
-				PlaySound.tvWordJpn = findViewById(R.id.textViewJpn);
-				PlaySound.tvGenzai = findViewById(R.id.textViewGenzai);
-				PlaySound.tvsubE = findViewById(R.id.textViewSubtitleEng);
-				PlaySound.tvsubJ = findViewById(R.id.textViewSubtitleJpn);
-				PlaySound.tvGogen = findViewById(R.id.textViewGogen);
-				PlaySound.tvNumSeikaisuu = findViewById(R.id.textViewNumSeikairitu);
-				PlaySound.tvSeikaisu = findViewById(R.id.textViewSeikaisuu);
-				PlaySound.textViewPath = findViewById(R.id.textViewPath);
-				PlaySound.textViewHatsuonKigou = findViewById(R.id.textViewHatsuonKigou);
+				tvWordEng = binding.textViewEng;
+				tvWordJpn = binding.textViewJpn;
+				tvGenzai = binding.textViewGenzai;
+				tvsubE = binding.textViewSubtitleEng;
+				tvsubJ = binding.textViewSubtitleJpn;
+				tvGogen = binding.textViewGogen;
+				tvNumSeikaisuu = binding.textViewNumSeikairitu;
+				tvSeikaisu = binding.textViewSeikaisuu;
+				textViewPath = binding.textViewPath;
+				textViewHatsuonKigou = binding.textViewHatsuonKigou;
+				
 				if (PlaySound.strQ != null)
 					PlaySound.isPhraseMode = PlaySound.strQ.charAt(1) == 'h';
 				if (isWordAndPhraseMode || PlaySound.isPhraseMode) {
-					PlaySound.tvsubE.setVisibility(View.VISIBLE);
-					PlaySound.tvsubJ.setVisibility(View.VISIBLE);
+					tvsubE.setVisibility(View.VISIBLE);
+					tvsubJ.setVisibility(View.VISIBLE);
 				}
 				else {
 					//単語の場合は右下の文字は非表示
-					PlaySound.tvsubE.setVisibility(GONE);
-					PlaySound.tvsubJ.setVisibility(GONE);
+					tvsubE.setVisibility(GONE);
+					tvsubJ.setVisibility(GONE);
 				}
 				
-				Button buttonStartStop = findViewById(R.id.buttonStartStop);
-				buttonStartStop.setOnClickListener(this::onStartStopButtonClick);
-				buttonStartStop.setText(playing ? "stop" : "start");
-				findViewById(R.id.buttonNowChange).setOnClickListener(this::onSelectNowButtonClick);
-				findViewById(R.id.buttonToBegin).setOnClickListener(this::onResetButtonClick);
-				findViewById(R.id.buttonPip).setOnClickListener(this::onPIPButtonClicked);
+				binding.buttonStartStop.setOnClickListener(this::onStartStopButtonClick);
+				binding.buttonStartStop.setText(playing ? "stop" : "start");
+				binding.buttonNowChange.setOnClickListener(this::onSelectNowButtonClick);
+				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
+				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
 				
 				activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 				
@@ -97,15 +96,13 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					sentakuQ = WordPhraseData.q_num.testp1q;
 				}
 				
-				SeekBar sbE = findViewById(R.id.seekBarEng);
-				sbE.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
-				sbE.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
-				onSpeedSeekBar(sbE);
-				SeekBar sbJ = findViewById(R.id.seekBarJpn);
-				sbJ.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
-				sbJ.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
-				onSpeedSeekBar(sbJ);
-				puts(getClassName() + getMethodName() + " ended");
+				binding.seekBarEng.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
+				binding.seekBarEng.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
+				onSpeedSeekBar(binding.seekBarEng);
+				
+				binding.seekBarJpn.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
+				binding.seekBarJpn.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
+				onSpeedSeekBar(binding.seekBarEng);
 			} catch (Exception e) {
 				showException(context, e);
 			}
@@ -273,7 +270,8 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			
 			if (!nowIsDecided && sentakuUnit.equals(WordPhraseData.q_num.unit.all)) {
 				now = MyLibrary.PreferenceManager.getIntData(context, "MainActivity" +
-					"now", (PlaySound.strQ.startsWith("ph") ? PlaySound.strQ.substring(2) : PlaySound.strQ) + "now", 1);
+					"now", (PlaySound.strQ.startsWith("ph") ? PlaySound.strQ.substring(2) :
+					PlaySound.strQ) + "now", 1);
 				PlaySound.nFrom = 1;
 				PlaySound.nTo = lastnum;
 			}
@@ -553,13 +551,13 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			SeekBar sb = (SeekBar) v;
 			if (sb.getId() == R.id.seekBarEng) {
 				//英語
-				((TextView) findViewById(R.id.textViewSeekBarEng)).setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
+				binding.textViewSeekBarEng.setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 				PlaySound.dPlaySpeedEng = 1 + 0.1 * sb.getProgress();
 				putIntData(context, "SeekBar", "english", sb.getProgress());
 			}
 			else if (sb.getId() == R.id.seekBarJpn) {
 				//日本語
-				((TextView) findViewById(R.id.textViewSeekBarJpn)).setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
+				binding.textViewSeekBarJpn.setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
 				PlaySound.dPlaySpeedJpn = 1 + 0.1 * sb.getProgress();
 				putIntData(context, "SeekBar", "japanese", sb.getProgress());
 			}

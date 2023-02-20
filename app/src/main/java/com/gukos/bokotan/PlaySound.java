@@ -34,12 +34,10 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.widget.TextView;
 
 import androidx.core.app.NotificationCompat;
 
 public class PlaySound extends Service {
-	public static TextView tvWordEng, tvWordJpn, tvGenzai, tvsubE, tvsubJ, tvNumSeikaisuu, tvSeikaisu, tvGogen, textViewPath, textViewHatsuonKigou;
 	public static double dPlaySpeedEng = 1.5, dPlaySpeedJpn = 1.5;
 	public static String[] wordE, wordJ, strPhraseJ, strPhraseE;
 	public static boolean isPhraseMode, bHyojiYakuBeforeRead = true, bEnglishToJapaneseOrder = true;
@@ -161,10 +159,10 @@ public class PlaySound extends Service {
 	
 	private void setEngText(int num) {
 		try {
-			tvWordEng.setMaxLines(1);
-			tvWordEng.setText(wordE[num]);
+			PlayerFragment.tvWordEng.setMaxLines(1);
+			PlayerFragment.tvWordEng.setText(wordE[num]);
 			if (SettingFragment.checkBoxHatsuonKigou.isChecked())
-				textViewHatsuonKigou.setText(getHatsuon(wordE[now]));
+				PlayerFragment.textViewHatsuonKigou.setText(getHatsuon(wordE[now]));
 		} catch (Exception e) {
 			showException(this, e);
 		}
@@ -221,7 +219,7 @@ public class PlaySound extends Service {
 						}
 					}
 					//puts("now="+now+",word="+wordE[now]+",hash="+hashMapKishutu.get(wordE[now]));
-					tvSeikaisu.setText("正解" + getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + '/' + (getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + getIntData(this, "testActivity" + strQ + "Test", "nWordHuseikaisuu" + now, 0)));
+					PlayerFragment.tvSeikaisu.setText("正解" + getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + '/' + (getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + getIntData(this, "testActivity" + strQ + "Test", "nWordHuseikaisuu" + now, 0)));
 				}
 				
 				if (nFrom != 0 && nTo != 0) {
@@ -229,7 +227,7 @@ public class PlaySound extends Service {
 					if (now >= nTo) now = nFrom;
 				}
 				
-				if (tvGenzai != null) tvGenzai.setText("No." + now);
+				if (PlayerFragment.tvGenzai != null) PlayerFragment.tvGenzai.setText("No." + now);
 				int nWordSeikaisuu = 0, nWordHuseikaisuu = 0;
 				if (lastnum == 2400) {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "1qTest", "nWordSeikaisuu" + now, 0);
@@ -239,8 +237,8 @@ public class PlaySound extends Service {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordSeikaisuu" + now, 0);
 					nWordHuseikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordHuseikaisuu" + now, 0);
 				}
-				if (tvNumSeikaisuu != null)
-					tvNumSeikaisuu.setText(
+				if (PlayerFragment.tvNumSeikaisuu != null)
+					PlayerFragment.tvNumSeikaisuu.setText(
 						" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu > 0 ? nWordSeikaisuu + nWordHuseikaisuu : 1) +
 							"% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
 				if (isWordAndPhraseMode) {
@@ -267,30 +265,30 @@ public class PlaySound extends Service {
 				
 				if (isPhraseMode) {
 					if (bHyojiYakuBeforeRead) {
-						tvWordJpn.setText(strPhraseJ[now]);
+						PlayerFragment.tvWordJpn.setText(strPhraseJ[now]);
 					}
 					else {
-						tvWordJpn.setText("");
+						PlayerFragment.tvWordJpn.setText("");
 					}
-					tvWordEng.setMaxLines(10);
-					tvWordEng.setText(strPhraseE[now]);
-					tvsubE.setText(wordE[now]);
-					tvsubJ.setText(wordJ[now]);
+					PlayerFragment.tvWordEng.setMaxLines(10);
+					PlayerFragment.tvWordEng.setText(strPhraseE[now]);
+					PlayerFragment.tvsubE.setText(wordE[now]);
+					PlayerFragment.tvsubJ.setText(wordJ[now]);
 				}
 				else {
 					if (bHyojiYakuBeforeRead) {
-						tvWordJpn.setText(wordJ[now]);
+						PlayerFragment.tvWordJpn.setText(wordJ[now]);
 					}
 					else {
-						tvWordJpn.setText("");
+						PlayerFragment.tvWordJpn.setText("");
 					}
 					setEngText(now);
 				}
 				if (isPhraseMode || isWordAndPhraseMode) {
-					tvsubE.setText(wordE[now]);
-					tvsubJ.setText(wordJ[now]);
+					PlayerFragment.tvsubE.setText(wordE[now]);
+					PlayerFragment.tvsubJ.setText(wordJ[now]);
 				}
-				tvGogen.setText(getGogenString(now, false, false));
+				PlayerFragment.tvGogen.setText(getGogenString(now, false, false));
 			}
 			PipActivity.ChangeText(wordE[now], wordJ[now], now);
 			String strQPath = strQ;
@@ -314,7 +312,7 @@ public class PlaySound extends Service {
 				path = getPath(tanjukugoEX, strQPath, word, english, now);
 			}
 			else path = getPath(passTan, strQPath, word, english, now);
-			textViewPath.setText(path);
+			PlayerFragment.textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(getApplicationContext(), Uri.parse(path));
 				if (mediaPlayerClassStatic == null) {
@@ -339,8 +337,8 @@ public class PlaySound extends Service {
 			}
 			if (!bEnglishToJapaneseOrder && !bHyojiYakuBeforeRead) {
 				if (isPhraseMode) {
-					tvWordEng.setMaxLines(10);
-					tvWordEng.setText(strPhraseE[now]);
+					PlayerFragment.tvWordEng.setMaxLines(10);
+					PlayerFragment.tvWordEng.setText(strPhraseE[now]);
 				}
 				else {
 					setEngText(now);
@@ -364,7 +362,7 @@ public class PlaySound extends Service {
 				}
 				if (now <= nFrom) now = nFrom;
 				if (now >= nTo) now = nFrom;
-				if (tvGenzai != null) tvGenzai.setText("No." + now);
+				if (PlayerFragment.tvGenzai != null) PlayerFragment.tvGenzai.setText("No." + now);
 				int nWordSeikaisuu = 0, nWordHuseikaisuu = 0;
 				if (lastnum == 2400) {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "1qTest", "nWordSeikaisuu" + now, 0);
@@ -374,35 +372,35 @@ public class PlaySound extends Service {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordSeikaisuu" + now, 0);
 					nWordHuseikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordHuseikaisuu" + now, 0);
 				}
-				tvNumSeikaisuu.setText(
+				PlayerFragment.tvNumSeikaisuu.setText(
 					" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu + 1) +
 						"% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
 				
 				if (isPhraseMode) {
 					if (bHyojiYakuBeforeRead) {
-						tvWordEng.setMaxLines(10);
-						tvWordEng.setText(strPhraseE[now]);
+						PlayerFragment.tvWordEng.setMaxLines(10);
+						PlayerFragment.tvWordEng.setText(strPhraseE[now]);
 					}
 					else {
-						tvWordEng.setText("");
+						PlayerFragment.tvWordEng.setText("");
 					}
-					tvWordJpn.setText(strPhraseJ[now]);
+					PlayerFragment.tvWordJpn.setText(strPhraseJ[now]);
 				}
 				else {
 					if (bHyojiYakuBeforeRead) {
 						setEngText(now);
 					}
 					else {
-						tvWordEng.setText("");
+						PlayerFragment.tvWordEng.setText("");
 					}
-					tvWordJpn.setText(wordJ[now]);
+					PlayerFragment.tvWordJpn.setText(wordJ[now]);
 				}
 				if (isPhraseMode || isWordAndPhraseMode) {
-					tvsubE.setText(wordE[now]);
-					tvsubJ.setText(wordJ[now]);
+					PlayerFragment.tvsubE.setText(wordE[now]);
+					PlayerFragment.tvsubJ.setText(wordJ[now]);
 				}
 				PipActivity.ChangeText(wordE[now], wordJ[now], now);
-				tvGogen.setText(getGogenString(now, false, false));
+				PlayerFragment.tvGogen.setText(getGogenString(now, false, false));
 			}
 			
 			String strQPath = strQ;
@@ -424,7 +422,7 @@ public class PlaySound extends Service {
 				path = getPath(tanjukugoEX, strQPath, word, japanese, now);
 			}
 			else path = getPath(passTan, strQPath, word, japanese, now);
-			textViewPath.setText(path);
+			PlayerFragment.textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(this, Uri.parse(path));
 				mediaPlayerClassStatic.setPlaybackParams(mediaPlayerClassStatic.getPlaybackParams().setSpeed((float) dPlaySpeedJpn));
@@ -440,10 +438,10 @@ public class PlaySound extends Service {
 			}
 			if (bEnglishToJapaneseOrder && !bHyojiYakuBeforeRead) {
 				if (isPhraseMode) {
-					tvWordJpn.setText(strPhraseJ[now]);
+					PlayerFragment.tvWordJpn.setText(strPhraseJ[now]);
 				}
 				else {
-					tvWordJpn.setText(wordJ[now]);
+					PlayerFragment.tvWordJpn.setText(wordJ[now]);
 				}
 			}
 		} catch (Exception e) {

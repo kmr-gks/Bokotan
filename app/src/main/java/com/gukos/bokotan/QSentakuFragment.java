@@ -28,8 +28,10 @@ import static com.gukos.bokotan.MyLibrary.strExceptionFIlePath;
 import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
 import static com.gukos.bokotan.PlaySound.strQ;
 import static com.gukos.bokotan.SettingFragment.cbAutoStop;
+import static com.gukos.bokotan.SettingFragment.checkBoxHatsuonKigou;
 import static com.gukos.bokotan.SettingFragment.swHyojiBeforeRead;
 import static com.gukos.bokotan.SettingFragment.swMaruBatu;
+import static com.gukos.bokotan.SettingFragment.swOnlyFirst;
 import static com.gukos.bokotan.SettingFragment.switchSkipOboe;
 import static com.gukos.bokotan.SettingFragment.switchSortHanten;
 
@@ -50,10 +52,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -90,25 +89,22 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	public void initialize() {
 		try {
-			Spinner spinnerHanni = findViewById(R.id.spinnerHanni);
-			spinnerHanni.setSelection(getIntData(context, "spinnerHanni", "selected", 4));
-			spinnerHanni.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
-			spinnerHanni.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hanni));
+			binding.spinnerHanni.setSelection(getIntData(context, "spinnerHanni", "selected", 4));
+			binding.spinnerHanni.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
+			binding.spinnerHanni.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hanni));
 			
-			Spinner spinnerHinsi = findViewById(R.id.spinnerHinsi);
-			spinnerHinsi.setSelection(getIntData(context, "spinnerHinsi", "selected", 3));
-			spinnerHinsi.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
-			spinnerHinsi.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hinsi));
+			binding.spinnerHinsi.setSelection(getIntData(context, "spinnerHinsi", "selected", 3));
+			binding.spinnerHinsi.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
+			binding.spinnerHinsi.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hinsi));
 			
-			Spinner spinnerMode = findViewById(R.id.spinnerMode);
-			spinnerMode.setSelection(getIntData(context, "spinnerMode", "selected", 2));
-			spinnerMode.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
-			spinnerMode.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_mode));
+			binding.spinnerMode.setSelection(getIntData(context, "spinnerMode", "selected", 2));
+			binding.spinnerMode.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
+			binding.spinnerMode.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_mode));
 			
 			KensakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
 			//バージョン表記
-			this.<TextView>findViewById(R.id.textViewVersion).setText(getBuildDate(context));
+			binding.textViewVersion.setText(getBuildDate(context));
 			
 			//権限リクエスト
 			//最前面に表示
@@ -166,16 +162,14 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			//TODO:タブ表示
 			
 			
-			findViewById(R.id.buttonPrefExport).setOnClickListener(this::onExportPrefsButton);
-			findViewById(R.id.buttonPrefImp).setOnClickListener(this::onImportPrefsButton);
-			findViewById(R.id.buttonWriteTest).setOnClickListener(this::onWriteText);
-			findViewById(R.id.buttonAlarm).setOnClickListener(this::onAlarmset);
-			findViewById(R.id.buttonShowSettingNew).setOnClickListener(this::onShowSettingNew);
+			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
+			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
+			binding.buttonWriteTest.setOnClickListener(this::onWriteText);
+			binding.buttonAlarm.setOnClickListener(this::onAlarmset);
+			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
 			
-			for (int id : new int[]{R.id.button1q, R.id.buttonP1q, R.id.button2q, R.id.buttonP2q,
-				R.id.buttonAll, R.id.buttonYume0_0, R.id.buttonYume0_8, R.id.buttonYume1,
-				R.id.buttonYume2, R.id.buttonYume3, R.id.button1qEx, R.id.buttonP1qEx}) {
-				findViewById(id).setOnClickListener(this::onSelectQ);
+			for (var button : new Button[]{binding.button1q, binding.buttonP1q, binding.button2q, binding.buttonP2q, binding.buttonAll, binding.buttonYume00, binding.buttonYume08, binding.buttonYume1, binding.buttonYume2, binding.buttonYume3, binding.button1qEx, binding.buttonP1qEx}) {
+				button.setOnClickListener(this::onSelectQ);
 			}
 		} catch (Exception e) {
 			showException(context, e);
@@ -216,11 +210,13 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	private void onImportPrefsButton(View view) {
 		try {
 			putAllSetting(context, readFromFile(context, stringBokotanDirPath + fnAppSettings + ".txt"));
-			for (int id : new int[]{R.id.switchOnlyFirst, R.id.switchHyojiYakuBeforeRead, R.id.switchSkipOboe, R.id.switchSkipMaruBatu, R.id.switchSortHanten}) {
-				((Switch) findViewById(id)).setChecked(getSetting(context, "id" + id, true));
+			
+			for (var sw : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, swMaruBatu, switchSortHanten}) {
+				sw.setChecked(getSetting(context, "id" + sw.getId(), true));
 			}
-			for (int id : new int[]{R.id.checkBoxDefaultAdapter, R.id.checkBoxAutoStop, R.id.checkBoxHatsuonkigou}) {
-				((CheckBox) findViewById(id)).setChecked(getSetting(context, "id" + id, false));
+			//R.id.checkBoxDefaultAdapter
+			for (var checkBox : new CheckBox[]{cbAutoStop, checkBoxHatsuonKigou}) {
+				checkBox.setChecked(getSetting(context, "id" + checkBox.getId(), false));
 			}
 			for (var fileName : getAllFileNames()) {
 				final String strFilePath = stringBokotanDirPath + fileName + ".txt";
@@ -249,10 +245,9 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	private void onSelectQ(View v) {
 		try {
-			EditText editTextNowNumber = findViewById(R.id.editTextNumber);
-			if (editTextNowNumber.length() != 0) {
+			if (binding.editTextNumber.length() != 0) {
 				PlayerFragment.nowIsDecided = true;
-				PlaySound.now = Integer.parseInt(editTextNowNumber.getText().toString()) - 1;
+				PlaySound.now = Integer.parseInt(binding.editTextNumber.getText().toString()) - 1;
 			}
 			else {
 				PlayerFragment.nowIsDecided = false;

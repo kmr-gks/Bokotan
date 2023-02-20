@@ -1,9 +1,9 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.PlaySound.now;
 import static com.gukos.bokotan.PlaySound.wordE;
 import static com.gukos.bokotan.PlaySound.wordJ;
-import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.Activity;
 import android.app.PictureInPictureParams;
@@ -11,16 +11,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Rational;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.databinding.DataBindingUtil;
+
+import com.gukos.bokotan.databinding.ActivityPipBinding;
 
 public class PipActivity extends Activity {
-	static TextView tvPipE, tvPipJ, tvNum;
 	static boolean startPIP = false;
 	
 	public static final int CONTROL_TYPE_A = 12, CONTROL_TYPE_B = 103;
 	public static final String EXTRA_CONTROL_TYPE = "100";
-	
 	public static int pipYoko = 16, pipTate = 9;
+	private static ActivityPipBinding binding;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,18 +32,14 @@ public class PipActivity extends Activity {
 				return;
 			}
 			super.onCreate(savedInstanceState);
-			setContentView(R.layout.activity_pip);
-			
-			tvPipE = findViewById(R.id.textViewPipEng);
-			tvPipJ = findViewById(R.id.textViewPipJpn);
-			tvNum = findViewById(R.id.textViewNo);
+			//setContentView(R.layout.activity_pip);
+			binding= DataBindingUtil.setContentView(this,R.layout.activity_pip);
 			
 			PipActivity.ChangeText(wordE[now], wordJ[now], now);
 			
 			//pip
 			PictureInPictureParams.Builder pictureInPictureParams = new PictureInPictureParams.Builder();
 			//Aspect ratio is too extreme (must be between 0.418410 and 2.390000).
-			//pictureInPictureParams.setAspectRatio(new Rational(16,9));
 			if (pipYoko > 0 && pipTate > 0 && 0.418410 < 1.0 * pipYoko / pipTate && 1.0 * pipYoko / pipTate < 2.39) {
 				pictureInPictureParams.setAspectRatio(new Rational(pipYoko, pipTate));
 			}
@@ -82,9 +80,9 @@ public class PipActivity extends Activity {
 	static void ChangeText(String strE, String strJpn, int num) {
 		if (startPIP)
 			try {
-				tvPipE.setText(strE);
-				tvPipJ.setText(strJpn);
-				tvNum.setText(String.format("%d", num));
+				binding.textViewPipEng.setText(strE);
+				binding.textViewPipJpn.setText(strJpn);
+				binding.textViewNo.setText(String.format("%d", num));
 			} catch (Exception e) {
 				showException(e);
 			}

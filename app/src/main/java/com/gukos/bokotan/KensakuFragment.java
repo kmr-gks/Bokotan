@@ -35,10 +35,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -60,7 +57,6 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	KensakuFragment() {
 		super(FragmentKensakuBinding::inflate);
 	}
-	
 	
 	static class WordInfo {
 		static int size = 0;
@@ -173,9 +169,6 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	
 	private final ArrayList<WordInfo> allData = new ArrayList<>();
 	private ArrayList<WordInfo> resultData = new ArrayList<>();
-	private ListView lvResult;
-	private TextView tvResultCount;
-	private Button buttonKensakuHouhou;
 	enumKensakuHouhou kensakuHouhou = starts;
 	
 	
@@ -191,20 +184,12 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	
 	public void initialize() {
 		try {
-			EditText etKey = findViewById(R.id.editTextKensakuKey);
-			lvResult = findViewById(R.id.listViewKensakuResult);
-			tvResultCount = findViewById(R.id.textViewKensakuResultCount);
-			Button buttonCLear = findViewById(R.id.buttonClearKey);
-			buttonKensakuHouhou = findViewById(R.id.buttonKensakuHouhou);
+			binding.editTextKensakuKey.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) this::EditTextChanged);
+			binding.buttonClearKey.setOnClickListener(v -> binding.editTextKensakuKey.setText(""));
 			
-			etKey.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) this::EditTextChanged);
-			
-			buttonCLear.setOnClickListener(v -> etKey.setText(""));
-			
-			kensakuHouhou =
-				kensakuHouhou.toEnumKensakuHouhou(MyLibrary.PreferenceManager.getIntData(context, "enumKensakuHouhou", "kensakuhouhou", kensakuHouhou.toInt()));
-			buttonKensakuHouhou.setText(kensakuHouhou.toString());
-			buttonKensakuHouhou.setOnClickListener(v -> {
+			kensakuHouhou = kensakuHouhou.toEnumKensakuHouhou(MyLibrary.PreferenceManager.getIntData(context, "enumKensakuHouhou", "kensakuhouhou", kensakuHouhou.toInt()));
+			binding.buttonKensakuHouhou.setText(kensakuHouhou.toString());
+			binding.buttonKensakuHouhou.setOnClickListener(v -> {
 				try {
 					switch (kensakuHouhou) {
 						case starts: {
@@ -220,9 +205,9 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 							break;
 						}
 					}
-					buttonKensakuHouhou.setText(kensakuHouhou.toString());
+					binding.buttonKensakuHouhou.setText(kensakuHouhou.toString());
 					//人工的に文字を変更して再検索
-					etKey.setText(etKey.getText());
+					binding.editTextKensakuKey.setText(binding.editTextKensakuKey.getText());
 				} catch (Exception e) {
 					MyLibrary.ExceptionManager.showException(context, e);
 				}
@@ -365,8 +350,8 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 			//別スレッドからUIを変更するときに必要
 			activity.runOnUiThread(() -> {
 				try {
-					tvResultCount.setText(resultData.size() + "件");
-					setListView(lvResult, resultData, null, null);
+					binding.textViewKensakuResultCount.setText(resultData.size() + "件");
+					setListView(binding.listViewKensakuResult, resultData, null, null);
 				} catch (Exception e) {
 					showException(context, e);
 				}
@@ -609,8 +594,8 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 						
 					}
 					activity.runOnUiThread(() -> {
-						tvResultCount.setText(resultData.size() + "件");
-						setListView(lvResult, resultData, titleList, key);
+						binding.textViewKensakuResultCount.setText(resultData.size() + "件");
+						setListView(binding.listViewKensakuResult, resultData, titleList, key);
 					});
 				}
 			});

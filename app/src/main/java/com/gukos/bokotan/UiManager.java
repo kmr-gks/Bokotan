@@ -82,16 +82,13 @@ public class UiManager {
 		}
 		
 		@Override
-		public final View onCreateView(LayoutInflater inflater, ViewGroup container,
-		                               Bundle savedInstanceState) {
+		public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			//こう書きたいが、javaではできない？
 			//binding= Binding.inflate(inflater, container, false);
 			binding = methodInflate.invoke(inflater, container, false);
 			binding.setLifecycleOwner(this);
 			return binding.getRoot();
 		}
-		
-		final <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
 		
 		//ActivityのonCreateに相当
 		@Override

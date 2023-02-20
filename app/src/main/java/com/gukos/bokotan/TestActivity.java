@@ -1,26 +1,28 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.GogenYomuFactory.getGogenString;
-import static com.gukos.bokotan.PlayerFragment.lastnum;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager;
+import static com.gukos.bokotan.MyLibrary.FileDirectoryManager;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.PlaySound.strPhraseE;
 import static com.gukos.bokotan.PlaySound.strPhraseJ;
 import static com.gukos.bokotan.PlaySound.strQ;
-import static com.gukos.bokotan.WordPhraseData.toFindFromAndTo;
 import static com.gukos.bokotan.PlaySound.wordE;
 import static com.gukos.bokotan.PlaySound.wordJ;
-import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
+import static com.gukos.bokotan.PlayerFragment.lastnum;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataType.word;
-import static com.gukos.bokotan.MyLibrary.*;
-import static com.gukos.bokotan.WordPhraseData.strQenum;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
+import static com.gukos.bokotan.WordPhraseData.strQenum;
+import static com.gukos.bokotan.WordPhraseData.toFindFromAndTo;
 
 import android.app.AlertDialog;
 import android.graphics.Color;
@@ -30,9 +32,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+
+import com.gukos.bokotan.databinding.ActivityTestBinding;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -41,42 +45,28 @@ public class TestActivity extends AppCompatActivity {
 	private static final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
 	public static int[] nSeikaisuu = new int[3000], nHuseikaisuu = new int[3000];
 	static boolean bSort = true, bSkipMaruBatuButton = false;
-	TextView tvMondai, tvKaitou, tvKaisetsu, tvMaruBatu, tvRange;
-	Button bSentaku1, bSentaku2, bSentaku3, bSentaku4, bMarubatu;
-	CheckBox checkBoxHatsuon, checkBoxKoukaon;
-	int nGenzaiNanMonme, nMondaiTangoNum, nSeikaiSentakusi, testCount = 0, nQuiz = 0, nGokaku = 0, nSeitou = 0;
+	private int nGenzaiNanMonme, nMondaiTangoNum, nSeikaiSentakusi, testCount = 0, nQuiz = 0, nGokaku =
+		 0, nSeitou = 0;
 	final int[] nTangoNum = new int[10];
 	final Random random = new Random();
 	static final SoundPool sp = new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(2).build();
 	static final int[] seikairitsu = new int[3000];
 	final Seikairitsu[] numAndSeikairitu = new Seikairitsu[3000];
 	
+	private static ActivityTestBinding binding;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			setContentView(R.layout.activity_test);
-			
-			tvMondai = findViewById(R.id.textViewMondaibun);
-			tvKaitou = findViewById(R.id.textViewKaitou);
-			tvKaisetsu = findViewById(R.id.textViewKaisetsu);
-			tvMaruBatu = findViewById(R.id.textViewMaruBatu);
-			bSentaku1 = findViewById(R.id.buttonChoice1);
-			bSentaku2 = findViewById(R.id.buttonChoice2);
-			bSentaku3 = findViewById(R.id.buttonChoice3);
-			bSentaku4 = findViewById(R.id.buttonChoice4);
-			bMarubatu = findViewById(R.id.buttonMarubatu);
-			tvRange = findViewById(R.id.textViewHanni);
-			
-			checkBoxHatsuon = findViewById(R.id.checkBoxHatsuon);
-			checkBoxKoukaon = findViewById(R.id.checkBoxKoukaon);
+			binding= DataBindingUtil.setContentView(this,R.layout.activity_test);
 			
 			//TODO ファイル名変更
 			
-			checkBoxHatsuon.setChecked(PreferenceManager.getSetting(this, "checkBoxHatsuon", true));
-			checkBoxHatsuon.setOnClickListener(view -> PreferenceManager.putSetting(this, "checkBoxHatsuon", ((CheckBox) view).isChecked()));
-			checkBoxKoukaon.setChecked(PreferenceManager.getSetting(this, "checkBoxKoukaon", true));
-			checkBoxKoukaon.setOnClickListener(view -> PreferenceManager.putSetting(this, "checkBoxKoukaon", ((CheckBox) view).isChecked()));
+			binding.checkBoxHatsuon.setChecked(PreferenceManager.getSetting(this, "checkBoxHatsuon", true));
+			binding.checkBoxHatsuon.setOnClickListener(view -> PreferenceManager.putSetting(this, "checkBoxHatsuon", ((CheckBox) view).isChecked()));
+			binding.checkBoxKoukaon.setChecked(PreferenceManager.getSetting(this, "binding.checkBoxKoukaon", true));
+			binding.checkBoxKoukaon.setOnClickListener(view -> PreferenceManager.putSetting(this, "binding.checkBoxKoukaon", ((CheckBox) view).isChecked()));
 			
 			
 			switch (strQ) {
@@ -314,12 +304,12 @@ public class TestActivity extends AppCompatActivity {
 			int nRangeForOptionsFrom = PlaySound.from, nRangeForOptionsTo = PlaySound.to;
 			//debug end
 			if (!bSkipMaruBatuButton) {
-				bMarubatu.setVisibility(View.INVISIBLE);
-				bSentaku1.setVisibility(View.VISIBLE);
-				bSentaku2.setVisibility(View.VISIBLE);
-				bSentaku3.setVisibility(View.VISIBLE);
-				bSentaku4.setVisibility(View.VISIBLE);
-				findViewById(R.id.buttonWakaranai).setVisibility(View.VISIBLE);
+				binding.buttonMarubatu.setVisibility(View.INVISIBLE);
+				binding.buttonChoice1.setVisibility(View.VISIBLE);
+				binding.buttonChoice2.setVisibility(View.VISIBLE);
+				binding.buttonChoice3.setVisibility(View.VISIBLE);
+				binding.buttonChoice4.setVisibility(View.VISIBLE);
+				binding.buttonWakaranai.setVisibility(View.VISIBLE);
 			}
 			if (PlaySound.nShurui == 4 && PlaySound.nUnit != 4 && !strQ.contains("y")) {
 				//まとめの場合
@@ -397,9 +387,8 @@ public class TestActivity extends AppCompatActivity {
 				|| nTangoNum[3] == nTangoNum[4]);
 			testCount++;
 			
-			TextView textViewMondaiNumber = findViewById(R.id.textViewMondaiNum);
 			if (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum] > 0) {
-				textViewMondaiNumber.setText(
+				binding.textViewMondaiNum.setText(
 					nGenzaiNanMonme + "問目 No." + nMondaiTangoNum
 						+ '(' + (int) nSeikaisuu[nMondaiTangoNum] * 100
 						/ (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum])
@@ -407,23 +396,23 @@ public class TestActivity extends AppCompatActivity {
 						+ '/' + (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum]) + ')');
 			}
 			else {
-				textViewMondaiNumber.setText(nGenzaiNanMonme + "問目 No." + nMondaiTangoNum + "(0% 0/0)");
+				binding.textViewMondaiNum.setText(nGenzaiNanMonme + "問目 No." + nMondaiTangoNum + "(0% 0/0)");
 			}
 			
-			tvMondai.setText(wordE[nMondaiTangoNum]);
-			bSentaku1.setText(wordJ[nTangoNum[1]]);
-			bSentaku2.setText(wordJ[nTangoNum[2]]);
-			bSentaku3.setText(wordJ[nTangoNum[3]]);
-			bSentaku4.setText(wordJ[nTangoNum[4]]);
+			binding.textViewMondaibun.setText(wordE[nMondaiTangoNum]);
+			binding.buttonChoice1.setText(wordJ[nTangoNum[1]]);
+			binding.buttonChoice2.setText(wordJ[nTangoNum[2]]);
+			binding.buttonChoice3.setText(wordJ[nTangoNum[3]]);
+			binding.buttonChoice4.setText(wordJ[nTangoNum[4]]);
 			if (!bSkipMaruBatuButton) {
-				tvKaitou.setText("");
-				tvKaisetsu.setText("");
-				tvMaruBatu.setText("");
+				binding.textViewKaitou.setText("");
+				binding.textViewKaisetsu.setText("");
+				binding.textViewMaruBatu.setText("");
 			}
 			
-			tvRange.setText("範囲 No." + PlaySound.from + '-' + PlaySound.to + "\n合格:" + nGokaku + '/' + nQuiz);
+			binding.textViewHanni.setText("範囲 No." + PlaySound.from + '-' + PlaySound.to + "\n合格:" + nGokaku + '/' + nQuiz);
 			
-			if (checkBoxHatsuon.isChecked()) {
+			if (binding.checkBoxHatsuon.isChecked()) {
 				//発音にチェックされている
 				String strLoadPath;
 				if (strQ.startsWith("y")) {
@@ -446,18 +435,18 @@ public class TestActivity extends AppCompatActivity {
 	public void checkKaitou(int sentaku) {
 		try {
 			if (!bSkipMaruBatuButton) {
-				bMarubatu.setVisibility(View.VISIBLE);
-				bSentaku1.setVisibility(View.INVISIBLE);
-				bSentaku2.setVisibility(View.INVISIBLE);
-				bSentaku3.setVisibility(View.INVISIBLE);
-				bSentaku4.setVisibility(View.INVISIBLE);
-				findViewById(R.id.buttonWakaranai).setVisibility(View.INVISIBLE);
+				binding.textViewMaruBatu.setVisibility(View.VISIBLE);
+				binding.buttonChoice1.setVisibility(View.INVISIBLE);
+				binding.buttonChoice2.setVisibility(View.INVISIBLE);
+				binding.buttonChoice3.setVisibility(View.INVISIBLE);
+				binding.buttonChoice4.setVisibility(View.INVISIBLE);
+				binding.buttonWakaranai.setVisibility(View.INVISIBLE);
 			}
 			if (sentaku == nSeikaiSentakusi) {
 				//正解
-				if (checkBoxKoukaon.isChecked()) sp.load(this, R.raw.seikai, 1);
-				tvMaruBatu.setText("〇");
-				tvMaruBatu.setTextColor(Color.RED);
+				if (binding.checkBoxKoukaon.isChecked()) sp.load(this, R.raw.seikai, 1);
+				binding.textViewMaruBatu.setText("〇");
+				binding.textViewMaruBatu.setTextColor(Color.RED);
 				nSeikaisuu[nMondaiTangoNum]++;
 				if (nSeikaisuu[nMondaiTangoNum] == 1) nSeitou++;
 				//正解が増えることにより合格数が増えた場合更新
@@ -469,9 +458,9 @@ public class TestActivity extends AppCompatActivity {
 			}
 			else {
 				//不正解
-				if (checkBoxKoukaon.isChecked()) sp.load(this, R.raw.huseikai, 1);
-				tvMaruBatu.setText("×");
-				tvMaruBatu.setTextColor(Color.BLUE);
+				if (binding.checkBoxKoukaon.isChecked()) sp.load(this, R.raw.huseikai, 1);
+				binding.textViewMaruBatu.setText("×");
+				binding.textViewMaruBatu.setTextColor(Color.BLUE);
 				nHuseikaisuu[nMondaiTangoNum]++;
 				//正解が増えることにより合格数が増えた場合更新
 				//今回合格、正解する前は不合格のとき合格数を増やす
@@ -481,8 +470,8 @@ public class TestActivity extends AppCompatActivity {
 			}
 			puts("filename:" + dnTestActivity + strQ);
 			
-			tvKaitou.setText("解答:" + wordE[nMondaiTangoNum] + wordJ[nMondaiTangoNum] + "\n" + getGogenString(nMondaiTangoNum, false, false));
-			tvKaisetsu.setText(
+			binding.textViewKaitou.setText("解答:" + wordE[nMondaiTangoNum] + wordJ[nMondaiTangoNum] + "\n" + getGogenString(nMondaiTangoNum, false, false));
+			binding.textViewKaisetsu.setText(
 				"\n1 No." + nTangoNum[1] + '	' + wordE[nTangoNum[1]] + '	' + wordJ[nTangoNum[1]] +
 					"\n2 No." + nTangoNum[2] + '	' + wordE[nTangoNum[2]] + '	' + wordJ[nTangoNum[2]] +
 					"\n3 No." + nTangoNum[3] + '	' + wordE[nTangoNum[3]] + '	' + wordJ[nTangoNum[3]] +

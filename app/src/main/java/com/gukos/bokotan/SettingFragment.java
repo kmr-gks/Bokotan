@@ -15,9 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
@@ -49,18 +47,26 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 	
 	public void initialize() {
 		try {
-			//ここでnull例外発生
-			RadioButton radioButtonSkipOption = findViewById(getIntData(context, dnQSentakuActivity, "RadioButton", R.id.radioButtonOnlyKioku));
-			if (radioButtonSkipOption == null)
-				radioButtonSkipOption = findViewById(R.id.radioButtonOnlyKioku);
-			radioButtonSkipOption.setChecked(true);
+			swOnlyFirst = binding.switchOnlyFirst;
+			swHyojiBeforeRead = binding.switchHyojiYakuBeforeRead;
+			switchSkipOboe = binding.switchSkipOboe;
+			swMaruBatu = binding.switchSkipMaruBatu;
+			switchSortHanten = binding.switchSortHanten;
+			cbAutoStop = binding.checkBoxAutoStop;
+			checkBoxHatsuonKigou = binding.checkBoxHatsuonkigou;
+			radioButtonEtoJ = binding.radioButtonEtoJ;
 			
-			radioButtonEtoJ = findViewById(R.id.radioButtonEtoJ);
+			int skipoptionId = getIntData(context, dnQSentakuActivity, "RadioButton", R.id.radioButtonOnlyKioku);
+			for (var radioButton : new RadioButton[]{binding.radioButtonOnlyKioku, binding.radioButtonOnlyHugoukaku, binding.radioButton1seikai, binding.radioButton2huseikai}) {
+				if (skipoptionId == radioButton.getId()) {
+					radioButton.setChecked(true);
+					break;
+				}
+			}
 			
-			EditText editTextPipYoko = findViewById(R.id.editTextPipYoko);
-			editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
-			pipYoko = Integer.parseInt(editTextPipYoko.getText().toString());
-			editTextPipYoko.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
+			binding.editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
+			pipYoko = Integer.parseInt(binding.editTextPipYoko.getText().toString());
+			binding.editTextPipYoko.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
 				try {
 					if (editable.length() > 0) {
 						pipYoko = Integer.parseInt(editable.toString());
@@ -71,10 +77,9 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 				}
 			});
 			
-			EditText editTextPipTate = findViewById(R.id.editTextPipTate);
-			editTextPipTate.setText(String.valueOf(getIntData(context, "editText", "editTextPipTate", 9)));
-			pipTate = Integer.parseInt(editTextPipTate.getText().toString());
-			editTextPipTate.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
+			binding.editTextPipTate.setText(String.valueOf(getIntData(context, "editText", "editTextPipTate", 9)));
+			pipTate = Integer.parseInt(binding.editTextPipTate.getText().toString());
+			binding.editTextPipTate.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
 				{
 					try {
 						if (editable.length() > 0) {
@@ -87,44 +92,30 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 				}
 			});
 			
-			swOnlyFirst = findViewById(R.id.switchOnlyFirst);
 			initializeSettingItem(swOnlyFirst, true);
-			
-			swHyojiBeforeRead = findViewById(R.id.switchHyojiYakuBeforeRead);
 			initializeSettingItem(swHyojiBeforeRead, true);
-			
-			switchSkipOboe = findViewById(R.id.switchSkipOboe);
 			initializeSettingItem(switchSkipOboe, true);
-			
-			swMaruBatu = findViewById(R.id.switchSkipMaruBatu);
 			initializeSettingItem(swMaruBatu, true);
-			
-			switchSortHanten = findViewById(R.id.switchSortHanten);
 			initializeSettingItem(switchSortHanten, false);
 			
 			for (var v : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, swMaruBatu, switchSortHanten}) {
 				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
 			}
 			
-			CheckBox cbDefaultAdapter = findViewById(R.id.checkBoxDefaultAdapter);
-			cbAutoStop = findViewById(R.id.checkBoxAutoStop);
-			checkBoxHatsuonKigou = findViewById(R.id.checkBoxHatsuonkigou);
-			initializeSettingItem(cbDefaultAdapter, true);
+			initializeSettingItem(binding.checkBoxDefaultAdapter, true);
 			initializeSettingItem(cbAutoStop, false);
 			initializeSettingItem(checkBoxHatsuonKigou, false);
-			for (var v : new CheckBox[]{cbDefaultAdapter, cbAutoStop, checkBoxHatsuonKigou}) {
+			for (var v : new CheckBox[]{binding.checkBoxDefaultAdapter, cbAutoStop, checkBoxHatsuonKigou}) {
 				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
 			}
 			
+			binding.spinnerSpace.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
+			binding.spinnerSpace.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
+			binding.spinnerSpace.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));
 			
-			Spinner spinnerKuuhaku = findViewById(R.id.spinnerSpace);
-			spinnerKuuhaku.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
-			spinnerKuuhaku.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
-			spinnerKuuhaku.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));
-			
-			for (int id : new int[]{R.id.radioButtonOnlyKioku, R.id.radioButtonOnlyHugoukaku,
-				R.id.radioButton1seikai, R.id.radioButton2huseikai}) {
-				findViewById(id).setOnClickListener(this::onRadioChecked);
+			for (var radioButton : new RadioButton[]{binding.radioButtonOnlyKioku,
+				binding.radioButtonOnlyHugoukaku, binding.radioButton1seikai, binding.radioButton2huseikai}) {
+				radioButton.setOnClickListener(this::onRadioChecked);
 			}
 		} catch (Exception exception) {
 			showException(context, exception);
