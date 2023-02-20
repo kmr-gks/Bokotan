@@ -10,6 +10,7 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.initializeSettingIte
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
+import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 
 import android.app.Activity;
 import android.content.Context;
@@ -29,8 +30,8 @@ import androidx.fragment.app.Fragment;
 
 public class SettingFragment extends Fragment {
 	//他のクラスからアクセス
-	public static CheckBox cbAutoStop,checkBoxHatsuonKigou;
-	public static Switch switchSkipOboe,swHyojiBeforeRead,switchSortHanten,swMaruBatu;
+	public static CheckBox cbAutoStop, checkBoxHatsuonKigou;
+	public static Switch switchSkipOboe, swHyojiBeforeRead, switchSortHanten, swMaruBatu;
 	public static RadioButton radioButtonEtoJ;
 	
 	Context context;
@@ -55,7 +56,7 @@ public class SettingFragment extends Fragment {
 			activity = getActivity();
 			viewFragment = view;
 			try {
-				new Thread(()->activity.runOnUiThread(this::initialize)).start();
+				new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 			} catch (Exception e) {
 				showException(context, e);
 			}
@@ -64,20 +65,20 @@ public class SettingFragment extends Fragment {
 		}
 	}
 	
-	public void initialize(){
-		try{
+	public void initialize() {
+		try {
 			//ここでnull例外発生
 			RadioButton radioButtonSkipOption = findViewById(getIntData(context, dnQSentakuActivity, "RadioButton", R.id.radioButtonOnlyKioku));
 			if (radioButtonSkipOption == null)
 				radioButtonSkipOption = findViewById(R.id.radioButtonOnlyKioku);
 			radioButtonSkipOption.setChecked(true);
 			
-			radioButtonEtoJ=findViewById(R.id.radioButtonEtoJ);
+			radioButtonEtoJ = findViewById(R.id.radioButtonEtoJ);
 			
 			EditText editTextPipYoko = findViewById(R.id.editTextPipYoko);
 			editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
 			pipYoko = Integer.parseInt(editTextPipYoko.getText().toString());
-			editTextPipYoko.addTextChangedListener((MyLibrary.UiInterface.TextWatcherAfterOnly) editable -> {
+			editTextPipYoko.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
 				try {
 					if (editable.length() > 0) {
 						pipYoko = Integer.parseInt(editable.toString());
@@ -91,7 +92,7 @@ public class SettingFragment extends Fragment {
 			EditText editTextPipTate = findViewById(R.id.editTextPipTate);
 			editTextPipTate.setText(String.valueOf(getIntData(context, "editText", "editTextPipTate", 9)));
 			pipTate = Integer.parseInt(editTextPipTate.getText().toString());
-			editTextPipTate.addTextChangedListener((MyLibrary.UiInterface.TextWatcherAfterOnly) editable -> {
+			editTextPipTate.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
 				{
 					try {
 						if (editable.length() > 0) {
@@ -136,14 +137,15 @@ public class SettingFragment extends Fragment {
 			
 			Spinner spinnerKuuhaku = findViewById(R.id.spinnerSpace);
 			spinnerKuuhaku.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
-			spinnerKuuhaku.setOnItemSelectedListener((MyLibrary.UiInterface.AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
+			spinnerKuuhaku.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
+			spinnerKuuhaku.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));
 			
 			for (int id : new int[]{R.id.radioButtonOnlyKioku, R.id.radioButtonOnlyHugoukaku,
 				R.id.radioButton1seikai, R.id.radioButton2huseikai}) {
 				findViewById(id).setOnClickListener(this::onRadioChecked);
 			}
-		}catch (Exception exception){
-			showException(context,exception);
+		} catch (Exception exception) {
+			showException(context, exception);
 		}
 	}
 	
