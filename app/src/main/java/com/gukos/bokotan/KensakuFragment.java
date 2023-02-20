@@ -1,6 +1,5 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.CommonVariables.trGogenYomu;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.contains;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.ends;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.starts;
@@ -57,24 +56,20 @@ import java.util.function.BiFunction;
 
 public class KensakuFragment extends Fragment {
 	
+	public static TreeMap<String, GogenYomu> trGogenYomu;
 	Context context;
 	Activity activity;
 	View viewFragment;
 	
-	Thread threadInitial = null;
-	Thread threadSearch = null;
+	Thread threadInitial = null, threadSearch = null;
 	boolean threadSearchIsRunning = true;
 	
 	private <T extends View> T findViewById(int id) {return viewFragment.findViewById(id);}
 	
 	static class WordInfo {
 		static int size = 0;
-		final int toushiNumber;
-		final int localNumber;
-		final String category;
-		final String e;
-		final String j;
-		final String subCategory;
+		final int toushiNumber, localNumber;
+		final String category, e, j, subCategory;
 		final WordPhraseData.DataType dataType;
 		
 		WordInfo(String category, String e, String j, int localNumber, WordPhraseData.DataType dataType) {

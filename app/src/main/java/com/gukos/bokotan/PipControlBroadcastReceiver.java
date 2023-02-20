@@ -1,8 +1,8 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.CommonVariables.now;
-import static com.gukos.bokotan.CommonVariables.playing;
-import static com.gukos.bokotan.CommonVariables.strQ;
+import static com.gukos.bokotan.PlaySound.now;
+import static com.gukos.bokotan.PlayerFragment.playing;
+import static com.gukos.bokotan.PlaySound.strQ;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.PipActivity.CONTROL_TYPE_A;
 import static com.gukos.bokotan.PipActivity.CONTROL_TYPE_B;
@@ -16,9 +16,9 @@ public class PipControlBroadcastReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
-
+			
 			new PlayerFragment().onStartStopButtonClick(null);
-
+			
 			final int controlType = intent.getIntExtra(EXTRA_CONTROL_TYPE, 0);
 			switch (controlType) {
 				case CONTROL_TYPE_A: {

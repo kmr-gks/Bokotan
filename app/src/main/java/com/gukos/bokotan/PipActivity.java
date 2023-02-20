@@ -1,8 +1,8 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.CommonVariables.now;
-import static com.gukos.bokotan.CommonVariables.wordE;
-import static com.gukos.bokotan.CommonVariables.wordJ;
+import static com.gukos.bokotan.PlaySound.now;
+import static com.gukos.bokotan.PlaySound.wordE;
+import static com.gukos.bokotan.PlaySound.wordJ;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.Activity;
@@ -16,12 +16,12 @@ import android.widget.TextView;
 public class PipActivity extends Activity {
 	static TextView tvPipE, tvPipJ, tvNum;
 	static boolean startPIP = false;
-
+	
 	public static final int CONTROL_TYPE_A = 12, CONTROL_TYPE_B = 103;
 	public static final String EXTRA_CONTROL_TYPE = "100";
-
+	
 	public static int pipYoko = 16, pipTate = 9;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
@@ -31,20 +31,21 @@ public class PipActivity extends Activity {
 			}
 			super.onCreate(savedInstanceState);
 			setContentView(R.layout.activity_pip);
-
+			
 			tvPipE = findViewById(R.id.textViewPipEng);
 			tvPipJ = findViewById(R.id.textViewPipJpn);
 			tvNum = findViewById(R.id.textViewNo);
-
+			
 			PipActivity.ChangeText(wordE[now], wordJ[now], now);
-
+			
 			//pip
 			PictureInPictureParams.Builder pictureInPictureParams = new PictureInPictureParams.Builder();
 			//Aspect ratio is too extreme (must be between 0.418410 and 2.390000).
 			//pictureInPictureParams.setAspectRatio(new Rational(16,9));
 			if (pipYoko > 0 && pipTate > 0 && 0.418410 < 1.0 * pipYoko / pipTate && 1.0 * pipYoko / pipTate < 2.39) {
 				pictureInPictureParams.setAspectRatio(new Rational(pipYoko, pipTate));
-			} else {
+			}
+			else {
 				pictureInPictureParams.setAspectRatio(new Rational(16, 9));
 			}
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -69,15 +70,15 @@ public class PipActivity extends Activity {
 		pictureInPictureParams.setActions(actions);
 		*/
 			enterPictureInPictureMode(pictureInPictureParams.build());
-
-
+			
+			
 			//デフォルト
 			//enterPictureInPictureMode(new PictureInPictureParams.Builder().setAspectRatio(new Rational(16,9)).build());
 		} catch (Exception e) {
 			showException(this, e);
 		}
 	}
-
+	
 	static void ChangeText(String strE, String strJpn, int num) {
 		if (startPIP)
 			try {
@@ -88,7 +89,7 @@ public class PipActivity extends Activity {
 				showException(e);
 			}
 	}
-
+	
 	public void exitPIP(View v) {
 		try {
 			finish();

@@ -1,18 +1,16 @@
 package com.gukos.bokotan;
 
 import static android.view.View.GONE;
-import static com.gukos.bokotan.CommonVariables.hashMapKishutu;
-import static com.gukos.bokotan.CommonVariables.now;
-import static com.gukos.bokotan.CommonVariables.nowIsDecided;
+import static com.gukos.bokotan.PlaySound.now;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
-import static com.gukos.bokotan.CommonVariables.isWordAndPhraseMode;
-import static com.gukos.bokotan.CommonVariables.sentakuQ;
-import static com.gukos.bokotan.CommonVariables.sentakuUnit;
-import static com.gukos.bokotan.CommonVariables.swOnlyFirst;
+import static com.gukos.bokotan.PlaySound.isWordAndPhraseMode;
+import static com.gukos.bokotan.WordPhraseData.sentakuQ;
+import static com.gukos.bokotan.WordPhraseData.sentakuUnit;
+import static com.gukos.bokotan.SettingFragment.swOnlyFirst;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
@@ -40,8 +38,14 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class PlayerFragment extends Fragment {
+	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
+	
+	public static int lastnum;
+	public static boolean playing = false;
+	static boolean nowIsDecided = false;
 	Context context;
 	Activity activity;
 	View viewFragment;
@@ -74,39 +78,39 @@ public class PlayerFragment extends Fragment {
 				puts(getClassName() + getMethodName() + " start");
 				
 				//UI設定
-				CommonVariables.tvWordEng = findViewById(R.id.textViewEng);
-				CommonVariables.tvWordJpn = findViewById(R.id.textViewJpn);
-				CommonVariables.tvGenzai = findViewById(R.id.textViewGenzai);
-				CommonVariables.tvsubE = findViewById(R.id.textViewSubtitleEng);
-				CommonVariables.tvsubJ = findViewById(R.id.textViewSubtitleJpn);
-				CommonVariables.tvGogen = findViewById(R.id.textViewGogen);
-				CommonVariables.tvNumSeikaisuu = findViewById(R.id.textViewNumSeikairitu);
-				CommonVariables.tvSeikaisu = findViewById(R.id.textViewSeikaisuu);
-				CommonVariables.textViewPath = findViewById(R.id.textViewPath);
-				CommonVariables.textViewHatsuonKigou = findViewById(R.id.textViewHatsuonKigou);
-				if (CommonVariables.strQ != null)
-					CommonVariables.isPhraseMode = CommonVariables.strQ.charAt(1) == 'h';
-				if (isWordAndPhraseMode || CommonVariables.isPhraseMode) {
-					CommonVariables.tvsubE.setVisibility(View.VISIBLE);
-					CommonVariables.tvsubJ.setVisibility(View.VISIBLE);
+				PlaySound.tvWordEng = findViewById(R.id.textViewEng);
+				PlaySound.tvWordJpn = findViewById(R.id.textViewJpn);
+				PlaySound.tvGenzai = findViewById(R.id.textViewGenzai);
+				PlaySound.tvsubE = findViewById(R.id.textViewSubtitleEng);
+				PlaySound.tvsubJ = findViewById(R.id.textViewSubtitleJpn);
+				PlaySound.tvGogen = findViewById(R.id.textViewGogen);
+				PlaySound.tvNumSeikaisuu = findViewById(R.id.textViewNumSeikairitu);
+				PlaySound.tvSeikaisu = findViewById(R.id.textViewSeikaisuu);
+				PlaySound.textViewPath = findViewById(R.id.textViewPath);
+				PlaySound.textViewHatsuonKigou = findViewById(R.id.textViewHatsuonKigou);
+				if (PlaySound.strQ != null)
+					PlaySound.isPhraseMode = PlaySound.strQ.charAt(1) == 'h';
+				if (isWordAndPhraseMode || PlaySound.isPhraseMode) {
+					PlaySound.tvsubE.setVisibility(View.VISIBLE);
+					PlaySound.tvsubJ.setVisibility(View.VISIBLE);
 				}
 				else {
 					//単語の場合は右下の文字は非表示
-					CommonVariables.tvsubE.setVisibility(GONE);
-					CommonVariables.tvsubJ.setVisibility(GONE);
+					PlaySound.tvsubE.setVisibility(GONE);
+					PlaySound.tvsubJ.setVisibility(GONE);
 				}
 				
 				Button buttonStartStop = findViewById(R.id.buttonStartStop);
 				buttonStartStop.setOnClickListener(this::onStartStopButtonClick);
-				buttonStartStop.setText(CommonVariables.playing ? "stop" : "start");
+				buttonStartStop.setText(playing ? "stop" : "start");
 				findViewById(R.id.buttonNowChange).setOnClickListener(this::onSelectNowButtonClick);
 				findViewById(R.id.buttonToBegin).setOnClickListener(this::onResetButtonClick);
 				findViewById(R.id.buttonPip).setOnClickListener(this::onPIPButtonClicked);
 				
 				activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 				
-				if (CommonVariables.strQ == null) {
-					CommonVariables.strQ = "p1q";
+				if (PlaySound.strQ == null) {
+					PlaySound.strQ = "p1q";
 					sentakuQ = WordPhraseData.q_num.testp1q;
 				}
 				
@@ -133,7 +137,7 @@ public class PlayerFragment extends Fragment {
 		try {
 			//再生開始
 			puts(getClassName() + getMethodName() + " start");
-			CommonVariables.playing = true;
+			playing = true;
 			
 			hashMapKishutu.clear();
 			//バグ対策
@@ -143,13 +147,13 @@ public class PlayerFragment extends Fragment {
 			
 			switch (sentakuQ) {
 				case test1q: {
-					CommonVariables.lastnum = 2400;
+					lastnum = 2400;
 					WordPhraseData w = new WordPhraseData(PasstanWord + "1q", context);
-					CommonVariables.wordE = w.e;
-					CommonVariables.wordJ = w.j;
+					PlaySound.wordE = w.e;
+					PlaySound.wordJ = w.j;
 					WordPhraseData p = new WordPhraseData(PasstanPhrase + "1q", context);
-					CommonVariables.strPhraseE = p.e;
-					CommonVariables.strPhraseJ = p.j;
+					PlaySound.strPhraseE = p.e;
+					PlaySound.strPhraseJ = p.j;
 					if (swOnlyFirst.isChecked()) {
 						//ユメタン単語
 						for (String Q : new String[]{"00", "08", "1", "2", "3"}) {
@@ -170,13 +174,13 @@ public class PlayerFragment extends Fragment {
 					break;
 				}
 				case testp1q: {
-					CommonVariables.lastnum = 1850;
+					lastnum = 1850;
 					WordPhraseData w = new WordPhraseData(PasstanWord + "p1q", context);
-					CommonVariables.wordE = w.e;
-					CommonVariables.wordJ = w.j;
+					PlaySound.wordE = w.e;
+					PlaySound.wordJ = w.j;
 					WordPhraseData p = new WordPhraseData(PasstanPhrase + "p1q", context);
-					CommonVariables.strPhraseE = p.e;
-					CommonVariables.strPhraseJ = p.j;
+					PlaySound.strPhraseE = p.e;
+					PlaySound.strPhraseJ = p.j;
 					if (swOnlyFirst.isChecked()) {
 						//ユメタン単語
 						for (String Q : new String[]{"00", "08", "1", "2", "3"}) {
@@ -189,27 +193,27 @@ public class PlayerFragment extends Fragment {
 					break;
 				}
 				case test2q: {
-					CommonVariables.lastnum = 1704;
+					lastnum = 1704;
 					WordPhraseData w = new WordPhraseData(PasstanWord + "2q", context);
-					CommonVariables.wordE = w.e;
-					CommonVariables.wordJ = w.j;
+					PlaySound.wordE = w.e;
+					PlaySound.wordJ = w.j;
 					WordPhraseData p = new WordPhraseData(PasstanPhrase + "2q", context);
-					CommonVariables.strPhraseE = p.e;
-					CommonVariables.strPhraseJ = p.j;
+					PlaySound.strPhraseE = p.e;
+					PlaySound.strPhraseJ = p.j;
 					break;
 				}
 				case testp2q: {
-					CommonVariables.lastnum = 1500;
+					lastnum = 1500;
 					WordPhraseData w = new WordPhraseData(PasstanWord + "p2q", context);
-					CommonVariables.wordE = w.e;
-					CommonVariables.wordJ = w.j;
+					PlaySound.wordE = w.e;
+					PlaySound.wordJ = w.j;
 					WordPhraseData p = new WordPhraseData(PasstanPhrase + "p2q", context);
-					CommonVariables.strPhraseE = p.e;
-					CommonVariables.strPhraseJ = p.j;
+					PlaySound.strPhraseE = p.e;
+					PlaySound.strPhraseJ = p.j;
 					break;
 				}
 				case test1qEx: {
-					CommonVariables.lastnum = 2811;
+					lastnum = 2811;
 					WordPhraseData w = new WordPhraseData(TanjukugoWord + "1q", context);
 					WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + "1q", context);
 					//配列を一旦Streamに変換して結合したあと、配列に戻す。
@@ -220,16 +224,16 @@ public class PlayerFragment extends Fragment {
 					for (int i = 1; wx.e[i] != null; i++) arrayListE.add(wx.e[i]);
 					for (int i = 1; w.j[i] != null; i++) arrayListJ.add(w.j[i]);
 					for (int i = 1; wx.j[i] != null; i++) arrayListJ.add(wx.j[i]);
-					CommonVariables.wordE = arrayListE.toArray(new String[0]);
-					CommonVariables.wordJ = arrayListJ.toArray(new String[0]);
+					PlaySound.wordE = arrayListE.toArray(new String[0]);
+					PlaySound.wordJ = arrayListJ.toArray(new String[0]);
 					
 					WordPhraseData p = new WordPhraseData(TanjukugoPhrase + "1q", context);
-					CommonVariables.strPhraseE = p.e;
-					CommonVariables.strPhraseJ = p.j;
+					PlaySound.strPhraseE = p.e;
+					PlaySound.strPhraseJ = p.j;
 					break;
 				}
 				case testp1qEx: {
-					CommonVariables.lastnum = 2400;
+					lastnum = 2400;
 					WordPhraseData w = new WordPhraseData(TanjukugoWord + "p1q", context);
 					WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + "p1q", context);
 					ArrayList<String> arrayListE = new ArrayList<>(), arrayListJ = new ArrayList<>();
@@ -239,62 +243,62 @@ public class PlayerFragment extends Fragment {
 					for (int i = 1; wx.e[i] != null; i++) arrayListE.add(wx.e[i]);
 					for (int i = 1; w.j[i] != null; i++) arrayListJ.add(w.j[i]);
 					for (int i = 1; wx.j[i] != null; i++) arrayListJ.add(wx.j[i]);
-					CommonVariables.wordE = arrayListE.toArray(new String[0]);
-					CommonVariables.wordJ = arrayListJ.toArray(new String[0]);
+					PlaySound.wordE = arrayListE.toArray(new String[0]);
+					PlaySound.wordJ = arrayListJ.toArray(new String[0]);
 					
 					WordPhraseData p = new WordPhraseData(TanjukugoPhrase + "p1q", context);
-					CommonVariables.strPhraseE = p.e;
-					CommonVariables.strPhraseJ = p.j;
+					PlaySound.strPhraseE = p.e;
+					PlaySound.strPhraseJ = p.j;
 					break;
 				}
 				case testy00: {
-					CommonVariables.lastnum = 800;
+					lastnum = 800;
 					WordPhraseData w = new WordPhraseData(YumeWord + "00", context);
-					CommonVariables.strPhraseE = CommonVariables.wordE = w.e;
-					CommonVariables.strPhraseJ = CommonVariables.wordJ = w.j;
+					PlaySound.strPhraseE = PlaySound.wordE = w.e;
+					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
 					break;
 				}
 				case testy08: {
-					CommonVariables.lastnum = 800;
+					lastnum = 800;
 					WordPhraseData w = new WordPhraseData(YumeWord + "08", context);
-					CommonVariables.strPhraseE = CommonVariables.wordE = w.e;
-					CommonVariables.strPhraseJ = CommonVariables.wordJ = w.j;
+					PlaySound.strPhraseE = PlaySound.wordE = w.e;
+					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
 					break;
 				}
 				case testy1: {
-					CommonVariables.lastnum = 1000;
+					lastnum = 1000;
 					WordPhraseData w = new WordPhraseData(YumeWord + "1", context);
-					CommonVariables.strPhraseE = CommonVariables.wordE = w.e;
-					CommonVariables.strPhraseJ = CommonVariables.wordJ = w.j;
+					PlaySound.strPhraseE = PlaySound.wordE = w.e;
+					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
 					break;
 				}
 				case testy2: {
-					CommonVariables.lastnum = 1000;
+					lastnum = 1000;
 					WordPhraseData w = new WordPhraseData(YumeWord + "2", context);
-					CommonVariables.strPhraseE = CommonVariables.wordE = w.e;
-					CommonVariables.strPhraseJ = CommonVariables.wordJ = w.j;
+					PlaySound.strPhraseE = PlaySound.wordE = w.e;
+					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
 					break;
 				}
 				case testy3: {
-					CommonVariables.lastnum = 800;
+					lastnum = 800;
 					WordPhraseData w = new WordPhraseData(YumeWord + "3", context);
-					CommonVariables.strPhraseE = CommonVariables.wordE = w.e;
-					CommonVariables.strPhraseJ = CommonVariables.wordJ = w.j;
+					PlaySound.strPhraseE = PlaySound.wordE = w.e;
+					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
 					break;
 				}
 			}
 			
 			if (!nowIsDecided && sentakuUnit.equals(WordPhraseData.q_num.unit.all)) {
 				now = MyLibrary.PreferenceManager.getIntData(context, "MainActivity" +
-					"now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", 1);
-				CommonVariables.nFrom = 1;
-				CommonVariables.nTo = CommonVariables.lastnum;
+					"now", (PlaySound.strQ.startsWith("ph") ? PlaySound.strQ.substring(2) : PlaySound.strQ) + "now", 1);
+				PlaySound.nFrom = 1;
+				PlaySound.nTo = lastnum;
 			}
-			else if (CommonVariables.nUnit != 5) {
+			else if (PlaySound.nUnit != 5) {
 				int unit = 0;
-				switch (CommonVariables.nUnit) {
+				switch (PlaySound.nUnit) {
 					case 1: {//A
-						switch (CommonVariables.nShurui) {
+						switch (PlaySound.nShurui) {
 							case 1: {//V
 								break;
 							}
@@ -314,7 +318,7 @@ public class PlayerFragment extends Fragment {
 						break;
 					}
 					case 2: {//B
-						switch (CommonVariables.nShurui) {
+						switch (PlaySound.nShurui) {
 							case 1: {//V
 								unit = 3;
 								break;
@@ -335,7 +339,7 @@ public class PlayerFragment extends Fragment {
 						break;
 					}
 					case 3: {//C
-						switch (CommonVariables.nShurui) {
+						switch (PlaySound.nShurui) {
 							case 1: {//V
 								unit = 6;
 								break;
@@ -360,25 +364,25 @@ public class PlayerFragment extends Fragment {
 						break;
 				}
 				
-				CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, unit);
-				CommonVariables.nFrom = CommonVariables.from;
-				CommonVariables.nTo = CommonVariables.to;
+				WordPhraseData.SetNumFromAndTo(lastnum, unit);
+				PlaySound.nFrom = PlaySound.from;
+				PlaySound.nTo = PlaySound.to;
 			}
 			
 			//1q
 			//if (lastnum==2400){
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q)) {
-				for (int i = 0; i < CommonVariables.lastnum; i++) {
-					CommonVariables.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordSeikaisuu" + i, 0);
-					CommonVariables.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordHuseikaisuu" + i, 0);
+				for (int i = 0; i < lastnum; i++) {
+					TestActivity.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordSeikaisuu" + i, 0);
+					TestActivity.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordHuseikaisuu" + i, 0);
 				}
 			}
 			//p1q
 			//if (lastnum==1850){
 			if (sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
-				for (int i = 0; i < CommonVariables.lastnum; i++) {
-					CommonVariables.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordSeikaisuu" + i, 0);
-					CommonVariables.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordHuseikaisuu" + i, 0);
+				for (int i = 0; i < lastnum; i++) {
+					TestActivity.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordSeikaisuu" + i, 0);
+					TestActivity.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordHuseikaisuu" + i, 0);
 				}
 			}
 			
@@ -388,21 +392,21 @@ public class PlayerFragment extends Fragment {
 				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞",
 				                                                          "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
 				for (int i = 0; i < 10; i++) {
-					CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, i);
-					adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", CommonVariables.from, CommonVariables.to));
+					WordPhraseData.SetNumFromAndTo(lastnum, i);
+					adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", PlaySound.from, PlaySound.to));
 				}
 			}
 			if (sentakuQ.equals(WordPhraseData.q_num.test1qEx)) {
 				for (int i = 0; i <= 9; i++) {
-					adapterUnit.add("Unit" + (i + 1) + " (" + CommonVariables.toFindFromAndTo[12][i][0] + "-" + CommonVariables.toFindFromAndTo[12][i][1] + ")");
+					adapterUnit.add("Unit" + (i + 1) + " (" + WordPhraseData.toFindFromAndTo[12][i][0] + "-" + WordPhraseData.toFindFromAndTo[12][i][1] + ")");
 				}
-				adapterUnit.add("UnitEX" + " (" + CommonVariables.toFindFromAndTo[12][10][0] + "-" + CommonVariables.toFindFromAndTo[12][10][1] + ")");
+				adapterUnit.add("UnitEX" + " (" + WordPhraseData.toFindFromAndTo[12][10][0] + "-" + WordPhraseData.toFindFromAndTo[12][10][1] + ")");
 			}
 			if (sentakuQ.equals(WordPhraseData.q_num.testp1qEx)) {
 				for (int i = 0; i <= 9; i++) {
-					adapterUnit.add("Unit" + (i + 1) + " (" + CommonVariables.toFindFromAndTo[13][i][0] + "-" + CommonVariables.toFindFromAndTo[13][i][1] + ")");
+					adapterUnit.add("Unit" + (i + 1) + " (" + WordPhraseData.toFindFromAndTo[13][i][0] + "-" + WordPhraseData.toFindFromAndTo[13][i][1] + ")");
 				}
-				adapterUnit.add("UnitEX" + " (" + CommonVariables.toFindFromAndTo[13][10][0] + "-" + CommonVariables.toFindFromAndTo[13][10][1] + ")");
+				adapterUnit.add("UnitEX" + " (" + WordPhraseData.toFindFromAndTo[13][10][0] + "-" + WordPhraseData.toFindFromAndTo[13][10][1] + ")");
 			}
 			if (sentakuQ.equals(WordPhraseData.q_num.testy08) || sentakuQ.equals(WordPhraseData.q_num.testy3)) {
 				for (int i = 1; i <= 8; i++) {
@@ -439,26 +443,26 @@ public class PlayerFragment extends Fragment {
 	
 	private void askTangoNumber(int unit) {
 		try {
-			CommonVariables.SetNumFromAndTo(CommonVariables.lastnum, unit);
+			WordPhraseData.SetNumFromAndTo(lastnum, unit);
 			
 			ArrayAdapter<String> adapterWord = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.testy08)
 				|| sentakuQ.equals(WordPhraseData.q_num.testy1)
 				|| sentakuQ.equals(WordPhraseData.q_num.testy2)
 				|| sentakuQ.equals(WordPhraseData.q_num.testy3)) {
-				CommonVariables.from = unit * 100 + 1;
-				CommonVariables.to = (unit + 1) * 100;
+				PlaySound.from = unit * 100 + 1;
+				PlaySound.to = (unit + 1) * 100;
 			}
 			if (sentakuQ.equals(WordPhraseData.q_num.test1qEx)) {
-				CommonVariables.from = CommonVariables.toFindFromAndTo[12][unit][0];
-				CommonVariables.to = CommonVariables.toFindFromAndTo[12][unit][1];
+				PlaySound.from = WordPhraseData.toFindFromAndTo[12][unit][0];
+				PlaySound.to = WordPhraseData.toFindFromAndTo[12][unit][1];
 			}
 			if (sentakuQ.equals(WordPhraseData.q_num.testp1qEx)) {
-				CommonVariables.from = CommonVariables.toFindFromAndTo[13][unit][0];
-				CommonVariables.to = CommonVariables.toFindFromAndTo[13][unit][1];
+				PlaySound.from = WordPhraseData.toFindFromAndTo[13][unit][0];
+				PlaySound.to = WordPhraseData.toFindFromAndTo[13][unit][1];
 			}
-			for (int i = CommonVariables.from; i <= CommonVariables.to; i++) {
-				adapterWord.add(i + ":" + CommonVariables.wordE[i] + " (" + CommonVariables.wordJ[i] + ")");
+			for (int i = PlaySound.from; i <= PlaySound.to; i++) {
+				adapterWord.add(i + ":" + PlaySound.wordE[i] + " (" + PlaySound.wordJ[i] + ")");
 			}
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			builder.setTitle("単語を選択してください");
@@ -474,7 +478,7 @@ public class PlayerFragment extends Fragment {
 		try {
 			//単語を選んだあと
 			adWord.dismiss();
-			now = CommonVariables.from + which - 1;
+			now = PlaySound.from + which - 1;
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -493,7 +497,7 @@ public class PlayerFragment extends Fragment {
 				//再生する
 				context.startForegroundService(new Intent(context, PlaySound.class));
 				button.setText("stop");
-				CommonVariables.playing = true;
+				playing = true;
 			}
 		} catch (Exception e) {
 			showException(context, e);
@@ -522,8 +526,8 @@ public class PlayerFragment extends Fragment {
 	
 	private void saveNow() {
 		try {
-			if (CommonVariables.strQ != null)
-				putIntData(context, "MainActivity" + "now", (CommonVariables.strQ.startsWith("ph") ? CommonVariables.strQ.substring(2) : CommonVariables.strQ) + "now", now);
+			if (PlaySound.strQ != null)
+				putIntData(context, "MainActivity" + "now", (PlaySound.strQ.startsWith("ph") ? PlaySound.strQ.substring(2) : PlaySound.strQ) + "now", now);
 		} catch (Exception exception) {
 			showException(context, exception);
 		}
@@ -532,7 +536,7 @@ public class PlayerFragment extends Fragment {
 	public void saiseiStop() {
 		try {
 			context.stopService(new Intent(context, PlaySound.class));
-			CommonVariables.playing = false;
+			playing = false;
 			
 		} catch (Exception e) {
 			showException(context, e);
@@ -567,13 +571,13 @@ public class PlayerFragment extends Fragment {
 			if (sb.getId() == R.id.seekBarEng) {
 				//英語
 				((TextView) findViewById(R.id.textViewSeekBarEng)).setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
-				CommonVariables.dPlaySpeedEng = 1 + 0.1 * sb.getProgress();
+				PlaySound.dPlaySpeedEng = 1 + 0.1 * sb.getProgress();
 				putIntData(context, "SeekBar", "english", sb.getProgress());
 			}
 			else if (sb.getId() == R.id.seekBarJpn) {
 				//日本語
 				((TextView) findViewById(R.id.textViewSeekBarJpn)).setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
-				CommonVariables.dPlaySpeedJpn = 1 + 0.1 * sb.getProgress();
+				PlaySound.dPlaySpeedJpn = 1 + 0.1 * sb.getProgress();
 				putIntData(context, "SeekBar", "japanese", sb.getProgress());
 			}
 		} catch (Exception e) {

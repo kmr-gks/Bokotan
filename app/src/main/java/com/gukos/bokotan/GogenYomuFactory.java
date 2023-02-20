@@ -1,6 +1,6 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.CommonVariables.wordE;
+import static com.gukos.bokotan.PlaySound.wordE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.content.Context;
@@ -13,14 +13,8 @@ import java.io.InputStreamReader;
 import java.util.TreeMap;
 
 class GogenYomu {
-	public final String wordEng;
-	public final String wordJpn;
-	public final String bunrui;
-	public final String gogen1;
-	public final String gogen2;
-	public final String gogen3;
-	public final String sankou;
-
+	public final String wordEng, wordJpn, bunrui, gogen1, gogen2, gogen3, sankou;
+	
 	public GogenYomu(String wordEng, String wordJpn, String bunrui, String gogen1, String gogen2, String gogen3, String sankou) {
 		this.wordEng = wordEng;
 		this.wordJpn = wordJpn;
@@ -30,7 +24,7 @@ class GogenYomu {
 		this.gogen3 = gogen3;
 		this.sankou = sankou;
 	}
-
+	
 	public String getGogenString(boolean containsBunrui, boolean containsSankou) {
 		try {
 			String ans = "語源:" + this.gogen1;
@@ -46,7 +40,7 @@ class GogenYomu {
 		}
 		return "<不明>";
 	}
-
+	
 	@NonNull
 	public String toString() {
 		try {
@@ -56,7 +50,7 @@ class GogenYomu {
 		}
 		return "<不明>";
 	}
-
+	
 	private static String tikan(String stringWith_) {
 		try {
 			StringBuilder ans = new StringBuilder();
@@ -75,7 +69,7 @@ class GogenYomu {
 public class GogenYomuFactory {
 	private static final TreeMap<String, GogenYomu> trGogenYomu = new TreeMap<>();
 	final String strFileNameYomuGogenGaku = "読む語源学全内容2.csv";
-
+	
 	public GogenYomuFactory(Context context) {
 		try {
 			InputStream is = context.getAssets().open(strFileNameYomuGogenGaku);
@@ -92,15 +86,15 @@ public class GogenYomuFactory {
 			//new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル"+ strFileNameYomuGogenGaku +"が見つかりません。").setPositiveButton("ok",null).create().show();
 		}
 	}
-
+	
 	public TreeMap<String, GogenYomu> getTrGogenYomu() {
 		return trGogenYomu;
 	}
-
+	
 	static String getGogenString(int now, boolean containsBunrui, boolean containsSankou) {
 		return getGogenString(wordE[now], containsBunrui, containsSankou);
 	}
-
+	
 	static String getGogenString(String word, boolean containsBunrui, boolean containsSankou) {
 		try {
 			GogenYomu gy = trGogenYomu.get(word);

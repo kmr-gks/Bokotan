@@ -42,10 +42,15 @@ public class TestFragment extends Fragment {
 		}
 	}
 	
-	static class Seikairitsu{
+	static class Seikairitsu {
 		final int num;
 		final int seitouritu;
 		final int toitakazu;
-		Seikairitsu(int num,int seitouritu,int toitakazu){this.num=num;this.seitouritu=seitouritu;this.toitakazu =toitakazu;}
+		
+		Seikairitsu(int num, int seitouritu, int toitakazu) {
+			this.num = num;
+			this.seitouritu = seitouritu;
+			this.toitakazu = toitakazu;
+		}
 	}
 }

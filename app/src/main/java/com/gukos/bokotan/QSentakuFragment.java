@@ -10,7 +10,7 @@ import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.Context.ALARM_SERVICE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
-import static com.gukos.bokotan.CommonVariables.strQ;
+import static com.gukos.bokotan.PlaySound.strQ;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -71,6 +71,7 @@ import java.util.List;
 
 public class QSentakuFragment extends Fragment {
 	
+	static int nWordPhraseOrTest = 1;
 	private Context context;
 	private FragmentActivity activity;
 	private View viewFragment;
@@ -117,7 +118,7 @@ public class QSentakuFragment extends Fragment {
 			spinnerMode.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
 			spinnerMode.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_mode));
 			
-			CommonVariables.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
+			KensakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
 			//バージョン表記
 			this.<TextView>findViewById(R.id.textViewVersion).setText(getBuildDate(context));
@@ -263,83 +264,83 @@ public class QSentakuFragment extends Fragment {
 		try {
 			EditText editTextNowNumber = findViewById(R.id.editTextNumber);
 			if (editTextNowNumber.length() != 0) {
-				CommonVariables.nowIsDecided = true;
-				CommonVariables.now = Integer.parseInt(editTextNowNumber.getText().toString()) - 1;
+				PlayerFragment.nowIsDecided = true;
+				PlaySound.now = Integer.parseInt(editTextNowNumber.getText().toString()) - 1;
 			}
 			else {
-				CommonVariables.nowIsDecided = false;
+				PlayerFragment.nowIsDecided = false;
 			}
 			if (switchSkipOboe != null) {
-				CommonVariables.bSkipOboe = switchSkipOboe.isChecked();
+				PlaySound.bSkipOboe = switchSkipOboe.isChecked();
 			}
-			else CommonVariables.bSkipOboe = false;
-			CommonVariables.bHyojiYakuBeforeRead = swHyojiBeforeRead.isChecked();
-			CommonVariables.bEnglishToJapaneseOrder = SettingFragment.radioButtonEtoJ.isChecked();
-			CommonVariables.bSort = switchSortHanten.isChecked();
+			else PlaySound.bSkipOboe = false;
+			PlaySound.bHyojiYakuBeforeRead = swHyojiBeforeRead.isChecked();
+			PlaySound.bEnglishToJapaneseOrder = SettingFragment.radioButtonEtoJ.isChecked();
+			TestActivity.bSort = switchSortHanten.isChecked();
 			switch (v.getId()) {
 				case R.id.button1q: {
 					strQ = "1q";
-					CommonVariables.strQenum = WordPhraseData.q_num.strQ.str1q;
-					CommonVariables.sentakuQ = WordPhraseData.q_num.test1q;
+					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.str1q;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.test1q;
 					break;
 				}
 				default:
 				case R.id.buttonP1q: {
 					strQ = "p1q";
-					CommonVariables.strQenum = WordPhraseData.q_num.strQ.strp1q;
-					CommonVariables.sentakuQ = WordPhraseData.q_num.testp1q;
+					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.strp1q;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.testp1q;
 					break;
 				}
 				case R.id.button2q: {
 					strQ = "2q";
-					CommonVariables.strQenum = WordPhraseData.q_num.strQ.str2q;
-					CommonVariables.sentakuQ = WordPhraseData.q_num.test2q;
+					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.str2q;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.test2q;
 					break;
 				}
 				case R.id.buttonP2q: {
 					strQ = "p2q";
-					CommonVariables.strQenum = WordPhraseData.q_num.strQ.strp2q;
-					CommonVariables.sentakuQ = WordPhraseData.q_num.testp2q;
+					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.strp2q;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.testp2q;
 					break;
 				}
 				case R.id.button1qEx: {
 					strQ = "tanjukugo1q";
-					CommonVariables.sentakuQ = WordPhraseData.q_num.test1qEx;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.test1qEx;
 					break;
 				}
 				case R.id.buttonP1qEx: {
 					strQ = "tanjukugop1q";
-					CommonVariables.sentakuQ = WordPhraseData.q_num.testp1qEx;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.testp1qEx;
 					break;
 				}
 				case R.id.buttonYume0_0:
 				case R.id.buttonYume0_8: {
 					strQ = "y08";
-					CommonVariables.strQenum = WordPhraseData.q_num.strQ.stry08;
-					CommonVariables.sentakuQ = WordPhraseData.q_num.testy08;
+					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.stry08;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy08;
 					break;
 				}
 				case R.id.buttonYume1: {
 					strQ = "y1";
-					CommonVariables.strQenum = WordPhraseData.q_num.strQ.stry1;
-					CommonVariables.sentakuQ = WordPhraseData.q_num.testy1;
+					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.stry1;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy1;
 					break;
 				}
 				case R.id.buttonYume2: {
 					strQ = "y2";
-					CommonVariables.strQenum = WordPhraseData.q_num.strQ.stry2;
-					CommonVariables.sentakuQ = WordPhraseData.q_num.testy2;
+					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.stry2;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy2;
 					break;
 				}
 				case R.id.buttonYume3: {
 					strQ = "y3";
-					CommonVariables.strQenum = WordPhraseData.q_num.strQ.stry3;
-					CommonVariables.sentakuQ = WordPhraseData.q_num.testy3;
+					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.stry3;
+					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy3;
 					break;
 				}
 			}
-			CommonVariables.isWordAndPhraseMode = false;
-			switch (CommonVariables.nWordPhraseOrTest) {
+			PlaySound.isWordAndPhraseMode = false;
+			switch (nWordPhraseOrTest) {
 				//単語
 				default:
 				case 1: {
@@ -367,7 +368,7 @@ public class QSentakuFragment extends Fragment {
 						Toast.makeText(context, "単語+文は1級、準1級、ユメタンのみです。", Toast.LENGTH_SHORT).show();
 						return;
 					}
-					CommonVariables.isWordAndPhraseMode = true;
+					PlaySound.isWordAndPhraseMode = true;
 					onStartPlaying();
 					break;
 				}
@@ -458,29 +459,29 @@ public class QSentakuFragment extends Fragment {
 			MyLibrary.PreferenceManager.putIntData(context, "spinnerHanni", "selected", i);
 			switch (i) {
 				case 0: {
-					CommonVariables.nUnit = 1;
-					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruA;
+					PlaySound.nUnit = 1;
+					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.deruA;
 					break;
 				}
 				case 1: {
-					CommonVariables.nUnit = 2;
-					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruB;
+					PlaySound.nUnit = 2;
+					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.deruB;
 					break;
 				}
 				case 2: {
-					CommonVariables.nUnit = 3;
-					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.deruC;
+					PlaySound.nUnit = 3;
+					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.deruC;
 					break;
 				}
 				case 3: {
-					CommonVariables.nUnit = 4;
-					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.Jukugo;
+					PlaySound.nUnit = 4;
+					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.Jukugo;
 					break;
 				}
 				case 4: {
-					CommonVariables.nUnit = 5;
-					CommonVariables.sentakuUnit = WordPhraseData.q_num.unit.all;
-					CommonVariables.nShurui = 4;
+					PlaySound.nUnit = 5;
+					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.all;
+					PlaySound.nShurui = 4;
 					break;
 				}
 			}
@@ -494,19 +495,19 @@ public class QSentakuFragment extends Fragment {
 			MyLibrary.PreferenceManager.putIntData(context, "spinnerHinsi", "selected", i);
 			switch (i) {
 				case 0: {
-					CommonVariables.nShurui = 1;
+					PlaySound.nShurui = 1;
 					break;
 				}
 				case 1: {
-					CommonVariables.nShurui = 2;
+					PlaySound.nShurui = 2;
 					break;
 				}
 				case 2: {
-					CommonVariables.nShurui = 3;
+					PlaySound.nShurui = 3;
 					break;
 				}
 				case 3: {
-					CommonVariables.nShurui = 4;
+					PlaySound.nShurui = 4;
 					break;
 				}
 			}
@@ -521,38 +522,38 @@ public class QSentakuFragment extends Fragment {
 			switch (i) {
 				case 0: {
 					//単語
-					CommonVariables.nWordPhraseOrTest = 1;
-					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.word;
+					nWordPhraseOrTest = 1;
+					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.word;
 					break;
 				}
 				case 1: {
 					//文
-					CommonVariables.nWordPhraseOrTest = 2;
-					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.phrase;
+					nWordPhraseOrTest = 2;
+					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.phrase;
 					break;
 				}
 				case 2: {
 					//単語+文
-					CommonVariables.nWordPhraseOrTest = 6;
-					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.wordPlusPhrase;
+					nWordPhraseOrTest = 6;
+					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.wordPlusPhrase;
 					break;
 				}
 				case 3: {
 					//ランダムテスト
-					CommonVariables.nWordPhraseOrTest = 3;
-					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.randomTest;
+					nWordPhraseOrTest = 3;
+					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.randomTest;
 					break;
 				}
 				case 4: {
 					//正答率テスト
-					CommonVariables.nWordPhraseOrTest = 4;
-					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.huseikainomiTest;
+					nWordPhraseOrTest = 4;
+					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.huseikainomiTest;
 					break;
 				}
 				case 5: {
 					//順番テスト
-					CommonVariables.nWordPhraseOrTest = 5;
-					CommonVariables.WordPhraseOrTest = WordPhraseData.q_num.mode.seitouritsujunTest;
+					nWordPhraseOrTest = 5;
+					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.seitouritsujunTest;
 					break;
 				}
 			}

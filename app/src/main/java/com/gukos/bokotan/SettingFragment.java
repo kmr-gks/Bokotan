@@ -1,7 +1,6 @@
 package com.gukos.bokotan;
 
 
-import static com.gukos.bokotan.CommonVariables.swOnlyFirst;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.strDirectoryNameForKuuhaku;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
@@ -33,6 +32,8 @@ public class SettingFragment extends Fragment {
 	public static CheckBox cbAutoStop, checkBoxHatsuonKigou;
 	public static Switch switchSkipOboe, swHyojiBeforeRead, switchSortHanten, swMaruBatu;
 	public static RadioButton radioButtonEtoJ;
+	//ビュー
+	static Switch swOnlyFirst;
 	
 	Context context;
 	Activity activity;
@@ -177,19 +178,19 @@ public class SettingFragment extends Fragment {
 			putIntData(context, dnQSentakuActivity, "RadioButton", v.getId());
 			switch (v.getId()) {
 				case R.id.radioButtonOnlyKioku: {
-					CommonVariables.skipjoken = WordPhraseData.q_num.skipjouken.kirokunomi;
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.kirokunomi;
 					break;
 				}
 				case R.id.radioButton1seikai: {
-					CommonVariables.skipjoken = WordPhraseData.q_num.skipjouken.seikai1;
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.seikai1;
 					break;
 				}
 				case R.id.radioButton2huseikai: {
-					CommonVariables.skipjoken = WordPhraseData.q_num.skipjouken.huseikai2;
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.huseikai2;
 					break;
 				}
 				case R.id.radioButtonOnlyHugoukaku: {
-					CommonVariables.skipjoken = WordPhraseData.q_num.skipjouken.onlyHugoukaku;
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.onlyHugoukaku;
 				}
 			}
 		} catch (Exception e) {

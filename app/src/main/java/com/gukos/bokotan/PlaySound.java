@@ -2,34 +2,9 @@ package com.gukos.bokotan;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
-import static com.gukos.bokotan.CommonVariables.bEnglishToJapaneseOrder;
-import static com.gukos.bokotan.CommonVariables.bHyojiYakuBeforeRead;
-import static com.gukos.bokotan.CommonVariables.bSkipOboe;
-import static com.gukos.bokotan.CommonVariables.dPlaySpeedEng;
-import static com.gukos.bokotan.CommonVariables.dPlaySpeedJpn;
-import static com.gukos.bokotan.CommonVariables.hashMapKishutu;
-import static com.gukos.bokotan.CommonVariables.isPhraseMode;
-import static com.gukos.bokotan.CommonVariables.isWordAndPhraseMode;
-import static com.gukos.bokotan.CommonVariables.lastnum;
-import static com.gukos.bokotan.CommonVariables.nFrom;
-import static com.gukos.bokotan.CommonVariables.nTo;
-import static com.gukos.bokotan.CommonVariables.now;
-import static com.gukos.bokotan.CommonVariables.strPhraseE;
-import static com.gukos.bokotan.CommonVariables.strPhraseJ;
-import static com.gukos.bokotan.CommonVariables.strQ;
-import static com.gukos.bokotan.CommonVariables.swOnlyFirst;
-import static com.gukos.bokotan.CommonVariables.textViewHatsuonKigou;
-import static com.gukos.bokotan.CommonVariables.textViewPath;
-import static com.gukos.bokotan.CommonVariables.tvGenzai;
-import static com.gukos.bokotan.CommonVariables.tvGogen;
-import static com.gukos.bokotan.CommonVariables.tvNumSeikaisuu;
-import static com.gukos.bokotan.CommonVariables.tvSeikaisu;
-import static com.gukos.bokotan.CommonVariables.tvWordEng;
-import static com.gukos.bokotan.CommonVariables.tvWordJpn;
-import static com.gukos.bokotan.CommonVariables.tvsubE;
-import static com.gukos.bokotan.CommonVariables.tvsubJ;
-import static com.gukos.bokotan.CommonVariables.wordE;
-import static com.gukos.bokotan.CommonVariables.wordJ;
+import static com.gukos.bokotan.PlayerFragment.hashMapKishutu;
+import static com.gukos.bokotan.PlayerFragment.lastnum;
+import static com.gukos.bokotan.SettingFragment.swOnlyFirst;
 import static com.gukos.bokotan.GogenYomuFactory.getGogenString;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
@@ -59,12 +34,19 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.widget.TextView;
 
 import androidx.core.app.NotificationCompat;
 
 public class PlaySound extends Service {
+	public static TextView tvWordEng, tvWordJpn, tvGenzai, tvsubE, tvsubJ, tvNumSeikaisuu, tvSeikaisu, tvGogen, textViewPath, textViewHatsuonKigou;
+	public static double dPlaySpeedEng = 1.5, dPlaySpeedJpn = 1.5;
+	public static String[] wordE, wordJ, strPhraseJ, strPhraseE;
+	public static boolean isPhraseMode, bHyojiYakuBeforeRead = true, bEnglishToJapaneseOrder = true;
+	public static String strQ = null;//開始時には決まっているf
+	public static int now, nFrom, nTo, from, to, nUnit = 5, nShurui = 4;
+	static boolean isWordAndPhraseMode = false, bSkipOboe;
 	private static MediaPlayer mediaPlayerClassStatic;
-	private static int nInstance = 0;
 	private String path;
 	private Context context;
 	
@@ -79,19 +61,18 @@ public class PlaySound extends Service {
 			showException(this, e);
 		}
 	}
-
+	
 	@Override
 	public void onDestroy() {
 		try {
 			super.onDestroy();
 			resetMediaPlayer(mediaPlayerClassStatic);
 			mediaPlayerClassStatic = null;
-			nInstance--;
 		} catch (Exception e) {
 			showException(this, e);
 		}
 	}
-
+	
 	private void resetMediaPlayer(MediaPlayer mediaPlayer) {
 		try {
 			if (mediaPlayer != null) {
@@ -116,7 +97,7 @@ public class PlaySound extends Service {
 			showException(this, e);
 		}
 	}
-
+	
 	private void playStart(MediaPlayer mediaPlayer) {
 		try {
 			mediaPlayer.start();
@@ -124,7 +105,7 @@ public class PlaySound extends Service {
 			showException(this, e);
 		}
 	}
-
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		try {
@@ -132,7 +113,6 @@ public class PlaySound extends Service {
 			context = getApplicationContext();
 			resetMediaPlayer(mediaPlayerClassStatic);
 			mediaPlayerClassStatic = null;
-			nInstance++;
 			NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 			String strTutiChannelName = "再生中", strTutiChannelId = "bokotan_foreground", strTutiChannelShosai = "バックグラウンドで再生中";
 			if (nm.getNotificationChannel(strTutiChannelId) == null) {
@@ -156,12 +136,12 @@ public class PlaySound extends Service {
 			PendingIntent pendingIntentOpenActivity = PendingIntent.getActivity(context, 110, intent1, FLAG_IMMUTABLE);
 			
 			Notification notification = new NotificationCompat.Builder(this, strTutiChannelId)
-					.setContentTitle("再生中").setContentText("バックグラウンドで再生中")
-					.setSmallIcon(R.mipmap.ic_launcher)
-					.addAction(R.drawable.ic_launcher_foreground, "停止", sendStopPendingIntent)
-					.addAction(R.mipmap.launcher_new_icon, "小窓で表示", sendPipPendingIntent)
-					.setContentIntent(pendingIntentOpenActivity)
-					.build();
+				.setContentTitle("再生中").setContentText("バックグラウンドで再生中")
+				.setSmallIcon(R.mipmap.ic_launcher)
+				.addAction(R.drawable.ic_launcher_foreground, "停止", sendStopPendingIntent)
+				.addAction(R.mipmap.launcher_new_icon, "小窓で表示", sendPipPendingIntent)
+				.setContentIntent(pendingIntentOpenActivity)
+				.build();
 			//Notification.FLAG_NO_CLEARだと消える(Android13)
 			notification.flags |= Notification.FLAG_ONGOING_EVENT;
 			startForeground(1, notification);
@@ -172,13 +152,13 @@ public class PlaySound extends Service {
 		}
 		return START_NOT_STICKY;
 	}
-
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO: Return the communication channel to the service.
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
-
+	
 	private void setEngText(int num) {
 		try {
 			tvWordEng.setMaxLines(1);
@@ -201,11 +181,11 @@ public class PlaySound extends Service {
 				strQ = "p1q";
 			}
 			if (bEnglishToJapaneseOrder) {
-				if (!isWordAndPhraseMode || isPhraseMode){
+				if (!isWordAndPhraseMode || isPhraseMode) {
 					now++;
 				}
 				if (bSkipOboe) {
-					switch (CommonVariables.skipjoken) {
+					switch (WordPhraseData.skipjoken) {
 						case seikai1: {
 							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null) || getIntData(this, "testActivity" + strQ_WordPhraseKyoutuu + "Test", "nWordSeikaisuu" + now, 0) > 0) {
 								now++;
@@ -215,7 +195,7 @@ public class PlaySound extends Service {
 						}
 						case huseikai2: {
 							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null)
-									|| getIntData(this, "testActivity" + strQ_WordPhraseKyoutuu + "Test", "nWordHuseikaisuu" + now, 0) < 2) {
+								|| getIntData(this, "testActivity" + strQ_WordPhraseKyoutuu + "Test", "nWordHuseikaisuu" + now, 0) < 2) {
 								now++;
 								if (now >= lastnum) break;
 							}
@@ -225,7 +205,7 @@ public class PlaySound extends Service {
 							int seikaisu = getIntData(this, DataName.dnTestActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語正解数 + now, 0);
 							int huseikaisu = getIntData(this, DataName.dnTestActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語不正解数 + now, 0);
 							while ((swOnlyFirst.isChecked() && hashMapKishutu.get(wordE[now]) != null)
-									|| TestActivity.isGokaku(seikaisu, huseikaisu)) {
+								|| TestActivity.isGokaku(seikaisu, huseikaisu)) {
 								now++;
 								seikaisu = getIntData(this, DataName.dnTestActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語正解数 + now, 0);
 								huseikaisu = getIntData(this, DataName.dnTestActivity + strQ_WordPhraseKyoutuu + "Test", DataName.単語不正解数 + now, 0);
@@ -243,8 +223,8 @@ public class PlaySound extends Service {
 					//puts("now="+now+",word="+wordE[now]+",hash="+hashMapKishutu.get(wordE[now]));
 					tvSeikaisu.setText("正解" + getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + '/' + (getIntData(this, "testActivity" + strQ + "Test", "nWordSeikaisuu" + now, 0) + getIntData(this, "testActivity" + strQ + "Test", "nWordHuseikaisuu" + now, 0)));
 				}
-
-				if (nFrom!=0&&nTo!=0) {
+				
+				if (nFrom != 0 && nTo != 0) {
 					if (now <= nFrom) now = nFrom;
 					if (now >= nTo) now = nFrom;
 				}
@@ -254,14 +234,15 @@ public class PlaySound extends Service {
 				if (lastnum == 2400) {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "1qTest", "nWordSeikaisuu" + now, 0);
 					nWordHuseikaisuu = getIntData(this, "testActivity" + "1qTest", "nWordHuseikaisuu" + now, 0);
-				} else if (lastnum == 1850) {
+				}
+				else if (lastnum == 1850) {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordSeikaisuu" + now, 0);
 					nWordHuseikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordHuseikaisuu" + now, 0);
 				}
 				if (tvNumSeikaisuu != null)
 					tvNumSeikaisuu.setText(
-							" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu > 0 ? nWordSeikaisuu + nWordHuseikaisuu : 1) +
-									"% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
+						" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu > 0 ? nWordSeikaisuu + nWordHuseikaisuu : 1) +
+							"% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
 				if (isWordAndPhraseMode) {
 					switch (strQ) {
 						case "1q": {
@@ -283,21 +264,24 @@ public class PlaySound extends Service {
 					}
 					isPhraseMode = !isPhraseMode;
 				}
-
+				
 				if (isPhraseMode) {
 					if (bHyojiYakuBeforeRead) {
 						tvWordJpn.setText(strPhraseJ[now]);
-					} else {
+					}
+					else {
 						tvWordJpn.setText("");
 					}
 					tvWordEng.setMaxLines(10);
 					tvWordEng.setText(strPhraseE[now]);
 					tvsubE.setText(wordE[now]);
 					tvsubJ.setText(wordJ[now]);
-				} else {
+				}
+				else {
 					if (bHyojiYakuBeforeRead) {
 						tvWordJpn.setText(wordJ[now]);
-					} else {
+					}
+					else {
 						tvWordJpn.setText("");
 					}
 					setEngText(now);
@@ -311,7 +295,7 @@ public class PlaySound extends Service {
 			PipActivity.ChangeText(wordE[now], wordJ[now], now);
 			String strQPath = strQ;
 			if ((strQPath.startsWith("ph")) || strQPath.startsWith(
-					"phy")) {
+				"phy")) {
 				//フォルダ統合
 				strQPath = strQ.substring(2);
 			}
@@ -321,18 +305,20 @@ public class PlaySound extends Service {
 					path = getPath(yumetan, strQPath, phrase, english, now);
 				else if (strQPath.startsWith("tanjukugo")) {
 					path = getPath(tanjukugoEX, strQPath, phrase, english, now);
-				} else
+				}
+				else
 					path = getPath(passTan, strQPath, phrase, english, now);
 			else if (strQPath.startsWith("y"))
 				path = getPath(yumetan, strQPath, word, english, now);
 			else if (strQPath.startsWith("tanjukugo")) {
 				path = getPath(tanjukugoEX, strQPath, word, english, now);
-			} else path = getPath(passTan, strQPath, word, english, now);
+			}
+			else path = getPath(passTan, strQPath, word, english, now);
 			textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(getApplicationContext(), Uri.parse(path));
-				if (mediaPlayerClassStatic==null){
-					puts("null"+",from="+nFrom+"to"+nTo+"now"+now+"uri:"+path);
+				if (mediaPlayerClassStatic == null) {
+					puts("null" + ",from=" + nFrom + "to" + nTo + "now" + now + "uri:" + path);
 					return;
 				}
 				mediaPlayerClassStatic.setPlaybackParams(mediaPlayerClassStatic.getPlaybackParams().setSpeed((float) dPlaySpeedEng));
@@ -341,7 +327,8 @@ public class PlaySound extends Service {
 					resetMediaPlayer(mediaPlayerLamda);
 					if (isPhraseMode || strQ.startsWith("y") || strQ.startsWith("tanjukugo")) {
 						bokotanPlayJapanese();
-					} else {
+					}
+					else {
 						JosiCheck(0);
 					}
 				});
@@ -354,7 +341,8 @@ public class PlaySound extends Service {
 				if (isPhraseMode) {
 					tvWordEng.setMaxLines(10);
 					tvWordEng.setText(strPhraseE[now]);
-				} else {
+				}
+				else {
 					setEngText(now);
 				}
 			}
@@ -381,26 +369,30 @@ public class PlaySound extends Service {
 				if (lastnum == 2400) {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "1qTest", "nWordSeikaisuu" + now, 0);
 					nWordHuseikaisuu = getIntData(this, "testActivity" + "1qTest", "nWordHuseikaisuu" + now, 0);
-				} else if (lastnum == 1850) {
+				}
+				else if (lastnum == 1850) {
 					nWordSeikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordSeikaisuu" + now, 0);
 					nWordHuseikaisuu = getIntData(this, "testActivity" + "p1qTest", "nWordHuseikaisuu" + now, 0);
 				}
 				tvNumSeikaisuu.setText(
-						" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu + 1) +
-								"% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
-
+					" (" + (int) nWordSeikaisuu * 100 / (nWordSeikaisuu + nWordHuseikaisuu + 1) +
+						"% " + nWordSeikaisuu + '/' + (nWordSeikaisuu + nWordHuseikaisuu) + ')' + nFrom + '-' + nTo);
+				
 				if (isPhraseMode) {
 					if (bHyojiYakuBeforeRead) {
 						tvWordEng.setMaxLines(10);
 						tvWordEng.setText(strPhraseE[now]);
-					} else {
+					}
+					else {
 						tvWordEng.setText("");
 					}
 					tvWordJpn.setText(strPhraseJ[now]);
-				} else {
+				}
+				else {
 					if (bHyojiYakuBeforeRead) {
 						setEngText(now);
-					} else {
+					}
+					else {
 						tvWordEng.setText("");
 					}
 					tvWordJpn.setText(wordJ[now]);
@@ -412,7 +404,7 @@ public class PlaySound extends Service {
 				PipActivity.ChangeText(wordE[now], wordJ[now], now);
 				tvGogen.setText(getGogenString(now, false, false));
 			}
-
+			
 			String strQPath = strQ;
 			if ((strQPath.startsWith("ph")) || strQPath.startsWith("phy")) {
 				//フォルダ統合
@@ -423,13 +415,15 @@ public class PlaySound extends Service {
 					path = getPath(yumetan, strQPath, phrase, japanese, now);
 				else if (strQPath.startsWith("tanjukugo")) {
 					path = getPath(tanjukugoEX, strQPath, phrase, japanese, now);
-				} else
+				}
+				else
 					path = getPath(passTan, strQPath, phrase, japanese, now);
 			else if (strQPath.startsWith("y"))
 				path = getPath(yumetan, strQPath, word, japanese, now);
 			else if (strQPath.startsWith("tanjukugo")) {
 				path = getPath(tanjukugoEX, strQPath, word, japanese, now);
-			} else path = getPath(passTan, strQPath, word, japanese, now);
+			}
+			else path = getPath(passTan, strQPath, word, japanese, now);
 			textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(this, Uri.parse(path));
@@ -447,7 +441,8 @@ public class PlaySound extends Service {
 			if (bEnglishToJapaneseOrder && !bHyojiYakuBeforeRead) {
 				if (isPhraseMode) {
 					tvWordJpn.setText(strPhraseJ[now]);
-				} else {
+				}
+				else {
 					tvWordJpn.setText(wordJ[now]);
 				}
 			}
@@ -455,7 +450,7 @@ public class PlaySound extends Service {
 			showException(this, e);
 		}
 	}
-
+	
 	public void JosiCheck(int index)//最初は0を指定
 	{
 		try {

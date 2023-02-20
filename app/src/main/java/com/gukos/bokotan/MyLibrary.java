@@ -1,7 +1,7 @@
 package com.gukos.bokotan;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.gukos.bokotan.CommonVariables.toFindFromAndTo;
+import static com.gukos.bokotan.WordPhraseData.toFindFromAndTo;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static java.lang.Math.min;
@@ -36,11 +36,12 @@ import java.util.Objects;
 
 public final class MyLibrary {
 	
-	public static final String stringDownloadPath = "/storage/emulated/0/Download/";
-	public static final String stringBokotanDirPath = stringDownloadPath + "bokotan/";
-	public static final String strGaibuDataDirectory = stringDownloadPath + "data/";
-	public static final String strExceptionFIlePath = stringBokotanDirPath + "exceptions.txt";
-	public static final String packageName = MyLibrary.class.getPackage().getName();
+	public static final String
+		stringDownloadPath = "/storage/emulated/0/Download/",
+		stringBokotanDirPath = stringDownloadPath + "bokotan/",
+		strGaibuDataDirectory = stringDownloadPath + "data/",
+		strExceptionFIlePath = stringBokotanDirPath + "exceptions.txt",
+		packageName = MyLibrary.class.getPackage().getName();
 	
 	public static final class ExceptionManager {
 		
@@ -275,11 +276,12 @@ public final class MyLibrary {
 		}
 		
 		public static class DataName {
-			public static final String dnTestActivity = "testActivity";
-			public static final String dnQSentakuActivity = "qSentakuActivity";
-			public static final String 現在何問目 = "nGenzaiNanMonme";
-			public static final String 単語正解数 = "nWordSeikaisuu";
-			public static final String 単語不正解数 = "nWordHuseikaisuu";
+			public static final String
+				dnTestActivity = "testActivity",
+				dnQSentakuActivity = "qSentakuActivity",
+				現在何問目 = "nGenzaiNanMonme",
+				単語正解数 = "nWordSeikaisuu",
+				単語不正解数 = "nWordHuseikaisuu";
 		}
 	}
 	

@@ -24,7 +24,7 @@ public class TabPagerAdapter extends FragmentStateAdapter {
 		settingFragment = new SettingFragment();
 		qSentakuFragment = new QSentakuFragment();
 		playerFragment = new PlayerFragment();
-		testFragment=new TestFragment();
+		testFragment = new TestFragment();
 		kensakuFragment = new KensakuFragment();
 	}
 	
@@ -45,8 +45,8 @@ public class TabPagerAdapter extends FragmentStateAdapter {
 				fragment = playerFragment;
 				break;
 			}
-			case 3:{
-				fragment=testFragment;
+			case 3: {
+				fragment = testFragment;
 				break;
 			}
 			case 4: {

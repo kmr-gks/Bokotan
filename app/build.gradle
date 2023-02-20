@@ -39,7 +39,7 @@ android {
 
 	//bindingを使うため
 	buildFeatures {
-		viewBinding true
+		dataBinding true
 	}
 
 	//レイアウトフォルダーを分ける
