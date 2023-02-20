@@ -9,198 +9,327 @@
 	tools:context=".QSentakuFragment">
 
 	<TextView
-		android:id="@+id/textViewUnitSelect"
+		android:id="@+id/textViewWelcome"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="単元を選択"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewWelcome" />
-
-	<TextView
-		android:id="@+id/textViewNowInput"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/now"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutManageSettings" />
-
-	<EditText
-		android:id="@+id/editTextNumber"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:autofillHints="no"
-		android:ems="10"
-		android:hint="@string/editNumberText"
-		android:inputType="number"
-		android:minHeight="48dp"
-		app:layout_constraintStart_toEndOf="@+id/textViewNowInput"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutManageSettings" />
-
-	<LinearLayout
-		android:id="@+id/linearLayoutOption"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
+		android:text="@string/app_name"
+		android:textColor="@color/textcolor"
+		android:textSize="30sp"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewUnitSelect">
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<ScrollView
+		android:id="@+id/scrollViewQSentaku"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:isScrollContainer="false"
+		app:layout_constraintBottom_toTopOf="@+id/textViewVersion"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/textViewWelcome">
 
 		<LinearLayout
-			android:id="@+id/linearLayoutUnitSelection"
+			android:id="@+id/linearLayoutScroll"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:orientation="horizontal">
+			android:orientation="vertical">
 
 			<TextView
-				android:id="@+id/textViewHanni"
-				android:layout_width="0dp"
+				android:id="@+id/textViewUnitSelect"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_weight="2.5"
-				android:text="@string/hanni"
-				android:textColor="@color/textcolor" />
+				android:text="単元を選択" />
+
+			<LinearLayout
+				android:id="@+id/linearLayoutOption"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical">
+
+				<LinearLayout
+					android:id="@+id/linearLayoutUnitSelection"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal">
+
+					<TextView
+						android:id="@+id/textViewHanni"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2.5"
+						android:text="@string/hanni"
+						android:textColor="@color/textcolor" />
+
+					<TextView
+						android:id="@+id/textViewHinshi"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2.5"
+						android:text="@string/hinsi"
+						android:textColor="@color/textcolor" />
+
+					<TextView
+						android:id="@+id/textViewMode"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="4.5"
+						android:text="@string/mode"
+						android:textColor="@color/textcolor" />
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/linearLayoutSelection"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:orientation="horizontal">
+
+					<Spinner
+						android:id="@+id/spinnerHanni"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2.5"
+						android:popupBackground="@color/background" />
+
+					<Spinner
+						android:id="@+id/spinnerHinsi"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2.5"
+						android:popupBackground="@color/background" />
+
+					<Spinner
+						android:id="@+id/spinnerMode"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="4.5"
+						android:popupBackground="@color/background" />
+				</LinearLayout>
+			</LinearLayout>
 
 			<TextView
-				android:id="@+id/textViewHinshi"
-				android:layout_width="0dp"
+				android:id="@+id/textViewYumetan"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_weight="2.5"
-				android:text="@string/hinsi"
-				android:textColor="@color/textcolor" />
+				android:text="ユメタン" />
+
+			<LinearLayout
+				android:id="@+id/linearLayoutYume"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<Button
+					android:id="@+id/buttonYume0.0"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/_0y"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/buttonYume0.8"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/yumetan08"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/buttonYume1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/yumetan1"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/buttonYume2"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/yumetan2"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/buttonYume3"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/yumetan3"
+					android:textColor="@color/buttontext" />
+			</LinearLayout>
 
 			<TextView
-				android:id="@+id/textViewMode"
-				android:layout_width="0dp"
+				android:id="@+id/textViewPasstan"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_weight="4.5"
-				android:text="@string/mode"
+				android:text="パス単" />
+
+			<LinearLayout
+				android:id="@+id/linearLayoutQ"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<Button
+					android:id="@+id/button1q"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/_1q"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/buttonP1q"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/_p1q"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/button2q"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/_2q"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/buttonP2q"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/_p2q"
+					android:textColor="@color/buttontext" />
+
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/textViewTanjukugoEx"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="単熟語EX" />
+
+			<LinearLayout
+				android:id="@+id/linearLayoutTanjukugo"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<Button
+					android:id="@+id/button1qEx"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/_1_ex"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/buttonP1qEx"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/p1qex"
+					android:textColor="@color/buttontext" />
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/textViewOtherFetures"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="その他の機能" />
+
+			<LinearLayout
+				android:id="@+id/linearLayoutOtherFetures"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<Button
+					android:id="@+id/buttonAll"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/sougou"
+					android:textColor="@color/buttontext" />
+
+				<Button
+					android:id="@+id/buttonAlarm"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/alarm"
+					android:textColor="@color/buttontext"
+					android:textSize="11sp" />
+
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/textViewManageSettings"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="設定を管理" />
+
+			<LinearLayout
+				android:id="@+id/linearLayoutManageSettings"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<Button
+					android:id="@+id/buttonWriteTest"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/writecheck"
+					android:textColor="@color/buttontext"
+					android:textSize="12sp" />
+
+				<Button
+					android:id="@+id/buttonPrefExport"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/settingshozon"
+					android:textColor="@color/buttontext"
+					android:textSize="12sp" />
+
+				<Button
+					android:id="@+id/buttonPrefImp"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/readsettingsfromfile"
+					android:textColor="@color/buttontext"
+					android:textSize="12sp" />
+
+				<Button
+					android:id="@+id/buttonShowSettingNew"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="設定を表示(新)"
+					android:textColor="@color/buttontext" />
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/textViewNowInput"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/now" />
+
+			<EditText
+				android:id="@+id/editTextNumber"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:autofillHints="no"
+				android:ems="10"
+				android:hint="@string/editNumberText"
+				android:inputType="number"
+				android:minHeight="48dp"
 				android:textColor="@color/textcolor" />
 
 		</LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/linearLayoutSelection"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:orientation="horizontal">
-
-			<Spinner
-				android:id="@+id/spinnerHanni"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="2.5"
-				android:entries="@array/spinner_hanni"
-				android:popupBackground="@color/background" />
-
-			<Spinner
-				android:id="@+id/spinnerHinsi"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="2.5"
-				android:entries="@array/spinner_hinsi"
-				android:popupBackground="@color/background" />
-
-			<Spinner
-				android:id="@+id/spinnerMode"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="4.5"
-				android:entries="@array/spinner_mode"
-				android:popupBackground="@color/background" />
-		</LinearLayout>
-	</LinearLayout>
-
-
-	<LinearLayout
-		android:id="@+id/linearLayoutQ"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewPasstan">
-
-		<Button
-			android:id="@+id/button1q"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/_1q"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/buttonP1q"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/_p1q"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/button2q"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/_2q"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/buttonP2q"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/_p2q"
-			android:textColor="@color/buttontext" />
-
-	</LinearLayout>
-
-	<LinearLayout
-		android:id="@+id/linearLayoutYume"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewYumetan">
-
-		<Button
-			android:id="@+id/buttonYume0.0"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/_0y"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/buttonYume0.8"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/yumetan08"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/buttonYume1"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/yumetan1"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/buttonYume2"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/yumetan2"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/buttonYume3"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/yumetan3"
-			android:textColor="@color/buttontext" />
-	</LinearLayout>
+	</ScrollView>
 
 	<TextView
 		android:id="@+id/textViewVersion"
@@ -212,158 +341,5 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent" />
 
-	<LinearLayout
-		android:id="@+id/linearLayoutTanjukugo"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewTanjukugoEx">
-
-		<Button
-			android:id="@+id/button1qEx"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/_1_ex"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/buttonP1qEx"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/p1qex"
-			android:textColor="@color/buttontext" />
-	</LinearLayout>
-
-	<LinearLayout
-		android:id="@+id/linearLayoutOtherButton"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintEnd_toEndOf="@+id/linearLayoutTanjukugo"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutTanjukugo">
-
-	</LinearLayout>
-
-	<TextView
-		android:id="@+id/textViewYumetan"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="ユメタン"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutOption" />
-
-	<TextView
-		android:id="@+id/textViewPasstan"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="パス単"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutYume" />
-
-	<TextView
-		android:id="@+id/textViewTanjukugoEx"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="単熟語EX"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutQ" />
-
-	<TextView
-		android:id="@+id/textViewOtherFetures"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="その他の機能"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutTanjukugo" />
-
-	<LinearLayout
-		android:id="@+id/linearLayoutOtherFetures"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewOtherFetures">
-
-		<Button
-			android:id="@+id/buttonAll"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="@string/sougou"
-			android:textColor="@color/buttontext" />
-
-		<Button
-			android:id="@+id/buttonAlarm"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/alarm"
-			android:textColor="@color/buttontext"
-			android:textSize="11sp" />
-
-	</LinearLayout>
-
-	<TextView
-		android:id="@+id/textViewManageSettings"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="設定を管理"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/linearLayoutOtherFetures" />
-
-	<LinearLayout
-		android:id="@+id/linearLayoutManageSettings"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/textViewManageSettings">
-
-		<Button
-			android:id="@+id/buttonWriteTest"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/writecheck"
-			android:textColor="@color/buttontext"
-			android:textSize="12sp" />
-
-		<Button
-			android:id="@+id/buttonPrefExport"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/settingshozon"
-			android:textColor="@color/buttontext"
-			android:textSize="12sp" />
-
-		<Button
-			android:id="@+id/buttonPrefImp"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/readsettingsfromfile"
-			android:textColor="@color/buttontext"
-			android:textSize="12sp" />
-
-		<Button
-			android:id="@+id/buttonShowSettingNew"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:text="設定を表示(新)"
-			android:textColor="@color/buttontext" />
-	</LinearLayout>
-
-	<TextView
-		android:id="@+id/textViewWelcome"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/app_name"
-		android:textColor="@color/textcolor"
-		android:textSize="30sp"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

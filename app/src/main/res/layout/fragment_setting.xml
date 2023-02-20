@@ -10,6 +10,7 @@
 		android:id="@+id/scrollViewSettings"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:isScrollContainer="false"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent">
@@ -63,7 +64,6 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="@drawable/border"
-				android:entries="@array/spinner_kuuhaku"
 				android:minHeight="48dp"
 				android:popupBackground="@color/background" />
 
@@ -149,7 +149,7 @@
 
 			<Switch
 				android:id="@+id/switchSortHanten"
-				android:layout_width="wrap_content"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minHeight="48dp"
 				android:text="@string/sortgyaku"
@@ -193,14 +193,16 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:hint="@string/pipyoko"
-					android:inputType="numberSigned" />
+					android:inputType="numberSigned"
+					android:textColor="@color/textcolor" />
 
 				<EditText
 					android:id="@+id/editTextPipTate"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:hint="@string/piptate"
-					android:inputType="numberSigned" />
+					android:inputType="numberSigned"
+					android:textColor="@color/textcolor" />
 			</LinearLayout>
 
 		</LinearLayout>

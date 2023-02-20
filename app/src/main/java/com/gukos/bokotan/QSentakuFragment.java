@@ -104,15 +104,18 @@ public class QSentakuFragment extends Fragment {
 		try {
 			Spinner spinnerHanni = findViewById(R.id.spinnerHanni);
 			spinnerHanni.setSelection(getIntData(context, "spinnerHanni", "selected", 4));
-			spinnerHanni.setOnItemSelectedListener((MyLibrary.UiInterface.AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
+			spinnerHanni.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
+			spinnerHanni.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hanni));
 			
 			Spinner spinnerHinsi = findViewById(R.id.spinnerHinsi);
 			spinnerHinsi.setSelection(getIntData(context, "spinnerHinsi", "selected", 3));
-			spinnerHinsi.setOnItemSelectedListener((MyLibrary.UiInterface.AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
+			spinnerHinsi.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
+			spinnerHinsi.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hinsi));
 			
 			Spinner spinnerMode = findViewById(R.id.spinnerMode);
 			spinnerMode.setSelection(getIntData(context, "spinnerMode", "selected", 2));
-			spinnerMode.setOnItemSelectedListener((MyLibrary.UiInterface.AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
+			spinnerMode.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
+			spinnerMode.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_mode));
 			
 			CommonVariables.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
