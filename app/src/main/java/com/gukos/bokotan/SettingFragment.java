@@ -14,7 +14,6 @@ import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Switch;
 
@@ -24,8 +23,7 @@ import com.gukos.bokotan.databinding.FragmentSettingBinding;
 
 public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingBinding> {
 	//他のクラスからアクセス
-	public static CheckBox cbAutoStop, checkBoxHatsuonKigou;
-	public static Switch switchSkipOboe, swHyojiBeforeRead, switchSortHanten, swMaruBatu;
+	public static Switch switchSkipOboe, swHyojiBeforeRead, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou;
 	public static RadioButton radioButtonEtoJ;
 	//ビュー
 	static Switch swOnlyFirst;
@@ -50,7 +48,6 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 			swOnlyFirst = binding.switchOnlyFirst;
 			swHyojiBeforeRead = binding.switchHyojiYakuBeforeRead;
 			switchSkipOboe = binding.switchSkipOboe;
-			swMaruBatu = binding.switchSkipMaruBatu;
 			switchSortHanten = binding.switchSortHanten;
 			cbAutoStop = binding.checkBoxAutoStop;
 			checkBoxHatsuonKigou = binding.checkBoxHatsuonkigou;
@@ -95,26 +92,20 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 			initializeSettingItem(swOnlyFirst, true);
 			initializeSettingItem(swHyojiBeforeRead, true);
 			initializeSettingItem(switchSkipOboe, true);
-			initializeSettingItem(swMaruBatu, true);
 			initializeSettingItem(switchSortHanten, false);
-			
-			for (var v : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, swMaruBatu, switchSortHanten}) {
-				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
-			}
-			
-			initializeSettingItem(binding.checkBoxDefaultAdapter, true);
 			initializeSettingItem(cbAutoStop, false);
 			initializeSettingItem(checkBoxHatsuonKigou, false);
-			for (var v : new CheckBox[]{binding.checkBoxDefaultAdapter, cbAutoStop, checkBoxHatsuonKigou}) {
+			
+			for (var v : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou}) {
 				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
 			}
 			
+			binding.spinnerSpace.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));
 			binding.spinnerSpace.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
 			binding.spinnerSpace.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
-			binding.spinnerSpace.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));
 			
 			for (var radioButton : new RadioButton[]{binding.radioButtonOnlyKioku,
-				binding.radioButtonOnlyHugoukaku, binding.radioButton1seikai, binding.radioButton2huseikai}) {
+					binding.radioButtonOnlyHugoukaku, binding.radioButton1seikai, binding.radioButton2huseikai}) {
 				radioButton.setOnClickListener(this::onRadioChecked);
 			}
 		} catch (Exception exception) {

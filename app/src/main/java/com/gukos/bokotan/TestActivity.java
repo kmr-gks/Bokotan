@@ -44,9 +44,9 @@ import java.util.Random;
 public class TestActivity extends AppCompatActivity {
 	private static final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
 	public static int[] nSeikaisuu = new int[3000], nHuseikaisuu = new int[3000];
-	static boolean bSort = true, bSkipMaruBatuButton = false;
+	static boolean bSort = true;
 	private int nGenzaiNanMonme, nMondaiTangoNum, nSeikaiSentakusi, testCount = 0, nQuiz = 0, nGokaku =
-		 0, nSeitou = 0;
+			0, nSeitou = 0;
 	final int[] nTangoNum = new int[10];
 	final Random random = new Random();
 	static final SoundPool sp = new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(2).build();
@@ -59,7 +59,7 @@ public class TestActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			binding= DataBindingUtil.setContentView(this,R.layout.activity_test);
+			binding = DataBindingUtil.setContentView(this, R.layout.activity_test);
 			
 			//TODO ファイル名変更
 			
@@ -302,15 +302,6 @@ public class TestActivity extends AppCompatActivity {
 			//debug
 			//出題範囲はMainActivity.to-MainActivity.from
 			int nRangeForOptionsFrom = PlaySound.from, nRangeForOptionsTo = PlaySound.to;
-			//debug end
-			if (!bSkipMaruBatuButton) {
-				binding.buttonMarubatu.setVisibility(View.INVISIBLE);
-				binding.buttonChoice1.setVisibility(View.VISIBLE);
-				binding.buttonChoice2.setVisibility(View.VISIBLE);
-				binding.buttonChoice3.setVisibility(View.VISIBLE);
-				binding.buttonChoice4.setVisibility(View.VISIBLE);
-				binding.buttonWakaranai.setVisibility(View.VISIBLE);
-			}
 			if (PlaySound.nShurui == 4 && PlaySound.nUnit != 4 && !strQ.contains("y")) {
 				//まとめの場合
 				int unit;
@@ -346,9 +337,9 @@ public class TestActivity extends AppCompatActivity {
 				if (WordPhraseData.WordPhraseOrTest.equals(WordPhraseData.q_num.mode.seitouritsujunTest)) {
 					nMondaiTangoNum = numAndSeikairitu[testCount].num;
 					if (strQenum.equals(WordPhraseData.q_num.strQ.str1q)
-						|| strQenum.equals(WordPhraseData.q_num.strQ.strp1q)
-						|| strQenum.equals(WordPhraseData.q_num.strQ.str2q)
-						|| strQenum.equals(WordPhraseData.q_num.strQ.strp2q)) {
+							|| strQenum.equals(WordPhraseData.q_num.strQ.strp1q)
+							|| strQenum.equals(WordPhraseData.q_num.strQ.str2q)
+							|| strQenum.equals(WordPhraseData.q_num.strQ.strp2q)) {
 						for (int i = 0; i <= 9; i++) {
 							if (toFindFromAndTo[WordPhraseData.sentakuQ.ordinal()][i][0] <= nMondaiTangoNum && nMondaiTangoNum <= toFindFromAndTo[WordPhraseData.sentakuQ.ordinal()][i][1]) {
 								nRangeForOptionsFrom = toFindFromAndTo[WordPhraseData.sentakuQ.ordinal()][i][0];
@@ -380,20 +371,20 @@ public class TestActivity extends AppCompatActivity {
 				}
 				
 			} while (nTangoNum[1] == nTangoNum[2]
-				|| nTangoNum[1] == nTangoNum[3]
-				|| nTangoNum[1] == nTangoNum[4]
-				|| nTangoNum[2] == nTangoNum[3]
-				|| nTangoNum[2] == nTangoNum[4]
-				|| nTangoNum[3] == nTangoNum[4]);
+					|| nTangoNum[1] == nTangoNum[3]
+					|| nTangoNum[1] == nTangoNum[4]
+					|| nTangoNum[2] == nTangoNum[3]
+					|| nTangoNum[2] == nTangoNum[4]
+					|| nTangoNum[3] == nTangoNum[4]);
 			testCount++;
 			
 			if (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum] > 0) {
 				binding.textViewMondaiNum.setText(
-					nGenzaiNanMonme + "問目 No." + nMondaiTangoNum
-						+ '(' + (int) nSeikaisuu[nMondaiTangoNum] * 100
-						/ (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum])
-						+ "% " + nSeikaisuu[nMondaiTangoNum]
-						+ '/' + (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum]) + ')');
+						nGenzaiNanMonme + "問目 No." + nMondaiTangoNum
+								+ '(' + (int) nSeikaisuu[nMondaiTangoNum] * 100
+								/ (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum])
+								+ "% " + nSeikaisuu[nMondaiTangoNum]
+								+ '/' + (nSeikaisuu[nMondaiTangoNum] + nHuseikaisuu[nMondaiTangoNum]) + ')');
 			}
 			else {
 				binding.textViewMondaiNum.setText(nGenzaiNanMonme + "問目 No." + nMondaiTangoNum + "(0% 0/0)");
@@ -404,11 +395,6 @@ public class TestActivity extends AppCompatActivity {
 			binding.buttonChoice2.setText(wordJ[nTangoNum[2]]);
 			binding.buttonChoice3.setText(wordJ[nTangoNum[3]]);
 			binding.buttonChoice4.setText(wordJ[nTangoNum[4]]);
-			if (!bSkipMaruBatuButton) {
-				binding.textViewKaitou.setText("");
-				binding.textViewKaisetsu.setText("");
-				binding.textViewMaruBatu.setText("");
-			}
 			
 			binding.textViewHanni.setText("範囲 No." + PlaySound.from + '-' + PlaySound.to + "\n合格:" + nGokaku + '/' + nQuiz);
 			
@@ -434,14 +420,6 @@ public class TestActivity extends AppCompatActivity {
 	
 	public void checkKaitou(int sentaku) {
 		try {
-			if (!bSkipMaruBatuButton) {
-				binding.textViewMaruBatu.setVisibility(View.VISIBLE);
-				binding.buttonChoice1.setVisibility(View.INVISIBLE);
-				binding.buttonChoice2.setVisibility(View.INVISIBLE);
-				binding.buttonChoice3.setVisibility(View.INVISIBLE);
-				binding.buttonChoice4.setVisibility(View.INVISIBLE);
-				binding.buttonWakaranai.setVisibility(View.INVISIBLE);
-			}
 			if (sentaku == nSeikaiSentakusi) {
 				//正解
 				if (binding.checkBoxKoukaon.isChecked()) sp.load(this, R.raw.seikai, 1);
@@ -452,7 +430,7 @@ public class TestActivity extends AppCompatActivity {
 				//正解が増えることにより合格数が増えた場合更新
 				//今回合格、正解する前は不合格のとき合格数を増やす
 				if (isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
-					&& !isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
+						&& !isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku++;
 				
 			}
@@ -465,19 +443,19 @@ public class TestActivity extends AppCompatActivity {
 				//正解が増えることにより合格数が増えた場合更新
 				//今回合格、正解する前は不合格のとき合格数を増やす
 				if (!isGokaku(nSeikaisuu[nMondaiTangoNum], nHuseikaisuu[nMondaiTangoNum])
-					&& isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
+						&& isGokaku(nSeikaisuu[nMondaiTangoNum] - 1, nHuseikaisuu[nMondaiTangoNum]))
 					nGokaku--;
 			}
 			puts("filename:" + dnTestActivity + strQ);
 			
 			binding.textViewKaitou.setText("解答:" + wordE[nMondaiTangoNum] + wordJ[nMondaiTangoNum] + "\n" + getGogenString(nMondaiTangoNum, false, false));
 			binding.textViewKaisetsu.setText(
-				"\n1 No." + nTangoNum[1] + '	' + wordE[nTangoNum[1]] + '	' + wordJ[nTangoNum[1]] +
-					"\n2 No." + nTangoNum[2] + '	' + wordE[nTangoNum[2]] + '	' + wordJ[nTangoNum[2]] +
-					"\n3 No." + nTangoNum[3] + '	' + wordE[nTangoNum[3]] + '	' + wordJ[nTangoNum[3]] +
-					"\n4 No." + nTangoNum[4] + '	' + wordE[nTangoNum[4]] + '	' + wordJ[nTangoNum[4]]);
+					"\n1 No." + nTangoNum[1] + '	' + wordE[nTangoNum[1]] + '	' + wordJ[nTangoNum[1]] +
+							"\n2 No." + nTangoNum[2] + '	' + wordE[nTangoNum[2]] + '	' + wordJ[nTangoNum[2]] +
+							"\n3 No." + nTangoNum[3] + '	' + wordE[nTangoNum[3]] + '	' + wordJ[nTangoNum[3]] +
+							"\n4 No." + nTangoNum[4] + '	' + wordE[nTangoNum[4]] + '	' + wordJ[nTangoNum[4]]);
 			nGenzaiNanMonme++;
-			if (bSkipMaruBatuButton) setMondaiBun();
+			setMondaiBun();
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}
@@ -523,10 +501,10 @@ public class TestActivity extends AppCompatActivity {
 	public void onHintButtonTapped(View v) {
 		try {
 			new AlertDialog.Builder(this)
-				.setTitle("ヒント:例文(No." + nMondaiTangoNum + ")")
-				.setMessage(getGogenString(nMondaiTangoNum, true, true) + "\n\n" + strPhraseE[nMondaiTangoNum] + "\n\n\n\n\n" + strPhraseJ[nMondaiTangoNum])
-				.setPositiveButton("OK", null)
-				.show();
+					.setTitle("ヒント:例文(No." + nMondaiTangoNum + ")")
+					.setMessage(getGogenString(nMondaiTangoNum, true, true) + "\n\n" + strPhraseE[nMondaiTangoNum] + "\n\n\n\n\n" + strPhraseJ[nMondaiTangoNum])
+					.setPositiveButton("OK", null)
+					.show();
 		} catch (Exception e) {
 			ExceptionManager.showException(this, e);
 		}

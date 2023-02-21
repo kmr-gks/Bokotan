@@ -145,15 +145,6 @@
 					android:textColor="@color/textcolor" />
 
 				<Switch
-					android:id="@+id/switchSkipMaruBatu"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:checked="true"
-					android:minHeight="48dp"
-					android:text="@string/notox"
-					android:textColor="@color/textcolor" />
-
-				<Switch
 					android:id="@+id/switchSortHanten"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -161,24 +152,19 @@
 					android:text="@string/sortgyaku"
 					android:textColor="@color/textcolor" />
 
-				<CheckBox
+				<Switch
 					android:id="@+id/checkBoxHatsuonkigou"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:minHeight="48dp"
 					android:text="@string/printhatuonkigou"
 					android:textColor="@color/textcolor" />
 
-				<CheckBox
-					android:id="@+id/checkBoxDefaultAdapter"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:text="@string/defaultadapter"
-					android:textColor="@color/textcolor" />
-
-				<CheckBox
+				<Switch
 					android:id="@+id/checkBoxAutoStop"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:minHeight="48dp"
 					android:text="@string/stopwheneyephone"
 					android:textColor="@color/textcolor" />
 
@@ -200,6 +186,7 @@
 						android:layout_height="wrap_content"
 						android:hint="@string/pipyoko"
 						android:inputType="numberSigned"
+						android:minHeight="48dp"
 						android:textColor="@color/textcolor" />
 
 					<EditText
@@ -208,6 +195,7 @@
 						android:layout_height="wrap_content"
 						android:hint="@string/piptate"
 						android:inputType="numberSigned"
+						android:minHeight="48dp"
 						android:textColor="@color/textcolor" />
 				</LinearLayout>
 

@@ -30,7 +30,6 @@ import static com.gukos.bokotan.PlaySound.strQ;
 import static com.gukos.bokotan.SettingFragment.cbAutoStop;
 import static com.gukos.bokotan.SettingFragment.checkBoxHatsuonKigou;
 import static com.gukos.bokotan.SettingFragment.swHyojiBeforeRead;
-import static com.gukos.bokotan.SettingFragment.swMaruBatu;
 import static com.gukos.bokotan.SettingFragment.swOnlyFirst;
 import static com.gukos.bokotan.SettingFragment.switchSkipOboe;
 import static com.gukos.bokotan.SettingFragment.switchSortHanten;
@@ -51,7 +50,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -89,17 +87,17 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	public void initialize() {
 		try {
+			binding.spinnerHanni.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hanni));
 			binding.spinnerHanni.setSelection(getIntData(context, "spinnerHanni", "selected", 4));
 			binding.spinnerHanni.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
-			binding.spinnerHanni.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hanni));
 			
+			binding.spinnerHinsi.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hinsi));
 			binding.spinnerHinsi.setSelection(getIntData(context, "spinnerHinsi", "selected", 3));
 			binding.spinnerHinsi.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
-			binding.spinnerHinsi.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hinsi));
 			
+			binding.spinnerMode.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_mode));
 			binding.spinnerMode.setSelection(getIntData(context, "spinnerMode", "selected", 2));
 			binding.spinnerMode.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
-			binding.spinnerMode.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_mode));
 			
 			KensakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
@@ -183,10 +181,10 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				content += fileName + "\n" + getAllPreferenceData(context, fileName) + "\n";
 			}
 			new AlertDialog.Builder(context)
-				.setTitle(((Button) view).getText())
-				.setMessage(content)
-				.create()
-				.show();
+					.setTitle(((Button) view).getText())
+					.setMessage(content)
+					.create()
+					.show();
 		} catch (Exception exception) {
 			showException(context, exception);
 		}
@@ -211,12 +209,8 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		try {
 			putAllSetting(context, readFromFile(context, stringBokotanDirPath + fnAppSettings + ".txt"));
 			
-			for (var sw : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, swMaruBatu, switchSortHanten}) {
+			for (var sw : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou}) {
 				sw.setChecked(getSetting(context, "id" + sw.getId(), true));
-			}
-			//R.id.checkBoxDefaultAdapter
-			for (var checkBox : new CheckBox[]{cbAutoStop, checkBoxHatsuonKigou}) {
-				checkBox.setChecked(getSetting(context, "id" + checkBox.getId(), false));
 			}
 			for (var fileName : getAllFileNames()) {
 				final String strFilePath = stringBokotanDirPath + fileName + ".txt";
@@ -367,7 +361,6 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				case 4:
 				case 5: {
 					strQ = strQ + "Test";
-					TestActivity.bSkipMaruBatuButton = swMaruBatu.isChecked();
 					startActivity(new Intent(context, TestActivity.class));
 					break;
 				}
@@ -407,7 +400,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				                                                 PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 				                                                 // アラームをセットする
 				                                                 AlarmManager am =
-					                                                 (AlarmManager) context.getSystemService(ALARM_SERVICE);
+						                                                 (AlarmManager) context.getSystemService(ALARM_SERVICE);
 				                                                 if (am != null) {
 					                                                 am.setExact(AlarmManager.RTC_WAKEUP, calendar1.getTimeInMillis(), pending);
 					                                                 Toast.makeText(context, "Set Alarm ", Toast.LENGTH_SHORT).show();
