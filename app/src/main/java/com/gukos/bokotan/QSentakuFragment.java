@@ -320,6 +320,14 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy3;
 					break;
 				}
+				/*
+				case R.id.buttonAll:{
+					strQ="all";
+					WordPhraseData.strQenum=WordPhraseData.q_num.strQ.all;
+					WordPhraseData.sentakuQ=WordPhraseData.q_num.testAll;
+					break;
+				}
+				*/
 			}
 			PlaySound.isWordAndPhraseMode = false;
 			switch (nWordPhraseOrTest) {

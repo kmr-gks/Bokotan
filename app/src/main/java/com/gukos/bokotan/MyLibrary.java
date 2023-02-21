@@ -132,7 +132,8 @@ public final class MyLibrary {
 				var data = context.getSharedPreferences(strFileName, MODE_PRIVATE).getAll();
 				JSONObject jsonObject = new JSONObject();
 				for (var entry : data.entrySet()) {
-					jsonObject.put(entry.getKey(), entry.getValue());
+					if (!entry.getKey().startsWith("nWord"))
+						jsonObject.put(entry.getKey(), entry.getValue());
 				}
 				return jsonObject;
 			} catch (Exception e) {
@@ -219,6 +220,9 @@ public final class MyLibrary {
 		
 		public static void putAllData(Context context, String strFileName, String stringJson) {
 			try {
+				//リセット
+				context.getSharedPreferences(strFileName,MODE_PRIVATE).edit().clear();
+				
 				JSONObject jsonObject = new JSONObject(stringJson);
 				Iterator<String> iterator = jsonObject.keys();
 				while (iterator.hasNext()) {
@@ -231,7 +235,8 @@ public final class MyLibrary {
 					}
 					else if (value instanceof Integer) {
 						//DisplayOutput.puts("file="+strFileName+" ,key="+key+" ,int value="+value);
-						putIntData(context, strFileName, key, (int) value);
+						if (!key.startsWith("nWord"))
+							putIntData(context, strFileName, key, (int) value);
 					}
 				}
 			} catch (Exception exception) {
