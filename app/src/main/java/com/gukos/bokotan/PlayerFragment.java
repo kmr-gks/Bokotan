@@ -41,12 +41,10 @@ import java.util.HashMap;
 public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBinding> {
 	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
 	
-	public static int lastnum;
-	public static boolean playing = false;
+	public static int lastnum,selectedIndex = 0;
+	public static boolean playing = false,nowIsDecided = false;
 	public static TextView tvWordEng, tvWordJpn, tvGenzai, tvsubE, tvsubJ, tvNumSeikaisuu, tvSeikaisu, tvGogen, textViewPath, textViewHatsuonKigou;
-	static boolean nowIsDecided = false;
 	private static ArrayAdapter<String> adapterUnit;
-	protected int selectedIndex = 0;
 	AlertDialog adWord, adUnit;
 	
 	public PlayerFragment() {

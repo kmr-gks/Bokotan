@@ -53,11 +53,9 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	public static TreeMap<String, GogenYomu> trGogenYomu;
 	Thread threadInitial = null, threadSearch = null;
 	boolean threadSearchIsRunning = true;
-	
-	KensakuFragment() {
-		super(FragmentKensakuBinding::inflate);
-	}
-	
+	private final ArrayList<WordInfo> allData = new ArrayList<>();
+	private ArrayList<WordInfo> resultData = new ArrayList<>();
+	enumKensakuHouhou kensakuHouhou = starts;
 	static class WordInfo {
 		static int size = 0;
 		final int toushiNumber, localNumber;
@@ -167,10 +165,9 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
-	private final ArrayList<WordInfo> allData = new ArrayList<>();
-	private ArrayList<WordInfo> resultData = new ArrayList<>();
-	enumKensakuHouhou kensakuHouhou = starts;
-	
+	KensakuFragment() {
+		super(FragmentKensakuBinding::inflate);
+	}
 	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {

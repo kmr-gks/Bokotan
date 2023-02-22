@@ -47,8 +47,7 @@ public class WordPhraseData {
 	static q_num.unit sentakuUnit = q_num.unit.all;
 	static q_num.strQ strQenum = q_num.strQ.strp1q;
 	static q_num.skipjouken skipjoken = q_num.skipjouken.kirokunomi;
-	public final String[] e = new String[20000];
-	public final String[] j = new String[20000];
+	public final String[] e = new String[20000],j = new String[20000];
 	public final static String
 		PasstanWord = "Passtan/WordData",
 		PasstanPhrase = "Passtan/Phrase",

@@ -1,0 +1,17 @@
+https://hackmd.io/@jkofK/H1oyws7kY
+https://qiita.com/ydty/items/0a328021172a8f3d6dae
+https://www.servernote.net/article.cgi?id=android-studio-install-note
+
+C:\Program Files\Android
+C:\Program Files (x86)\Android
+%USERPROFILE%\.android
+%USERPROFILE%\.m2
+%USERPROFILE%\.gradle
+%USERPROFILE%\AppData\Local\Android
+%USERPROFILE%\AppData\Local\Android Open Source Project
+%USERPROFILE%\AppData\Local\Google\AndroidStudio4.2
+%USERPROFILE%\AppData\Local\Google\AndroidStudio2020.3
+%USERPROFILE%\AppData\Local\kotlin
+%USERPROFILE%\AppData\Roaming\Google\AndroidStudio2020.3
+
+

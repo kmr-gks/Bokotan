@@ -90,8 +90,7 @@ public final class MyLibrary {
 	
 	public static final class PreferenceManager {
 		
-		public static final String fnAppSettings = "appsettings";
-		private static final String delimiter = ",";
+		public static final String fnAppSettings = "appsettings",delimiter = ",";
 		
 		public static String intArrayToString(int[] array) {
 			String data = "";
@@ -132,6 +131,7 @@ public final class MyLibrary {
 				var data = context.getSharedPreferences(strFileName, MODE_PRIVATE).getAll();
 				JSONObject jsonObject = new JSONObject();
 				for (var entry : data.entrySet()) {
+					//前の保存方式 nWordSeikaisu,nWordHuseikaisuを排除
 					if (!entry.getKey().startsWith("nWord"))
 						jsonObject.put(entry.getKey(), entry.getValue());
 				}
@@ -235,8 +235,12 @@ public final class MyLibrary {
 					}
 					else if (value instanceof Integer) {
 						//DisplayOutput.puts("file="+strFileName+" ,key="+key+" ,int value="+value);
+						//前の保存方式 nWordSeikaisu,nWordHuseikaisuを排除
 						if (!key.startsWith("nWord"))
 							putIntData(context, strFileName, key, (int) value);
+					}
+					else if (value instanceof String) {
+						putStringData(context, strFileName, key, (String) value);
 					}
 				}
 			} catch (Exception exception) {

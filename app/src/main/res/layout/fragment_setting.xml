@@ -67,9 +67,8 @@
 
 				<Spinner
 					android:id="@+id/spinnerSpace"
-					android:layout_width="match_parent"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:background="@drawable/border"
 					android:minHeight="48dp"
 					android:popupBackground="@color/background" />
 
@@ -79,43 +78,12 @@
 					android:layout_height="wrap_content"
 					android:text="表示順" />
 
-				<RadioGroup
-					android:id="@+id/radioGropuHyojiOrder"
-					android:layout_width="match_parent"
+				<Spinner
+					android:id="@+id/spinnerHyojijun"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:background="@drawable/border"
-					android:orientation="vertical">
-
-					<RadioButton
-						android:id="@+id/radioButtonOnlyKioku"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:checked="false"
-						android:text="@string/onlykiroku"
-						android:textColor="@color/textcolor" />
-
-					<RadioButton
-						android:id="@+id/radioButtonOnlyHugoukaku"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:text="@string/onlyhugoukaku"
-						android:textColor="@color/textcolor" />
-
-					<RadioButton
-						android:id="@+id/radioButton1seikai"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:text="@string/skip1seikai"
-						android:textColor="@color/textcolor" />
-
-					<RadioButton
-						android:id="@+id/radioButton2huseikai"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:text="@string/only2huseikai"
-						android:textColor="@color/textcolor" />
-
-				</RadioGroup>
+					android:minHeight="48dp"
+					android:popupBackground="@color/background" />
 
 				<Switch
 					android:id="@+id/switchOnlyFirst"

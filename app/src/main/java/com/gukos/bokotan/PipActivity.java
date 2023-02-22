@@ -18,7 +18,6 @@ import com.gukos.bokotan.databinding.ActivityPipBinding;
 
 public class PipActivity extends Activity {
 	static boolean startPIP = false;
-	
 	public static final int CONTROL_TYPE_A = 12, CONTROL_TYPE_B = 103;
 	public static final String EXTRA_CONTROL_TYPE = "100";
 	public static int pipYoko = 16, pipTate = 9;

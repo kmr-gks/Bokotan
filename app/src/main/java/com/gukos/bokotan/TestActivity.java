@@ -45,8 +45,7 @@ public class TestActivity extends AppCompatActivity {
 	private static final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
 	public static int[] nSeikaisuu = new int[3000], nHuseikaisuu = new int[3000];
 	static boolean bSort = true;
-	private int nGenzaiNanMonme, nMondaiTangoNum, nSeikaiSentakusi, testCount = 0, nQuiz = 0, nGokaku =
-			0, nSeitou = 0;
+	private int nGenzaiNanMonme, nMondaiTangoNum, nSeikaiSentakusi, testCount = 0, nQuiz = 0, nGokaku = 0, nSeitou = 0;
 	final int[] nTangoNum = new int[10];
 	final Random random = new Random();
 	static final SoundPool sp = new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(2).build();

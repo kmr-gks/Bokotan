@@ -3,7 +3,6 @@ package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.strDirectoryNameForKuuhaku;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.initializeSettingItem;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
@@ -53,14 +52,6 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 			checkBoxHatsuonKigou = binding.checkBoxHatsuonkigou;
 			radioButtonEtoJ = binding.radioButtonEtoJ;
 			
-			int skipoptionId = getIntData(context, dnQSentakuActivity, "RadioButton", R.id.radioButtonOnlyKioku);
-			for (var radioButton : new RadioButton[]{binding.radioButtonOnlyKioku, binding.radioButtonOnlyHugoukaku, binding.radioButton1seikai, binding.radioButton2huseikai}) {
-				if (skipoptionId == radioButton.getId()) {
-					radioButton.setChecked(true);
-					break;
-				}
-			}
-			
 			binding.editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
 			pipYoko = Integer.parseInt(binding.editTextPipYoko.getText().toString());
 			binding.editTextPipYoko.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
@@ -102,18 +93,17 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 			
 			binding.spinnerSpace.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));
 			binding.spinnerSpace.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
-			binding.spinnerSpace.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerKuuhakuOnItemSelectedListener);
+			binding.spinnerSpace.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerKuuhakuOnItemSelectedListener);
 			
-			for (var radioButton : new RadioButton[]{binding.radioButtonOnlyKioku,
-					binding.radioButtonOnlyHugoukaku, binding.radioButton1seikai, binding.radioButton2huseikai}) {
-				radioButton.setOnClickListener(this::onRadioChecked);
-			}
+			binding.spinnerHyojijun.setAdapter(getAdapterForSpinner(context, R.array.spinner_hyojijun));
+			binding.spinnerHyojijun.setSelection(getIntData(context, "spinnerHyojijun", "selected", 0));
+			binding.spinnerHyojijun.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerHyojijunOnItemSelectedListener);
 		} catch (Exception exception) {
 			showException(context, exception);
 		}
 	}
 	
-	public void SpinnerKuuhakuOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
+	private void spinnerKuuhakuOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
 		try {
 			putIntData(context, "spinnerKuuhaku", "selected", i);
 			switch (i) {
@@ -136,29 +126,30 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 		}
 	}
 	
-	private void onRadioChecked(View v) {
+	private void spinnerHyojijunOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
 		try {
-			putIntData(context, dnQSentakuActivity, "RadioButton", v.getId());
-			switch (v.getId()) {
-				case R.id.radioButtonOnlyKioku: {
+			putIntData(context, "spinnerHyojijun", "selected", i);
+			switch (i) {
+				default:
+				case 0: {
 					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.kirokunomi;
 					break;
 				}
-				case R.id.radioButton1seikai: {
+				case 1: {
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.onlyHugoukaku;
+					break;
+				}
+				case 2: {
 					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.seikai1;
 					break;
 				}
-				case R.id.radioButton2huseikai: {
+				case 3: {
 					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.huseikai2;
 					break;
-				}
-				case R.id.radioButtonOnlyHugoukaku: {
-					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.onlyHugoukaku;
 				}
 			}
 		} catch (Exception e) {
 			showException(context, e);
 		}
 	}
-	
 }
