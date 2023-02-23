@@ -1,6 +1,9 @@
 package com.gukos.bokotan;
 
 
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
+import static com.gukos.bokotan.WordPhraseData.PasstanWord;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,7 +12,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
 public class QuizService extends Service {
 	
@@ -21,7 +23,7 @@ public class QuizService extends Service {
 	
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		
-		int requestCode = intent.getIntExtra("REQUEST_CODE",0);
+		int requestCode = intent.getIntExtra("REQUEST_CODE", 0);
 		Context context = getApplicationContext();
 		String channelId = "default";
 		String title = context.getString(R.string.app_name);
@@ -47,43 +49,58 @@ public class QuizService extends Service {
 			
 			startForeground(1, notification);
 		}
-		
 		thread = new MeasureThread();
 		thread.start();
 		
 		return START_NOT_STICKY;
 	}
+	
 	@Override
-	public void onDestroy(){
+	public void onDestroy() {
 		thread.cancel();
 	}
 	
 	private class MeasureThread extends Thread {
 		boolean onActive = true;
+		private Context context = getApplicationContext();
+		
 		public MeasureThread() {
 		}
 		
 		public void run() {
+			sendBroadcast(TestFragment.ViewName.Mondaibun, "読み込み中");
 			Intent intent = new Intent(getApplication(), QuizService.class);
 			intent.putExtra("REQUEST_CODE", 1);
 			
+			String[] e,j;
+			
 			synchronized (this) {
-				for (int i = 0; i < 10; i++) {
-					Log.d("debug", " i = " + i);
-					try {
-						wait(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					if(!onActive) break;
-				}
+				if (!onActive) stopSelf();
+				WordPhraseData w = new WordPhraseData(PasstanWord + "1q", context);
+				e=w.e;
+				j=w.j;
+				MyLibrary.sleep(500);
+				if (!onActive) stopSelf();
+				sendBroadcast(TestFragment.ViewName.Mondaibun,e[1]);
+				sendBroadcast(TestFragment.ViewName.Select1,j[1]);
+				sendBroadcast(TestFragment.ViewName.Select2,j[2]);
 			}
 			//サービス終了
 			stopSelf();
 		}
-		public void cancel(){
+		
+		public void cancel() {
 			onActive = false;
 			stopSelf();
+		}
+		
+		public void sendBroadcast(int viewName,String message) {
+			Intent broadcastIntent = new Intent();
+			broadcastIntent.putExtra("message", message);
+			broadcastIntent.putExtra("viewName",viewName);
+			broadcastIntent.setAction("UPDATE_ACTION");
+			context.sendBroadcast(broadcastIntent);
+			puts("PUT message"+broadcastIntent.getStringExtra("message")+"viewName"+broadcastIntent.getIntExtra("viewName",-1));
 		}
 	}
 }
