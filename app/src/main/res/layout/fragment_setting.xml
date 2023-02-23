@@ -85,7 +85,7 @@
 					android:minHeight="48dp"
 					android:popupBackground="@color/background" />
 
-				<Switch
+				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/switchOnlyFirst"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
 					android:text="@string/skipkishutu"
 					android:textColor="@color/textcolor" />
 
-				<Switch
+				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/switchHyojiYakuBeforeRead"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
 					android:text="@string/printbeforeread"
 					android:textColor="@color/textcolor" />
 
-				<Switch
+				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/switchSkipOboe"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
 					android:text="@string/skipoboe"
 					android:textColor="@color/textcolor" />
 
-				<Switch
+				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/switchSortHanten"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -120,7 +120,7 @@
 					android:text="@string/sortgyaku"
 					android:textColor="@color/textcolor" />
 
-				<Switch
+				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/checkBoxHatsuonkigou"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -128,7 +128,7 @@
 					android:text="@string/printhatuonkigou"
 					android:textColor="@color/textcolor" />
 
-				<Switch
+				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/checkBoxAutoStop"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
@@ -66,6 +67,16 @@ public class UiManager {
 			//これをオーバーロードする
 			@Override
 			abstract void afterTextChanged(Editable editable);
+		}
+	}
+	
+	public static final class Listener{
+		public static void onClickSettingItem(CompoundButton buttonView, boolean isChecked) {
+			try {
+				MyLibrary.PreferenceManager.putSetting(buttonView.getContext(), "id" + buttonView.getId(), isChecked);
+			} catch (Exception e) {
+				MyLibrary.ExceptionManager.showException(e);
+			}
 		}
 	}
 	

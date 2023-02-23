@@ -1,9 +1,9 @@
 package com.gukos.bokotan;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.gukos.bokotan.WordPhraseData.toFindFromAndTo;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
+import static com.gukos.bokotan.WordPhraseData.toFindFromAndTo;
 import static java.lang.Math.min;
 
 import android.content.Context;
@@ -11,10 +11,11 @@ import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.core.text.HtmlCompat;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.json.JSONObject;
 
@@ -257,7 +258,7 @@ public final class MyLibrary {
 			}
 		}
 		
-		public static void initializeSettingItem(Switch view, boolean defaultvalue) {
+		public static void initializeSettingItem(SwitchMaterial view, boolean defaultvalue) {
 			try {
 				view.setChecked(MyLibrary.PreferenceManager.getSetting(view.getContext(), "id" + view.getId(), defaultvalue));
 			} catch (Exception e) {
@@ -275,8 +276,6 @@ public final class MyLibrary {
 		
 		public static void onClickSettingItem(View view) {
 			try {
-				if (view instanceof Switch)
-					MyLibrary.PreferenceManager.putSetting(view.getContext(), "id" + view.getId(), ((Switch) view).isChecked());
 				if (view instanceof CheckBox)
 					MyLibrary.PreferenceManager.putSetting(view.getContext(), "id" + view.getId(), ((CheckBox) view).isChecked());
 			} catch (Exception e) {

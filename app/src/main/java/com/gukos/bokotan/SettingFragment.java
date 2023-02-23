@@ -14,18 +14,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.RadioButton;
-import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.gukos.bokotan.databinding.FragmentSettingBinding;
 
 public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingBinding> {
 	//他のクラスからアクセス
-	public static Switch switchSkipOboe, swHyojiBeforeRead, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou;
+	public static SwitchMaterial switchSkipOboe, swHyojiBeforeRead, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou,swOnlyFirst;
 	public static RadioButton radioButtonEtoJ;
-	//ビュー
-	static Switch swOnlyFirst;
 	
 	public SettingFragment() {
 		super(FragmentSettingBinding::inflate);
@@ -87,8 +85,9 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 			initializeSettingItem(cbAutoStop, false);
 			initializeSettingItem(checkBoxHatsuonKigou, false);
 			
-			for (var v : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou}) {
-				v.setOnClickListener(MyLibrary.PreferenceManager::onClickSettingItem);
+			for (var v : new SwitchMaterial[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe,
+				switchSortHanten, cbAutoStop, checkBoxHatsuonKigou}) {
+				v.setOnCheckedChangeListener(UiManager.Listener::onClickSettingItem);
 			}
 			
 			binding.spinnerSpace.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));

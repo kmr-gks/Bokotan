@@ -50,12 +50,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
 import java.io.FileWriter;
@@ -165,6 +165,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			binding.buttonWriteTest.setOnClickListener(this::onWriteText);
 			binding.buttonAlarm.setOnClickListener(this::onAlarmset);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
+			binding.buttonQuizservice.setOnClickListener(this::onQuizservice);
 			
 			for (var button : new Button[]{binding.button1q, binding.buttonP1q, binding.button2q, binding.buttonP2q, binding.buttonAll, binding.buttonYume00, binding.buttonYume08, binding.buttonYume1, binding.buttonYume2, binding.buttonYume3, binding.button1qEx, binding.buttonP1qEx}) {
 				button.setOnClickListener(this::onSelectQ);
@@ -209,7 +210,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		try {
 			putAllSetting(context, readFromFile(context, stringBokotanDirPath + fnAppSettings + ".txt"));
 			
-			for (var sw : new Switch[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou}) {
+			for (var sw : new SwitchMaterial[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou}) {
 				sw.setChecked(getSetting(context, "id" + sw.getId(), true));
 			}
 			for (var fileName : getAllFileNames()) {
@@ -411,6 +412,12 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		} catch (Exception e) {
 			showException(context, e);
 		}
+	}
+	
+	private void onQuizservice(View v){
+		Intent intent = new Intent(context, QuizService.class);
+		intent.putExtra("REQUEST_CODE", 1);
+		context.startForegroundService(intent);
 	}
 	
 	//https://qiita.com/niwasawa/items/c8271f56f058965b318b

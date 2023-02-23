@@ -256,11 +256,11 @@
 
 					<Button
 						android:id="@+id/buttonAll"
-						android:layout_width="0dp"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_weight="1"
 						android:text="@string/sougou"
-						android:textColor="@color/buttontext" />
+						android:textColor="@color/buttontext"
+						android:layout_weight="1" />
 
 					<Button
 						android:id="@+id/buttonAlarm"
@@ -269,6 +269,12 @@
 						android:text="@string/alarm"
 						android:textColor="@color/buttontext"
 						android:textSize="11sp" />
+
+					<Button
+						android:id="@+id/buttonQuizservice"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="クイズ(β)" />
 
 				</LinearLayout>
 
