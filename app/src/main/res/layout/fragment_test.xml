@@ -16,27 +16,46 @@
 			android:id="@+id/textViewMondai"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="TextView"
+			android:contentDescription="@string/choice"
+			app:layout_constraintBottom_toTopOf="@+id/buttonSelect1"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
 
 		<Button
 			android:id="@+id/buttonSelect1"
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:text="Button"
+			android:contentDescription="@string/choice"
+			app:layout_constraintBottom_toTopOf="@+id/buttonSelect2"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/textViewMondai" />
+			app:layout_constraintStart_toStartOf="parent" />
 
 		<Button
 			android:id="@+id/buttonSelect2"
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:text="Button"
+			android:contentDescription="@string/choice"
+			app:layout_constraintBottom_toTopOf="@+id/buttonSelect3"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/buttonSelect1" />
+			app:layout_constraintStart_toStartOf="parent" />
+
+		<Button
+			android:id="@+id/buttonSelect3"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:contentDescription="@string/choice"
+			app:layout_constraintBottom_toTopOf="@+id/buttonSelect4"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent" />
+
+		<Button
+			android:id="@+id/buttonSelect4"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:contentDescription="@string/choice"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent" />
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

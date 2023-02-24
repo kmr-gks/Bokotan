@@ -61,6 +61,7 @@
 	<string name="printbeforeread">読む前に表示</string>
 	<string name="alarm">alarm</string>
 	<string name="jtoe">日→英</string>
+	<string name="choice">選択肢</string>
 
 	<string-array name="spinner_hanni">
 		<item>A</item>

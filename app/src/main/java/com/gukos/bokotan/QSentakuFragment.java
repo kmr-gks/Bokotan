@@ -415,6 +415,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	}
 	
 	private void onQuizservice(View v){
+		TabActivity.setTabPageNum(3);
 		Intent intent = new Intent(context, QuizService.class);
 		intent.putExtra("REQUEST_CODE", 1);
 		context.startForegroundService(intent);
