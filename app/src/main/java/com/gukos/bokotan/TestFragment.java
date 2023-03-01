@@ -1,6 +1,5 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.DebugManager.getCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -20,6 +19,9 @@ import com.gukos.bokotan.databinding.FragmentTestBinding;
 
 //このクラスで定義されているメソッドやラムダ式は全てメインスレッドで実行される(UI処理に関わるため)
 public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding> {
+	
+	public static Boolean isInitialized = false;
+	
 	public static final String
 		QUIZ_ACTION_UI = MyLibrary.packageName + "." + MyLibrary.DebugManager.getClassName(),
 		QUIZ_UI_TEXT = "quiz ui text",
@@ -36,8 +38,7 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			printCurrentState();
 			Bundle bundle = msg.getData();
 			String text = bundle.getString(QUIZ_UI_TEXT);
-			ViewName viewName= (ViewName) bundle.getSerializable(QUIZ_VIEW_NAME);
-			puts(getCurrentState()+",view="+viewName+",text="+text);
+			ViewName viewName = (ViewName) bundle.getSerializable(QUIZ_VIEW_NAME);
 			switch (viewName) {
 				case Mondaibun: {
 					binding.textViewMondai.setText(text);
@@ -77,6 +78,10 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			binding.buttonSelect2.setOnClickListener(this::onChoice);
 			binding.buttonSelect3.setOnClickListener(this::onChoice);
 			binding.buttonSelect4.setOnClickListener(this::onChoice);
+			
+			synchronized (isInitialized) {
+				isInitialized = true;
+			}
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
@@ -97,10 +102,10 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			choice = 4;
 		}
 		
-		puts("send choice="+choice);
+		puts("send choice=" + choice);
 		Intent broadcastIntent =
-			new Intent(QuizService.QTHREAD_ACTION_CLICKED)
-				.putExtra(QuizService.QTHREAD_EXTRA_CHOICE, choice);
+			new Intent(QuizCreator.QTHREAD_ACTION_CLICKED)
+				.putExtra(QuizCreator.QTHREAD_EXTRA_CHOICE, choice);
 		context.sendBroadcast(broadcastIntent);
 	}
 	

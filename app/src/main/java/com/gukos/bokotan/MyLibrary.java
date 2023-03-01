@@ -90,7 +90,7 @@ public final class MyLibrary {
 	
 	public static final class PreferenceManager {
 		
-		public static final String fnAppSettings = "appsettings",delimiter = ",";
+		public static final String fnAppSettings = "appsettings", delimiter = ",";
 		
 		public static String intArrayToString(int[] array) {
 			String data = "";
@@ -221,7 +221,7 @@ public final class MyLibrary {
 		public static void putAllData(Context context, String strFileName, String stringJson) {
 			try {
 				//リセット
-				context.getSharedPreferences(strFileName,MODE_PRIVATE).edit().clear();
+				context.getSharedPreferences(strFileName, MODE_PRIVATE).edit().clear();
 				
 				JSONObject jsonObject = new JSONObject(stringJson);
 				Iterator<String> iterator = jsonObject.keys();
@@ -607,18 +607,18 @@ public final class MyLibrary {
 			return getNowLine(defaultHierarchy);
 		}
 		
-		public static String getNowThreadName(){
+		public static String getNowThreadName() {
 			return Thread.currentThread().getName();
-		}
-		
-		public static String getCurrentState() {
-			//引数のdefaultHierarchyを省略すると正しく動作しない。
-			return DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy)+",スレッド="+getNowThreadName();
 		}
 		
 		public static void printCurrentState() {
 			//引数のdefaultHierarchyを省略すると正しく動作しない。
-			DebugManager.puts(DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy)+",スレッド="+getNowThreadName());
+			DebugManager.puts("スレッド" + getNowThreadName() + ",クラス=" + DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy));
+		}
+		
+		public static void printCurrentState(String string) {
+			//引数のdefaultHierarchyを省略すると正しく動作しない。
+			DebugManager.puts("スレッド" + getNowThreadName() + ",クラス=" + DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy) + string);
 		}
 		
 		public static String getDeviceName() {return Build.PRODUCT + "," + Build.VERSION.RELEASE;}

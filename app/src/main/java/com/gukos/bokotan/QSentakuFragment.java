@@ -182,10 +182,10 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				content += fileName + "\n" + getAllPreferenceData(context, fileName) + "\n";
 			}
 			new AlertDialog.Builder(context)
-					.setTitle(((Button) view).getText())
-					.setMessage(content)
-					.create()
-					.show();
+				.setTitle(((Button) view).getText())
+				.setMessage(content)
+				.create()
+				.show();
 		} catch (Exception exception) {
 			showException(context, exception);
 		}
@@ -401,7 +401,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				                                                 PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 				                                                 // アラームをセットする
 				                                                 AlarmManager am =
-						                                                 (AlarmManager) context.getSystemService(ALARM_SERVICE);
+					                                                 (AlarmManager) context.getSystemService(ALARM_SERVICE);
 				                                                 if (am != null) {
 					                                                 am.setExact(AlarmManager.RTC_WAKEUP, calendar1.getTimeInMillis(), pending);
 					                                                 Toast.makeText(context, "Set Alarm ", Toast.LENGTH_SHORT).show();
@@ -414,11 +414,9 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		}
 	}
 	
-	private void onQuizservice(View v){
+	private void onQuizservice(View v) {
 		TabActivity.setTabPageNum(3);
-		Intent intent = new Intent(context, QuizService.class);
-		intent.putExtra("REQUEST_CODE", 1);
-		context.startForegroundService(intent);
+		new QuizCreator(context);
 	}
 	
 	//https://qiita.com/niwasawa/items/c8271f56f058965b318b
