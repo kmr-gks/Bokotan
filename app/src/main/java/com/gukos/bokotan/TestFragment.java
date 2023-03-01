@@ -1,7 +1,10 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MyLibrary.DebugManager.getCurrentState;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,12 +29,13 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	}
 	
 	//https://oc-technote.com/android/service%E3%81%8B%E3%82%89activity%E3%81%AB%E5%80%A4%E3%82%92%E6%8A%95%E3%81%92%E3%81%9F%E3%82%8A%E7%94%BB%E9%9D%A2%E3%82%92%E6%9B%B4%E6%96%B0%E3%81%97%E3%81%9F%E3%82%8A%E3%81%99%E3%82%8B%E6%96%B9/
-	private Handler drawHandler = new Handler(Looper.getMainLooper()) {
+	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
 			String text = bundle.getString(QUIZ_UI_TEXT);
 			ViewName viewName= (ViewName) bundle.getSerializable(QUIZ_VIEW_NAME);
+			puts(getCurrentState()+",view="+viewName+",text="+text);
 			switch (viewName) {
 				case Mondaibun: {
 					binding.textViewMondai.setText(text);
@@ -65,10 +69,40 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
+			puts(getCurrentState()+" thread name="+Thread.currentThread().getName());
 			context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI));
+			binding.buttonSelect1.setOnClickListener(this::onChoice);
+			binding.buttonSelect2.setOnClickListener(this::onChoice);
+			binding.buttonSelect3.setOnClickListener(this::onChoice);
+			binding.buttonSelect4.setOnClickListener(this::onChoice);
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
+	}
+	
+	public void onChoice(View view) {
+		//main thread
+		puts(getCurrentState() + " thread name=" + Thread.currentThread().getName());
+		
+		int choice = -1;
+		if (view == binding.buttonSelect1) {
+			choice = 1;
+		}
+		else if (view == binding.buttonSelect2) {
+			choice = 2;
+		}
+		else if (view == binding.buttonSelect3) {
+			choice = 3;
+		}
+		else if (view == binding.buttonSelect4) {
+			choice = 4;
+		}
+		//qthreadに通知
+		puts("send choice="+choice);
+		Intent broadcastIntent =
+			new Intent(QuizService.QuizThread.QTHREAD_ACTION_CLICKED)
+				.putExtra(QuizService.QuizThread.QTHREAD_EXTRA_CHOICE, choice);
+		context.sendBroadcast(broadcastIntent);
 	}
 	
 	static class Seikairitsu {

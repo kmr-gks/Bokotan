@@ -1,5 +1,8 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MyLibrary.DebugManager.getCurrentState;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +20,8 @@ public class DrawReceiver extends BroadcastReceiver {
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		//thread::main
+		puts(getCurrentState() + " thread name=" + Thread.currentThread().getName());
 		Message message = new Message();
 		message.setData(intent.getExtras());
 		handler.sendMessage(message);

@@ -22,7 +22,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.text.LineBreakConfig;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -79,6 +81,11 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					//単語の場合は右下の文字は非表示
 					tvsubE.setVisibility(GONE);
 					tvsubJ.setVisibility(GONE);
+				}
+				//Android13以降 日本語の折り返しに対応
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+					binding.textViewJpn.setLineBreakStyle(LineBreakConfig.LINE_BREAK_STYLE_NORMAL);
+					binding.textViewJpn.setLineBreakWordStyle(LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE);
 				}
 				
 				binding.buttonStartStop.setOnClickListener(this::onStartStopButtonClick);
