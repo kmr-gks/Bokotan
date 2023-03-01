@@ -9,7 +9,6 @@ import static java.lang.Math.min;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
@@ -269,15 +268,6 @@ public final class MyLibrary {
 		public static void initializeSettingItem(CheckBox view, boolean defaultvalue) {
 			try {
 				view.setChecked(MyLibrary.PreferenceManager.getSetting(view.getContext(), "id" + view.getId(), defaultvalue));
-			} catch (Exception e) {
-				ExceptionManager.showException(e);
-			}
-		}
-		
-		public static void onClickSettingItem(View view) {
-			try {
-				if (view instanceof CheckBox)
-					MyLibrary.PreferenceManager.putSetting(view.getContext(), "id" + view.getId(), ((CheckBox) view).isChecked());
 			} catch (Exception e) {
 				ExceptionManager.showException(e);
 			}
@@ -617,14 +607,18 @@ public final class MyLibrary {
 			return getNowLine(defaultHierarchy);
 		}
 		
+		public static String getNowThreadName(){
+			return Thread.currentThread().getName();
+		}
+		
 		public static String getCurrentState() {
 			//引数のdefaultHierarchyを省略すると正しく動作しない。
-			return DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy);
+			return DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy)+",スレッド="+getNowThreadName();
 		}
 		
 		public static void printCurrentState() {
 			//引数のdefaultHierarchyを省略すると正しく動作しない。
-			DebugManager.puts(DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy));
+			DebugManager.puts(DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy)+",スレッド="+getNowThreadName());
 		}
 		
 		public static String getDeviceName() {return Build.PRODUCT + "," + Build.VERSION.RELEASE;}

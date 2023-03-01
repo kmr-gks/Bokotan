@@ -1,6 +1,7 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getCurrentState;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
@@ -17,7 +18,7 @@ import androidx.annotation.NonNull;
 import com.gukos.bokotan.databinding.FragmentTestBinding;
 
 
-
+//このクラスで定義されているメソッドやラムダ式は全てメインスレッドで実行される(UI処理に関わるため)
 public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding> {
 	public static final String
 		QUIZ_ACTION_UI = MyLibrary.packageName + "." + MyLibrary.DebugManager.getClassName(),
@@ -32,6 +33,7 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
+			printCurrentState();
 			Bundle bundle = msg.getData();
 			String text = bundle.getString(QUIZ_UI_TEXT);
 			ViewName viewName= (ViewName) bundle.getSerializable(QUIZ_VIEW_NAME);
@@ -69,7 +71,7 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			puts(getCurrentState()+" thread name="+Thread.currentThread().getName());
+			printCurrentState();
 			context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI));
 			binding.buttonSelect1.setOnClickListener(this::onChoice);
 			binding.buttonSelect2.setOnClickListener(this::onChoice);
@@ -81,9 +83,6 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	}
 	
 	public void onChoice(View view) {
-		//main thread
-		puts(getCurrentState() + " thread name=" + Thread.currentThread().getName());
-		
 		int choice = -1;
 		if (view == binding.buttonSelect1) {
 			choice = 1;
@@ -97,11 +96,11 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 		else if (view == binding.buttonSelect4) {
 			choice = 4;
 		}
-		//qthreadに通知
+		
 		puts("send choice="+choice);
 		Intent broadcastIntent =
-			new Intent(QuizService.QuizThread.QTHREAD_ACTION_CLICKED)
-				.putExtra(QuizService.QuizThread.QTHREAD_EXTRA_CHOICE, choice);
+			new Intent(QuizService.QTHREAD_ACTION_CLICKED)
+				.putExtra(QuizService.QTHREAD_EXTRA_CHOICE, choice);
 		context.sendBroadcast(broadcastIntent);
 	}
 	
