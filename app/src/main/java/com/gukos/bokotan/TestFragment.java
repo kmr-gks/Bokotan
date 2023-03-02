@@ -1,7 +1,6 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
-import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.content.Intent;
@@ -11,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -23,41 +23,86 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	public static Boolean isInitialized = false;
 	
 	public static final String
-		QUIZ_ACTION_UI = MyLibrary.packageName + "." + MyLibrary.DebugManager.getClassName(),
-		QUIZ_UI_TEXT = "quiz ui text",
-		QUIZ_VIEW_NAME = "quiz ui name";
+		QUIZ_ACTION_UI_CHANGE = "quiz_action_ui_change",
+		QUIZ_VIEW_TEXT = "quiz_view_text",
+		QUIZ_VIEW_COLOR = "quiz_view_color",
+		QUIZ_VIEW_PROPERTIES = "quiz_view_properties",
+		QUIZ_VIEW_NAME = "quiz_view_name";
+	
+	public enum ViewProperties {
+		Text, TextColor
+	}
 	
 	public enum ViewName {
-		Mondaibun, Select1, Select2, Select3, Select4
+		Ans, Marubatsu, Editorial, No, Mondaibun, Hint, Select1, Select2, Select3, Select4, Idontknow
 	}
 	
 	//https://oc-technote.com/android/service%E3%81%8B%E3%82%89activity%E3%81%AB%E5%80%A4%E3%82%92%E6%8A%95%E3%81%92%E3%81%9F%E3%82%8A%E7%94%BB%E9%9D%A2%E3%82%92%E6%9B%B4%E6%96%B0%E3%81%97%E3%81%9F%E3%82%8A%E3%81%99%E3%82%8B%E6%96%B9/
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
-			printCurrentState();
 			Bundle bundle = msg.getData();
-			String text = bundle.getString(QUIZ_UI_TEXT);
 			ViewName viewName = (ViewName) bundle.getSerializable(QUIZ_VIEW_NAME);
+			ViewProperties viewProperties = (ViewProperties) bundle.getSerializable(QUIZ_VIEW_PROPERTIES);
+			final TextView textViewToHandle;
 			switch (viewName) {
+				case Ans: {
+					textViewToHandle = binding.textViewAns;
+					break;
+				}
+				case Marubatsu: {
+					textViewToHandle = binding.textViewMaruBatsu;
+					break;
+				}
+				case Editorial: {
+					textViewToHandle = binding.textViewEditorial;
+					break;
+				}
+				case No: {
+					textViewToHandle = binding.textViewNo;
+					break;
+				}
 				case Mondaibun: {
-					binding.textViewMondai.setText(text);
+					textViewToHandle = binding.textViewMondai;
+					break;
+				}
+				case Hint: {
+					textViewToHandle = binding.buttonHint;
 					break;
 				}
 				case Select1: {
-					binding.buttonSelect1.setText(text);
+					textViewToHandle = binding.buttonSelect1;
 					break;
 				}
 				case Select2: {
-					binding.buttonSelect2.setText(text);
+					textViewToHandle = binding.buttonSelect2;
 					break;
 				}
 				case Select3: {
-					binding.buttonSelect3.setText(text);
+					textViewToHandle = binding.buttonSelect3;
 					break;
 				}
 				case Select4: {
-					binding.buttonSelect4.setText(text);
+					textViewToHandle = binding.buttonSelect4;
+					break;
+				}
+				case Idontknow: {
+					textViewToHandle = binding.buttonIdontKnow;
+					break;
+				}
+				default: {
+					throw new IllegalStateException("view name is invalid");
+				}
+			}
+			switch (viewProperties) {
+				case Text: {
+					printCurrentState(",text change" + bundle.getString(QUIZ_VIEW_TEXT));
+					textViewToHandle.setText(bundle.getString(QUIZ_VIEW_TEXT));
+					break;
+				}
+				case TextColor: {
+					printCurrentState(",textcolor change" + bundle.getInt(QUIZ_VIEW_COLOR));
+					textViewToHandle.setTextColor(bundle.getInt(QUIZ_VIEW_COLOR));
 					break;
 				}
 			}
@@ -72,12 +117,12 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			printCurrentState();
-			context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI));
+			context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI_CHANGE));
 			binding.buttonSelect1.setOnClickListener(this::onChoice);
 			binding.buttonSelect2.setOnClickListener(this::onChoice);
 			binding.buttonSelect3.setOnClickListener(this::onChoice);
 			binding.buttonSelect4.setOnClickListener(this::onChoice);
+			binding.buttonIdontKnow.setOnClickListener(this::onChoice);
 			
 			synchronized (isInitialized) {
 				isInitialized = true;
@@ -102,7 +147,6 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			choice = 4;
 		}
 		
-		puts("send choice=" + choice);
 		Intent broadcastIntent =
 			new Intent(QuizCreator.QTHREAD_ACTION_CLICKED)
 				.putExtra(QuizCreator.QTHREAD_EXTRA_CHOICE, choice);

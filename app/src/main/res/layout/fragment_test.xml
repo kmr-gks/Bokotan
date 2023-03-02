@@ -13,14 +13,58 @@
 		android:background="@color/background">
 
 		<TextView
+			android:id="@+id/textViewAns"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:autoSizeTextType="uniform"
+			android:textColor="#FF0000"
+			android:textSize="24sp"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<TextView
+			android:id="@+id/textViewMaruBatsu"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="96sp"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<TextView
+			android:id="@+id/textViewEditorial"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="18sp"
+			app:layout_constraintBottom_toTopOf="@+id/textViewNo"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/textViewAns" />
+
+		<TextView
+			android:id="@+id/textViewNo"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			app:layout_constraintBottom_toTopOf="@+id/textViewMondai"
+			app:layout_constraintStart_toStartOf="parent" />
+
+		<TextView
 			android:id="@+id/textViewMondai"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:contentDescription="@string/choice"
+			android:textSize="40sp"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect1"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent" />
+
+		<Button
+			android:id="@+id/buttonHint"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="ヒント"
+			app:layout_constraintBottom_toTopOf="@+id/buttonSelect1"
+			app:layout_constraintEnd_toEndOf="parent" />
 
 		<Button
 			android:id="@+id/buttonSelect1"
@@ -29,7 +73,10 @@
 			android:contentDescription="@string/choice"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect2"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent" />
+			app:layout_constraintStart_toStartOf="parent"
+			android:autoSizeTextType="uniform"
+			android:textColor="@color/buttontext"
+			android:textSize="25sp" />
 
 		<Button
 			android:id="@+id/buttonSelect2"
@@ -38,7 +85,10 @@
 			android:contentDescription="@string/choice"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect3"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent" />
+			app:layout_constraintStart_toStartOf="parent"
+			android:autoSizeTextType="uniform"
+			android:textColor="@color/buttontext"
+			android:textSize="25sp" />
 
 		<Button
 			android:id="@+id/buttonSelect3"
@@ -47,15 +97,31 @@
 			android:contentDescription="@string/choice"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect4"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent" />
+			app:layout_constraintStart_toStartOf="parent"
+			android:autoSizeTextType="uniform"
+			android:textColor="@color/buttontext"
+			android:textSize="25sp" />
 
 		<Button
 			android:id="@+id/buttonSelect4"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:contentDescription="@string/choice"
+			app:layout_constraintBottom_toTopOf="@+id/buttonIdontKnow"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			android:autoSizeTextType="uniform"
+			android:textColor="@color/buttontext"
+			android:textSize="25sp" />
+
+		<Button
+			android:id="@+id/buttonIdontKnow"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="わからない"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />
+
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,8 +1,6 @@
 package com.gukos.bokotan;
 
 
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
-import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
@@ -12,6 +10,7 @@ import static com.gukos.bokotan.WordPhraseData.YumeWord;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -25,37 +24,47 @@ import kotlin.jvm.functions.Function3;
 
 public class QuizCreator {
 	
-	private HandlerThread handlerThread;
-	private Handler handler;
-	private Context context;
+	private final HandlerThread handlerThread;
+	private final Handler handler;
+	private final Context context;
 	public static final String
 		QTHREAD_ACTION_CLICKED = "qthread_action_clicked",
 		QTHREAD_EXTRA_CHOICE = "qthread_extra_choice";
 	private boolean onActive = true;
-	private ArrayList<String> e = new ArrayList<>(), j = new ArrayList<>();
+	private final ArrayList<String> e = new ArrayList<>();
+	private final ArrayList<String> j = new ArrayList<>();
+	private int nProblems=0;
+	int ansChoice;
 	private final Random random = new Random();
 	
 	//メインスレッド
 	public QuizCreator(Context context) {
-		printCurrentState();
 		this.context = context;
 		
 		handlerThread = new HandlerThread("QuizHandlerThread");
 		handlerThread.start();
 		handler = new Handler(handlerThread.getLooper()) {
 			//looperを指定しているので、クイズスレッド
+			//選択肢のボタンをクリックしたときの処理
 			@Override
 			public void handleMessage(Message message) {
-				printCurrentState();
 				int choice = message.getData().getInt(QTHREAD_EXTRA_CHOICE, -1);
-				puts("receive choice=" + choice);
+				if (ansChoice==choice){
+					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解");
+					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
+					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
+				}else{
+					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解");
+					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
+					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
+				}
 				setMondai();
 			}
 		};
 		//handler.post()はクイズスレッド
 		handler.post(() -> {
 			//クイズを開始する処理
-			printCurrentState();
+			
 			//Testragmentの画面読み込みが終わるまで待機(スレッドが違うため、こちらの処理の方が早いことがある。)
 			while (true) {
 				synchronized (TestFragment.isInitialized) {
@@ -63,7 +72,7 @@ public class QuizCreator {
 				}
 				sleep(100);
 			}
-			sendBroadcast(TestFragment.ViewName.Mondaibun, "読み込み中");
+			sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, "読み込み中");
 			
 			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(QTHREAD_ACTION_CLICKED));
 			
@@ -89,18 +98,25 @@ public class QuizCreator {
 	
 	//クイズスレッド
 	private void setMondai() {
-		printCurrentState();
-		int ansChoice = random.nextInt(4) + 1;
+		nProblems++;
+		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems+"問目");
+		ansChoice = random.nextInt(4) + 1;
 		int ansNum = random.nextInt(e.size());
-		int choice1Num = random.nextInt(e.size());
-		int choice2Num = random.nextInt(e.size());
-		int choice3Num = random.nextInt(e.size());
-		int choice4Num = random.nextInt(e.size());
-		sendBroadcast(TestFragment.ViewName.Mondaibun, e.get(ansNum));
-		sendBroadcast(TestFragment.ViewName.Select1, j.get(choice1Num));
-		sendBroadcast(TestFragment.ViewName.Select2, j.get(choice2Num));
-		sendBroadcast(TestFragment.ViewName.Select3, j.get(choice3Num));
-		sendBroadcast(TestFragment.ViewName.Select4, j.get(choice4Num));
+		//なぜかこれだはダメ
+		//ArrayList<Integer> choiceList=new ArrayList<>(4);
+		ArrayList<Integer> choiceList=new ArrayList<>(Arrays.asList(0,0,0,0));
+		//4つの選択肢はそれぞれ異なる
+		do {
+			for (int i = 0; i < 4; i++) {
+				if (ansChoice - 1 == i) choiceList.set(i, ansNum);
+				else choiceList.set(i, random.nextInt(e.size()));
+			}
+		} while (choiceList.stream().distinct().count() != 4);
+		sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, e.get(ansNum));
+		sendBroadcastTextChange(TestFragment.ViewName.Select1, j.get(choiceList.get(0)));
+		sendBroadcastTextChange(TestFragment.ViewName.Select2, j.get(choiceList.get(1)));
+		sendBroadcastTextChange(TestFragment.ViewName.Select3, j.get(choiceList.get(2)));
+		sendBroadcastTextChange(TestFragment.ViewName.Select4, j.get(choiceList.get(3)));
 	}
 	
 	public void cancel() {
@@ -108,11 +124,22 @@ public class QuizCreator {
 	}
 	
 	//TestFragment内のviewに表示する文字を変更させるためのintentを送信する。クイズスレッド
-	private void sendBroadcast(TestFragment.ViewName viewName, String text) {
-		printCurrentState(",view=" + viewName + ",text=" + text);
+	private void sendBroadcastTextChange(TestFragment.ViewName viewName, String text) {
+		//printCurrentState(",view=" + viewName + ",text=" + text);
 		Intent broadcastIntent =
-			new Intent(TestFragment.QUIZ_ACTION_UI)
-				.putExtra(TestFragment.QUIZ_UI_TEXT, text)
+			new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
+				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES,TestFragment.ViewProperties.Text)
+				.putExtra(TestFragment.QUIZ_VIEW_TEXT, text)
+				.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
+		context.sendBroadcast(broadcastIntent);
+	}
+	
+	private void sendBroadcastColorChange(TestFragment.ViewName viewName, int color) {
+		//printCurrentState(",view=" + viewName + ",text=" + text);
+		Intent broadcastIntent =
+			new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
+				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES,TestFragment.ViewProperties.TextColor)
+				.putExtra(TestFragment.QUIZ_VIEW_COLOR, color)
 				.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
 		context.sendBroadcast(broadcastIntent);
 	}
