@@ -129,6 +129,18 @@
 					android:textColor="@color/textcolor" />
 
 				<com.google.android.material.switchmaterial.SwitchMaterial
+					android:id="@+id/switchQuizHatsuon"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/quiz_word_hatsuon" />
+
+				<com.google.android.material.switchmaterial.SwitchMaterial
+					android:id="@+id/switchQuizOxKoukaon"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/quiz_ox_hatsuon" />
+
+				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/checkBoxAutoStop"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"

@@ -62,6 +62,8 @@
 	<string name="alarm">alarm</string>
 	<string name="jtoe">日→英</string>
 	<string name="choice">選択肢</string>
+	<string name="quiz_word_hatsuon">クイズで出題される単語を発音</string>
+	<string name="quiz_ox_hatsuon">クイズでマルバツの効果音を再生</string>
 
 	<string-array name="spinner_hanni">
 		<item>A</item>

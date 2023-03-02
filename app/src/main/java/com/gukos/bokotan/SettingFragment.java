@@ -22,7 +22,7 @@ import com.gukos.bokotan.databinding.FragmentSettingBinding;
 
 public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingBinding> {
 	//他のクラスからアクセス
-	public static SwitchMaterial switchSkipOboe, swHyojiBeforeRead, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou,swOnlyFirst;
+	public static SwitchMaterial switchSkipOboe, swHyojiBeforeRead, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou, swOnlyFirst, switchQuizHatsuon, switchQuizOX;
 	public static RadioButton radioButtonEtoJ;
 	
 	public SettingFragment() {
@@ -46,6 +46,8 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 			swHyojiBeforeRead = binding.switchHyojiYakuBeforeRead;
 			switchSkipOboe = binding.switchSkipOboe;
 			switchSortHanten = binding.switchSortHanten;
+			switchQuizHatsuon=binding.switchQuizHatsuon;
+			switchQuizOX=binding.switchQuizOxKoukaon;
 			cbAutoStop = binding.checkBoxAutoStop;
 			checkBoxHatsuonKigou = binding.checkBoxHatsuonkigou;
 			radioButtonEtoJ = binding.radioButtonEtoJ;
@@ -84,9 +86,10 @@ public class SettingFragment extends UiManager.FragmentBingding<FragmentSettingB
 			initializeSettingItem(switchSortHanten, false);
 			initializeSettingItem(cbAutoStop, false);
 			initializeSettingItem(checkBoxHatsuonKigou, false);
+			initializeSettingItem(binding.switchQuizHatsuon, true);
+			initializeSettingItem(binding.switchQuizOxKoukaon, true);
 			
-			for (var v : new SwitchMaterial[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe,
-				switchSortHanten, cbAutoStop, checkBoxHatsuonKigou}) {
+			for (var v : new SwitchMaterial[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou,binding.switchQuizHatsuon, binding.switchQuizOxKoukaon}) {
 				v.setOnCheckedChangeListener(UiManager.Listener::onClickSettingItem);
 			}
 			

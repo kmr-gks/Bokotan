@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -31,6 +33,7 @@ public class QuizCreator {
 		QTHREAD_ACTION_CLICKED = "qthread_action_clicked",
 		QTHREAD_EXTRA_CHOICE = "qthread_extra_choice";
 	private boolean onActive = true;
+	private final SoundPool soundPool= new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(2).build();
 	private final ArrayList<String> e = new ArrayList<>();
 	private final ArrayList<String> j = new ArrayList<>();
 	private int nProblems=0;
@@ -50,10 +53,16 @@ public class QuizCreator {
 			public void handleMessage(Message message) {
 				int choice = message.getData().getInt(QTHREAD_EXTRA_CHOICE, -1);
 				if (ansChoice==choice){
+					if (SettingFragment.switchQuizOX.isChecked()){
+						soundPool.load(context,R.raw.seikai,1);
+					}
 					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解");
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
 				}else{
+					if (SettingFragment.switchQuizOX.isChecked()){
+						soundPool.load(context,R.raw.huseikai,1);
+					}
 					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解");
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
@@ -75,6 +84,7 @@ public class QuizCreator {
 			sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, "読み込み中");
 			
 			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(QTHREAD_ACTION_CLICKED));
+			soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> soundPool.play(sampleId, 1, 1, 1, 0, 1));
 			
 			//これを定期的に見る必要がある。
 			if (!onActive) return;
