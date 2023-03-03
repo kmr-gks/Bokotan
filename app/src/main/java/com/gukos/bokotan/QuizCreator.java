@@ -2,6 +2,9 @@ package com.gukos.bokotan;
 
 
 import static com.gukos.bokotan.MyLibrary.sleep;
+import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
+import static com.gukos.bokotan.WordPhraseData.DataLang.english;
+import static com.gukos.bokotan.WordPhraseData.DataType.word;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
@@ -19,10 +22,7 @@ import android.os.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Random;
-
-import kotlin.jvm.functions.Function3;
 
 public class QuizCreator {
 	
@@ -33,12 +33,31 @@ public class QuizCreator {
 		QTHREAD_ACTION_CLICKED = "qthread_action_clicked",
 		QTHREAD_EXTRA_CHOICE = "qthread_extra_choice";
 	private boolean onActive = true;
-	private final SoundPool soundPool= new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(2).build();
+	private final SoundPool soundPool = new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(2).build();
 	private final ArrayList<String> e = new ArrayList<>();
 	private final ArrayList<String> j = new ArrayList<>();
-	private int nProblems=0;
-	int ansChoice;
+	private int nProblems = 0;
+	int ansChoice, problemNum;
 	private final Random random = new Random();
+	
+	static final class QuizWordData {
+		public final String e, j;
+		public final int no;
+		public final String book;
+		
+		public QuizWordData(String e, String j, int no, String book) {
+			this.e = e;
+			this.j = j;
+			this.no = no;
+			this.book = book;
+		}
+		
+		public String toString() {
+			return "e=" + e + ",no=" + no + ",book=" + book;
+		}
+	}
+	
+	private final ArrayList<QuizWordData> quizWordDataList = new ArrayList<>();
 	
 	//メインスレッド
 	public QuizCreator(Context context) {
@@ -52,18 +71,20 @@ public class QuizCreator {
 			@Override
 			public void handleMessage(Message message) {
 				int choice = message.getData().getInt(QTHREAD_EXTRA_CHOICE, -1);
-				if (ansChoice==choice){
-					if (SettingFragment.switchQuizOX.isChecked()){
-						soundPool.load(context,R.raw.seikai,1);
+				if (ansChoice == choice) {
+					if (SettingFragment.switchQuizOX.isChecked()) {
+						soundPool.load(context, R.raw.seikai, 1);
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解");
+					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + quizWordDataList.get(problemNum).toString());
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
-				}else{
-					if (SettingFragment.switchQuizOX.isChecked()){
-						soundPool.load(context,R.raw.huseikai,1);
+				}
+				else {
+					if (SettingFragment.switchQuizOX.isChecked()) {
+						soundPool.load(context, R.raw.huseikai, 1);
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解");
+					sendBroadcastTextChange(TestFragment.ViewName.Ans,
+					                        "不正解 " + quizWordDataList.get(problemNum).toString());
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
 				}
@@ -88,20 +109,15 @@ public class QuizCreator {
 			
 			//これを定期的に見る必要がある。
 			if (!onActive) return;
-			Function3<WordPhraseData, ArrayList<String>, ArrayList<String>, Void> addF = (wordPhraseData, stringE, stringsJ) -> {
-				Arrays.stream(wordPhraseData.e).filter(Objects::nonNull).forEach(stringE::add);
-				Arrays.stream(wordPhraseData.j).filter(Objects::nonNull).forEach(stringsJ::add);
-				return null;
-			};
 			//単語データ読み取り
 			for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
-				addF.invoke(new WordPhraseData(PasstanWord + q, context), e, j);
+				new WordPhraseData(PasstanWord + q, context, quizWordDataList, q);
 			for (var q : new String[]{"1q", "p1q"})
-				addF.invoke(new WordPhraseData(TanjukugoWord + q, context), e, j);
+				new WordPhraseData(TanjukugoWord + q, context, quizWordDataList, q);
 			for (var q : new String[]{"1q", "p1q"})
-				addF.invoke(new WordPhraseData(TanjukugoEXWord + q, context), e, j);
+				new WordPhraseData(TanjukugoEXWord + q, context, quizWordDataList, q);
 			for (var q : new String[]{"00", "08", "1", "2", "3"})
-				addF.invoke(new WordPhraseData(YumeWord + q, context), e, j);
+				new WordPhraseData(YumeWord + q, context, quizWordDataList, q);
 			setMondai();
 		});
 	}
@@ -109,24 +125,37 @@ public class QuizCreator {
 	//クイズスレッド
 	private void setMondai() {
 		nProblems++;
-		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems+"問目");
+		//正解の選択肢を設定
 		ansChoice = random.nextInt(4) + 1;
-		int ansNum = random.nextInt(e.size());
+		//出題する単語を決定
+		problemNum = random.nextInt(quizWordDataList.size());
+		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + quizWordDataList.get(problemNum).toString());
+		if (SettingFragment.switchQuizHatsuon.isChecked()) {
+			//単語を再生
+			String mp3Path;
+			String book = quizWordDataList.get(problemNum).book;
+			int no = quizWordDataList.get(problemNum).no;
+			//パス単1q,p1qのみ再生
+			if (book.endsWith("1q")) {
+				mp3Path = MyLibrary.FileDirectoryManager.getPath(passTan, book, word, english, no);
+				soundPool.load(mp3Path, 1);
+			}
+		}
 		//なぜかこれだはダメ
 		//ArrayList<Integer> choiceList=new ArrayList<>(4);
-		ArrayList<Integer> choiceList=new ArrayList<>(Arrays.asList(0,0,0,0));
+		ArrayList<Integer> choiceList = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
 		//4つの選択肢はそれぞれ異なる
 		do {
 			for (int i = 0; i < 4; i++) {
-				if (ansChoice - 1 == i) choiceList.set(i, ansNum);
-				else choiceList.set(i, random.nextInt(e.size()));
+				if (ansChoice - 1 == i) choiceList.set(i, problemNum);
+				else choiceList.set(i, random.nextInt(quizWordDataList.size()));
 			}
 		} while (choiceList.stream().distinct().count() != 4);
-		sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, e.get(ansNum));
-		sendBroadcastTextChange(TestFragment.ViewName.Select1, j.get(choiceList.get(0)));
-		sendBroadcastTextChange(TestFragment.ViewName.Select2, j.get(choiceList.get(1)));
-		sendBroadcastTextChange(TestFragment.ViewName.Select3, j.get(choiceList.get(2)));
-		sendBroadcastTextChange(TestFragment.ViewName.Select4, j.get(choiceList.get(3)));
+		sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, quizWordDataList.get(problemNum).e);
+		sendBroadcastTextChange(TestFragment.ViewName.Select1, quizWordDataList.get(choiceList.get(0)).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select2, quizWordDataList.get(choiceList.get(1)).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select3, quizWordDataList.get(choiceList.get(2)).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select4, quizWordDataList.get(choiceList.get(3)).j);
 	}
 	
 	public void cancel() {
@@ -138,7 +167,7 @@ public class QuizCreator {
 		//printCurrentState(",view=" + viewName + ",text=" + text);
 		Intent broadcastIntent =
 			new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
-				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES,TestFragment.ViewProperties.Text)
+				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES, TestFragment.ViewProperties.Text)
 				.putExtra(TestFragment.QUIZ_VIEW_TEXT, text)
 				.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
 		context.sendBroadcast(broadcastIntent);
@@ -148,7 +177,7 @@ public class QuizCreator {
 		//printCurrentState(",view=" + viewName + ",text=" + text);
 		Intent broadcastIntent =
 			new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
-				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES,TestFragment.ViewProperties.TextColor)
+				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES, TestFragment.ViewProperties.TextColor)
 				.putExtra(TestFragment.QUIZ_VIEW_COLOR, color)
 				.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
 		context.sendBroadcast(broadcastIntent);

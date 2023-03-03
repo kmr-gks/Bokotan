@@ -8,6 +8,7 @@ import android.content.Context;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class WordPhraseData {
@@ -47,7 +48,7 @@ public class WordPhraseData {
 	static q_num.unit sentakuUnit = q_num.unit.all;
 	static q_num.strQ strQenum = q_num.strQ.strp1q;
 	static q_num.skipjouken skipjoken = q_num.skipjouken.kirokunomi;
-	public final String[] e = new String[20000],j = new String[20000];
+	public final String[] e = new String[20000], j = new String[20000];
 	public final static String
 		PasstanWord = "Passtan/WordData",
 		PasstanPhrase = "Passtan/Phrase",
@@ -72,6 +73,27 @@ public class WordPhraseData {
 			i = 0;
 			while ((str = br2.readLine()) != null) {
 				j[i] = str;
+				i++;
+			}
+			is1.close();
+			is2.close();
+			br1.close();
+			br2.close();
+		} catch (Exception e) {
+			showException(context, e);
+			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
+		}
+	}
+	
+	public WordPhraseData(String strQ, Context context, ArrayList<QuizCreator.QuizWordData> list, String book) {
+		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
+		try {
+			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
+			BufferedReader br1 = new BufferedReader(new InputStreamReader(is1)), br2 = new BufferedReader(new InputStreamReader(is2));
+			String dataE, dataJ;
+			int i = 0;
+			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
+				list.add(new QuizCreator.QuizWordData(dataE, dataJ, i, book));
 				i++;
 			}
 			is1.close();
@@ -123,10 +145,10 @@ public class WordPhraseData {
 	enum DataLang {english, japanese}
 	
 	public enum q_num {
-		test1q(), testp1q(), test2q(), testp2q(), testy00(), testy08(), testy1(), testy2(), testy3(), test1qEx, testp1qEx,testAll;
+		test1q(), testp1q(), test2q(), testp2q(), testy00(), testy08(), testy1(), testy2(), testy3(), test1qEx, testp1qEx, testAll;
 		
 		enum strQ {
-			str1q("1q"), strp1q("p1q"), str2q("2q"), strp2q("p2q"), str3q("3q"), str4q("4q"), str5q("5q"), stry00("y00"), stry08("y08"), stry1("y1"), stry2("y2"), stry3("y3"), ex1q("tanjukugo1q"),all("all");
+			str1q("1q"), strp1q("p1q"), str2q("2q"), strp2q("p2q"), str3q("3q"), str4q("4q"), str5q("5q"), stry00("y00"), stry08("y08"), stry1("y1"), stry2("y2"), stry3("y3"), ex1q("tanjukugo1q"), all("all");
 			
 			strQ(String s) {
 				getQ = s;
