@@ -240,6 +240,11 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			binding.spinnerHyojijun.setAdapter(getAdapterForSpinner(context, R.array.spinner_hyojijun));
 			binding.spinnerHyojijun.setSelection(getIntData(context, "spinnerHyojijun", "selected", 0));
 			binding.spinnerHyojijun.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerHyojijunOnItemSelectedListener);
+			
+			binding.buttonWord.setOnClickListener(this::onPlayStart);
+			binding.buttonPhrase.setOnClickListener(this::onPlayStart);
+			binding.buttonWP.setOnClickListener(this::onPlayStart);
+			binding.buttonQuiz.setOnClickListener(this::onQuizservice);
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -482,6 +487,11 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		} catch (Exception e) {
 			showException(context, e);
 		}
+	}
+	
+	private void onPlayStart(View view){
+		TabActivity.setTabPageNum(1);
+		new WordPhrasePlayer(context);
 	}
 	
 	private void onQuizservice(View v) {

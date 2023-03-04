@@ -22,10 +22,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.text.LineBreakConfig;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -41,6 +45,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBinding> {
+	public static Boolean isInitialized = false;
 	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
 	
 	public static int lastnum,selectedIndex = 0;
@@ -48,6 +53,78 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public static TextView tvWordEng, tvWordJpn, tvGenzai, tvsubE, tvsubJ, tvNumSeikaisuu, tvSeikaisu, tvGogen, textViewPath, textViewHatsuonKigou;
 	private static ArrayAdapter<String> adapterUnit;
 	AlertDialog adWord, adUnit;
+	
+	public static final String
+		PLAYER_ACTION_UI_CHANGE = "player_action_ui_change",
+		PLAYER_VIEW_TEXT = "player_view_text",
+		PLAYER_VIEW_COLOR = "player_view_color",
+		PLAYER_VIEW_PROPERTIES = "player_view_properties",
+		PLAYER_VIEW_NAME = "player_view_name";
+	
+	public enum PlayerViewProperties {
+		Text, TextColor
+	}
+	
+	public enum PlayerViewName {
+		genzai,gogen,subJ,subE,eng,jpn,path,
+		Debug
+	}
+	
+	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
+		@Override
+		public void handleMessage(Message msg) {
+			Bundle bundle = msg.getData();
+			PlayerViewName viewName = (PlayerViewName) bundle.getSerializable(PLAYER_VIEW_NAME);
+			PlayerViewProperties viewProperties =(PlayerViewProperties) bundle.getSerializable(PLAYER_VIEW_PROPERTIES);
+			final TextView textViewToHandle;
+			switch (viewName) {
+				case genzai:{
+					textViewToHandle=binding.textViewGenzai;
+					break;
+				}
+				case gogen:{
+					textViewToHandle=binding.textViewGogen;
+					break;
+				}
+				case subJ:{
+					textViewToHandle=binding.textViewSubtitleJpn;
+					break;
+				}
+				case subE:{
+					textViewToHandle=binding.textViewSubtitleEng;
+					break;
+				}
+				case eng:{
+					textViewToHandle=binding.textViewEng;
+					break;
+				}
+				case jpn:{
+					textViewToHandle=binding.textViewJpn;
+					break;
+				}
+				case path:{
+					textViewToHandle=binding.textViewPath;
+					break;
+				}
+				case Debug:{
+					//textViewToHandle=binding.
+					//break;
+				}
+				default: {
+					throw new IllegalStateException("view name is invalid");
+				}
+			}
+			switch (viewProperties){
+				case Text:{
+					textViewToHandle.setText(bundle.getString(PLAYER_VIEW_TEXT));
+					break;
+				}
+				case TextColor:{
+					textViewToHandle.setTextColor(bundle.getInt(PLAYER_VIEW_COLOR));
+				}
+			}
+		}
+	};
 	
 	public PlayerFragment() {
 		super(FragmentPlayerBinding::inflate);
@@ -60,6 +137,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			super.onViewCreated(view, savedInstanceState);
 			try {
 				//UI設定
+				context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE));
 				tvWordEng = binding.textViewEng;
 				tvWordJpn = binding.textViewJpn;
 				tvGenzai = binding.textViewGenzai;
@@ -108,6 +186,10 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				binding.seekBarJpn.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarJpn.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(binding.seekBarEng);
+				
+				synchronized (isInitialized) {
+					isInitialized = true;
+				}
 			} catch (Exception e) {
 				showException(context, e);
 			}

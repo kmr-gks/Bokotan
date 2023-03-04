@@ -38,7 +38,7 @@ public class TabActivity extends AppCompatActivity {
 		//フラグメント作成できる？
 		//tabPagerAdapter.createFragment()
 		//初期位置
-		viewPager.setCurrentItem(1);
+		viewPager.setCurrentItem(0);
 		
 		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
 	}

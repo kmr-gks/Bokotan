@@ -324,6 +324,46 @@
 				</LinearLayout>
 
 				<TextView
+					android:id="@+id/textViewModeSelect"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="モードを選択(開始)" />
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:orientation="horizontal">
+
+					<Button
+						android:id="@+id/buttonWord"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:text="単語" />
+
+					<Button
+						android:id="@+id/buttonPhrase"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:text="文" />
+
+					<Button
+						android:id="@+id/buttonWP"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:text="単語+文" />
+
+					<Button
+						android:id="@+id/buttonQuiz"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:text="テスト" />
+				</LinearLayout>
+
+				<TextView
 					android:id="@+id/textViewNowInput"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
