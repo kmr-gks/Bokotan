@@ -4,7 +4,7 @@ import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 import static com.gukos.bokotan.PlayerFragment.hashMapKishutu;
 import static com.gukos.bokotan.PlayerFragment.lastnum;
-import static com.gukos.bokotan.SettingFragment.swOnlyFirst;
+import static com.gukos.bokotan.QSentakuFragment.swOnlyFirst;
 import static com.gukos.bokotan.GogenYomuFactory.getGogenString;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
@@ -161,7 +161,7 @@ public class PlaySound extends Service {
 		try {
 			PlayerFragment.tvWordEng.setMaxLines(1);
 			PlayerFragment.tvWordEng.setText(wordE[num]);
-			if (SettingFragment.checkBoxHatsuonKigou.isChecked())
+			if (QSentakuFragment.checkBoxHatsuonKigou.isChecked())
 				PlayerFragment.textViewHatsuonKigou.setText(getHatsuon(wordE[now]));
 		} catch (Exception e) {
 			showException(this, e);

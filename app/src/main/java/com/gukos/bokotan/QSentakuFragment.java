@@ -15,24 +15,24 @@ import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.openWriteFileWithExistCheck;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.readFromFile;
+import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.strDirectoryNameForKuuhaku;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.fnAppSettings;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllFileNames;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllPreferenceData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getSetting;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.initializeSettingItem;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putAllData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putAllSetting;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.MyLibrary.getBuildDate;
 import static com.gukos.bokotan.MyLibrary.getNowTime;
 import static com.gukos.bokotan.MyLibrary.strExceptionFIlePath;
 import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
+import static com.gukos.bokotan.PipActivity.pipTate;
+import static com.gukos.bokotan.PipActivity.pipYoko;
 import static com.gukos.bokotan.PlaySound.strQ;
-import static com.gukos.bokotan.SettingFragment.cbAutoStop;
-import static com.gukos.bokotan.SettingFragment.checkBoxHatsuonKigou;
-import static com.gukos.bokotan.SettingFragment.swHyojiBeforeRead;
-import static com.gukos.bokotan.SettingFragment.swOnlyFirst;
-import static com.gukos.bokotan.SettingFragment.switchSkipOboe;
-import static com.gukos.bokotan.SettingFragment.switchSortHanten;
+import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -50,6 +50,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -65,6 +66,16 @@ import java.util.List;
 
 public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentakuBinding> {
 	
+	//他のクラスからアクセス
+	public static SwitchMaterial switchSkipOboe;
+	public static SwitchMaterial swHyojiBeforeRead;
+	public static SwitchMaterial switchSortHanten;
+	public static SwitchMaterial cbAutoStop;
+	public static SwitchMaterial checkBoxHatsuonKigou;
+	public static SwitchMaterial swOnlyFirst;
+	public static SwitchMaterial switchQuizHatsuon;
+	public static SwitchMaterial switchQuizOX;
+	public static RadioButton radioButtonEtoJ;
 	static int nWordPhraseOrTest = 1;
 	
 	public QSentakuFragment() {
@@ -170,6 +181,65 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			for (var button : new Button[]{binding.button1q, binding.buttonP1q, binding.button2q, binding.buttonP2q, binding.buttonAll, binding.buttonYume00, binding.buttonYume08, binding.buttonYume1, binding.buttonYume2, binding.buttonYume3, binding.button1qEx, binding.buttonP1qEx}) {
 				button.setOnClickListener(this::onSelectQ);
 			}
+			
+			QSentakuFragment.swOnlyFirst = binding.switchOnlyFirst;
+			QSentakuFragment.swHyojiBeforeRead = binding.switchHyojiYakuBeforeRead;
+			QSentakuFragment.switchSkipOboe = binding.switchSkipOboe;
+			QSentakuFragment.switchSortHanten = binding.switchSortHanten;
+			QSentakuFragment.switchQuizHatsuon=binding.switchQuizHatsuon;
+			QSentakuFragment.switchQuizOX=binding.switchQuizOxKoukaon;
+			QSentakuFragment.cbAutoStop = binding.checkBoxAutoStop;
+			QSentakuFragment.checkBoxHatsuonKigou = binding.checkBoxHatsuonkigou;
+			QSentakuFragment.radioButtonEtoJ = binding.radioButtonEtoJ;
+			
+			binding.editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
+			pipYoko = Integer.parseInt(binding.editTextPipYoko.getText().toString());
+			binding.editTextPipYoko.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
+				try {
+					if (editable.length() > 0) {
+						pipYoko = Integer.parseInt(editable.toString());
+						putIntData(context, "editText", "editTextPipYoko", pipYoko);
+					}
+				} catch (Exception e) {
+					showException(context, e);
+				}
+			});
+			
+			binding.editTextPipTate.setText(String.valueOf(getIntData(context, "editText", "editTextPipTate", 9)));
+			pipTate = Integer.parseInt(binding.editTextPipTate.getText().toString());
+			binding.editTextPipTate.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
+				{
+					try {
+						if (editable.length() > 0) {
+							pipTate = Integer.parseInt(editable.toString());
+							putIntData(context, "editText", "editTextPipTate", pipTate);
+						}
+					} catch (Exception e) {
+						showException(context, e);
+					}
+				}
+			});
+			
+			initializeSettingItem(QSentakuFragment.swOnlyFirst, true);
+			initializeSettingItem(QSentakuFragment.swHyojiBeforeRead, true);
+			initializeSettingItem(QSentakuFragment.switchSkipOboe, true);
+			initializeSettingItem(QSentakuFragment.switchSortHanten, false);
+			initializeSettingItem(QSentakuFragment.cbAutoStop, false);
+			initializeSettingItem(QSentakuFragment.checkBoxHatsuonKigou, false);
+			initializeSettingItem(binding.switchQuizHatsuon, true);
+			initializeSettingItem(binding.switchQuizOxKoukaon, true);
+			
+			for (var v : new SwitchMaterial[]{QSentakuFragment.swOnlyFirst, QSentakuFragment.swHyojiBeforeRead, QSentakuFragment.switchSkipOboe, QSentakuFragment.switchSortHanten, QSentakuFragment.cbAutoStop, QSentakuFragment.checkBoxHatsuonKigou,binding.switchQuizHatsuon, binding.switchQuizOxKoukaon}) {
+				v.setOnCheckedChangeListener(UiManager.Listener::onClickSettingItem);
+			}
+			
+			binding.spinnerSpace.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));
+			binding.spinnerSpace.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
+			binding.spinnerSpace.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerKuuhakuOnItemSelectedListener);
+			
+			binding.spinnerHyojijun.setAdapter(getAdapterForSpinner(context, R.array.spinner_hyojijun));
+			binding.spinnerHyojijun.setSelection(getIntData(context, "spinnerHyojijun", "selected", 0));
+			binding.spinnerHyojijun.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerHyojijunOnItemSelectedListener);
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -252,7 +322,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			}
 			else PlaySound.bSkipOboe = false;
 			PlaySound.bHyojiYakuBeforeRead = swHyojiBeforeRead.isChecked();
-			PlaySound.bEnglishToJapaneseOrder = SettingFragment.radioButtonEtoJ.isChecked();
+			PlaySound.bEnglishToJapaneseOrder = radioButtonEtoJ.isChecked();
 			TestActivity.bSort = switchSortHanten.isChecked();
 			switch (v.getId()) {
 				case R.id.button1q: {
@@ -373,7 +443,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	private void onStartPlaying() {
 		//再生
-		TabActivity.setTabPageNum(2);
+		TabActivity.setTabPageNum(1);
 		PlayerFragment.initialize(getContext());
 		context.startForegroundService(new Intent(context, PlaySound.class));
 	}
@@ -415,7 +485,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	}
 	
 	private void onQuizservice(View v) {
-		TabActivity.setTabPageNum(3);
+		TabActivity.setTabPageNum(2);
 		new QuizCreator(context);
 	}
 	
@@ -543,6 +613,56 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					//順番テスト
 					nWordPhraseOrTest = 5;
 					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.seitouritsujunTest;
+					break;
+				}
+			}
+		} catch (Exception e) {
+			showException(context, e);
+		}
+	}
+	
+	private void spinnerKuuhakuOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
+		try {
+			putIntData(context, "spinnerKuuhaku", "selected", i);
+			switch (i) {
+				default:
+				case 0: {
+					strDirectoryNameForKuuhaku = "";
+					break;
+				}
+				case 1: {
+					strDirectoryNameForKuuhaku = "autocut-";
+					break;
+				}
+				case 2: {
+					strDirectoryNameForKuuhaku = "manucut-";
+					break;
+				}
+			}
+		} catch (Exception e) {
+			showException(context, e);
+		}
+	}
+	
+	private void spinnerHyojijunOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
+		try {
+			putIntData(context, "spinnerHyojijun", "selected", i);
+			switch (i) {
+				default:
+				case 0: {
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.kirokunomi;
+					break;
+				}
+				case 1: {
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.onlyHugoukaku;
+					break;
+				}
+				case 2: {
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.seikai1;
+					break;
+				}
+				case 3: {
+					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.huseikai2;
 					break;
 				}
 			}

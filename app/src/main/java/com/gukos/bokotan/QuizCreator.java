@@ -78,7 +78,7 @@ public class QuizCreator {
 			public void handleMessage(Message message) {
 				int choice = message.getData().getInt(QTHREAD_EXTRA_CHOICE, -1);
 				if (ansChoice == choice) {
-					if (SettingFragment.switchQuizOX.isChecked()) {
+					if (QSentakuFragment.switchQuizOX.isChecked()) {
 						soundPool.load(context, R.raw.seikai, 1);
 					}
 					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + quizWordDataList.get(problemNum).toString());
@@ -86,7 +86,7 @@ public class QuizCreator {
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
 				}
 				else {
-					if (SettingFragment.switchQuizOX.isChecked()) {
+					if (QSentakuFragment.switchQuizOX.isChecked()) {
 						soundPool.load(context, R.raw.huseikai, 1);
 					}
 					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解 " + quizWordDataList.get(problemNum).toString());
@@ -135,7 +135,7 @@ public class QuizCreator {
 		//出題する単語を決定
 		problemNum = random.nextInt(quizWordDataList.size());
 		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + quizWordDataList.get(problemNum).toString());
-		if (SettingFragment.switchQuizHatsuon.isChecked()) {
+		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
 			String mp3Path=null;
 			String q = quizWordDataList.get(problemNum).dataQ;

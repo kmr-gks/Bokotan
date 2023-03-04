@@ -8,7 +8,7 @@ import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.PlaySound.isWordAndPhraseMode;
 import static com.gukos.bokotan.PlaySound.now;
-import static com.gukos.bokotan.SettingFragment.swOnlyFirst;
+import static com.gukos.bokotan.QSentakuFragment.swOnlyFirst;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
