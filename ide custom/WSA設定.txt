@@ -1,0 +1,2 @@
+adb -s 127.0.0.1:58526 install "D:\...\Downloads\File Manager_3.1.4_Apkpure.apk"
+adb -s 127.0.0.1:58526 push "download\data.zip" /sdcard/Download/data.zip

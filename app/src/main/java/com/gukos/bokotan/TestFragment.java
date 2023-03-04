@@ -34,7 +34,8 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	}
 	
 	public enum ViewName {
-		Ans, Marubatsu, Editorial, No, Mondaibun, Hint, Select1, Select2, Select3, Select4, Idontknow
+		Ans, Marubatsu, Editorial, No, Mondaibun, Hint, Select1, Select2, Select3, Select4, Idontknow,
+		Debug
 	}
 	
 	//https://oc-technote.com/android/service%E3%81%8B%E3%82%89activity%E3%81%AB%E5%80%A4%E3%82%92%E6%8A%95%E3%81%92%E3%81%9F%E3%82%8A%E7%94%BB%E9%9D%A2%E3%82%92%E6%9B%B4%E6%96%B0%E3%81%97%E3%81%9F%E3%82%8A%E3%81%99%E3%82%8B%E6%96%B9/
@@ -88,6 +89,10 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 				}
 				case Idontknow: {
 					textViewToHandle = binding.buttonIdontKnow;
+					break;
+				}
+				case Debug: {
+					textViewToHandle = binding.textViewDebug;
 					break;
 				}
 				default: {

@@ -14,7 +14,7 @@ import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPath;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
-import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
@@ -302,14 +302,14 @@ public class PlaySound extends Service {
 				if (strQPath.startsWith("y"))
 					path = getPath(yumetan, strQPath, phrase, english, now);
 				else if (strQPath.startsWith("tanjukugo")) {
-					path = getPath(tanjukugoEX, strQPath, phrase, english, now);
+					path = getPath(tanjukugo, strQPath, phrase, english, now);
 				}
 				else
 					path = getPath(passTan, strQPath, phrase, english, now);
 			else if (strQPath.startsWith("y"))
 				path = getPath(yumetan, strQPath, word, english, now);
 			else if (strQPath.startsWith("tanjukugo")) {
-				path = getPath(tanjukugoEX, strQPath, word, english, now);
+				path = getPath(tanjukugo, strQPath, word, english, now);
 			}
 			else path = getPath(passTan, strQPath, word, english, now);
 			PlayerFragment.textViewPath.setText(path);
@@ -412,14 +412,14 @@ public class PlaySound extends Service {
 				if (strQPath.startsWith("y"))
 					path = getPath(yumetan, strQPath, phrase, japanese, now);
 				else if (strQPath.startsWith("tanjukugo")) {
-					path = getPath(tanjukugoEX, strQPath, phrase, japanese, now);
+					path = getPath(tanjukugo, strQPath, phrase, japanese, now);
 				}
 				else
 					path = getPath(passTan, strQPath, phrase, japanese, now);
 			else if (strQPath.startsWith("y"))
 				path = getPath(yumetan, strQPath, word, japanese, now);
 			else if (strQPath.startsWith("tanjukugo")) {
-				path = getPath(tanjukugoEX, strQPath, word, japanese, now);
+				path = getPath(tanjukugo, strQPath, word, japanese, now);
 			}
 			else path = getPath(passTan, strQPath, word, japanese, now);
 			PlayerFragment.textViewPath.setText(path);

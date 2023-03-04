@@ -420,7 +420,7 @@ public final class MyLibrary {
 						path += strDataQ + "/" + type + String.format("%04d", tangoNum) + ".mp3";
 						break;
 					}
-					case tanjukugoEX: {
+					case tanjukugo: {
 						if (dataType == WordPhraseData.DataType.word && dataLang == WordPhraseData.DataLang.english)
 							type = "英語";
 						else if (dataType == WordPhraseData.DataType.word && dataLang == WordPhraseData.DataLang.japanese)

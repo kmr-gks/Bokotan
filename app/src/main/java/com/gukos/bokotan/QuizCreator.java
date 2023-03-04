@@ -2,7 +2,11 @@ package com.gukos.bokotan;
 
 
 import static com.gukos.bokotan.MyLibrary.sleep;
+import static com.gukos.bokotan.WordPhraseData.DataBook;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEx;
+import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataType.word;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
@@ -43,17 +47,19 @@ public class QuizCreator {
 	static final class QuizWordData {
 		public final String e, j;
 		public final int no;
-		public final String book;
+		public final DataBook dataBook;
+		public final String dataQ;
 		
-		public QuizWordData(String e, String j, int no, String book) {
+		public QuizWordData(String e, String j, int no, DataBook dataBook, String dataQ) {
 			this.e = e;
 			this.j = j;
 			this.no = no;
-			this.book = book;
+			this.dataBook = dataBook;
+			this.dataQ = dataQ;
 		}
 		
 		public String toString() {
-			return "e=" + e + ",no=" + no + ",book=" + book;
+			return "e=" + e + ",no=" + no + ",book=" + dataBook + ",q=" + dataQ;
 		}
 	}
 	
@@ -83,8 +89,7 @@ public class QuizCreator {
 					if (SettingFragment.switchQuizOX.isChecked()) {
 						soundPool.load(context, R.raw.huseikai, 1);
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Ans,
-					                        "不正解 " + quizWordDataList.get(problemNum).toString());
+					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解 " + quizWordDataList.get(problemNum).toString());
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
 				}
@@ -111,13 +116,13 @@ public class QuizCreator {
 			if (!onActive) return;
 			//単語データ読み取り
 			for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
-				new WordPhraseData(PasstanWord + q, context, quizWordDataList, q);
+				new WordPhraseData(PasstanWord + q, context, quizWordDataList, passTan, q);
 			for (var q : new String[]{"1q", "p1q"})
-				new WordPhraseData(TanjukugoWord + q, context, quizWordDataList, q);
+				new WordPhraseData(TanjukugoWord + q, context, quizWordDataList, tanjukugo, q);
 			for (var q : new String[]{"1q", "p1q"})
-				new WordPhraseData(TanjukugoEXWord + q, context, quizWordDataList, q);
+				new WordPhraseData(TanjukugoEXWord + q, context, quizWordDataList, tanjukugoEx, q);
 			for (var q : new String[]{"00", "08", "1", "2", "3"})
-				new WordPhraseData(YumeWord + q, context, quizWordDataList, q);
+				new WordPhraseData(YumeWord + q, context, quizWordDataList, yumetan, q);
 			setMondai();
 		});
 	}
@@ -132,13 +137,23 @@ public class QuizCreator {
 		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + quizWordDataList.get(problemNum).toString());
 		if (SettingFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
-			String mp3Path;
-			String book = quizWordDataList.get(problemNum).book;
+			String mp3Path=null;
+			String q = quizWordDataList.get(problemNum).dataQ;
 			int no = quizWordDataList.get(problemNum).no;
+			DataBook dataBook=quizWordDataList.get(problemNum).dataBook;
 			//パス単1q,p1qのみ再生
-			if (book.endsWith("1q")) {
-				mp3Path = MyLibrary.FileDirectoryManager.getPath(passTan, book, word, english, no);
+			if (dataBook==passTan&&q.endsWith("1q")) {
+				mp3Path = MyLibrary.FileDirectoryManager.getPath(passTan, q, word, english, no);
+			}
+			if (dataBook==yumetan) {
+				mp3Path = MyLibrary.FileDirectoryManager.getPath(yumetan, "y"+q, word, english, no);
+			}
+			if (dataBook==tanjukugo) {
+				mp3Path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, q, word, english, no);
+			}
+			if (mp3Path!=null){
 				soundPool.load(mp3Path, 1);
+				sendBroadcastTextChange(TestFragment.ViewName.Debug,mp3Path);
 			}
 		}
 		//なぜかこれだはダメ

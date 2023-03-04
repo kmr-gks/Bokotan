@@ -6,7 +6,7 @@ import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.starts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.tangoNumToString;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
-import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
@@ -19,7 +19,6 @@ import static com.gukos.bokotan.WordPhraseData.DataQ.y3;
 import static com.gukos.bokotan.WordPhraseData.DataType.phrase;
 import static com.gukos.bokotan.WordPhraseData.DataType.word;
 import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.SetHatsuonKigou;
-import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.getHatsuon;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.Svl;
@@ -44,7 +43,6 @@ import com.gukos.bokotan.databinding.FragmentKensakuBinding;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 
@@ -53,67 +51,9 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	public static TreeMap<String, GogenYomu> trGogenYomu;
 	Thread threadInitial = null, threadSearch = null;
 	boolean threadSearchIsRunning = true;
-	private final ArrayList<WordInfo> allData = new ArrayList<>();
-	private ArrayList<WordInfo> resultData = new ArrayList<>();
+	private final ArrayList<WordPhraseData.WordInfo> allData = new ArrayList<>();
+	private ArrayList<WordPhraseData.WordInfo> resultData = new ArrayList<>();
 	enumKensakuHouhou kensakuHouhou = starts;
-	static class WordInfo {
-		static int size = 0;
-		final int toushiNumber, localNumber;
-		final String category, e, j, subCategory;
-		final WordPhraseData.DataType dataType;
-		
-		WordInfo(String category, String e, String j, int localNumber, WordPhraseData.DataType dataType) {
-			this(category, null, e, j, localNumber, dataType);
-		}
-		
-		WordInfo(String category, String subCategory, String e, String j, int localNumber, WordPhraseData.DataType dataType) {
-			size++;
-			this.toushiNumber = size;
-			this.category = category;
-			if (Objects.isNull(subCategory)) this.subCategory = "";
-			else this.subCategory = subCategory;
-			this.e = e;
-			this.j = j;
-			this.localNumber = localNumber;
-			this.dataType = dataType;
-		}
-		
-		String[] getAllFieldString() {
-			return new String[]{
-				this.e,
-				this.j,
-				this.category,
-				this.subCategory,
-				String.valueOf(this.localNumber),
-			};
-		}
-		
-		public String toString() {
-			try {
-				String string = category + " " + subCategory + " " + e + " " + j;
-				return string.substring(0, Math.min(string.length(), 50));
-			} catch (Exception e) {
-				showException(e);
-			}
-			return "<不明>";
-		}
-		
-		public String toDetailedString() {
-			try {
-				return "No. " + this.toushiNumber
-					+ "\nカテゴリ: " + this.category
-					+ " " + subCategory + "\n番号:"
-					+ this.localNumber
-					+ "\n" + this.e
-					+ "\n発音:" + getHatsuon(this.e)
-					+ "\n" + this.j + "\n"
-					+ GogenYomuFactory.getGogenString(this.e, true, true);
-			} catch (Exception e) {
-				showException(e);
-			}
-			return "<不明>";
-		}
-	}
 	
 	enum enumKensakuHouhou {
 		starts, contains, ends;
@@ -226,7 +166,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	public void setData() {
 		try {
 			//ファイルを開いて読み込む
-			WordInfo.size = 0;
+			WordPhraseData.WordInfo.size = 0;
 			Map<String, String> mapQName = new HashMap<>() {{
 				put("1q", "1級");
 				put("p1q", "準1級");
@@ -257,7 +197,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				WordPhraseData w = new WordPhraseData(PasstanWord + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new WordInfo("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
+						allData.add(new WordPhraseData.WordInfo("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
 			}
 			
 			//単熟語EX単語
@@ -265,11 +205,11 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				WordPhraseData w = new WordPhraseData(TanjukugoWord + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new WordInfo("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
+						allData.add(new WordPhraseData.WordInfo("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
 				WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + Q, context);
 				for (int i = 1; i < Math.min(wx.e.length, wx.j.length); i++)
 					if (wx.e[i] != null && wx.j[i] != null)
-						allData.add(new WordInfo("単熟語EX" + mapQName.get(Q), "Unit EX", wx.e[i], wx.j[i], i, word));
+						allData.add(new WordPhraseData.WordInfo("単熟語EX" + mapQName.get(Q), "Unit EX", wx.e[i], wx.j[i], i, word));
 			}
 			
 			//ユメタン単語
@@ -277,13 +217,13 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				WordPhraseData w = new WordPhraseData(YumeWord + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new WordInfo(mapQName.get(Q), "Unit" + ((i - 1) / 100 + 1), w.e[i], w.j[i], i, word));
+						allData.add(new WordPhraseData.WordInfo(mapQName.get(Q), "Unit" + ((i - 1) / 100 + 1), w.e[i], w.j[i], i, word));
 			}
 			
 			//語源データも読み込む
 			int gogenNum = 0;
 			for (TreeMap.Entry<String, GogenYomu> map : trGogenYomu.entrySet())
-				allData.add(new WordInfo("読む語源学", map.getKey(), map.getValue().wordJpn, ++gogenNum, WordPhraseData.DataType.gogengaku));
+				allData.add(new WordPhraseData.WordInfo("読む語源学", map.getKey(), map.getValue().wordJpn, ++gogenNum, WordPhraseData.DataType.gogengaku));
 			
 			//英語漬け.comから読み込み
 			for (String Q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q",
@@ -292,14 +232,14 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				WordPhraseData wpd = new WordPhraseData("Eigoduke.com/" + "WordDataEigoduke" + Q, context);
 				for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
 					if (wpd.e[i] != null && wpd.j[i] != null)
-						allData.add(new WordInfo("英語漬け" + mapQName.get(Q), wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
+						allData.add(new WordPhraseData.WordInfo("英語漬け" + mapQName.get(Q), wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
 			}
 			for (int num = 1; num <= 10; num++) {
 				String Q = "-toeic (" + num + ")";
 				WordPhraseData wpd = new WordPhraseData("Eigoduke.com/" + "WordDataEigoduke" + Q, context);
 				for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
 					if (wpd.e[i] != null && wpd.j[i] != null)
-						allData.add(new WordInfo("英語漬け" + "TOEIC" + num, wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
+						allData.add(new WordPhraseData.WordInfo("英語漬け" + "TOEIC" + num, wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
 			}
 			
 			//distinction
@@ -307,7 +247,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				WordPhraseData w = new WordPhraseData(WordPhraseData.distinction + "d" + d + "word", context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new WordInfo("Distinction" + d, tangoNumToString("Distinction" + d, i), w.e[i], w.j[i], i, word));
+						allData.add(new WordPhraseData.WordInfo("Distinction" + d, tangoNumToString("Distinction" + d, i), w.e[i], w.j[i], i, word));
 			}
 			
 			//フレーズ
@@ -315,7 +255,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				WordPhraseData w = new WordPhraseData(PasstanPhrase + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new WordInfo("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+						allData.add(new WordPhraseData.WordInfo("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
 			}
 			
 			//単熟語EX単語
@@ -323,7 +263,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				WordPhraseData w = new WordPhraseData(TanjukugoPhrase + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new WordInfo("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+						allData.add(new WordPhraseData.WordInfo("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
 			}
 			
 			//distinction
@@ -331,14 +271,14 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				WordPhraseData w = new WordPhraseData(WordPhraseData.distinction + Q, context);
 				for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
 					if (w.e[i] != null && w.j[i] != null)
-						allData.add(new WordInfo("Distinction" + mapQName.get(Q), tangoNumToString("Distinction" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+						allData.add(new WordPhraseData.WordInfo("Distinction" + mapQName.get(Q), tangoNumToString("Distinction" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
 			}
 			
 			//SVL12000辞書
 			WordPhraseData wordPhraseData = new WordPhraseData(Svl, context);
 			for (int i = 1; i < Math.min(wordPhraseData.e.length, wordPhraseData.j.length); i++)
 				if (wordPhraseData.e[i] != null && wordPhraseData.j[i] != null)
-					allData.add(new WordInfo("SVL", Integer.toString((i - 1) / 1000 + 1), wordPhraseData.e[i], wordPhraseData.j[i], i, word));
+					allData.add(new WordPhraseData.WordInfo("SVL", Integer.toString((i - 1) / 1000 + 1), wordPhraseData.e[i], wordPhraseData.j[i], i, word));
 			
 			//コピー
 			resultData = new ArrayList<>(allData);
@@ -369,7 +309,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
-	private void setListView(ListView lv, ArrayList<WordInfo> wordInfoList, ArrayList<CharSequence> titleList, String key) {
+	private void setListView(ListView lv, ArrayList<WordPhraseData.WordInfo> wordInfoList, ArrayList<CharSequence> titleList, String key) {
 		try {
 			if (titleList == null || key.length() == 0) {
 				lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1, wordInfoList));
@@ -379,7 +319,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 			}
 			lv.setOnItemClickListener((adapterView, view, i, l) -> {
 				try {
-					WordInfo ld = wordInfoList.get(i);
+					WordPhraseData.WordInfo ld = wordInfoList.get(i);
 					new AlertDialog.Builder(context)
 						.setTitle(MyLibrary.DisplayOutput.setStringColored(ld.toushiNumber + " : " + ld.e, key))
 						.setMessage(MyLibrary.DisplayOutput.setStringColored(ld.toDetailedString(), key))
@@ -397,7 +337,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
-	void playEnglishAndJapanese(WordInfo ld) {
+	void playEnglishAndJapanese(WordPhraseData.WordInfo ld) {
 		try {
 			String path;
 			switch (ld.category) {
@@ -410,11 +350,11 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 					break;
 				}
 				case "単熟語EX1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(tanjukugoEX, "tanjukugo1q", ld.dataType, english, ld.localNumber);
+					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugo1q", ld.dataType, english, ld.localNumber);
 					break;
 				}
 				case "単熟語EX準1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(tanjukugoEX, "tanjukugop1q", ld.dataType, english, ld.localNumber);
+					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugop1q", ld.dataType, english, ld.localNumber);
 					break;
 				}
 				case "ユメタン0": {
@@ -452,11 +392,11 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 						break;
 					}
 					case "単熟語EX1級": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(tanjukugoEX, "tanjukugo1q", ld.dataType, japanese, ld.localNumber);
+						pathJpn = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugo1q", ld.dataType, japanese, ld.localNumber);
 						break;
 					}
 					case "単熟語EX準1級": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(tanjukugoEX, "tanjukugop1q", ld.dataType, japanese, ld.localNumber);
+						pathJpn = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugop1q", ld.dataType, japanese, ld.localNumber);
 						break;
 					}
 					case "ユメタン0": {
@@ -491,7 +431,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
-	void playEnglish(WordInfo ld) {
+	void playEnglish(WordPhraseData.WordInfo ld) {
 		try {
 			String path;
 			switch (ld.category) {
@@ -504,11 +444,11 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 					break;
 				}
 				case "単熟語EX1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(tanjukugoEX, "tanjukugo1q", ld.dataType, english, ld.localNumber);
+					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugo1q", ld.dataType, english, ld.localNumber);
 					break;
 				}
 				case "単熟語EX準1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(tanjukugoEX, "tanjukugop1q", ld.dataType, english, ld.localNumber);
+					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugop1q", ld.dataType, english, ld.localNumber);
 					break;
 				}
 				case "ユメタン0": {

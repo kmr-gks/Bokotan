@@ -13,7 +13,7 @@ import static com.gukos.bokotan.PlaySound.wordE;
 import static com.gukos.bokotan.PlaySound.wordJ;
 import static com.gukos.bokotan.PlayerFragment.lastnum;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
-import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEX;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataType.word;
@@ -404,7 +404,7 @@ public class TestActivity extends AppCompatActivity {
 					strLoadPath = FileDirectoryManager.getPath(yumetan, strQenum.getQ, word, english, nMondaiTangoNum);
 				}
 				else if (strQ.startsWith("tanjukugo")) {
-					strLoadPath = FileDirectoryManager.getPath(tanjukugoEX, strQ.substring(0, strQ.length() - 4), word, english, nMondaiTangoNum);
+					strLoadPath = FileDirectoryManager.getPath(tanjukugo, strQ.substring(0, strQ.length() - 4), word, english, nMondaiTangoNum);
 				}
 				else {
 					strLoadPath = FileDirectoryManager.getPath(passTan, strQenum.getQ, word, english, nMondaiTangoNum);

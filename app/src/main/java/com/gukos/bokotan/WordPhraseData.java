@@ -1,6 +1,7 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.getHatsuon;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class WordPhraseData {
 	//1qのunit=8のfrom=0,8,0; p1qunit=5 to=1,5,1
@@ -85,7 +87,7 @@ public class WordPhraseData {
 		}
 	}
 	
-	public WordPhraseData(String strQ, Context context, ArrayList<QuizCreator.QuizWordData> list, String book) {
+	public WordPhraseData(String strQ, Context context, ArrayList<QuizCreator.QuizWordData> list, DataBook dataBook, String dataQ) {
 		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
 		try {
 			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
@@ -93,7 +95,7 @@ public class WordPhraseData {
 			String dataE, dataJ;
 			int i = 0;
 			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
-				list.add(new QuizCreator.QuizWordData(dataE, dataJ, i, book));
+				list.add(new QuizCreator.QuizWordData(dataE, dataJ, i, dataBook,dataQ));
 				i++;
 			}
 			is1.close();
@@ -133,11 +135,28 @@ public class WordPhraseData {
 	}
 	
 	enum DataBook {
-		passTan, tanjukugoEX, yumetan,
+		passTan, tanjukugo, tanjukugoEx, yumetan,
 	}
 	
 	enum DataQ {
 		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3,
+	}
+	public static DataQ toDataQ(String string){
+		switch (string){
+			case "1q": return DataQ.q1;
+			case "p1q": return DataQ.qp1;
+			case "2q": return DataQ.q2;
+			case "p2q": return DataQ.qp2;
+			case "3q": return DataQ.q3;
+			case "4q": return DataQ.q4;
+			case "5q": return DataQ.q5;
+			case "y00": return DataQ.y00;
+			case "y08": return DataQ.y08;
+			case "y1": return DataQ.y1;
+			case "y2": return DataQ.y2;
+			case "y3": return DataQ.y3;
+			default:throw new IllegalArgumentException("Qの文字列が不正");
+		}
 	}
 	
 	enum DataType {word, phrase, gogengaku, eigoduke_com}
@@ -163,10 +182,6 @@ public class WordPhraseData {
 		
 		enum unit {
 			deruA, deruB, deruC, Jukugo, all
-		}
-		
-		enum shurui {
-			verb, noum, adjective, matome
 		}
 		
 		enum skipjouken {
@@ -218,6 +233,65 @@ public class WordPhraseData {
 				showException(e);
 				return "<不明>";
 			}
+		}
+	}
+	
+	static class WordInfo {
+		static int size = 0;
+		final int toushiNumber, localNumber;
+		final String category, e, j, subCategory;
+		final DataType dataType;
+		
+		WordInfo(String category, String e, String j, int localNumber, DataType dataType) {
+			this(category, null, e, j, localNumber, dataType);
+		}
+		
+		WordInfo(String category, String subCategory, String e, String j, int localNumber, DataType dataType) {
+			size++;
+			this.toushiNumber = size;
+			this.category = category;
+			if (Objects.isNull(subCategory)) this.subCategory = "";
+			else this.subCategory = subCategory;
+			this.e = e;
+			this.j = j;
+			this.localNumber = localNumber;
+			this.dataType = dataType;
+		}
+		
+		String[] getAllFieldString() {
+			return new String[]{
+				this.e,
+				this.j,
+				this.category,
+				this.subCategory,
+				String.valueOf(this.localNumber),
+			};
+		}
+		
+		public String toString() {
+			try {
+				String string = category + " " + subCategory + " " + e + " " + j;
+				return string.substring(0, Math.min(string.length(), 50));
+			} catch (Exception e) {
+				showException(e);
+			}
+			return "<不明>";
+		}
+		
+		public String toDetailedString() {
+			try {
+				return "No. " + this.toushiNumber
+					+ "\nカテゴリ: " + this.category
+					+ " " + subCategory + "\n番号:"
+					+ this.localNumber
+					+ "\n" + this.e
+					+ "\n発音:" + getHatsuon(this.e)
+					+ "\n" + this.j + "\n"
+					+ GogenYomuFactory.getGogenString(this.e, true, true);
+			} catch (Exception e) {
+				showException(e);
+			}
+			return "<不明>";
 		}
 	}
 }
