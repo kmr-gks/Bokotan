@@ -491,7 +491,8 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	private void onPlayStart(View view){
 		TabActivity.setTabPageNum(1);
-		new WordPhrasePlayer(context);
+		//new WordPhrasePlayer(context);
+		context.startForegroundService(new Intent(context, PlayerService.class).putExtra("rq", 1));
 	}
 	
 	private void onQuizservice(View v) {

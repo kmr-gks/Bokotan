@@ -38,6 +38,8 @@
 			android:exported="true"
 			android:permission="TODO" />
 
+		<service android:name=".PlayerService"/>
+
 		<receiver
 			android:name=".PipControlBroadcastReceiver"
 			android:exported="true"

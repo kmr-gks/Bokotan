@@ -8,6 +8,9 @@ import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.PlaySound.isWordAndPhraseMode;
 import static com.gukos.bokotan.PlaySound.now;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
 import static com.gukos.bokotan.QSentakuFragment.swOnlyFirst;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
@@ -186,6 +189,8 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				binding.seekBarJpn.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarJpn.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(binding.seekBarEng);
+				
+				binding.buttonStopService.setOnClickListener(this::onPlayerServiceStop);
 				
 				synchronized (isInitialized) {
 					isInitialized = true;
@@ -457,8 +462,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			
 			adapterUnit = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q) || sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
-				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞",
-				                                                          "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
+				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞", "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
 				for (int i = 0; i < 10; i++) {
 					WordPhraseData.SetNumFromAndTo(lastnum, i);
 					adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", PlaySound.from, PlaySound.to));
@@ -580,6 +584,11 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		} catch (Exception e) {
 			showException(context, e);
 		}
+	}
+	
+	public void onPlayerServiceStop(View view){
+		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE,PLAYERSERVICE_MESSAGE_STOP);
+		context.sendBroadcast(broadcastIntent);
 	}
 	
 	@Override
