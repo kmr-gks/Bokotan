@@ -10,6 +10,7 @@ import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.Context.ALARM_SERVICE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -57,6 +58,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.gukos.bokotan.WordPhraseData.q_num;
 import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
 import java.io.FileWriter;
@@ -491,8 +493,11 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	private void onPlayStart(View view){
 		TabActivity.setTabPageNum(1);
-		//new WordPhrasePlayer(context);
-		context.startForegroundService(new Intent(context, PlayerService.class).putExtra("rq", 1));
+		q_num.mode mode= q_num.mode.word;
+		if (view==binding.buttonPhrase) mode= q_num.mode.phrase;
+		else if (view==binding.buttonWP) mode= q_num.mode.wordPlusPhrase;
+		puts("mode="+mode);
+		context.startForegroundService(new Intent(context, PlayerService.class).putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode));
 	}
 	
 	private void onQuizservice(View v) {

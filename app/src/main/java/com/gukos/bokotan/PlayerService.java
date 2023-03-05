@@ -11,8 +11,9 @@ import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.Text;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
-import static com.gukos.bokotan.WordPhraseData.DataType.word;
+import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
+import static com.gukos.bokotan.WordPhraseData.q_num;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -35,8 +36,10 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 
 public class PlayerService extends Service {
-	MeasureThread thread;
+	
+	public static final String PLAYERSERVICE_EXTRA_MODE = "PLAYERSERVICE_EXTRA_MODE";
 	Context context;
+	q_num.mode selectMode, nowMode = q_num.mode.word;
 	
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -46,24 +49,19 @@ public class PlayerService extends Service {
 		Log.d("MyService", "onStartCommand()");
 		Log.d("MyService", "Thread name = " + Thread.currentThread().getName());
 		
-		int requestCode = intent.getIntExtra("REQUEST_CODE", 0);
+		selectMode = (q_num.mode) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
+		if (selectMode == q_num.mode.phrase) nowMode = q_num.mode.phrase;
+		
 		context = getApplicationContext();
 		String channelId = "default";
 		String title = context.getString(R.string.app_name);
-		
-		PendingIntent pendingIntent =
-			PendingIntent.getActivity(context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
-		
-		NotificationManager notificationManager =
-			(NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 101, intent, PendingIntent.FLAG_IMMUTABLE);
+		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		// Notification Channel 設定
-		NotificationChannel channel = new NotificationChannel(
-			channelId, title, NotificationManager.IMPORTANCE_DEFAULT);
+		NotificationChannel channel = new NotificationChannel(channelId, title, NotificationManager.IMPORTANCE_DEFAULT);
 		
 		if (notificationManager != null) {
 			notificationManager.createNotificationChannel(channel);
-			
 			Notification notification = new Notification.Builder(context, channelId)
 				.setContentTitle(title)
 				// android標準アイコンから
@@ -73,32 +71,31 @@ public class PlayerService extends Service {
 				.setContentIntent(pendingIntent)
 				.setWhen(System.currentTimeMillis())
 				.build();
-			
 			// startForeground
 			startForeground(1, notification);
-			
 		}
 		
-		thread = new MeasureThread(this);
-		thread.start();
-		
-		Service thisService= this;
-		HandlerThread handlerThread=new HandlerThread("test");
+		Service thisService = this;
+		HandlerThread handlerThread = new HandlerThread("test");
 		handlerThread.start();
-		handler=new Handler(handlerThread.getLooper()){
+		handler = new Handler(handlerThread.getLooper()) {
 			@Override
 			public void handleMessage(@NonNull Message msg) {
-				String messageType=msg.getData().getString(PLAYERSERVICE_MESSAGE_TYPE);
-				if (messageType.equals(PLAYERSERVICE_MESSAGE_STOP)){
+				String messageType = msg.getData().getString(PLAYERSERVICE_MESSAGE_TYPE);
+				if (messageType.equals(PLAYERSERVICE_MESSAGE_STOP)) {
 					//サービス停止
 					puts("サービス停止");
-					isPlaying=false;
-					if (mediaPlayer != null) {
-						if(mediaPlayer.isPlaying()) mediaPlayer.stop();
-						mediaPlayer.reset();
-						mediaPlayer.release();
+					isPlaying = false;
+					try {
+						if (mediaPlayer != null) {
+							mediaPlayer.stop();
+							mediaPlayer.reset();
+							mediaPlayer.release();
+						}
+						thisService.stopSelf();
+					} catch (Exception exception) {
+						;
 					}
-					thisService.stopSelf();
 				}
 			}
 		};
@@ -109,9 +106,9 @@ public class PlayerService extends Service {
 				}
 				sleep(100);
 			}
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng,"読み込み中");
+			sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng, "読み込み中");
 			sendBroadcastTextChange(PlayerFragment.PlayerViewName.jpn, "読み込み中");
-			isPlaying=true;
+			isPlaying = true;
 			
 			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(PLAYERSERVICE_ACTION));
 			
@@ -123,61 +120,76 @@ public class PlayerService extends Service {
 	}
 	
 	public static final String
-		PLAYERSERVICE_ACTION ="playerservice_action_stop",
-		PLAYERSERVICE_MESSAGE_TYPE="playerservice_message_type",
-		PLAYERSERVICE_MESSAGE_STOP="playerservice_message_stop";
+		PLAYERSERVICE_ACTION = "playerservice_action_stop",
+		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
+		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop";
 	
 	Handler handler;
 	MediaPlayer mediaPlayer;
 	ArrayList<QuizCreator.QuizWordData> quizWordDataList = new ArrayList<>();
-	int now=1;
 	String path;
 	boolean isPlaying;
 	
 	private void onPlay() {
 		//リソースの開放
-		if (mediaPlayer != null) {
-			if(mediaPlayer.isPlaying()) mediaPlayer.stop();
-			mediaPlayer.reset();
-			mediaPlayer.release();
+		try {
+			if (mediaPlayer != null) {
+				mediaPlayer.stop();
+				mediaPlayer.reset();
+				mediaPlayer.release();
+			}
+		} catch (Exception exception) {
+			;
 		}
 		if (isPlaying) {
 			sendBroadcastTextChange(PlayerFragment.PlayerViewName.genzai, "No." + quizWordDataList.get(now).no);
 			sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng, quizWordDataList.get(now).e);
 			sendBroadcastTextChange(PlayerFragment.PlayerViewName.jpn, quizWordDataList.get(now).j);
-			path = getPath(passTan, "1q", word, english, now);
+			path = getPath(passTan, "1q", nowMode, nowLang, now);
 			mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
 			mediaPlayer.start();
 			mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
-			now++;
+			setNextState();
+		}
+	}
+	
+	WordPhraseData.DataLang nowLang = english;
+	int now = 1;
+	
+	void setNextState() {
+		if (nowLang == english) {
+			//現在英語:日本語にする
+			nowLang = japanese;
+		}
+		else {
+			//現在日本語:英語にする
+			nowLang = english;
+			if (selectMode == q_num.mode.wordPlusPhrase) {
+				//単語->文
+				if (nowMode == q_num.mode.word) {
+					//現在単語だった
+					nowMode = q_num.mode.phrase;
+				}
+				else {
+					//文だった
+					nowMode = q_num.mode.word;
+					now++;
+				}
+			}
+			else {
+				//ずっと単語またはずっと文
+				nowMode = selectMode;
+				now++;
+			}
 		}
 	}
 	
 	private void sendBroadcastTextChange(PlayerFragment.PlayerViewName viewName, String text) {
-		//printCurrentState(",view=" + viewName + ",text=" + text);
 		Intent broadcastIntent =
 			new Intent(PLAYER_ACTION_UI_CHANGE)
 				.putExtra(PLAYER_VIEW_PROPERTIES, Text)
 				.putExtra(PLAYER_VIEW_TEXT, text)
 				.putExtra(PLAYER_VIEW_NAME, viewName);
 		context.sendBroadcast(broadcastIntent);
-	}
-}
-
-
-class MeasureThread extends Thread{
-	Service service;
-	MeasureThread(Service service){
-		this.service=service;
-	}
-	public void run() {
-		Log.d("MeasureThread run", "Thread name = "
-			+ Thread.currentThread().getName());
-		
-			for (int i = 0; i < 10; i++) {
-				puts(" i = " + i);
-				MyLibrary.sleep(1000);
-			}
-		service.stopSelf();
 	}
 }

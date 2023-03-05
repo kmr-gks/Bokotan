@@ -326,6 +326,18 @@ public final class MyLibrary {
 			}
 		}
 		
+		public static String getPath(WordPhraseData.DataBook dataBook, String str, WordPhraseData.q_num.mode mode, WordPhraseData.DataLang dataLang, int tangoNum) {
+			try {
+				WordPhraseData.DataType dataType;
+				if (mode== WordPhraseData.q_num.mode.word) dataType= WordPhraseData.DataType.word;
+				else dataType= WordPhraseData.DataType.phrase;
+				return getPath(dataBook, str, dataType, dataLang, tangoNum, true);
+			} catch (Exception e) {
+				ExceptionManager.showException(e);
+				return "<不明>";
+			}
+		}
+		
 		public static String getPath(WordPhraseData.DataBook dataBook, String str, WordPhraseData.DataType dataType, WordPhraseData.DataLang dataLang, int tangoNum) {
 			try {
 				return getPath(dataBook, str, dataType, dataLang, tangoNum, true);
