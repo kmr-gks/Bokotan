@@ -9,6 +9,8 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.PlaySound.isWordAndPhraseMode;
 import static com.gukos.bokotan.PlaySound.now;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_ENG_SPEED;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_JPN_SPEED;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
 import static com.gukos.bokotan.QSentakuFragment.swOnlyFirst;
@@ -645,17 +647,20 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public void onSpeedSeekBar(View v) {
 		try {
 			SeekBar sb = (SeekBar) v;
+			float speed = 1 + sb.getProgress()*0.1f;
 			if (sb.getId() == R.id.seekBarEng) {
 				//英語
-				binding.textViewSeekBarEng.setText(String.format("英語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
-				PlaySound.dPlaySpeedEng = 1 + 0.1 * sb.getProgress();
+				binding.textViewSeekBarEng.setText(String.format("英語速度:%.1f", speed));
+				PlaySound.dPlaySpeedEng = speed;
 				putIntData(context, "SeekBar", "english", sb.getProgress());
+				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_ENG_SPEED).putExtra(PLAYERSERVICE_MESSAGE_ENG_SPEED, speed));
 			}
 			else if (sb.getId() == R.id.seekBarJpn) {
 				//日本語
-				binding.textViewSeekBarJpn.setText(String.format("日本語速度:%.1f", 1.0 + sb.getProgress() / 10.0));
-				PlaySound.dPlaySpeedJpn = 1 + 0.1 * sb.getProgress();
+				binding.textViewSeekBarJpn.setText(String.format("日本語速度:%.1f", speed));
+				PlaySound.dPlaySpeedJpn = speed;
 				putIntData(context, "SeekBar", "japanese", sb.getProgress());
+				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_JPN_SPEED).putExtra(PLAYERSERVICE_MESSAGE_JPN_SPEED, speed));
 			}
 		} catch (Exception e) {
 			showException(context, e);

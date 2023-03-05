@@ -24,7 +24,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -81,20 +83,32 @@ public class PlayerService extends Service {
 		handler = new Handler(handlerThread.getLooper()) {
 			@Override
 			public void handleMessage(@NonNull Message msg) {
-				String messageType = msg.getData().getString(PLAYERSERVICE_MESSAGE_TYPE);
-				if (messageType.equals(PLAYERSERVICE_MESSAGE_STOP)) {
-					//サービス停止
-					puts("サービス停止");
-					isPlaying = false;
-					try {
-						if (mediaPlayer != null) {
-							mediaPlayer.stop();
-							mediaPlayer.reset();
-							mediaPlayer.release();
+				Bundle bundle=msg.getData();
+				String messageType = bundle.getString(PLAYERSERVICE_MESSAGE_TYPE);
+				switch (messageType) {
+					case PLAYERSERVICE_MESSAGE_STOP: {
+						//サービス停止
+						puts("サービス停止");
+						isPlaying = false;
+						try {
+							if (mediaPlayer != null) {
+								mediaPlayer.stop();
+								mediaPlayer.reset();
+								mediaPlayer.release();
+							}
+							thisService.stopSelf();
+						} catch (Exception exception) {
+							;
 						}
-						thisService.stopSelf();
-					} catch (Exception exception) {
-						;
+						break;
+					}
+					case PLAYERSERVICE_MESSAGE_JPN_SPEED:{
+						dPlaySpeedJpn=bundle.getFloat(PLAYERSERVICE_MESSAGE_JPN_SPEED);
+						break;
+					}
+					case PLAYERSERVICE_MESSAGE_ENG_SPEED:{
+						dPlaySpeedEng=bundle.getFloat(PLAYERSERVICE_MESSAGE_ENG_SPEED);
+						break;
 					}
 				}
 			}
@@ -120,15 +134,18 @@ public class PlayerService extends Service {
 	}
 	
 	public static final String
-		PLAYERSERVICE_ACTION = "playerservice_action_stop",
+		PLAYERSERVICE_ACTION = "playerservice_action",
 		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
-		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop";
+		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
+		PLAYERSERVICE_MESSAGE_JPN_SPEED = "playerservice_message_jpn_speed",
+		PLAYERSERVICE_MESSAGE_ENG_SPEED = "playerservice_message_eng_speed";
 	
 	Handler handler;
 	MediaPlayer mediaPlayer;
 	ArrayList<QuizCreator.QuizWordData> quizWordDataList = new ArrayList<>();
 	String path;
 	boolean isPlaying;
+	float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 1.5f;
 	
 	private void onPlay() {
 		//リソースの開放
@@ -149,40 +166,39 @@ public class PlayerService extends Service {
 			mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
 			mediaPlayer.start();
 			mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
-			setNextState();
+			
+			if (nowLang == english) {
+				//現在英語:日本語にする
+				nowLang = japanese;
+				mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedEng));
+			}
+			else {
+				//現在日本語:英語にする
+				nowLang = english;
+				if (selectMode == q_num.mode.wordPlusPhrase) {
+					//単語->文
+					if (nowMode == q_num.mode.word) {
+						//現在単語だった
+						nowMode = q_num.mode.phrase;
+					}
+					else {
+						//文だった
+						nowMode = q_num.mode.word;
+						now++;
+					}
+				}
+				else {
+					//ずっと単語またはずっと文
+					nowMode = selectMode;
+					now++;
+				}
+				mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedJpn));
+			}
 		}
 	}
 	
 	WordPhraseData.DataLang nowLang = english;
 	int now = 1;
-	
-	void setNextState() {
-		if (nowLang == english) {
-			//現在英語:日本語にする
-			nowLang = japanese;
-		}
-		else {
-			//現在日本語:英語にする
-			nowLang = english;
-			if (selectMode == q_num.mode.wordPlusPhrase) {
-				//単語->文
-				if (nowMode == q_num.mode.word) {
-					//現在単語だった
-					nowMode = q_num.mode.phrase;
-				}
-				else {
-					//文だった
-					nowMode = q_num.mode.word;
-					now++;
-				}
-			}
-			else {
-				//ずっと単語またはずっと文
-				nowMode = selectMode;
-				now++;
-			}
-		}
-	}
 	
 	private void sendBroadcastTextChange(PlayerFragment.PlayerViewName viewName, String text) {
 		Intent broadcastIntent =
