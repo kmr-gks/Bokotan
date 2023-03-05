@@ -323,6 +323,13 @@
 						android:textColor="@color/buttontext" />
 				</LinearLayout>
 
+				<Spinner
+					android:id="@+id/spinnerBookQ"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:minHeight="48dp"
+					android:popupBackground="@color/background" />
+
 				<TextView
 					android:id="@+id/textViewModeSelect"
 					android:layout_width="match_parent"
@@ -387,7 +394,7 @@
 					android:text="問題出題方法" />
 
 				<RadioGroup
-					android:id="@+id/radioGropuEngAndJpn"
+					android:id="@+id/radioGroupEngAndJpn"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:background="@drawable/border"

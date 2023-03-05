@@ -404,7 +404,9 @@ public class TestActivity extends AppCompatActivity {
 					strLoadPath = FileDirectoryManager.getPath(yumetan, strQenum.getQ, word, english, nMondaiTangoNum);
 				}
 				else if (strQ.startsWith("tanjukugo")) {
+					puts("getPath:"+tanjukugo+","+strQ.substring(0, strQ.length() - 4)+","+word+ ","+english+","+nMondaiTangoNum);
 					strLoadPath = FileDirectoryManager.getPath(tanjukugo, strQ.substring(0, strQ.length() - 4), word, english, nMondaiTangoNum);
+					puts("path="+strLoadPath);
 				}
 				else {
 					strLoadPath = FileDirectoryManager.getPath(passTan, strQenum.getQ, word, english, nMondaiTangoNum);

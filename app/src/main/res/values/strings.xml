@@ -95,12 +95,21 @@
 		<item>0.25秒カット</item>
 	</string-array>
 
-
 	<string-array name="spinner_hyojijun">
 		<item>記録のみ</item>
 		<item>不合格のみ</item>
 		<item>1回正解を飛ばす</item>
 		<item>2回以上不正解のみ</item>
+	</string-array>
+
+	<string-array name="spinner_book_q">
+		<item>ユメタン1</item>
+		<item>ユメタン2</item>
+		<item>ユメタン3</item>
+		<item>パス単1級</item>
+		<item>パス単準1級</item>
+		<item>単熟語1級</item>
+		<item>単熟語準1級</item>
 	</string-array>
 
 </resources>

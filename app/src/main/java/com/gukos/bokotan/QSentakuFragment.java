@@ -10,7 +10,6 @@ import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.Context.ALARM_SERVICE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
-import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -242,6 +241,10 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			binding.spinnerHyojijun.setAdapter(getAdapterForSpinner(context, R.array.spinner_hyojijun));
 			binding.spinnerHyojijun.setSelection(getIntData(context, "spinnerHyojijun", "selected", 0));
 			binding.spinnerHyojijun.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerHyojijunOnItemSelectedListener);
+			
+			binding.spinnerBookQ.setAdapter(getAdapterForSpinner(context, R.array.spinner_book_q));
+			binding.spinnerBookQ.setSelection(getIntData(context,"spinnerBookQ","selected",4));
+			binding.spinnerBookQ.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected)this::spinnerBookQOnItemSelectedListener);
 			
 			binding.buttonWord.setOnClickListener(this::onPlayStart);
 			binding.buttonPhrase.setOnClickListener(this::onPlayStart);
@@ -496,8 +499,53 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		q_num.mode mode= q_num.mode.word;
 		if (view==binding.buttonPhrase) mode= q_num.mode.phrase;
 		else if (view==binding.buttonWP) mode= q_num.mode.wordPlusPhrase;
-		puts("mode="+mode);
-		context.startForegroundService(new Intent(context, PlayerService.class).putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode));
+		WordPhraseData.DataBook dataBook;
+		String stringQ;
+		switch (binding.spinnerBookQ.getSelectedItemPosition()){
+			case 0:{
+				dataBook= WordPhraseData.DataBook.yumetan;
+				stringQ="y1";
+				break;
+			}
+			case 1:{
+				dataBook= WordPhraseData.DataBook.yumetan;
+				stringQ="y2";
+				break;
+			}
+			case 2:{
+				dataBook= WordPhraseData.DataBook.yumetan;
+				stringQ="y3";
+				break;
+			}
+			case 3:{
+				dataBook= WordPhraseData.DataBook.passTan;
+				stringQ="1q";
+				break;
+			}
+			default:
+			case 4:{
+				dataBook= WordPhraseData.DataBook.passTan;
+				stringQ="p1q";
+				break;
+			}
+			case 5:{
+				dataBook= WordPhraseData.DataBook.tanjukugo;
+				stringQ="1q";
+				break;
+			}
+			case 6:{
+				dataBook= WordPhraseData.DataBook.tanjukugo;
+				stringQ="p1q";
+				break;
+			}
+		}
+		
+		context.startForegroundService(
+			new Intent(context, PlayerService.class)
+				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
+				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK,dataBook)
+				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_Q,stringQ)
+		);
 	}
 	
 	private void onQuizservice(View v) {
@@ -687,4 +735,11 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		}
 	}
 	
+	private void spinnerBookQOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
+		try {
+			putIntData(context, "spinnerBookQ", "selected", i);
+		} catch (Exception e) {
+			showException(context, e);
+		}
+	}
 }

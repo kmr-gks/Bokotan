@@ -1,6 +1,7 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPath;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_ACTION_UI_CHANGE;
@@ -10,9 +11,13 @@ import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.Text;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
+import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
+import static com.gukos.bokotan.WordPhraseData.YumeWord;
 import static com.gukos.bokotan.WordPhraseData.q_num;
 
 import android.app.Notification;
@@ -39,7 +44,10 @@ import java.util.ArrayList;
 
 public class PlayerService extends Service {
 	
-	public static final String PLAYERSERVICE_EXTRA_MODE = "PLAYERSERVICE_EXTRA_MODE";
+	public static final String
+		PLAYERSERVICE_EXTRA_MODE = "PLAYERSERVICE_EXTRA_MODE",
+		PLAYERSERVICE_EXTRA_BOOK="playerservice_extra_book",
+		PLAYERSERVICE_EXTRA_Q="playerservice_extra_q";
 	Context context;
 	q_num.mode selectMode, nowMode = q_num.mode.word;
 	
@@ -53,6 +61,8 @@ public class PlayerService extends Service {
 		
 		selectMode = (q_num.mode) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
 		if (selectMode == q_num.mode.phrase) nowMode = q_num.mode.phrase;
+		dataBook= (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
+		stringQ=intent.getStringExtra(PLAYERSERVICE_EXTRA_Q);
 		
 		context = getApplicationContext();
 		String channelId = "default";
@@ -126,8 +136,29 @@ public class PlayerService extends Service {
 			
 			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(PLAYERSERVICE_ACTION));
 			
-			for (var q : new String[]{"1q", "p1q"})
-				new WordPhraseData(PasstanWord + q, context, quizWordDataList, passTan, q);
+			String strBookName;
+			switch (dataBook){
+				default:
+				case passTan:{
+					strBookName=PasstanWord;
+					break;
+				}
+				case tanjukugo:{
+					strBookName=TanjukugoWord;
+					break;
+				}
+				case yumetan:{
+					strBookName=YumeWord;
+					break;
+				}
+			}
+			puts("strBookName + stringQ="+strBookName + stringQ+",dataBook="+dataBook+",stringq="+stringQ);
+			puts("PasstanWord + q="+PasstanWord + "p1q"+",passTan="+passTan+",q=p1q");
+			if (dataBook==yumetan){
+				new WordPhraseData(strBookName + stringQ.substring(1), context,quizWordDataList, dataBook, stringQ);
+			}else {
+				new WordPhraseData(strBookName + stringQ, context, quizWordDataList, dataBook, stringQ);
+			}
 			onPlay();
 		});
 		return START_NOT_STICKY;
@@ -146,6 +177,8 @@ public class PlayerService extends Service {
 	String path;
 	boolean isPlaying;
 	float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 1.5f;
+	WordPhraseData.DataBook dataBook=passTan;
+	String stringQ="p1q";
 	
 	private void onPlay() {
 		//リソースの開放
@@ -162,37 +195,46 @@ public class PlayerService extends Service {
 			sendBroadcastTextChange(PlayerFragment.PlayerViewName.genzai, "No." + quizWordDataList.get(now).no);
 			sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng, quizWordDataList.get(now).e);
 			sendBroadcastTextChange(PlayerFragment.PlayerViewName.jpn, quizWordDataList.get(now).j);
-			path = getPath(passTan, "1q", nowMode, nowLang, now);
-			mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
-			mediaPlayer.start();
-			mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
-			
-			if (nowLang == english) {
-				//現在英語:日本語にする
-				nowLang = japanese;
-				mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedEng));
-			}
-			else {
-				//現在日本語:英語にする
-				nowLang = english;
-				if (selectMode == q_num.mode.wordPlusPhrase) {
-					//単語->文
-					if (nowMode == q_num.mode.word) {
-						//現在単語だった
-						nowMode = q_num.mode.phrase;
-					}
-					else {
-						//文だった
-						nowMode = q_num.mode.word;
-						now++;
-					}
+			puts("getPath:"+dataBook+","+stringQ+","+nowMode+","+nowLang+","+now);
+			if (dataBook==tanjukugo) {
+				path = getPath(dataBook, "tanjukugo"+stringQ, nowMode, nowLang, now);
+			}else path = getPath(dataBook, stringQ, nowMode, nowLang, now);
+			puts("path="+path);
+			sendBroadcastTextChange(PlayerFragment.PlayerViewName.path, path);
+			try {
+				mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
+				mediaPlayer.start();
+				mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
+				
+				if (nowLang == english) {
+					//現在英語:日本語にする
+					nowLang = japanese;
+					mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedEng));
 				}
 				else {
-					//ずっと単語またはずっと文
-					nowMode = selectMode;
-					now++;
+					//現在日本語:英語にする
+					nowLang = english;
+					if (selectMode == q_num.mode.wordPlusPhrase) {
+						//単語->文
+						if (nowMode == q_num.mode.word) {
+							//現在単語だった
+							nowMode = q_num.mode.phrase;
+						}
+						else {
+							//文だった
+							nowMode = q_num.mode.word;
+							now++;
+						}
+					}
+					else {
+						//ずっと単語またはずっと文
+						nowMode = selectMode;
+						now++;
+					}
+					mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedJpn));
 				}
-				mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedJpn));
+			} catch (Exception exception) {
+				showException(context, exception);
 			}
 		}
 	}
