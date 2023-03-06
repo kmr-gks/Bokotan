@@ -155,9 +155,35 @@ public class PlayerService extends Service {
 			puts("strBookName + stringQ="+strBookName + stringQ+",dataBook="+dataBook+",stringq="+stringQ);
 			puts("PasstanWord + q="+PasstanWord + "p1q"+",passTan="+passTan+",q=p1q");
 			if (dataBook==yumetan){
-				new WordPhraseData(strBookName + stringQ.substring(1), context,quizWordDataList, dataBook, stringQ);
+				//ユメタン:単語のみ
+				new WordPhraseData(strBookName + stringQ.substring(1), context, wordDataList, dataBook, stringQ);
+				phraseDataList=wordDataList;
 			}else {
-				new WordPhraseData(strBookName + stringQ, context, quizWordDataList, dataBook, stringQ);
+				if(selectMode== q_num.mode.word) {
+					//単語データのみ読み込む
+					new WordPhraseData(strBookName + stringQ, context, wordDataList, dataBook, stringQ);
+				}else if (selectMode== q_num.mode.phrase){
+					//文データのみ読み込む
+					String dirpath=null;
+					if (strBookName==PasstanWord){
+						dirpath="Passtan/Phrase";
+					}
+					if (strBookName==TanjukugoWord){
+						dirpath="TanjukugoEX/Phrase";
+					}
+					new WordPhraseData(dirpath + stringQ, context, phraseDataList, dataBook, stringQ);
+				}else{
+					//両方読み込む
+					new WordPhraseData(strBookName + stringQ, context, wordDataList, dataBook, stringQ);
+					String dirpath=null;
+					if (strBookName==PasstanWord){
+						dirpath="Passtan/Phrase";
+					}
+					if (strBookName==TanjukugoWord){
+						dirpath="TanjukugoEX/Phrase";
+					}
+					new WordPhraseData(dirpath + stringQ, context, phraseDataList, dataBook, stringQ);
+				}
 			}
 			onPlay();
 		});
@@ -173,7 +199,7 @@ public class PlayerService extends Service {
 	
 	Handler handler;
 	MediaPlayer mediaPlayer;
-	ArrayList<QuizCreator.QuizWordData> quizWordDataList = new ArrayList<>();
+	ArrayList<QuizCreator.QuizWordData> wordDataList = new ArrayList<>(),phraseDataList= new ArrayList<>();
 	String path;
 	boolean isPlaying;
 	float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 1.5f;
@@ -192,9 +218,11 @@ public class PlayerService extends Service {
 			;
 		}
 		if (isPlaying) {
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.genzai, "No." + quizWordDataList.get(now).no);
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng, quizWordDataList.get(now).e);
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.jpn, quizWordDataList.get(now).j);
+			var list=wordDataList;
+			if (nowMode== q_num.mode.phrase) list=phraseDataList;
+			sendBroadcastTextChange(PlayerFragment.PlayerViewName.genzai, "No." + list.get(now).no);
+			sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng, list.get(now).e);
+			sendBroadcastTextChange(PlayerFragment.PlayerViewName.jpn, list.get(now).j);
 			puts("getPath:"+dataBook+","+stringQ+","+nowMode+","+nowLang+","+now);
 			if (dataBook==tanjukugo) {
 				path = getPath(dataBook, "tanjukugo"+stringQ, nowMode, nowLang, now);

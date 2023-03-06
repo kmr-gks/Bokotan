@@ -325,7 +325,7 @@
 
 				<Spinner
 					android:id="@+id/spinnerBookQ"
-					android:layout_width="wrap_content"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:minHeight="48dp"
 					android:popupBackground="@color/background" />
@@ -427,7 +427,7 @@
 
 				<Spinner
 					android:id="@+id/spinnerSpace"
-					android:layout_width="wrap_content"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:minHeight="48dp"
 					android:popupBackground="@color/background" />
@@ -440,7 +440,7 @@
 
 				<Spinner
 					android:id="@+id/spinnerHyojijun"
-					android:layout_width="wrap_content"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:minHeight="48dp"
 					android:popupBackground="@color/background" />
