@@ -550,7 +550,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	private void onQuizservice(View v) {
 		TabActivity.setTabPageNum(2);
-		new QuizCreator(context);
+		new QuizCreator(context,null,null);
 	}
 	
 	//https://qiita.com/niwasawa/items/c8271f56f058965b318b

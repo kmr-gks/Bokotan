@@ -90,35 +90,40 @@ public class WordPhraseData {
 		}
 	}
 	
-	public static WordPhraseData read(DataBook dataBook, String strBookName, DataQ dataQ, Context context, ArrayList<QuizCreator.QuizWordData> wordDataList, ArrayList<QuizCreator.QuizWordData> phraseDataList,q_num.mode selectMode) {
+	public static void read(DataBook dataBook, DataQ dataQ, Context context, ArrayList<QuizCreator.QuizWordData> wordDataList, ArrayList<QuizCreator.QuizWordData> phraseDataList, q_num.mode selectMode) {
+		final String strBookName,dirpath;
+		switch (dataBook) {
+			default:
+			case passTan: {
+				strBookName = PasstanWord;
+				dirpath="Passtan/Phrase";
+				break;
+			}
+			case tanjukugo: {
+				strBookName = TanjukugoWord;
+				dirpath="TanjukugoEX/Phrase";
+				break;
+			}
+			case yumetan: {
+				strBookName = YumeWord;
+				dirpath=null;
+				break;
+			}
+		}
 		if (dataBook==yumetan){
 			//ユメタン:単語のみ
-			return new WordPhraseData(strBookName + dataQ.toString().substring(1), context, wordDataList, dataBook, dataQ);
+			new WordPhraseData(strBookName + dataQ.toString().substring(1), context, wordDataList, dataBook, dataQ);
 		}else {
 			if(selectMode== q_num.mode.word) {
 				//単語データのみ読み込む
-				return new WordPhraseData(strBookName + dataQ.toString(), context, wordDataList, dataBook, dataQ);
+				new WordPhraseData(strBookName + dataQ.toString(), context, wordDataList, dataBook, dataQ);
 			}else if (selectMode== q_num.mode.phrase){
 				//文データのみ読み込む
-				String dirpath=null;
-				if (strBookName ==PasstanWord){
-					dirpath="Passtan/Phrase";
-				}
-				if (strBookName ==TanjukugoWord){
-					dirpath="TanjukugoEX/Phrase";
-				}
-				return new WordPhraseData(dirpath + dataQ.toString(), context, phraseDataList, dataBook, dataQ);
+				new WordPhraseData(dirpath + dataQ.toString(), context, phraseDataList, dataBook, dataQ);
 			}else{
 				//両方読み込む
 				new WordPhraseData(strBookName + dataQ.toString(), context, wordDataList, dataBook, dataQ);
-				String dirpath=null;
-				if (strBookName ==PasstanWord){
-					dirpath="Passtan/Phrase";
-				}
-				if (strBookName ==TanjukugoWord){
-					dirpath="TanjukugoEX/Phrase";
-				}
-				return new WordPhraseData(dirpath + dataQ.toString(), context, phraseDataList, dataBook, dataQ);
+				new WordPhraseData(dirpath + dataQ.toString(), context, phraseDataList, dataBook, dataQ);
 			}
 		}
 	}

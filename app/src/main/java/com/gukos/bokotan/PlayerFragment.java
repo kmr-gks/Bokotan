@@ -190,7 +190,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				
 				binding.seekBarJpn.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarJpn.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
-				onSpeedSeekBar(binding.seekBarEng);
+				onSpeedSeekBar(binding.seekBarJpn);
 				
 				binding.buttonStopService.setOnClickListener(this::onPlayerServiceStop);
 				
@@ -589,6 +589,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	}
 	
 	public void onPlayerServiceStop(View view){
+		puts(getMethodName());
 		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE,PLAYERSERVICE_MESSAGE_STOP);
 		context.sendBroadcast(broadcastIntent);
 	}

@@ -1,6 +1,7 @@
 package com.gukos.bokotan;
 
 
+import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.WordPhraseData.DataBook;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
@@ -37,11 +38,16 @@ public class QuizCreator {
 		QTHREAD_ACTION_CLICKED = "qthread_action_clicked",
 		QTHREAD_EXTRA_CHOICE = "qthread_extra_choice";
 	private boolean onActive = true;
-	private final SoundPool soundPool = new SoundPool.Builder().setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()).setMaxStreams(2).build();
-	private final ArrayList<String> e = new ArrayList<>();
-	private final ArrayList<String> j = new ArrayList<>();
+	private final SoundPool soundPool =
+		new SoundPool.Builder()
+			.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+			.setMaxStreams(2)
+			.build();
+	private final ArrayList<String> e = new ArrayList<>(), j = new ArrayList<>();
 	private int nProblems = 0;
 	int ansChoice, problemNum;
+	DataBook dataBook;
+	WordPhraseData.DataQ dataQ;
 	private final Random random = new Random();
 	
 	static final class QuizWordData {
@@ -65,14 +71,15 @@ public class QuizCreator {
 	
 	private final ArrayList<QuizWordData> quizWordDataList = new ArrayList<>();
 	
-	//メインスレッド
-	public QuizCreator(Context context) {
+	//コンストラクタ
+	public QuizCreator(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
 		this.context = context;
-		
-		handlerThread = new HandlerThread("QuizHandlerThread");
+		this.dataBook=dataBook;
+		this.dataQ=dataQ;
+		handlerThread = new HandlerThread(getClassName());
 		handlerThread.start();
 		handler = new Handler(handlerThread.getLooper()) {
-			//looperを指定しているので、クイズスレッド
+			//looperを指定しているので、クイズスレッドで実行される
 			//選択肢のボタンをクリックしたときの処理
 			@Override
 			public void handleMessage(Message message) {
@@ -96,10 +103,9 @@ public class QuizCreator {
 				setMondai();
 			}
 		};
-		//handler.post()はクイズスレッド
+		//handler.post()はクイズスレッドで、最初に実行される
 		handler.post(() -> {
 			//クイズを開始する処理
-			
 			//Testragmentの画面読み込みが終わるまで待機(スレッドが違うため、こちらの処理の方が早いことがある。)
 			while (true) {
 				synchronized (TestFragment.isInitialized) {
@@ -137,40 +143,39 @@ public class QuizCreator {
 		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + quizWordDataList.get(problemNum).toString());
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
-			String mp3Path=null;
+			String mp3Path = null;
 			String q = quizWordDataList.get(problemNum).dataQ;
 			int no = quizWordDataList.get(problemNum).no;
-			DataBook dataBook=quizWordDataList.get(problemNum).dataBook;
+			DataBook dataBook = quizWordDataList.get(problemNum).dataBook;
 			//パス単1q,p1qのみ再生
-			if (dataBook==passTan&&q.endsWith("1q")) {
+			if (dataBook == passTan && q.endsWith("1q")) {
 				mp3Path = MyLibrary.FileDirectoryManager.getPath(passTan, q, word, english, no);
 			}
-			if (dataBook==yumetan) {
-				mp3Path = MyLibrary.FileDirectoryManager.getPath(yumetan, "y"+q, word, english, no);
+			if (dataBook == yumetan) {
+				mp3Path = MyLibrary.FileDirectoryManager.getPath(yumetan, "y" + q, word, english, no);
 			}
-			if (dataBook==tanjukugo) {
+			if (dataBook == tanjukugo) {
 				mp3Path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, q, word, english, no);
 			}
-			if (mp3Path!=null){
+			if (mp3Path != null) {
 				soundPool.load(mp3Path, 1);
-				sendBroadcastTextChange(TestFragment.ViewName.Debug,mp3Path);
+				sendBroadcastTextChange(TestFragment.ViewName.Debug, mp3Path);
 			}
 		}
-		//なぜかこれだはダメ
-		//ArrayList<Integer> choiceList=new ArrayList<>(4);
-		ArrayList<Integer> choiceList = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
+		
+		var choiceList = new int[4];
 		//4つの選択肢はそれぞれ異なる
 		do {
 			for (int i = 0; i < 4; i++) {
-				if (ansChoice - 1 == i) choiceList.set(i, problemNum);
-				else choiceList.set(i, random.nextInt(quizWordDataList.size()));
+				if (ansChoice - 1 == i) choiceList[i]=problemNum;
+				else choiceList[i]=random.nextInt(quizWordDataList.size());
 			}
-		} while (choiceList.stream().distinct().count() != 4);
+		} while (Arrays.stream(choiceList).distinct().count() != 4);
 		sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, quizWordDataList.get(problemNum).e);
-		sendBroadcastTextChange(TestFragment.ViewName.Select1, quizWordDataList.get(choiceList.get(0)).j);
-		sendBroadcastTextChange(TestFragment.ViewName.Select2, quizWordDataList.get(choiceList.get(1)).j);
-		sendBroadcastTextChange(TestFragment.ViewName.Select3, quizWordDataList.get(choiceList.get(2)).j);
-		sendBroadcastTextChange(TestFragment.ViewName.Select4, quizWordDataList.get(choiceList.get(3)).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select1, quizWordDataList.get(choiceList[0]).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select2, quizWordDataList.get(choiceList[1]).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select3, quizWordDataList.get(choiceList[2]).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select4, quizWordDataList.get(choiceList[3]).j);
 	}
 	
 	public void cancel() {
