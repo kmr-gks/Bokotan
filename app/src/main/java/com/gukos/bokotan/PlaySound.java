@@ -300,18 +300,18 @@ public class PlaySound extends Service {
 			//単語のみ
 			if (isPhraseMode)//フレーズならば
 				if (strQPath.startsWith("y"))
-					path = getPath(yumetan, strQPath, phrase, english, now);
+					path = MyLibrary.FileDirectoryManager.getPath(yumetan, strQPath, phrase, english, now);
 				else if (strQPath.startsWith("tanjukugo")) {
-					path = getPath(tanjukugo, strQPath, phrase, english, now);
+					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, strQPath, phrase, english, now);
 				}
 				else
-					path = getPath(passTan, strQPath, phrase, english, now);
+					path = MyLibrary.FileDirectoryManager.getPath(passTan, strQPath, phrase, english, now);
 			else if (strQPath.startsWith("y"))
-				path = getPath(yumetan, strQPath, word, english, now);
+				path = MyLibrary.FileDirectoryManager.getPath(yumetan, strQPath, word, english, now);
 			else if (strQPath.startsWith("tanjukugo")) {
-				path = getPath(tanjukugo, strQPath, word, english, now);
+				path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, strQPath, word, english, now);
 			}
-			else path = getPath(passTan, strQPath, word, english, now);
+			else path = MyLibrary.FileDirectoryManager.getPath(passTan, strQPath, word, english, now);
 			PlayerFragment.textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(getApplicationContext(), Uri.parse(path));
@@ -410,18 +410,18 @@ public class PlaySound extends Service {
 			}
 			if (isPhraseMode)
 				if (strQPath.startsWith("y"))
-					path = getPath(yumetan, strQPath, phrase, japanese, now);
+					path = MyLibrary.FileDirectoryManager.getPath(yumetan, strQPath, phrase, japanese, now);
 				else if (strQPath.startsWith("tanjukugo")) {
-					path = getPath(tanjukugo, strQPath, phrase, japanese, now);
+					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, strQPath, phrase, japanese, now);
 				}
 				else
-					path = getPath(passTan, strQPath, phrase, japanese, now);
+					path = MyLibrary.FileDirectoryManager.getPath(passTan, strQPath, phrase, japanese, now);
 			else if (strQPath.startsWith("y"))
-				path = getPath(yumetan, strQPath, word, japanese, now);
+				path = MyLibrary.FileDirectoryManager.getPath(yumetan, strQPath, word, japanese, now);
 			else if (strQPath.startsWith("tanjukugo")) {
-				path = getPath(tanjukugo, strQPath, word, japanese, now);
+				path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, strQPath, word, japanese, now);
 			}
-			else path = getPath(passTan, strQPath, word, japanese, now);
+			else path = MyLibrary.FileDirectoryManager.getPath(passTan, strQPath, word, japanese, now);
 			PlayerFragment.textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(this, Uri.parse(path));

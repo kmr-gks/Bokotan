@@ -65,7 +65,7 @@ public class WordPhrasePlayer extends BackgroundThread{
 		sendBroadcastTextChange(PlayerFragment.PlayerViewName.genzai, "No."+quizWordDataList.get(now).no);
 		sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng,quizWordDataList.get(now).e);
 		sendBroadcastTextChange(PlayerFragment.PlayerViewName.jpn,quizWordDataList.get(now).j);
-		path = getPath(passTan, "1q", word, english, now);
+		path = MyLibrary.FileDirectoryManager.getPath(passTan, "1q", word, english, now);
 		mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
 		mediaPlayer.start();
 		mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
@@ -78,7 +78,7 @@ public class WordPhrasePlayer extends BackgroundThread{
 			mediaPlayer.reset();
 			mediaPlayer.release();
 		}
-		path=getPath(passTan,"1q",word,english,now);
+		path= MyLibrary.FileDirectoryManager.getPath(passTan, "1q", word, english, now);
 		mediaPlayer=MediaPlayer.create(context, Uri.parse(path));
 		mediaPlayer.start();
 		mediaPlayer.setOnCompletionListener(this::onPlay);

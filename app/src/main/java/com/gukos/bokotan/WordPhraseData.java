@@ -1,10 +1,13 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.getHatsuon;
 
 import android.app.AlertDialog;
 import android.content.Context;
+
+import androidx.annotation.NonNull;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -87,6 +90,60 @@ public class WordPhraseData {
 		}
 	}
 	
+	public static WordPhraseData read(DataBook dataBook, String strBookName, DataQ dataQ, Context context, ArrayList<QuizCreator.QuizWordData> wordDataList, ArrayList<QuizCreator.QuizWordData> phraseDataList,q_num.mode selectMode) {
+		if (dataBook==yumetan){
+			//ユメタン:単語のみ
+			return new WordPhraseData(strBookName + dataQ.toString().substring(1), context, wordDataList, dataBook, dataQ);
+		}else {
+			if(selectMode== q_num.mode.word) {
+				//単語データのみ読み込む
+				return new WordPhraseData(strBookName + dataQ.toString(), context, wordDataList, dataBook, dataQ);
+			}else if (selectMode== q_num.mode.phrase){
+				//文データのみ読み込む
+				String dirpath=null;
+				if (strBookName ==PasstanWord){
+					dirpath="Passtan/Phrase";
+				}
+				if (strBookName ==TanjukugoWord){
+					dirpath="TanjukugoEX/Phrase";
+				}
+				return new WordPhraseData(dirpath + dataQ.toString(), context, phraseDataList, dataBook, dataQ);
+			}else{
+				//両方読み込む
+				new WordPhraseData(strBookName + dataQ.toString(), context, wordDataList, dataBook, dataQ);
+				String dirpath=null;
+				if (strBookName ==PasstanWord){
+					dirpath="Passtan/Phrase";
+				}
+				if (strBookName ==TanjukugoWord){
+					dirpath="TanjukugoEX/Phrase";
+				}
+				return new WordPhraseData(dirpath + dataQ.toString(), context, phraseDataList, dataBook, dataQ);
+			}
+		}
+	}
+	
+	public WordPhraseData(String strQ, Context context, ArrayList<QuizCreator.QuizWordData> list, DataBook dataBook, DataQ dataQ) {
+		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
+		try {
+			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
+			BufferedReader br1 = new BufferedReader(new InputStreamReader(is1)), br2 = new BufferedReader(new InputStreamReader(is2));
+			String dataE, dataJ;
+			int i = 0;
+			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
+				list.add(new QuizCreator.QuizWordData(dataE, dataJ, i, dataBook,dataQ.toString()));
+				i++;
+			}
+			is1.close();
+			is2.close();
+			br1.close();
+			br2.close();
+		} catch (Exception e) {
+			showException(context, e);
+			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
+		}
+	}
+	
 	public WordPhraseData(String strQ, Context context, ArrayList<QuizCreator.QuizWordData> list, DataBook dataBook, String dataQ) {
 		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
 		try {
@@ -139,8 +196,24 @@ public class WordPhraseData {
 	}
 	
 	enum DataQ {
-		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3,
+		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3;
+		
+		@NonNull
+		@Override
+		public String toString() {
+			switch (this){
+				case q1: return "1q";
+				case qp1: return "p1q";
+				case q2: return "2q";
+				case qp2: return "p2q";
+				case q3: return "3q";
+				case q4: return "4q";
+				case q5: return "5q";
+				default:return super.toString();
+			}
+		}
 	}
+	
 	public static DataQ toDataQ(String string){
 		switch (string){
 			case "1q": return DataQ.q1;

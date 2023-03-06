@@ -57,6 +57,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.gukos.bokotan.WordPhraseData.DataQ;
+import com.gukos.bokotan.WordPhraseData.DataBook;
 import com.gukos.bokotan.WordPhraseData.q_num;
 import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
@@ -466,27 +468,25 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			int minute = calendar.get(Calendar.MINUTE);
 			
 			// 時間選択ダイアログの生成
-			TimePickerDialog timepick = new TimePickerDialog(context,
-			                                                 (view, hourOfDay, minute1) -> {
-				                                                 // 設定 ボタンクリック時の処理
-				                                                 // 時間をセットする
-				                                                 Calendar calendar1 = Calendar.getInstance();
-				                                                 // Calendarを使って現在の時間をミリ秒で取得
-				                                                 calendar1.setTimeInMillis(System.currentTimeMillis());
-				                                                 // 設定
-				                                                 calendar1.set(Calendar.HOUR_OF_DAY, hourOfDay);
-				                                                 calendar1.set(Calendar.MINUTE, minute1);
-				                                                 //明示的なBroadCast
-				                                                 Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-				                                                 PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-				                                                 // アラームをセットする
-				                                                 AlarmManager am =
-					                                                 (AlarmManager) context.getSystemService(ALARM_SERVICE);
-				                                                 if (am != null) {
-					                                                 am.setExact(AlarmManager.RTC_WAKEUP, calendar1.getTimeInMillis(), pending);
-					                                                 Toast.makeText(context, "Set Alarm ", Toast.LENGTH_SHORT).show();
-				                                                 }
-			                                                 }, hour, minute, true);
+			TimePickerDialog timepick = new TimePickerDialog(context, (view, hourOfDay, minute1) -> {
+				// 設定 ボタンクリック時の処理
+				// 時間をセットする
+				Calendar calendar1 = Calendar.getInstance();
+				// Calendarを使って現在の時間をミリ秒で取得
+				calendar1.setTimeInMillis(System.currentTimeMillis());
+				// 設定
+				calendar1.set(Calendar.HOUR_OF_DAY, hourOfDay);
+				calendar1.set(Calendar.MINUTE, minute1);
+				//明示的なBroadCast
+				Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+				PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+				// アラームをセットする
+				AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+				if (am != null) {
+					am.setExact(AlarmManager.RTC_WAKEUP, calendar1.getTimeInMillis(), pending);
+					Toast.makeText(context, "Set Alarm ", Toast.LENGTH_SHORT).show();
+				}
+			}, hour, minute, true);
 			// 表示
 			timepick.show();
 		} catch (Exception e) {
@@ -499,43 +499,43 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		q_num.mode mode= q_num.mode.word;
 		if (view==binding.buttonPhrase) mode= q_num.mode.phrase;
 		else if (view==binding.buttonWP) mode= q_num.mode.wordPlusPhrase;
-		WordPhraseData.DataBook dataBook;
-		String stringQ;
+		DataBook dataBook;
+		DataQ dataQ;
 		switch (binding.spinnerBookQ.getSelectedItemPosition()){
 			case 0:{
-				dataBook= WordPhraseData.DataBook.yumetan;
-				stringQ="y1";
+				dataBook= DataBook.yumetan;
+				dataQ=DataQ.y1;
 				break;
 			}
 			case 1:{
-				dataBook= WordPhraseData.DataBook.yumetan;
-				stringQ="y2";
+				dataBook= DataBook.yumetan;
+				dataQ=DataQ.y2;
 				break;
 			}
 			case 2:{
-				dataBook= WordPhraseData.DataBook.yumetan;
-				stringQ="y3";
+				dataBook= DataBook.yumetan;
+				dataQ=DataQ.y3;
 				break;
 			}
 			case 3:{
-				dataBook= WordPhraseData.DataBook.passTan;
-				stringQ="1q";
+				dataBook= DataBook.passTan;
+				dataQ=DataQ.q1;
 				break;
 			}
 			default:
 			case 4:{
-				dataBook= WordPhraseData.DataBook.passTan;
-				stringQ="p1q";
+				dataBook= DataBook.passTan;
+				dataQ=DataQ.qp1;
 				break;
 			}
 			case 5:{
-				dataBook= WordPhraseData.DataBook.tanjukugo;
-				stringQ="1q";
+				dataBook= DataBook.tanjukugo;
+				dataQ=DataQ.q1;
 				break;
 			}
 			case 6:{
-				dataBook= WordPhraseData.DataBook.tanjukugo;
-				stringQ="p1q";
+				dataBook= DataBook.tanjukugo;
+				dataQ=DataQ.qp1;
 				break;
 			}
 		}
@@ -544,7 +544,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			new Intent(context, PlayerService.class)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK,dataBook)
-				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_Q,stringQ)
+				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q,dataQ)
 		);
 	}
 	

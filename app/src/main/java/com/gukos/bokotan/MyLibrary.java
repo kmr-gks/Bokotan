@@ -326,11 +326,13 @@ public final class MyLibrary {
 			}
 		}
 		
-		public static String getPath(WordPhraseData.DataBook dataBook, String str, WordPhraseData.q_num.mode mode, WordPhraseData.DataLang dataLang, int tangoNum) {
+		public static String getPathPs(WordPhraseData.DataBook dataBook, WordPhraseData.DataQ dataQ, WordPhraseData.q_num.mode mode, WordPhraseData.DataLang dataLang, int tangoNum) {
 			try {
 				WordPhraseData.DataType dataType;
 				if (mode== WordPhraseData.q_num.mode.word) dataType= WordPhraseData.DataType.word;
 				else dataType= WordPhraseData.DataType.phrase;
+				String str=dataQ.toString();
+				if (dataBook== WordPhraseData.DataBook.tanjukugo) str="tanjukugo"+str;
 				return getPath(dataBook, str, dataType, dataLang, tangoNum, true);
 			} catch (Exception e) {
 				ExceptionManager.showException(e);

@@ -55,6 +55,4 @@ public class TabPagerAdapter extends FragmentStateAdapter {
 	public int getItemCount() {
 		return TAB_NAMES.length;
 	}
-	
-	public static TestFragment getTestFragment(){return testFragment;}
 }

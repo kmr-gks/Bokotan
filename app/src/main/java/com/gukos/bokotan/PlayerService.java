@@ -1,8 +1,10 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPath;
+import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.fnAppSettings;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_ACTION_UI_CHANGE;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_NAME;
@@ -11,10 +13,10 @@ import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.Text;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
-import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
+import static com.gukos.bokotan.WordPhraseData.DataQ;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
@@ -35,19 +37,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.gukos.bokotan.PlayerFragment.PlayerViewName;
 
 import java.util.ArrayList;
 
 public class PlayerService extends Service {
 	
 	public static final String
-		PLAYERSERVICE_EXTRA_MODE = "PLAYERSERVICE_EXTRA_MODE",
-		PLAYERSERVICE_EXTRA_BOOK="playerservice_extra_book",
-		PLAYERSERVICE_EXTRA_Q="playerservice_extra_q";
+		PLAYERSERVICE_EXTRA_MODE = "ps_em",
+		PLAYERSERVICE_EXTRA_BOOK="ps_eb",
+		PLAYERSERVICE_EXTRA_DATA_Q="ps_edq";
 	Context context;
 	q_num.mode selectMode, nowMode = q_num.mode.word;
 	
@@ -62,7 +67,7 @@ public class PlayerService extends Service {
 		selectMode = (q_num.mode) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
 		if (selectMode == q_num.mode.phrase) nowMode = q_num.mode.phrase;
 		dataBook= (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
-		stringQ=intent.getStringExtra(PLAYERSERVICE_EXTRA_Q);
+		dataQ= (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
 		
 		context = getApplicationContext();
 		String channelId = "default";
@@ -110,6 +115,15 @@ public class PlayerService extends Service {
 						} catch (Exception exception) {
 							;
 						}
+						//表示している文字列を削除
+						sendBroadcastTextChange(PlayerViewName.path, "");
+						sendBroadcastTextChange(PlayerViewName.eng, "");
+						sendBroadcastTextChange(PlayerViewName.jpn, "");
+						sendBroadcastTextChange(PlayerViewName.subE, "");
+						sendBroadcastTextChange(PlayerViewName.subJ, "");
+						sendBroadcastTextChange(PlayerViewName.genzai, "");
+						runOnUiThread(() -> TabActivity.setTabPageNum(0));
+						MyLibrary.PreferenceManager.putIntData(context,fnAppSettings, getClassName()+ dataBook+dataQ+selectMode,now );
 						break;
 					}
 					case PLAYERSERVICE_MESSAGE_JPN_SPEED:{
@@ -130,11 +144,13 @@ public class PlayerService extends Service {
 				}
 				sleep(100);
 			}
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng, "読み込み中");
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.jpn, "読み込み中");
+			sendBroadcastTextChange(PlayerViewName.eng, "読み込み中");
+			sendBroadcastTextChange(PlayerViewName.jpn, "読み込み中");
 			isPlaying = true;
 			
 			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(PLAYERSERVICE_ACTION));
+			
+			now=MyLibrary.PreferenceManager.getIntData(context,fnAppSettings, getClassName()+ dataBook+dataQ+selectMode,1 );
 			
 			String strBookName;
 			switch (dataBook){
@@ -152,39 +168,10 @@ public class PlayerService extends Service {
 					break;
 				}
 			}
-			puts("strBookName + stringQ="+strBookName + stringQ+",dataBook="+dataBook+",stringq="+stringQ);
-			puts("PasstanWord + q="+PasstanWord + "p1q"+",passTan="+passTan+",q=p1q");
-			if (dataBook==yumetan){
-				//ユメタン:単語のみ
-				new WordPhraseData(strBookName + stringQ.substring(1), context, wordDataList, dataBook, stringQ);
-				phraseDataList=wordDataList;
-			}else {
-				if(selectMode== q_num.mode.word) {
-					//単語データのみ読み込む
-					new WordPhraseData(strBookName + stringQ, context, wordDataList, dataBook, stringQ);
-				}else if (selectMode== q_num.mode.phrase){
-					//文データのみ読み込む
-					String dirpath=null;
-					if (strBookName==PasstanWord){
-						dirpath="Passtan/Phrase";
-					}
-					if (strBookName==TanjukugoWord){
-						dirpath="TanjukugoEX/Phrase";
-					}
-					new WordPhraseData(dirpath + stringQ, context, phraseDataList, dataBook, stringQ);
-				}else{
-					//両方読み込む
-					new WordPhraseData(strBookName + stringQ, context, wordDataList, dataBook, stringQ);
-					String dirpath=null;
-					if (strBookName==PasstanWord){
-						dirpath="Passtan/Phrase";
-					}
-					if (strBookName==TanjukugoWord){
-						dirpath="TanjukugoEX/Phrase";
-					}
-					new WordPhraseData(dirpath + stringQ, context, phraseDataList, dataBook, stringQ);
-				}
-			}
+			//extracted(strBookName);
+			WordPhraseData.read(dataBook,strBookName,dataQ,context,wordDataList,phraseDataList, selectMode);
+			if (dataBook==yumetan) phraseDataList=wordDataList;
+			
 			onPlay();
 		});
 		return START_NOT_STICKY;
@@ -204,7 +191,7 @@ public class PlayerService extends Service {
 	boolean isPlaying;
 	float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 1.5f;
 	WordPhraseData.DataBook dataBook=passTan;
-	String stringQ="p1q";
+	DataQ dataQ;
 	
 	private void onPlay() {
 		//リソースの開放
@@ -220,15 +207,19 @@ public class PlayerService extends Service {
 		if (isPlaying) {
 			var list=wordDataList;
 			if (nowMode== q_num.mode.phrase) list=phraseDataList;
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.genzai, "No." + list.get(now).no);
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.eng, list.get(now).e);
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.jpn, list.get(now).j);
-			puts("getPath:"+dataBook+","+stringQ+","+nowMode+","+nowLang+","+now);
-			if (dataBook==tanjukugo) {
-				path = getPath(dataBook, "tanjukugo"+stringQ, nowMode, nowLang, now);
-			}else path = getPath(dataBook, stringQ, nowMode, nowLang, now);
-			puts("path="+path);
-			sendBroadcastTextChange(PlayerFragment.PlayerViewName.path, path);
+			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).no+",Q="+dataQ);
+			sendBroadcastTextChange(PlayerViewName.eng, list.get(now).e);
+			sendBroadcastTextChange(PlayerViewName.jpn, list.get(now).j);
+			//文を再生しているときは、単語も表示しておく。
+			if (selectMode== q_num.mode.wordPlusPhrase&&nowMode== q_num.mode.phrase){
+				sendBroadcastTextChange(PlayerViewName.subE,wordDataList.get(now).e);
+				sendBroadcastTextChange(PlayerViewName.subJ,wordDataList.get(now).j);
+			}else{
+				sendBroadcastTextChange(PlayerViewName.subE,"");
+				sendBroadcastTextChange(PlayerViewName.subJ,"");
+			}
+			path=getPathPs(dataBook,dataQ,nowMode,nowLang,now);
+			sendBroadcastTextChange(PlayerViewName.path, path);
 			try {
 				mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
 				mediaPlayer.start();
@@ -270,12 +261,16 @@ public class PlayerService extends Service {
 	WordPhraseData.DataLang nowLang = english;
 	int now = 1;
 	
-	private void sendBroadcastTextChange(PlayerFragment.PlayerViewName viewName, String text) {
+	private void sendBroadcastTextChange(PlayerViewName viewName, String text) {
 		Intent broadcastIntent =
 			new Intent(PLAYER_ACTION_UI_CHANGE)
 				.putExtra(PLAYER_VIEW_PROPERTIES, Text)
 				.putExtra(PLAYER_VIEW_TEXT, text)
 				.putExtra(PLAYER_VIEW_NAME, viewName);
 		context.sendBroadcast(broadcastIntent);
+	}
+	
+	private void runOnUiThread(Runnable runnable){
+		new Handler(Looper.getMainLooper()).post(runnable);
 	}
 }
