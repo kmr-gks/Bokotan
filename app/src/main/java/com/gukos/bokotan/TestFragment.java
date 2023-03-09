@@ -1,6 +1,5 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.content.Intent;
@@ -101,12 +100,10 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			}
 			switch (viewProperties) {
 				case Text: {
-					printCurrentState(",text change" + bundle.getString(QUIZ_VIEW_TEXT));
 					textViewToHandle.setText(bundle.getString(QUIZ_VIEW_TEXT));
 					break;
 				}
 				case TextColor: {
-					printCurrentState(",textcolor change" + bundle.getInt(QUIZ_VIEW_COLOR));
 					textViewToHandle.setTextColor(bundle.getInt(QUIZ_VIEW_COLOR));
 					break;
 				}

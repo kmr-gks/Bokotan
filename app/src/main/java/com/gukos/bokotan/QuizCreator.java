@@ -2,6 +2,7 @@ package com.gukos.bokotan;
 
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.WordPhraseData.DataBook;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
@@ -46,8 +47,6 @@ public class QuizCreator {
 	private final ArrayList<String> e = new ArrayList<>(), j = new ArrayList<>();
 	private int nProblems = 0;
 	int ansChoice, problemNum;
-	DataBook dataBook;
-	WordPhraseData.DataQ dataQ;
 	private final Random random = new Random();
 	
 	static final class QuizWordData {
@@ -69,13 +68,11 @@ public class QuizCreator {
 		}
 	}
 	
-	private final ArrayList<QuizWordData> quizWordDataList = new ArrayList<>();
+	private final ArrayList<QuizWordData> list = new ArrayList<>();
 	
 	//コンストラクタ
 	public QuizCreator(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
 		this.context = context;
-		this.dataBook=dataBook;
-		this.dataQ=dataQ;
 		handlerThread = new HandlerThread(getClassName());
 		handlerThread.start();
 		handler = new Handler(handlerThread.getLooper()) {
@@ -88,7 +85,7 @@ public class QuizCreator {
 					if (QSentakuFragment.switchQuizOX.isChecked()) {
 						soundPool.load(context, R.raw.seikai, 1);
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + quizWordDataList.get(problemNum).toString());
+					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + list.get(problemNum).toString());
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
 				}
@@ -96,7 +93,7 @@ public class QuizCreator {
 					if (QSentakuFragment.switchQuizOX.isChecked()) {
 						soundPool.load(context, R.raw.huseikai, 1);
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解 " + quizWordDataList.get(problemNum).toString());
+					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解 " + list.get(problemNum).toString());
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
 				}
@@ -116,19 +113,38 @@ public class QuizCreator {
 			sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, "読み込み中");
 			
 			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(QTHREAD_ACTION_CLICKED));
-			soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> soundPool.play(sampleId, 1, 1, 1, 0, 1));
+			soundPool.setOnLoadCompleteListener((soundPool, id, status) -> soundPool.play(id, 1, 1, 1, 0, 1));
 			
 			//これを定期的に見る必要がある。
 			if (!onActive) return;
 			//単語データ読み取り
-			for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
-				new WordPhraseData(PasstanWord + q, context, quizWordDataList, passTan, q);
-			for (var q : new String[]{"1q", "p1q"})
-				new WordPhraseData(TanjukugoWord + q, context, quizWordDataList, tanjukugo, q);
-			for (var q : new String[]{"1q", "p1q"})
-				new WordPhraseData(TanjukugoEXWord + q, context, quizWordDataList, tanjukugoEx, q);
-			for (var q : new String[]{"00", "08", "1", "2", "3"})
-				new WordPhraseData(YumeWord + q, context, quizWordDataList, yumetan, q);
+			String qString = dataQ.toString();
+			switch (dataBook) {
+				case passTan: {
+					new WordPhraseData(PasstanWord + qString, context, list, passTan, qString);
+					break;
+				}
+				case tanjukugo: {
+					new WordPhraseData(TanjukugoWord + qString, context, list, tanjukugo, qString);
+					new WordPhraseData(TanjukugoEXWord + qString, context, list, tanjukugoEx, qString);
+					break;
+				}
+				case yumetan: {
+					new WordPhraseData(YumeWord + qString, context, list, yumetan, qString);
+					break;
+				}
+				default: {
+					for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
+						new WordPhraseData(PasstanWord + q, context, list, passTan, q);
+					for (var q : new String[]{"1q", "p1q"})
+						new WordPhraseData(TanjukugoWord + q, context, list, tanjukugo, q);
+					for (var q : new String[]{"1q", "p1q"})
+						new WordPhraseData(TanjukugoEXWord + q, context, list, tanjukugoEx, q);
+					for (var q : new String[]{"00", "08", "1", "2", "3"})
+						new WordPhraseData(YumeWord + q, context, list, yumetan, q);
+					break;
+				}
+			}
 			setMondai();
 		});
 	}
@@ -139,14 +155,14 @@ public class QuizCreator {
 		//正解の選択肢を設定
 		ansChoice = random.nextInt(4) + 1;
 		//出題する単語を決定
-		problemNum = random.nextInt(quizWordDataList.size());
-		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + quizWordDataList.get(problemNum).toString());
+		problemNum = random.nextInt(list.size());
+		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + list.get(problemNum).toString());
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
 			String mp3Path = null;
-			String q = quizWordDataList.get(problemNum).dataQ;
-			int no = quizWordDataList.get(problemNum).no;
-			DataBook dataBook = quizWordDataList.get(problemNum).dataBook;
+			String q = list.get(problemNum).dataQ;
+			int no = list.get(problemNum).no;
+			DataBook dataBook = list.get(problemNum).dataBook;
 			//パス単1q,p1qのみ再生
 			if (dataBook == passTan && q.endsWith("1q")) {
 				mp3Path = MyLibrary.FileDirectoryManager.getPath(passTan, q, word, english, no);
@@ -155,7 +171,8 @@ public class QuizCreator {
 				mp3Path = MyLibrary.FileDirectoryManager.getPath(yumetan, "y" + q, word, english, no);
 			}
 			if (dataBook == tanjukugo) {
-				mp3Path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, q, word, english, no);
+				puts("getPath:" + tanjukugo + "," + q + "," + word + "," + english + "," + no);
+				mp3Path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugo" + q, word, english, no);
 			}
 			if (mp3Path != null) {
 				soundPool.load(mp3Path, 1);
@@ -167,15 +184,15 @@ public class QuizCreator {
 		//4つの選択肢はそれぞれ異なる
 		do {
 			for (int i = 0; i < 4; i++) {
-				if (ansChoice - 1 == i) choiceList[i]=problemNum;
-				else choiceList[i]=random.nextInt(quizWordDataList.size());
+				if (ansChoice - 1 == i) choiceList[i] = problemNum;
+				else choiceList[i] = random.nextInt(list.size());
 			}
 		} while (Arrays.stream(choiceList).distinct().count() != 4);
-		sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, quizWordDataList.get(problemNum).e);
-		sendBroadcastTextChange(TestFragment.ViewName.Select1, quizWordDataList.get(choiceList[0]).j);
-		sendBroadcastTextChange(TestFragment.ViewName.Select2, quizWordDataList.get(choiceList[1]).j);
-		sendBroadcastTextChange(TestFragment.ViewName.Select3, quizWordDataList.get(choiceList[2]).j);
-		sendBroadcastTextChange(TestFragment.ViewName.Select4, quizWordDataList.get(choiceList[3]).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, list.get(problemNum).e);
+		sendBroadcastTextChange(TestFragment.ViewName.Select1, list.get(choiceList[0]).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select2, list.get(choiceList[1]).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select3, list.get(choiceList[2]).j);
+		sendBroadcastTextChange(TestFragment.ViewName.Select4, list.get(choiceList[3]).j);
 	}
 	
 	public void cancel() {

@@ -179,7 +179,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			binding.buttonWriteTest.setOnClickListener(this::onWriteText);
 			binding.buttonAlarm.setOnClickListener(this::onAlarmset);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
-			binding.buttonQuizservice.setOnClickListener(this::onQuizservice);
+			binding.buttonQuizservice.setOnClickListener(this::onPlayQuizStart);
 			
 			for (var button : new Button[]{binding.button1q, binding.buttonP1q, binding.button2q, binding.buttonP2q, binding.buttonAll, binding.buttonYume00, binding.buttonYume08, binding.buttonYume1, binding.buttonYume2, binding.buttonYume3, binding.button1qEx, binding.buttonP1qEx}) {
 				button.setOnClickListener(this::onSelectQ);
@@ -189,8 +189,8 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			QSentakuFragment.swHyojiBeforeRead = binding.switchHyojiYakuBeforeRead;
 			QSentakuFragment.switchSkipOboe = binding.switchSkipOboe;
 			QSentakuFragment.switchSortHanten = binding.switchSortHanten;
-			QSentakuFragment.switchQuizHatsuon=binding.switchQuizHatsuon;
-			QSentakuFragment.switchQuizOX=binding.switchQuizOxKoukaon;
+			QSentakuFragment.switchQuizHatsuon = binding.switchQuizHatsuon;
+			QSentakuFragment.switchQuizOX = binding.switchQuizOxKoukaon;
 			QSentakuFragment.cbAutoStop = binding.checkBoxAutoStop;
 			QSentakuFragment.checkBoxHatsuonKigou = binding.checkBoxHatsuonkigou;
 			QSentakuFragment.radioButtonEtoJ = binding.radioButtonEtoJ;
@@ -232,7 +232,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			initializeSettingItem(binding.switchQuizHatsuon, true);
 			initializeSettingItem(binding.switchQuizOxKoukaon, true);
 			
-			for (var v : new SwitchMaterial[]{QSentakuFragment.swOnlyFirst, QSentakuFragment.swHyojiBeforeRead, QSentakuFragment.switchSkipOboe, QSentakuFragment.switchSortHanten, QSentakuFragment.cbAutoStop, QSentakuFragment.checkBoxHatsuonKigou,binding.switchQuizHatsuon, binding.switchQuizOxKoukaon}) {
+			for (var v : new SwitchMaterial[]{QSentakuFragment.swOnlyFirst, QSentakuFragment.swHyojiBeforeRead, QSentakuFragment.switchSkipOboe, QSentakuFragment.switchSortHanten, QSentakuFragment.cbAutoStop, QSentakuFragment.checkBoxHatsuonKigou, binding.switchQuizHatsuon, binding.switchQuizOxKoukaon}) {
 				v.setOnCheckedChangeListener(UiManager.Listener::onClickSettingItem);
 			}
 			
@@ -245,13 +245,13 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			binding.spinnerHyojijun.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerHyojijunOnItemSelectedListener);
 			
 			binding.spinnerBookQ.setAdapter(getAdapterForSpinner(context, R.array.spinner_book_q));
-			binding.spinnerBookQ.setSelection(getIntData(context,"spinnerBookQ","selected",4));
-			binding.spinnerBookQ.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected)this::spinnerBookQOnItemSelectedListener);
+			binding.spinnerBookQ.setSelection(getIntData(context, "spinnerBookQ", "selected", 4));
+			binding.spinnerBookQ.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerBookQOnItemSelectedListener);
 			
-			binding.buttonWord.setOnClickListener(this::onPlayStart);
-			binding.buttonPhrase.setOnClickListener(this::onPlayStart);
-			binding.buttonWP.setOnClickListener(this::onPlayStart);
-			binding.buttonQuiz.setOnClickListener(this::onQuizservice);
+			binding.buttonWord.setOnClickListener(this::onPlayQuizStart);
+			binding.buttonPhrase.setOnClickListener(this::onPlayQuizStart);
+			binding.buttonWP.setOnClickListener(this::onPlayQuizStart);
+			binding.buttonQuiz.setOnClickListener(this::onPlayQuizStart);
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -494,63 +494,64 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		}
 	}
 	
-	private void onPlayStart(View view){
-		TabActivity.setTabPageNum(1);
-		q_num.mode mode= q_num.mode.word;
-		if (view==binding.buttonPhrase) mode= q_num.mode.phrase;
-		else if (view==binding.buttonWP) mode= q_num.mode.wordPlusPhrase;
+	private void onPlayQuizStart(View view) {
+		//スピナーから本と級を取得
 		DataBook dataBook;
 		DataQ dataQ;
-		switch (binding.spinnerBookQ.getSelectedItemPosition()){
-			case 0:{
-				dataBook= DataBook.yumetan;
-				dataQ=DataQ.y1;
+		switch (binding.spinnerBookQ.getSelectedItemPosition()) {
+			case 0: {
+				dataBook = DataBook.yumetan;
+				dataQ = DataQ.y1;
 				break;
 			}
-			case 1:{
-				dataBook= DataBook.yumetan;
-				dataQ=DataQ.y2;
+			case 1: {
+				dataBook = DataBook.yumetan;
+				dataQ = DataQ.y2;
 				break;
 			}
-			case 2:{
-				dataBook= DataBook.yumetan;
-				dataQ=DataQ.y3;
+			case 2: {
+				dataBook = DataBook.yumetan;
+				dataQ = DataQ.y3;
 				break;
 			}
-			case 3:{
-				dataBook= DataBook.passTan;
-				dataQ=DataQ.q1;
+			case 3: {
+				dataBook = DataBook.passTan;
+				dataQ = DataQ.q1;
 				break;
 			}
 			default:
-			case 4:{
-				dataBook= DataBook.passTan;
-				dataQ=DataQ.qp1;
+			case 4: {
+				dataBook = DataBook.passTan;
+				dataQ = DataQ.qp1;
 				break;
 			}
-			case 5:{
-				dataBook= DataBook.tanjukugo;
-				dataQ=DataQ.q1;
+			case 5: {
+				dataBook = DataBook.tanjukugo;
+				dataQ = DataQ.q1;
 				break;
 			}
-			case 6:{
-				dataBook= DataBook.tanjukugo;
-				dataQ=DataQ.qp1;
+			case 6: {
+				dataBook = DataBook.tanjukugo;
+				dataQ = DataQ.qp1;
 				break;
 			}
 		}
-		
-		context.startForegroundService(
-			new Intent(context, PlayerService.class)
-				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
-				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK,dataBook)
-				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q,dataQ)
-		);
-	}
-	
-	private void onQuizservice(View v) {
-		TabActivity.setTabPageNum(2);
-		new QuizCreator(context,null,null);
+		if (view == binding.buttonQuiz) {
+			TabActivity.setTabPageNum(2);
+			new QuizCreator(context, dataBook, dataQ);
+		}
+		else {
+			TabActivity.setTabPageNum(1);
+			q_num.mode mode = q_num.mode.word;
+			if (view == binding.buttonPhrase) mode = q_num.mode.phrase;
+			else if (view == binding.buttonWP) mode = q_num.mode.wordPlusPhrase;
+			context.startForegroundService(
+				new Intent(context, PlayerService.class)
+					.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
+					.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, dataBook)
+					.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, dataQ)
+			);
+		}
 	}
 	
 	//https://qiita.com/niwasawa/items/c8271f56f058965b318b

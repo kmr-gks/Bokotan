@@ -4,7 +4,6 @@ import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +29,7 @@ public class TabActivity extends AppCompatActivity {
 		
 		puts(getClassName() + getMethodName() + ",bundle=" + toString(savedInstanceState));
 		
-		binding = DataBindingUtil.setContentView(this,R.layout.activity_tab);
+		binding = DataBindingUtil.setContentView(this, R.layout.activity_tab);
 		
 		TabPagerAdapter tabPagerAdapter = new TabPagerAdapter(this);
 		ViewPager2 viewPager = binding.viewpagerMain;
@@ -52,13 +51,20 @@ public class TabActivity extends AppCompatActivity {
 		}
 	}
 	
+	public static int getTabPageNum() {
+		try {
+			return TabActivity.binding.tabsMain.getSelectedTabPosition();
+		} catch (Exception exception) {
+			MyLibrary.ExceptionManager.showException(exception);
+			return 0;
+		}
+	}
+	
 	@Override
 	public void onBackPressed() {
 		//戻るボタン
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			super.onBackPressed();
-		}
-		return;
+		if (getTabPageNum() != 0) runOnUiThread(() -> setTabPageNum(0));
+		else super.onBackPressed();
 	}
 	
 	/*
