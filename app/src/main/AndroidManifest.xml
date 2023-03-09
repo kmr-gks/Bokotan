@@ -32,12 +32,6 @@
 		android:theme="@style/Theme.Bokotan"
 		tools:targetApi="tiramisu">
 
-		<service
-			android:name=".PlaySound"
-			android:enabled="true"
-			android:exported="true"
-			android:permission="TODO" />
-
 		<service android:name=".PlayerService"/>
 
 		<receiver
@@ -71,10 +65,6 @@
 			</intent-filter>
 		</receiver>
 
-		<activity
-			android:name=".TestActivity"
-			android:exported="false"
-			android:screenOrientation="portrait" />
 		<activity
 			android:name=".PipActivity"
 			android:launchMode="singleTask"

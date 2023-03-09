@@ -31,7 +31,6 @@ import static com.gukos.bokotan.MyLibrary.strExceptionFIlePath;
 import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
 import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
-import static com.gukos.bokotan.PlaySound.strQ;
 import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 
 import android.app.Activity;
@@ -57,8 +56,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
-import com.gukos.bokotan.WordPhraseData.DataQ;
 import com.gukos.bokotan.WordPhraseData.DataBook;
+import com.gukos.bokotan.WordPhraseData.DataQ;
 import com.gukos.bokotan.WordPhraseData.q_num;
 import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
@@ -101,17 +100,6 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	public void initialize() {
 		try {
-			binding.spinnerHanni.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hanni));
-			binding.spinnerHanni.setSelection(getIntData(context, "spinnerHanni", "selected", 4));
-			binding.spinnerHanni.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHanniOnItemSelectedListener);
-			
-			binding.spinnerHinsi.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_hinsi));
-			binding.spinnerHinsi.setSelection(getIntData(context, "spinnerHinsi", "selected", 3));
-			binding.spinnerHinsi.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerHinsiOnItemSelectedListener);
-			
-			binding.spinnerMode.setAdapter(UiManager.getAdapterForSpinner(context, R.array.spinner_mode));
-			binding.spinnerMode.setSelection(getIntData(context, "spinnerMode", "selected", 2));
-			binding.spinnerMode.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::SpinnerModeOnItemSelectedListener);
 			
 			KensakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
@@ -147,7 +135,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					startActivity(new Intent(ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
 				}
 			}
-			
+			/*
 			EarbudsConnectReceiver ecr = new EarbudsConnectReceiver(context, () -> {
 				if (cbAutoStop.isChecked())
 					MyLibrary.DisplayOutput.makeToastForLong(context, "有線イヤホン接続");
@@ -167,7 +155,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					context.stopService(intent1);
 				}
 			});
-			
+			*/
 			activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 			
 			
@@ -181,7 +169,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
 			binding.buttonQuizservice.setOnClickListener(this::onPlayQuizStart);
 			
-			for (var button : new Button[]{binding.button1q, binding.buttonP1q, binding.button2q, binding.buttonP2q, binding.buttonAll, binding.buttonYume00, binding.buttonYume08, binding.buttonYume1, binding.buttonYume2, binding.buttonYume3, binding.button1qEx, binding.buttonP1qEx}) {
+			for (var button : new Button[]{binding.buttonAll}) {
 				button.setOnClickListener(this::onSelectQ);
 			}
 			
@@ -322,6 +310,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	private void onSelectQ(View v) {
 		try {
+			/*
 			if (binding.editTextNumber.length() != 0) {
 				PlayerFragment.nowIsDecided = true;
 				PlaySound.now = Integer.parseInt(binding.editTextNumber.getText().toString()) - 1;
@@ -397,14 +386,6 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy3;
 					break;
 				}
-				/*
-				case R.id.buttonAll:{
-					strQ="all";
-					WordPhraseData.strQenum=WordPhraseData.q_num.strQ.all;
-					WordPhraseData.sentakuQ=WordPhraseData.q_num.testAll;
-					break;
-				}
-				*/
 			}
 			PlaySound.isWordAndPhraseMode = false;
 			switch (nWordPhraseOrTest) {
@@ -447,7 +428,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					startActivity(new Intent(context, TestActivity.class));
 					break;
 				}
-			}
+			}*/
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -457,7 +438,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		//再生
 		TabActivity.setTabPageNum(1);
 		PlayerFragment.initialize(getContext());
-		context.startForegroundService(new Intent(context, PlaySound.class));
+		//context.startForegroundService(new Intent(context, PlaySound.class));
 	}
 	
 	private void onAlarmset(View v) {
@@ -581,6 +562,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	public void SpinnerHanniOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
 		try {
 			MyLibrary.PreferenceManager.putIntData(context, "spinnerHanni", "selected", i);
+			/*
 			switch (i) {
 				case 0: {
 					PlaySound.nUnit = 1;
@@ -609,6 +591,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					break;
 				}
 			}
+		*/
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -617,6 +600,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	public void SpinnerHinsiOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
 		try {
 			MyLibrary.PreferenceManager.putIntData(context, "spinnerHinsi", "selected", i);
+			/*
 			switch (i) {
 				case 0: {
 					PlaySound.nShurui = 1;
@@ -635,6 +619,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					break;
 				}
 			}
+			*/
 		} catch (Exception e) {
 			showException(context, e);
 		}

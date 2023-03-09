@@ -32,7 +32,7 @@ public class UiManager {
 	public static final class UiInterface {
 		public interface AdapterViewItemSelected extends AdapterView.OnItemSelectedListener {
 			@Override
-			abstract void onItemSelected(AdapterView<?> adapterView, View view1, int i, long l);
+			void onItemSelected(AdapterView<?> adapterView, View view1, int i, long l);
 			
 			@Override
 			default void onNothingSelected(AdapterView<?> adapterView) {
@@ -75,7 +75,7 @@ public class UiManager {
 			
 			//これをオーバーロードする
 			@Override
-			abstract void afterTextChanged(Editable editable);
+			void afterTextChanged(Editable editable);
 		}
 	}
 	

@@ -10,8 +10,8 @@ public class StopPlayBroadcastReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
-			Intent i = new Intent(context, PlaySound.class);
-			context.stopService(i);
+			//Intent i = new Intent(context, PlaySound.class);
+			//context.stopService(i);
 		} catch (Exception e) {
 			showException(context, e);
 		}

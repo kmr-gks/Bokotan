@@ -1,6 +1,5 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.PlaySound.wordE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.content.Context;
@@ -89,10 +88,6 @@ public class GogenYomuFactory {
 	
 	public TreeMap<String, GogenYomu> getTrGogenYomu() {
 		return trGogenYomu;
-	}
-	
-	static String getGogenString(int now, boolean containsBunrui, boolean containsSankou) {
-		return getGogenString(wordE[now], containsBunrui, containsSankou);
 	}
 	
 	static String getGogenString(String word, boolean containsBunrui, boolean containsSankou) {

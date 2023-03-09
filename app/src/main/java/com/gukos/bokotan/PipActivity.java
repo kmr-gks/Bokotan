@@ -1,9 +1,6 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.PlaySound.now;
-import static com.gukos.bokotan.PlaySound.wordE;
-import static com.gukos.bokotan.PlaySound.wordJ;
 
 import android.app.Activity;
 import android.app.PictureInPictureParams;
@@ -34,7 +31,7 @@ public class PipActivity extends Activity {
 			//setContentView(R.layout.activity_pip);
 			binding= DataBindingUtil.setContentView(this,R.layout.activity_pip);
 			
-			PipActivity.ChangeText(wordE[now], wordJ[now], now);
+			//PipActivity.ChangeText(wordE[now], wordJ[now], now);
 			
 			//pip
 			PictureInPictureParams.Builder pictureInPictureParams = new PictureInPictureParams.Builder();

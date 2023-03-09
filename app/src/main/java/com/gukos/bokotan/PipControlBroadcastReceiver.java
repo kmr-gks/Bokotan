@@ -1,12 +1,10 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.PlaySound.now;
-import static com.gukos.bokotan.PlayerFragment.playing;
-import static com.gukos.bokotan.PlaySound.strQ;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.PipActivity.CONTROL_TYPE_A;
 import static com.gukos.bokotan.PipActivity.CONTROL_TYPE_B;
 import static com.gukos.bokotan.PipActivity.EXTRA_CONTROL_TYPE;
+import static com.gukos.bokotan.PlayerFragment.playing;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,12 +25,12 @@ public class PipControlBroadcastReceiver extends BroadcastReceiver {
 					//MainActivity.javaのonStartStopButtonClickより
 					context.stopService(intent);
 					playing = false;
-					MyLibrary.PreferenceManager.putIntData(context, "MainActivity" + "now", strQ + "now", now);
+					//MyLibrary.PreferenceManager.putIntData(context, "MainActivity" + "now",strQ + "now", now);
 					break;
 				}
 				case CONTROL_TYPE_B: {
 					if (intent == null) {
-						intent = new Intent(context, PlaySound.class);
+						//intent = new Intent(context, PlaySound.class);
 						intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
 						context.startForegroundService(intent);
 						playing = true;

@@ -1,27 +1,16 @@
 package com.gukos.bokotan;
 
-import static android.view.View.GONE;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
-import static com.gukos.bokotan.PlaySound.isWordAndPhraseMode;
-import static com.gukos.bokotan.PlaySound.now;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_ENG_SPEED;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_JPN_SPEED;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
-import static com.gukos.bokotan.QSentakuFragment.swOnlyFirst;
-import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
-import static com.gukos.bokotan.WordPhraseData.PasstanWord;
-import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
-import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
-import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
-import static com.gukos.bokotan.WordPhraseData.YumeWord;
 import static com.gukos.bokotan.WordPhraseData.sentakuQ;
-import static com.gukos.bokotan.WordPhraseData.sentakuUnit;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -154,17 +143,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				textViewPath = binding.textViewPath;
 				textViewHatsuonKigou = binding.textViewHatsuonKigou;
 				
-				if (PlaySound.strQ != null)
-					PlaySound.isPhraseMode = PlaySound.strQ.charAt(1) == 'h';
-				if (isWordAndPhraseMode || PlaySound.isPhraseMode) {
-					tvsubE.setVisibility(View.VISIBLE);
-					tvsubJ.setVisibility(View.VISIBLE);
-				}
-				else {
-					//単語の場合は右下の文字は非表示
-					tvsubE.setVisibility(GONE);
-					tvsubJ.setVisibility(GONE);
-				}
 				//Android13以降 日本語の折り返しに対応
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 					binding.textViewJpn.setLineBreakStyle(LineBreakConfig.LINE_BREAK_STYLE_NORMAL);
@@ -178,11 +156,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
 				
 				activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-				
-				if (PlaySound.strQ == null) {
-					PlaySound.strQ = "p1q";
-					sentakuQ = WordPhraseData.q_num.testp1q;
-				}
 				
 				binding.seekBarEng.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarEng.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
@@ -218,7 +191,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");    //1799
 			hashMapKishutu.put("grow into 〜", "p1q");                //1675
 			hashMapKishutu.put("accrue", "pass" + "1q");            //1568
-			
+			/*
 			switch (sentakuQ) {
 				case test1q: {
 					lastnum = 2400;
@@ -238,7 +211,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 						}
 						//パス単準1級
 						//パス単単語
-						for (String Q : new String[]{"p1q"/*, "2q", "p2q","3q","4q","5q"*/}) {
+						for (String Q : new String[]{"p1q"}) {
 							WordPhraseData wpdp = new WordPhraseData(PasstanWord + Q, context);
 							for (int i = 1; i < Math.min(wpdp.e.length, wpdp.j.length); i++)
 								if (wpdp.e[i] != null && wpdp.j[i] != null)
@@ -443,21 +416,21 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				PlaySound.nFrom = PlaySound.from;
 				PlaySound.nTo = PlaySound.to;
 			}
-			
+			*/
 			//1q
 			//if (lastnum==2400){
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q)) {
 				for (int i = 0; i < lastnum; i++) {
-					TestActivity.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordSeikaisuu" + i, 0);
-					TestActivity.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordHuseikaisuu" + i, 0);
+					//TestActivity.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context,"testActivity" + "1qTest", "nWordSeikaisuu" + i, 0);
+					//TestActivity.nHuseikaisuu[i] =MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordHuseikaisuu" + i, 0);
 				}
 			}
 			//p1q
 			//if (lastnum==1850){
 			if (sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
 				for (int i = 0; i < lastnum; i++) {
-					TestActivity.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordSeikaisuu" + i, 0);
-					TestActivity.nHuseikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordHuseikaisuu" + i, 0);
+					//TestActivity.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordSeikaisuu" + i, 0);
+					//TestActivity.nHuseikaisuu[i] =MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordHuseikaisuu" + i, 0);
 				}
 			}
 			
@@ -467,7 +440,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞", "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
 				for (int i = 0; i < 10; i++) {
 					WordPhraseData.SetNumFromAndTo(lastnum, i);
-					adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", PlaySound.from, PlaySound.to));
+					//adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", PlaySound.from,PlaySound.to));
 				}
 			}
 			if (sentakuQ.equals(WordPhraseData.q_num.test1qEx)) {
@@ -520,6 +493,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			WordPhraseData.SetNumFromAndTo(lastnum, unit);
 			
 			ArrayAdapter<String> adapterWord = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
+			/*
 			if (sentakuQ.equals(WordPhraseData.q_num.testy08)
 				|| sentakuQ.equals(WordPhraseData.q_num.testy1)
 				|| sentakuQ.equals(WordPhraseData.q_num.testy2)
@@ -538,6 +512,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			for (int i = PlaySound.from; i <= PlaySound.to; i++) {
 				adapterWord.add(i + ":" + PlaySound.wordE[i] + " (" + PlaySound.wordJ[i] + ")");
 			}
+			*/
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			builder.setTitle("単語を選択してください");
 			builder.setSingleChoiceItems(adapterWord, 0, this::onWordSelect);
@@ -552,7 +527,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		try {
 			//単語を選んだあと
 			adWord.dismiss();
-			now = PlaySound.from + which - 1;
+			//now = PlaySound.from + which - 1;
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -569,7 +544,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			}
 			else {
 				//再生する
-				context.startForegroundService(new Intent(context, PlaySound.class));
+				//context.startForegroundService(new Intent(context, PlaySound.class));
 				button.setText("stop");
 				playing = true;
 			}
@@ -582,7 +557,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public void onDestroy() {
 		try {
 			super.onDestroy();
-			context.stopService(new Intent(context, PlaySound.class));
+			//context.stopService(new Intent(context, PlaySound.class));
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -606,8 +581,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	
 	private void saveNow() {
 		try {
-			if (PlaySound.strQ != null)
-				putIntData(context, "MainActivity" + "now", (PlaySound.strQ.startsWith("ph") ? PlaySound.strQ.substring(2) : PlaySound.strQ) + "now", now);
+			//if (PlaySound.strQ != null)putIntData(context, "MainActivity" + "now",(PlaySound.strQ.startsWith("ph") ? PlaySound.strQ.substring(2) : PlaySound.strQ) + "now", now);
 		} catch (Exception exception) {
 			showException(context, exception);
 		}
@@ -615,7 +589,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	
 	public void saiseiStop() {
 		try {
-			context.stopService(new Intent(context, PlaySound.class));
+			//context.stopService(new Intent(context, PlaySound.class));
 			playing = false;
 			
 		} catch (Exception e) {
@@ -625,7 +599,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	
 	public void onResetButtonClick(View v) {
 		try {
-			now = 1;
+			//now = 1;
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -652,14 +626,14 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			if (sb.getId() == R.id.seekBarEng) {
 				//英語
 				binding.textViewSeekBarEng.setText(String.format("英語速度:%.1f", speed));
-				PlaySound.dPlaySpeedEng = speed;
+				//PlaySound.dPlaySpeedEng = speed;
 				putIntData(context, "SeekBar", "english", sb.getProgress());
 				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_ENG_SPEED).putExtra(PLAYERSERVICE_MESSAGE_ENG_SPEED, speed));
 			}
 			else if (sb.getId() == R.id.seekBarJpn) {
 				//日本語
 				binding.textViewSeekBarJpn.setText(String.format("日本語速度:%.1f", speed));
-				PlaySound.dPlaySpeedJpn = speed;
+				//PlaySound.dPlaySpeedJpn = speed;
 				putIntData(context, "SeekBar", "japanese", sb.getProgress());
 				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_JPN_SPEED).putExtra(PLAYERSERVICE_MESSAGE_JPN_SPEED, speed));
 			}

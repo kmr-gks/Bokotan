@@ -123,7 +123,7 @@ public class WordPhraseData {
 			}else{
 				//両方読み込む
 				new WordPhraseData(strBookName + dataQ.toString(), context, wordDataList, dataBook, dataQ);
-				new WordPhraseData(dirpath + dataQ.toString(), context, phraseDataList, dataBook, dataQ);
+				new WordPhraseData(dirpath + dataQ, context, phraseDataList, dataBook, dataQ);
 			}
 		}
 	}
@@ -172,6 +172,7 @@ public class WordPhraseData {
 	
 	public static void SetNumFromAndTo(int lastnum, int unit) {
 		try {
+			/*
 			PlaySound.from = 1;
 			PlaySound.to = lastnum;
 			if (unit > 10) unit--;
@@ -191,6 +192,7 @@ public class WordPhraseData {
 				PlaySound.from = toFindFromAndTo[3][unit][0];
 				PlaySound.to = toFindFromAndTo[3][unit][1];
 			}
+			*/
 		} catch (Exception e) {
 			showException(e);
 		}
