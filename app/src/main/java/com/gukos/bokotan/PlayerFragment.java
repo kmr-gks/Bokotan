@@ -53,8 +53,8 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public static Boolean isInitialized = false;
 	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
 	
-	public static int lastnum,selectedIndex = 0;
-	public static boolean playing = false,nowIsDecided = false;
+	public static int lastnum, selectedIndex = 0;
+	public static boolean playing = false, nowIsDecided = false;
 	public static TextView tvWordEng, tvWordJpn, tvGenzai, tvsubE, tvsubJ, tvNumSeikaisuu, tvSeikaisu, tvGogen, textViewPath, textViewHatsuonKigou;
 	private static ArrayAdapter<String> adapterUnit;
 	AlertDialog adWord, adUnit;
@@ -71,7 +71,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	}
 	
 	public enum PlayerViewName {
-		genzai,gogen,subJ,subE,eng,jpn,path,
+		genzai, hatsuon, subJ, subE, eng, jpn, path,
 		Debug
 	}
 	
@@ -80,38 +80,38 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
 			PlayerViewName viewName = (PlayerViewName) bundle.getSerializable(PLAYER_VIEW_NAME);
-			PlayerViewProperties viewProperties =(PlayerViewProperties) bundle.getSerializable(PLAYER_VIEW_PROPERTIES);
+			PlayerViewProperties viewProperties = (PlayerViewProperties) bundle.getSerializable(PLAYER_VIEW_PROPERTIES);
 			final TextView textViewToHandle;
 			switch (viewName) {
-				case genzai:{
-					textViewToHandle=binding.textViewGenzai;
+				case genzai: {
+					textViewToHandle = binding.textViewGenzai;
 					break;
 				}
-				case gogen:{
-					textViewToHandle=binding.textViewGogen;
+				case hatsuon: {
+					textViewToHandle = binding.textViewHatsuonKigou;
 					break;
 				}
-				case subJ:{
-					textViewToHandle=binding.textViewSubtitleJpn;
+				case subJ: {
+					textViewToHandle = binding.textViewSubtitleJpn;
 					break;
 				}
-				case subE:{
-					textViewToHandle=binding.textViewSubtitleEng;
+				case subE: {
+					textViewToHandle = binding.textViewSubtitleEng;
 					break;
 				}
-				case eng:{
-					textViewToHandle=binding.textViewEng;
+				case eng: {
+					textViewToHandle = binding.textViewEng;
 					break;
 				}
-				case jpn:{
-					textViewToHandle=binding.textViewJpn;
+				case jpn: {
+					textViewToHandle = binding.textViewJpn;
 					break;
 				}
-				case path:{
-					textViewToHandle=binding.textViewPath;
+				case path: {
+					textViewToHandle = binding.textViewPath;
 					break;
 				}
-				case Debug:{
+				case Debug: {
 					//textViewToHandle=binding.
 					//break;
 				}
@@ -119,12 +119,12 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					throw new IllegalStateException("view name is invalid");
 				}
 			}
-			switch (viewProperties){
-				case Text:{
+			switch (viewProperties) {
+				case Text: {
 					textViewToHandle.setText(bundle.getString(PLAYER_VIEW_TEXT));
 					break;
 				}
-				case TextColor:{
+				case TextColor: {
 					textViewToHandle.setTextColor(bundle.getInt(PLAYER_VIEW_COLOR));
 				}
 			}
@@ -588,9 +588,9 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		}
 	}
 	
-	public void onPlayerServiceStop(View view){
+	public void onPlayerServiceStop(View view) {
 		puts(getMethodName());
-		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE,PLAYERSERVICE_MESSAGE_STOP);
+		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
 		context.sendBroadcast(broadcastIntent);
 	}
 	
@@ -648,7 +648,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public void onSpeedSeekBar(View v) {
 		try {
 			SeekBar sb = (SeekBar) v;
-			float speed = 1 + sb.getProgress()*0.1f;
+			float speed = 1 + sb.getProgress() * 0.1f;
 			if (sb.getId() == R.id.seekBarEng) {
 				//英語
 				binding.textViewSeekBarEng.setText(String.format("英語速度:%.1f", speed));

@@ -2,17 +2,16 @@ package com.gukos.bokotan;
 
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
-import static com.gukos.bokotan.PlayerFragment.hashMapKishutu;
-import static com.gukos.bokotan.PlayerFragment.lastnum;
-import static com.gukos.bokotan.QSentakuFragment.swOnlyFirst;
 import static com.gukos.bokotan.GogenYomuFactory.getGogenString;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPath;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
+import static com.gukos.bokotan.PlayerFragment.hashMapKishutu;
+import static com.gukos.bokotan.PlayerFragment.lastnum;
+import static com.gukos.bokotan.QSentakuFragment.swOnlyFirst;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
@@ -311,7 +310,8 @@ public class PlaySound extends Service {
 			else if (strQPath.startsWith("tanjukugo")) {
 				path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, strQPath, word, english, now);
 			}
-			else path = MyLibrary.FileDirectoryManager.getPath(passTan, strQPath, word, english, now);
+			else
+				path = MyLibrary.FileDirectoryManager.getPath(passTan, strQPath, word, english, now);
 			PlayerFragment.textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(getApplicationContext(), Uri.parse(path));
@@ -421,7 +421,8 @@ public class PlaySound extends Service {
 			else if (strQPath.startsWith("tanjukugo")) {
 				path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, strQPath, word, japanese, now);
 			}
-			else path = MyLibrary.FileDirectoryManager.getPath(passTan, strQPath, word, japanese, now);
+			else
+				path = MyLibrary.FileDirectoryManager.getPath(passTan, strQPath, word, japanese, now);
 			PlayerFragment.textViewPath.setText(path);
 			try {
 				mediaPlayerClassStatic = MediaPlayer.create(this, Uri.parse(path));

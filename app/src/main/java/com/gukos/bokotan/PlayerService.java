@@ -45,7 +45,7 @@ import java.util.ArrayList;
 
 public class PlayerService extends Service {
 	public static final String
-		className=getClassName(),//場所によってこの関数の返す文字列が変わる
+		className = getClassName(),//場所によってこの関数の返す文字列が変わる
 		PLAYERSERVICE_EXTRA_MODE = "ps_em",
 		PLAYERSERVICE_EXTRA_BOOK = "ps_eb",
 		PLAYERSERVICE_EXTRA_DATA_Q = "ps_edq",
@@ -65,7 +65,7 @@ public class PlayerService extends Service {
 	int now = 1;
 	MediaPlayer mediaPlayer;
 	String path;
-	boolean isPlaying;
+	boolean isPlaying, isJoshiChecked = false;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -183,6 +183,30 @@ public class PlayerService extends Service {
 			ArrayList<QuizCreator.QuizWordData> list;
 			if (nowMode == q_num.mode.phrase) list = phraseDataList;
 			else list = wordDataList;
+			
+			//助詞の確認
+			if (dataBook == passTan && nowMode == q_num.mode.word && nowLang == japanese && !isJoshiChecked) {
+				isJoshiChecked = true;
+				String word = list.get(now).j;
+				if (word.charAt(0) == '～') word = word.substring(1);
+				if (word.charAt(0) == '(') {
+					int index = word.indexOf(')');
+					word = word.substring(index + 1);
+				}
+				if (word.charAt(0) == '～') word = word.substring(1);
+				char c = word.charAt(0);
+				if (c == 'を' || c == 'に' || c == 'の' || c == 'で') {
+					mediaPlayer = MediaPlayer.create(this, Uri.parse(MyLibrary.FileDirectoryManager.getJosiPath(c)));
+					mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedJpn));
+					mediaPlayer.start();
+					mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
+					return;
+				}
+			}
+			else {
+				isJoshiChecked = false;
+			}
+			
 			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).no);
 			sendBroadcastTextChange(PlayerViewName.eng, list.get(now).e);
 			sendBroadcastTextChange(PlayerViewName.jpn, list.get(now).j);
@@ -199,10 +223,8 @@ public class PlayerService extends Service {
 			path = getPathPs(dataBook, dataQ, nowMode, nowLang, now);
 			sendBroadcastTextChange(PlayerViewName.path, path);
 			try {
-				mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
-				mediaPlayer.start();
+				mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
 				mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
-				
 				if (nowLang == english) {
 					//現在英語:日本語にする
 					nowLang = japanese;
@@ -230,6 +252,7 @@ public class PlayerService extends Service {
 					}
 					mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedJpn));
 				}
+				mediaPlayer.start();
 			} catch (Exception exception) {
 				showException(context, exception);
 			}
