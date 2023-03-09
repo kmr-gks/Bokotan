@@ -3,6 +3,7 @@ package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.WordPhraseData.DataBook;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
@@ -16,6 +17,7 @@ import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -31,10 +33,12 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class QuizCreator {
+	private static QuizCreator instance = null;
 	
 	private final HandlerThread handlerThread;
 	private final Handler handler;
 	private final Context context;
+	private BroadcastReceiver broadcastReceiver;
 	public static final String
 		QTHREAD_ACTION_CLICKED = "qthread_action_clicked",
 		QTHREAD_EXTRA_CHOICE = "qthread_extra_choice";
@@ -71,7 +75,20 @@ public class QuizCreator {
 	private final ArrayList<QuizWordData> list = new ArrayList<>();
 	
 	//コンストラクタ
-	public QuizCreator(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
+	public static QuizCreator build(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
+		synchronized (QuizCreator.class) {
+			if (instance == null) {
+				instance = new QuizCreator(context, dataBook, dataQ);
+			}
+			else {
+				instance.stop();
+				instance = new QuizCreator(context, dataBook, dataQ);
+			}
+			return instance;
+		}
+	}
+	
+	private QuizCreator(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
 		this.context = context;
 		handlerThread = new HandlerThread(getClassName());
 		handlerThread.start();
@@ -112,12 +129,12 @@ public class QuizCreator {
 			}
 			sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, "読み込み中");
 			
-			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(QTHREAD_ACTION_CLICKED));
+			broadcastReceiver = new DrawReceiver(handler);
+			context.registerReceiver(broadcastReceiver, new IntentFilter(QTHREAD_ACTION_CLICKED));
 			soundPool.setOnLoadCompleteListener((soundPool, id, status) -> soundPool.play(id, 1, 1, 1, 0, 1));
 			
 			//これを定期的に見る必要がある。
 			if (!onActive) return;
-			//単語データ読み取り
 			String qString = dataQ.toString();
 			switch (dataBook) {
 				case passTan: {
@@ -130,7 +147,7 @@ public class QuizCreator {
 					break;
 				}
 				case yumetan: {
-					new WordPhraseData(YumeWord + qString, context, list, yumetan, qString);
+					new WordPhraseData(YumeWord + qString.substring(1), context, list, yumetan, qString);
 					break;
 				}
 				default: {
@@ -147,6 +164,14 @@ public class QuizCreator {
 			}
 			setMondai();
 		});
+	}
+	
+	private void stop() {
+		try {
+			context.unregisterReceiver(broadcastReceiver);
+		} catch (Exception exception) {
+			showException(context, exception);
+		}
 	}
 	
 	//クイズスレッド
@@ -168,7 +193,7 @@ public class QuizCreator {
 				mp3Path = MyLibrary.FileDirectoryManager.getPath(passTan, q, word, english, no);
 			}
 			if (dataBook == yumetan) {
-				mp3Path = MyLibrary.FileDirectoryManager.getPath(yumetan, "y" + q, word, english, no);
+				mp3Path = MyLibrary.FileDirectoryManager.getPath(yumetan, q, word, english, no);
 			}
 			if (dataBook == tanjukugo) {
 				puts("getPath:" + tanjukugo + "," + q + "," + word + "," + english + "," + no);

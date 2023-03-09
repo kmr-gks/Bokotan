@@ -42,7 +42,11 @@ public class TabActivity extends AppCompatActivity {
 		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
 	}
 	
-	//UIスレッドから呼ばなければならない
+	/**
+	 * UIスレッドから呼ばなければならない
+	 *
+	 * @param n タブの番号(左から0から始まる)
+	 */
 	public static void setTabPageNum(int n) {
 		try {
 			TabActivity.binding.tabsMain.getTabAt(n).select();

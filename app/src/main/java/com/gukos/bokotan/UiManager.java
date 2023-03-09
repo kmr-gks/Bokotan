@@ -40,14 +40,23 @@ public class UiManager {
 		}
 		
 		public interface OnSeekBarProgressChange extends SeekBar.OnSeekBarChangeListener {
-			@Override//ツマミがドラッグされると呼ばれる
-			abstract void onProgressChanged(SeekBar seekBar, int i, boolean b);
+			/**
+			 * ツマミがドラッグされると呼ばれる
+			 */
+			@Override
+			void onProgressChanged(SeekBar seekBar, int i, boolean b);
 			
-			@Override//ツマミがタッチされた時に呼ばれる
+			/**
+			 * ツマミがタッチされた時に呼ばれる
+			 */
+			@Override
 			default void onStartTrackingTouch(SeekBar seekBar) {
 			}
 			
-			@Override//ツマミがリリースされた時に呼ばれる
+			/**
+			 * ツマミがリリースされた時に呼ばれる
+			 */
+			@Override
 			default void onStopTrackingTouch(SeekBar seekBar) {
 			}
 		}
@@ -70,7 +79,7 @@ public class UiManager {
 		}
 	}
 	
-	public static final class Listener{
+	public static final class Listener {
 		public static void onClickSettingItem(CompoundButton buttonView, boolean isChecked) {
 			try {
 				MyLibrary.PreferenceManager.putSetting(buttonView.getContext(), "id" + buttonView.getId(), isChecked);
