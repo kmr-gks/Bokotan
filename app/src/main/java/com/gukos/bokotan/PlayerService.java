@@ -53,7 +53,8 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
 		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
 		PLAYERSERVICE_MESSAGE_JPN_SPEED = "playerservice_message_jpn_speed",
-		PLAYERSERVICE_MESSAGE_ENG_SPEED = "playerservice_message_eng_speed";
+		PLAYERSERVICE_MESSAGE_ENG_SPEED = "playerservice_message_eng_speed",
+		PLAYERSERVICE_MESSAGE_NOW="ps_mn";
 	Context context;
 	Handler handler;
 	q_num.mode selectMode, nowMode = q_num.mode.word;
@@ -143,6 +144,9 @@ public class PlayerService extends Service {
 						dPlaySpeedEng = bundle.getFloat(PLAYERSERVICE_MESSAGE_ENG_SPEED);
 						break;
 					}
+					case PLAYERSERVICE_MESSAGE_NOW:{
+						now=bundle.getInt(PLAYERSERVICE_MESSAGE_NOW);
+					}
 				}
 			}
 		};
@@ -210,6 +214,9 @@ public class PlayerService extends Service {
 			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).no);
 			sendBroadcastTextChange(PlayerViewName.eng, list.get(now).e);
 			sendBroadcastTextChange(PlayerViewName.jpn, list.get(now).j);
+			sendBroadcastPipTextChange(PipActivity.PipViewName.num,"No."+now);
+			sendBroadcastPipTextChange(PipActivity.PipViewName.eng,list.get(now).e);
+			sendBroadcastPipTextChange(PipActivity.PipViewName.jpn,list.get(now).j);
 			//文を再生しているときは、単語も表示しておく。
 			if (selectMode == q_num.mode.wordPlusPhrase && nowMode == q_num.mode.phrase) {
 				sendBroadcastTextChange(PlayerViewName.subE, wordDataList.get(now).e);
@@ -265,6 +272,14 @@ public class PlayerService extends Service {
 				.putExtra(PLAYER_VIEW_PROPERTIES, Text)
 				.putExtra(PLAYER_VIEW_TEXT, text)
 				.putExtra(PLAYER_VIEW_NAME, viewName);
+		context.sendBroadcast(broadcastIntent);
+	}
+	
+	private void sendBroadcastPipTextChange(PipActivity.PipViewName viewName, String text) {
+		Intent broadcastIntent =
+			new Intent(PipActivity.PIP_ACTION_UI)
+				.putExtra(PipActivity.PIP_VIEW_TEXT, text)
+				.putExtra(PipActivity.PIP_VIEW_NAME, viewName);
 		context.sendBroadcast(broadcastIntent);
 	}
 	

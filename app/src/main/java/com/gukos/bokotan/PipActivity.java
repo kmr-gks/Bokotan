@@ -4,10 +4,15 @@ import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.Activity;
 import android.app.PictureInPictureParams;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Rational;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.databinding.DataBindingUtil;
 
@@ -20,6 +25,44 @@ public class PipActivity extends Activity {
 	public static int pipYoko = 16, pipTate = 9;
 	private static ActivityPipBinding binding;
 	
+	public static final String
+		PIP_ACTION_UI="pau",
+		PIP_VIEW_TEXT="pvt",
+		PIP_VIEW_NAME="pvn";
+	
+	public enum PipViewName {
+		num,eng,jpn
+	}
+	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
+		@Override
+		public void handleMessage(Message msg) {
+			Bundle bundle = msg.getData();
+			PipViewName pipViewName =
+				(PipViewName) bundle.getSerializable(PIP_VIEW_NAME);
+			final TextView textViewToHandle;
+			switch (pipViewName) {
+				case num:{
+					textViewToHandle=binding.textViewNo;
+					break;
+				}
+				case eng:{
+					textViewToHandle=binding.textViewPipEng;
+					break;
+				}
+				case jpn:{
+					textViewToHandle=binding.textViewPipJpn;
+					break;
+				}
+				default: {
+					throw new IllegalStateException("view name is invalid");
+				}
+			}
+			
+			textViewToHandle.setText(bundle.getString(PIP_VIEW_TEXT));
+			
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
@@ -30,7 +73,7 @@ public class PipActivity extends Activity {
 			super.onCreate(savedInstanceState);
 			//setContentView(R.layout.activity_pip);
 			binding= DataBindingUtil.setContentView(this,R.layout.activity_pip);
-			
+			this.registerReceiver(new DrawReceiver(drawHandler),new IntentFilter(PIP_ACTION_UI));
 			//PipActivity.ChangeText(wordE[now], wordJ[now], now);
 			
 			//pip

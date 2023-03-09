@@ -8,6 +8,7 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_ENG_SPEED;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_JPN_SPEED;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_NOW;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
 import static com.gukos.bokotan.WordPhraseData.sentakuQ;
@@ -149,8 +150,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					binding.textViewJpn.setLineBreakWordStyle(LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE);
 				}
 				
-				binding.buttonStartStop.setOnClickListener(this::onStartStopButtonClick);
-				binding.buttonStartStop.setText(playing ? "stop" : "start");
 				binding.buttonNowChange.setOnClickListener(this::onSelectNowButtonClick);
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
 				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
@@ -527,7 +526,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		try {
 			//単語を選んだあと
 			adWord.dismiss();
-			//now = PlaySound.from + which - 1;
+			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE,PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW,which));
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -548,16 +547,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				button.setText("stop");
 				playing = true;
 			}
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	@Override
-	public void onDestroy() {
-		try {
-			super.onDestroy();
-			//context.stopService(new Intent(context, PlaySound.class));
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -599,7 +588,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	
 	public void onResetButtonClick(View v) {
 		try {
-			//now = 1;
+			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE,PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW,1));
 		} catch (Exception e) {
 			showException(context, e);
 		}
