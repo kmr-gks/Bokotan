@@ -8,7 +8,6 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.content.Context.ALARM_SERVICE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
@@ -33,15 +32,9 @@ import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
 import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 
-import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -50,7 +43,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -63,7 +55,6 @@ import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentakuBinding> {
@@ -156,22 +147,14 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				}
 			});
 			*/
-			activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-			
 			
 			//TODO:タブ表示
-			
 			
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
 			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
 			binding.buttonWriteTest.setOnClickListener(this::onWriteText);
-			binding.buttonAlarm.setOnClickListener(this::onAlarmset);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
 			binding.buttonQuizservice.setOnClickListener(this::onPlayQuizStart);
-			
-			for (var button : new Button[]{binding.buttonAll}) {
-				button.setOnClickListener(this::onSelectQ);
-			}
 			
 			QSentakuFragment.swOnlyFirst = binding.switchOnlyFirst;
 			QSentakuFragment.swHyojiBeforeRead = binding.switchHyojiYakuBeforeRead;
@@ -308,173 +291,6 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		MyLibrary.DisplayOutput.makeToastForLong(context, "ファイル書き込みに成功しました。");
 	}
 	
-	private void onSelectQ(View v) {
-		try {
-			/*
-			if (binding.editTextNumber.length() != 0) {
-				PlayerFragment.nowIsDecided = true;
-				PlaySound.now = Integer.parseInt(binding.editTextNumber.getText().toString()) - 1;
-			}
-			else {
-				PlayerFragment.nowIsDecided = false;
-			}
-			if (switchSkipOboe != null) {
-				PlaySound.bSkipOboe = switchSkipOboe.isChecked();
-			}
-			else PlaySound.bSkipOboe = false;
-			PlaySound.bHyojiYakuBeforeRead = swHyojiBeforeRead.isChecked();
-			PlaySound.bEnglishToJapaneseOrder = radioButtonEtoJ.isChecked();
-			TestActivity.bSort = switchSortHanten.isChecked();
-			switch (v.getId()) {
-				case R.id.button1q: {
-					strQ = "1q";
-					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.str1q;
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.test1q;
-					break;
-				}
-				default:
-				case R.id.buttonP1q: {
-					strQ = "p1q";
-					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.strp1q;
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.testp1q;
-					break;
-				}
-				case R.id.button2q: {
-					strQ = "2q";
-					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.str2q;
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.test2q;
-					break;
-				}
-				case R.id.buttonP2q: {
-					strQ = "p2q";
-					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.strp2q;
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.testp2q;
-					break;
-				}
-				case R.id.button1qEx: {
-					strQ = "tanjukugo1q";
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.test1qEx;
-					break;
-				}
-				case R.id.buttonP1qEx: {
-					strQ = "tanjukugop1q";
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.testp1qEx;
-					break;
-				}
-				case R.id.buttonYume0_0:
-				case R.id.buttonYume0_8: {
-					strQ = "y08";
-					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.stry08;
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy08;
-					break;
-				}
-				case R.id.buttonYume1: {
-					strQ = "y1";
-					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.stry1;
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy1;
-					break;
-				}
-				case R.id.buttonYume2: {
-					strQ = "y2";
-					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.stry2;
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy2;
-					break;
-				}
-				case R.id.buttonYume3: {
-					strQ = "y3";
-					WordPhraseData.strQenum = WordPhraseData.q_num.strQ.stry3;
-					WordPhraseData.sentakuQ = WordPhraseData.q_num.testy3;
-					break;
-				}
-			}
-			PlaySound.isWordAndPhraseMode = false;
-			switch (nWordPhraseOrTest) {
-				//単語
-				default:
-				case 1: {
-					if (strQ.endsWith("1q") || strQ.startsWith("y")) {
-						onStartPlaying();
-					}
-					else {
-						Toast.makeText(context, "単語は1級、準1級、ユメタンのみです。", Toast.LENGTH_SHORT).show();
-					}
-					break;
-				}
-				//文
-				case 2: {
-					if (!strQ.endsWith("1q") && !strQ.endsWith("p1q") && !strQ.startsWith("y")) {
-						Toast.makeText(context, "文は1級、準1級、ユメタンのみです。", Toast.LENGTH_SHORT).show();
-						return;
-					}
-					strQ = "ph" + strQ;
-					onStartPlaying();
-					break;
-				}
-				//単語+文
-				case 6: {
-					if (!strQ.endsWith("1q") && !strQ.endsWith("p1q") && !strQ.startsWith("y")) {
-						Toast.makeText(context, "単語+文は1級、準1級、ユメタンのみです。", Toast.LENGTH_SHORT).show();
-						return;
-					}
-					PlaySound.isWordAndPhraseMode = true;
-					onStartPlaying();
-					break;
-				}
-				//テスト
-				case 3:
-				case 4:
-				case 5: {
-					strQ = strQ + "Test";
-					startActivity(new Intent(context, TestActivity.class));
-					break;
-				}
-			}*/
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	private void onStartPlaying() {
-		//再生
-		TabActivity.setTabPageNum(1);
-		PlayerFragment.initialize(getContext());
-		//context.startForegroundService(new Intent(context, PlaySound.class));
-	}
-	
-	private void onAlarmset(View v) {
-		try {
-			// 現在時刻を取得
-			Calendar calendar = Calendar.getInstance();
-			int hour = calendar.get(Calendar.HOUR_OF_DAY);
-			int minute = calendar.get(Calendar.MINUTE);
-			
-			// 時間選択ダイアログの生成
-			TimePickerDialog timepick = new TimePickerDialog(context, (view, hourOfDay, minute1) -> {
-				// 設定 ボタンクリック時の処理
-				// 時間をセットする
-				Calendar calendar1 = Calendar.getInstance();
-				// Calendarを使って現在の時間をミリ秒で取得
-				calendar1.setTimeInMillis(System.currentTimeMillis());
-				// 設定
-				calendar1.set(Calendar.HOUR_OF_DAY, hourOfDay);
-				calendar1.set(Calendar.MINUTE, minute1);
-				//明示的なBroadCast
-				Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-				PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-				// アラームをセットする
-				AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-				if (am != null) {
-					am.setExact(AlarmManager.RTC_WAKEUP, calendar1.getTimeInMillis(), pending);
-					Toast.makeText(context, "Set Alarm ", Toast.LENGTH_SHORT).show();
-				}
-			}, hour, minute, true);
-			// 表示
-			timepick.show();
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
 	private void onPlayQuizStart(View view) {
 		//スピナーから本と級を取得
 		DataBook dataBook;
@@ -526,148 +342,15 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			q_num.mode mode = q_num.mode.word;
 			if (view == binding.buttonPhrase) mode = q_num.mode.phrase;
 			else if (view == binding.buttonWP) mode = q_num.mode.wordPlusPhrase;
-			context.startForegroundService(
-				new Intent(context, PlayerService.class)
-					.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
-					.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, dataBook)
-					.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, dataQ)
-			);
-		}
-	}
-	
-	//https://qiita.com/niwasawa/items/c8271f56f058965b318b
-	public String getVersionName(Activity activity) {
-		try {
-			// Java パッケージ名を取得
-			// android.content.Context#getPackageName
-			String name = activity.getPackageName();
-			
-			// インストールされているアプリケーションパッケージの
-			// 情報を取得するためのオブジェクトを取得
-			// android.content.Context#getPackageManager
-			PackageManager pm = activity.getPackageManager();
-			
-			// アプリケーションパッケージの情報を取得
-			PackageInfo info = pm.getPackageInfo(name, PackageManager.GET_META_DATA);
-			
-			// バージョン番号の文字列を返す
-			return info.versionName;
-			
-		} catch (Exception e) {
-			showException(context, e);
-			return null;
-		}
-	}
-	
-	public void SpinnerHanniOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
-		try {
-			MyLibrary.PreferenceManager.putIntData(context, "spinnerHanni", "selected", i);
-			/*
-			switch (i) {
-				case 0: {
-					PlaySound.nUnit = 1;
-					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.deruA;
-					break;
-				}
-				case 1: {
-					PlaySound.nUnit = 2;
-					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.deruB;
-					break;
-				}
-				case 2: {
-					PlaySound.nUnit = 3;
-					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.deruC;
-					break;
-				}
-				case 3: {
-					PlaySound.nUnit = 4;
-					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.Jukugo;
-					break;
-				}
-				case 4: {
-					PlaySound.nUnit = 5;
-					WordPhraseData.sentakuUnit = WordPhraseData.q_num.unit.all;
-					PlaySound.nShurui = 4;
-					break;
-				}
+			Intent intent=new Intent(context, PlayerService.class)
+				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
+				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, dataBook)
+				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, dataQ);
+			if(binding.editTextNumber.length()>0){
+				intent.putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, Integer.parseInt(  binding.editTextNumber.getText().toString()));
 			}
-		*/
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	public void SpinnerHinsiOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
-		try {
-			MyLibrary.PreferenceManager.putIntData(context, "spinnerHinsi", "selected", i);
-			/*
-			switch (i) {
-				case 0: {
-					PlaySound.nShurui = 1;
-					break;
-				}
-				case 1: {
-					PlaySound.nShurui = 2;
-					break;
-				}
-				case 2: {
-					PlaySound.nShurui = 3;
-					break;
-				}
-				case 3: {
-					PlaySound.nShurui = 4;
-					break;
-				}
-			}
-			*/
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	public void SpinnerModeOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
-		try {
-			MyLibrary.PreferenceManager.putIntData(context, "spinnerMode", "selected", i);
-			switch (i) {
-				case 0: {
-					//単語
-					nWordPhraseOrTest = 1;
-					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.word;
-					break;
-				}
-				case 1: {
-					//文
-					nWordPhraseOrTest = 2;
-					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.phrase;
-					break;
-				}
-				case 2: {
-					//単語+文
-					nWordPhraseOrTest = 6;
-					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.wordPlusPhrase;
-					break;
-				}
-				case 3: {
-					//ランダムテスト
-					nWordPhraseOrTest = 3;
-					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.randomTest;
-					break;
-				}
-				case 4: {
-					//正答率テスト
-					nWordPhraseOrTest = 4;
-					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.huseikainomiTest;
-					break;
-				}
-				case 5: {
-					//順番テスト
-					nWordPhraseOrTest = 5;
-					WordPhraseData.WordPhraseOrTest = WordPhraseData.q_num.mode.seitouritsujunTest;
-					break;
-				}
-			}
-		} catch (Exception e) {
-			showException(context, e);
+			binding.editTextNumber.setText("");
+			context.startForegroundService(intent);
 		}
 	}
 	

@@ -1,5 +1,6 @@
 package com.gukos.bokotan;
 
+import static android.media.AudioManager.STREAM_MUSIC;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
@@ -28,6 +29,8 @@ public class TabActivity extends AppCompatActivity {
 		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
 		
 		puts(getClassName() + getMethodName() + ",bundle=" + toString(savedInstanceState));
+		
+		setVolumeControlStream(STREAM_MUSIC);
 		
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_tab);
 		

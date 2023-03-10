@@ -49,6 +49,7 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_EXTRA_MODE = "ps_em",
 		PLAYERSERVICE_EXTRA_BOOK = "ps_eb",
 		PLAYERSERVICE_EXTRA_DATA_Q = "ps_edq",
+		PLAYERSERVICE_EXTRA_NOW="ps_en",
 		PLAYERSERVICE_ACTION = "playerservice_action",
 		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
 		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
@@ -79,6 +80,7 @@ public class PlayerService extends Service {
 		if (selectMode == q_num.mode.phrase) nowMode = q_num.mode.phrase;
 		dataBook = (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
 		dataQ = (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
+		now=intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW,-1);
 		
 		context = getApplicationContext();
 		String channelId = "default";
@@ -164,7 +166,9 @@ public class PlayerService extends Service {
 			
 			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(PLAYERSERVICE_ACTION));
 			
-			now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);
+			if(now==-1){
+				now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);
+			}
 			
 			WordPhraseData.read(dataBook, dataQ, context, wordDataList, phraseDataList, selectMode);
 			if (dataBook == yumetan) phraseDataList = wordDataList;

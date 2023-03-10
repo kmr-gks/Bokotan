@@ -71,10 +71,8 @@ public class PipActivity extends Activity {
 				return;
 			}
 			super.onCreate(savedInstanceState);
-			//setContentView(R.layout.activity_pip);
 			binding= DataBindingUtil.setContentView(this,R.layout.activity_pip);
 			this.registerReceiver(new DrawReceiver(drawHandler),new IntentFilter(PIP_ACTION_UI));
-			//PipActivity.ChangeText(wordE[now], wordJ[now], now);
 			
 			//pip
 			PictureInPictureParams.Builder pictureInPictureParams = new PictureInPictureParams.Builder();
@@ -92,39 +90,11 @@ public class PipActivity extends Activity {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 				pictureInPictureParams.setSeamlessResizeEnabled(true);
 			}
-			//https://qiita.com/YANOKURO/items/64568d2e62593ac2c389
-			//RemoteAction
-		/*
-		final ArrayList<RemoteAction>actions=new ArrayList<>();
-		PendingIntent intent=PendingIntent.getBroadcast(this,0,new Intent(this,PipControlBroadcastReceiver.class).putExtra(EXTRA_CONTROL_TYPE,CONTROL_TYPE_A),FLAG_IMMUTABLE);
-		PendingIntent intent2=PendingIntent.getBroadcast(this,0,new Intent(this,PipControlBroadcastReceiver.class).putExtra(EXTRA_CONTROL_TYPE,CONTROL_TYPE_B),FLAG_IMMUTABLE);
-		final Icon icon= Icon.createWithResource(PipActivity.this, android.R.drawable.ic_media_pause);
-		final Icon icon2= Icon.createWithResource(PipActivity.this, android.R.drawable.ic_media_play);
-		String strTitle = "testtitle";
-		String strContent = "testcontent";
-		actions.add(new RemoteAction(icon, strTitle, strContent,intent));
-		actions.add(new RemoteAction(icon2, strTitle, strContent,intent2));
-		pictureInPictureParams.setActions(actions);
-		*/
 			enterPictureInPictureMode(pictureInPictureParams.build());
 			
-			
-			//デフォルト
-			//enterPictureInPictureMode(new PictureInPictureParams.Builder().setAspectRatio(new Rational(16,9)).build());
 		} catch (Exception e) {
 			showException(this, e);
 		}
-	}
-	
-	static void ChangeText(String strE, String strJpn, int num) {
-		if (startPIP)
-			try {
-				binding.textViewPipEng.setText(strE);
-				binding.textViewPipJpn.setText(strJpn);
-				binding.textViewNo.setText(String.format("%d", num));
-			} catch (Exception e) {
-				showException(e);
-			}
 	}
 	
 	public void exitPIP(View v) {

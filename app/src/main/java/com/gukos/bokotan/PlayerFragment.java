@@ -19,7 +19,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.text.LineBreakConfig;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,7 +26,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -153,17 +151,12 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				binding.buttonNowChange.setOnClickListener(this::onSelectNowButtonClick);
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
 				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
-				
-				activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-				
 				binding.seekBarEng.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarEng.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
 				onSpeedSeekBar(binding.seekBarEng);
-				
 				binding.seekBarJpn.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarJpn.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(binding.seekBarJpn);
-				
 				binding.buttonStopService.setOnClickListener(this::onPlayerServiceStop);
 				
 				synchronized (isInitialized) {
@@ -190,250 +183,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");    //1799
 			hashMapKishutu.put("grow into 〜", "p1q");                //1675
 			hashMapKishutu.put("accrue", "pass" + "1q");            //1568
-			/*
-			switch (sentakuQ) {
-				case test1q: {
-					lastnum = 2400;
-					WordPhraseData w = new WordPhraseData(PasstanWord + "1q", context);
-					PlaySound.wordE = w.e;
-					PlaySound.wordJ = w.j;
-					WordPhraseData p = new WordPhraseData(PasstanPhrase + "1q", context);
-					PlaySound.strPhraseE = p.e;
-					PlaySound.strPhraseJ = p.j;
-					if (swOnlyFirst.isChecked()) {
-						//ユメタン単語
-						for (String Q : new String[]{"00", "08", "1", "2", "3"}) {
-							WordPhraseData wpdy = new WordPhraseData(YumeWord + Q, context);
-							for (int i = 1; i < Math.min(wpdy.e.length, wpdy.j.length); i++)
-								if (wpdy.e[i] != null && wpdy.j[i] != null)
-									hashMapKishutu.put(wpdy.e[i], "yume" + Q);
-						}
-						//パス単準1級
-						//パス単単語
-						for (String Q : new String[]{"p1q"}) {
-							WordPhraseData wpdp = new WordPhraseData(PasstanWord + Q, context);
-							for (int i = 1; i < Math.min(wpdp.e.length, wpdp.j.length); i++)
-								if (wpdp.e[i] != null && wpdp.j[i] != null)
-									hashMapKishutu.put(wpdp.e[i], "pass" + Q);
-						}
-					}
-					break;
-				}
-				case testp1q: {
-					lastnum = 1850;
-					WordPhraseData w = new WordPhraseData(PasstanWord + "p1q", context);
-					PlaySound.wordE = w.e;
-					PlaySound.wordJ = w.j;
-					WordPhraseData p = new WordPhraseData(PasstanPhrase + "p1q", context);
-					PlaySound.strPhraseE = p.e;
-					PlaySound.strPhraseJ = p.j;
-					if (swOnlyFirst.isChecked()) {
-						//ユメタン単語
-						for (String Q : new String[]{"00", "08", "1", "2", "3"}) {
-							WordPhraseData wpd = new WordPhraseData(YumeWord + Q, context);
-							for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
-								if (wpd.e[i] != null && wpd.j[i] != null)
-									hashMapKishutu.put(wpd.e[i], "yume" + Q);
-						}
-					}
-					break;
-				}
-				case test2q: {
-					lastnum = 1704;
-					WordPhraseData w = new WordPhraseData(PasstanWord + "2q", context);
-					PlaySound.wordE = w.e;
-					PlaySound.wordJ = w.j;
-					WordPhraseData p = new WordPhraseData(PasstanPhrase + "2q", context);
-					PlaySound.strPhraseE = p.e;
-					PlaySound.strPhraseJ = p.j;
-					break;
-				}
-				case testp2q: {
-					lastnum = 1500;
-					WordPhraseData w = new WordPhraseData(PasstanWord + "p2q", context);
-					PlaySound.wordE = w.e;
-					PlaySound.wordJ = w.j;
-					WordPhraseData p = new WordPhraseData(PasstanPhrase + "p2q", context);
-					PlaySound.strPhraseE = p.e;
-					PlaySound.strPhraseJ = p.j;
-					break;
-				}
-				case test1qEx: {
-					lastnum = 2811;
-					WordPhraseData w = new WordPhraseData(TanjukugoWord + "1q", context);
-					WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + "1q", context);
-					//配列を一旦Streamに変換して結合したあと、配列に戻す。
-					ArrayList<String> arrayListE = new ArrayList<>(), arrayListJ = new ArrayList<>();
-					arrayListE.add("index");
-					arrayListJ.add("index");
-					for (int i = 1; w.e[i] != null; i++) arrayListE.add(w.e[i]);
-					for (int i = 1; wx.e[i] != null; i++) arrayListE.add(wx.e[i]);
-					for (int i = 1; w.j[i] != null; i++) arrayListJ.add(w.j[i]);
-					for (int i = 1; wx.j[i] != null; i++) arrayListJ.add(wx.j[i]);
-					PlaySound.wordE = arrayListE.toArray(new String[0]);
-					PlaySound.wordJ = arrayListJ.toArray(new String[0]);
-					
-					WordPhraseData p = new WordPhraseData(TanjukugoPhrase + "1q", context);
-					PlaySound.strPhraseE = p.e;
-					PlaySound.strPhraseJ = p.j;
-					break;
-				}
-				case testp1qEx: {
-					lastnum = 2400;
-					WordPhraseData w = new WordPhraseData(TanjukugoWord + "p1q", context);
-					WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + "p1q", context);
-					ArrayList<String> arrayListE = new ArrayList<>(), arrayListJ = new ArrayList<>();
-					arrayListE.add("index");
-					arrayListJ.add("index");
-					for (int i = 1; w.e[i] != null; i++) arrayListE.add(w.e[i]);
-					for (int i = 1; wx.e[i] != null; i++) arrayListE.add(wx.e[i]);
-					for (int i = 1; w.j[i] != null; i++) arrayListJ.add(w.j[i]);
-					for (int i = 1; wx.j[i] != null; i++) arrayListJ.add(wx.j[i]);
-					PlaySound.wordE = arrayListE.toArray(new String[0]);
-					PlaySound.wordJ = arrayListJ.toArray(new String[0]);
-					
-					WordPhraseData p = new WordPhraseData(TanjukugoPhrase + "p1q", context);
-					PlaySound.strPhraseE = p.e;
-					PlaySound.strPhraseJ = p.j;
-					break;
-				}
-				case testy00: {
-					lastnum = 800;
-					WordPhraseData w = new WordPhraseData(YumeWord + "00", context);
-					PlaySound.strPhraseE = PlaySound.wordE = w.e;
-					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
-					break;
-				}
-				case testy08: {
-					lastnum = 800;
-					WordPhraseData w = new WordPhraseData(YumeWord + "08", context);
-					PlaySound.strPhraseE = PlaySound.wordE = w.e;
-					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
-					break;
-				}
-				case testy1: {
-					lastnum = 1000;
-					WordPhraseData w = new WordPhraseData(YumeWord + "1", context);
-					PlaySound.strPhraseE = PlaySound.wordE = w.e;
-					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
-					break;
-				}
-				case testy2: {
-					lastnum = 1000;
-					WordPhraseData w = new WordPhraseData(YumeWord + "2", context);
-					PlaySound.strPhraseE = PlaySound.wordE = w.e;
-					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
-					break;
-				}
-				case testy3: {
-					lastnum = 800;
-					WordPhraseData w = new WordPhraseData(YumeWord + "3", context);
-					PlaySound.strPhraseE = PlaySound.wordE = w.e;
-					PlaySound.strPhraseJ = PlaySound.wordJ = w.j;
-					break;
-				}
-			}
-			
-			if (!nowIsDecided && sentakuUnit.equals(WordPhraseData.q_num.unit.all)) {
-				now = MyLibrary.PreferenceManager.getIntData(context, "MainActivity" +
-					"now", (PlaySound.strQ.startsWith("ph") ? PlaySound.strQ.substring(2) :
-					PlaySound.strQ) + "now", 1);
-				PlaySound.nFrom = 1;
-				PlaySound.nTo = lastnum;
-			}
-			else if (PlaySound.nUnit != 5) {
-				int unit = 0;
-				switch (PlaySound.nUnit) {
-					case 1: {//A
-						switch (PlaySound.nShurui) {
-							case 1: {//V
-								break;
-							}
-							case 2: {//N
-								unit = 1;
-								break;
-							}
-							case 3: {//Aj
-								unit = 2;
-								break;
-							}
-							case 4: {//M
-								unit = 11;
-								break;
-							}
-						}
-						break;
-					}
-					case 2: {//B
-						switch (PlaySound.nShurui) {
-							case 1: {//V
-								unit = 3;
-								break;
-							}
-							case 2: {//N
-								unit = 4;
-								break;
-							}
-							case 3: {//Aj
-								unit = 5;
-								break;
-							}
-							case 4: {//M
-								unit = 12;
-								break;
-							}
-						}
-						break;
-					}
-					case 3: {//C
-						switch (PlaySound.nShurui) {
-							case 1: {//V
-								unit = 6;
-								break;
-							}
-							case 2: {//N
-								unit = 7;
-								break;
-							}
-							case 3: {//Aj
-								unit = 8;
-								break;
-							}
-							case 4: {//M
-								unit = 13;
-								break;
-							}
-						}
-						break;
-					}
-					case 4:
-						unit = 9;
-						break;
-				}
-				
-				WordPhraseData.SetNumFromAndTo(lastnum, unit);
-				PlaySound.nFrom = PlaySound.from;
-				PlaySound.nTo = PlaySound.to;
-			}
-			*/
-			//1q
-			//if (lastnum==2400){
-			if (sentakuQ.equals(WordPhraseData.q_num.test1q)) {
-				for (int i = 0; i < lastnum; i++) {
-					//TestActivity.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context,"testActivity" + "1qTest", "nWordSeikaisuu" + i, 0);
-					//TestActivity.nHuseikaisuu[i] =MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "1qTest", "nWordHuseikaisuu" + i, 0);
-				}
-			}
-			//p1q
-			//if (lastnum==1850){
-			if (sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
-				for (int i = 0; i < lastnum; i++) {
-					//TestActivity.nSeikaisuu[i] = MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordSeikaisuu" + i, 0);
-					//TestActivity.nHuseikaisuu[i] =MyLibrary.PreferenceManager.getIntData(context, "testActivity" + "p1qTest", "nWordHuseikaisuu" + i, 0);
-				}
-			}
-			
-			
+
 			adapterUnit = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			if (sentakuQ.equals(WordPhraseData.q_num.test1q) || sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
 				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞", "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
@@ -471,11 +221,9 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	
 	public void onSelectNowButtonClick(View v) {
 		try {
-			AlertDialog.Builder builder = new AlertDialog.Builder(
-				context);
-			builder.setTitle("選択してください");
-			//AlertDialogで選択された内容を保持
-			builder.setSingleChoiceItems(adapterUnit, selectedIndex, (dialog, which) -> {
+			adapterUnit=null;
+			AlertDialog.Builder builder =
+				new AlertDialog.Builder(context).setTitle("選択してください").setSingleChoiceItems(adapterUnit, selectedIndex, (dialog, which) -> {
 				selectedIndex = which;
 				adUnit.dismiss();
 				askTangoNumber(selectedIndex);
@@ -512,6 +260,8 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				adapterWord.add(i + ":" + PlaySound.wordE[i] + " (" + PlaySound.wordJ[i] + ")");
 			}
 			*/
+			adapterWord.add("aaa");
+			adapterWord.add("bbb");
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			builder.setTitle("単語を選択してください");
 			builder.setSingleChoiceItems(adapterWord, 0, this::onWordSelect);
@@ -532,58 +282,10 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		}
 	}
 	
-	public void onStartStopButtonClick(View view) {
-		try {
-			Button button = (Button) view;
-			if (button.getText().equals("stop")) {
-				//再生中 停止する
-				saiseiStop();
-				saveNow();
-				button.setText("start");
-			}
-			else {
-				//再生する
-				//context.startForegroundService(new Intent(context, PlaySound.class));
-				button.setText("stop");
-				playing = true;
-			}
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
 	public void onPlayerServiceStop(View view) {
 		puts(getMethodName());
 		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
 		context.sendBroadcast(broadcastIntent);
-	}
-	
-	@Override
-	public void onPause() {
-		try {
-			super.onPause();
-			saveNow();
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	private void saveNow() {
-		try {
-			//if (PlaySound.strQ != null)putIntData(context, "MainActivity" + "now",(PlaySound.strQ.startsWith("ph") ? PlaySound.strQ.substring(2) : PlaySound.strQ) + "now", now);
-		} catch (Exception exception) {
-			showException(context, exception);
-		}
-	}
-	
-	public void saiseiStop() {
-		try {
-			//context.stopService(new Intent(context, PlaySound.class));
-			playing = false;
-			
-		} catch (Exception e) {
-			showException(context, e);
-		}
 	}
 	
 	public void onResetButtonClick(View v) {

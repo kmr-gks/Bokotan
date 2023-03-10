@@ -154,16 +154,4 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 				.putExtra(QuizCreator.QTHREAD_EXTRA_CHOICE, choice);
 		context.sendBroadcast(broadcastIntent);
 	}
-	
-	static class Seikairitsu {
-		final int num;
-		final int seitouritu;
-		final int toitakazu;
-		
-		Seikairitsu(int num, int seitouritu, int toitakazu) {
-			this.num = num;
-			this.seitouritu = seitouritu;
-			this.toitakazu = toitakazu;
-		}
-	}
 }

@@ -34,37 +34,6 @@
 
 		<service android:name=".PlayerService"/>
 
-		<receiver
-			android:name=".PipControlBroadcastReceiver"
-			android:exported="true"
-			android:permission="TODO">
-			<intent-filter>
-				<action android:name="com.gukos.bokotan" />
-
-				<category android:name="android.intent.category.DEFAULT" />
-			</intent-filter>
-		</receiver>
-		<receiver
-			android:name=".StopPlayBroadcastReceiver"
-			android:exported="true"
-			android:permission="TODO">
-			<intent-filter>
-				<action android:name="com.gukos.bokotan" />
-
-				<category android:name="android.intent.category.DEFAULT" />
-			</intent-filter>
-		</receiver>
-		<receiver
-			android:name=".StartPipBroadcastReceiver"
-			android:exported="true"
-			android:permission="TODO">
-			<intent-filter>
-				<action android:name="com.gukos.bokotan" />
-
-				<category android:name="android.intent.category.DEFAULT" />
-			</intent-filter>
-		</receiver>
-
 		<activity
 			android:name=".PipActivity"
 			android:launchMode="singleTask"
@@ -81,9 +50,6 @@
 			</intent-filter>
 		</activity>
 
-		<receiver
-			android:name=".AlarmBroadcastReceiver"
-			android:process=":remote" />
 	</application>
 
 </manifest>
