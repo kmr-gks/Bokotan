@@ -597,7 +597,7 @@ public final class MyLibrary {
 		
 		public static String getClassName(int hierarchyOfStack) {
 			//return new Object(){}.getClass().getEnclosingClass().getSimpleName();
-			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getClassName().substring(packageName.length() + 1) + "#";
+			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getClassName().substring(packageName.length() + 1);
 		}
 		
 		public static String getClassName() {
@@ -613,11 +613,11 @@ public final class MyLibrary {
 			return getMethodName(defaultHierarchy);
 		}
 		
-		public static String getNowLine(int hierarchyOfStack) {
-			return "@" + Thread.currentThread().getStackTrace()[hierarchyOfStack].getLineNumber();
+		public static int getNowLine(int hierarchyOfStack) {
+			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getLineNumber();
 		}
 		
-		public static String getNowLine() {
+		public static int getNowLine() {
 			return getNowLine(defaultHierarchy);
 		}
 		
@@ -627,12 +627,12 @@ public final class MyLibrary {
 		
 		public static void printCurrentState() {
 			//引数のdefaultHierarchyを省略すると正しく動作しない。
-			DebugManager.puts("スレッド" + getNowThreadName() + ",クラス=" + DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy));
+			DebugManager.puts("スレッド" + getNowThreadName() + ",クラス" + DebugManager.getClassName(defaultHierarchy) + ",メソッド" + DebugManager.getMethodName(defaultHierarchy) + ",行" + DebugManager.getNowLine(defaultHierarchy) + ", ");
 		}
 		
 		public static void printCurrentState(String string) {
 			//引数のdefaultHierarchyを省略すると正しく動作しない。
-			DebugManager.puts("スレッド" + getNowThreadName() + ",クラス=" + DebugManager.getClassName(defaultHierarchy) + DebugManager.getMethodName(defaultHierarchy) + DebugManager.getNowLine(defaultHierarchy) + string);
+			DebugManager.puts("スレッド" + getNowThreadName() + ",クラス" + DebugManager.getClassName(defaultHierarchy) + ",メソッド" + DebugManager.getMethodName(defaultHierarchy) + ",行" + DebugManager.getNowLine(defaultHierarchy) + ", " + string);
 		}
 		
 		public static String getDeviceName() {return Build.PRODUCT + "," + Build.VERSION.RELEASE;}

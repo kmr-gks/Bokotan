@@ -20,13 +20,21 @@
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent">
 
+			<androidx.appcompat.widget.SearchView
+				android:id="@+id/searchView"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.8"
+				app:iconifiedByDefault="false"
+				app:queryHint="検索" />
+
 			<com.google.android.material.textfield.TextInputEditText
 				android:id="@+id/editTextKensakuKey"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="0.8"
 				android:hint="@string/kensaku"
-				android:inputType="textEmailAddress"
+				android:inputType="textNoSuggestions|text"
 				android:textColor="@color/textcolor" />
 
 			<Button

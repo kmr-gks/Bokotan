@@ -126,8 +126,6 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	public void initialize() {
 		try {
-			KensakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
-			
 			//バージョン表記
 			binding.textViewVersion.setText(getBuildDate(context));
 			
