@@ -51,7 +51,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	public static TreeMap<String, GogenYomu> trGogenYomu;
 	Thread threadInitial = null, threadSearch = null;
 	boolean threadSearchIsRunning = true;
-	private final ArrayList<WordPhraseData.WordInfo> allData = new ArrayList<>();
+	private ArrayList<WordPhraseData.WordInfo> allData = new ArrayList<>();
 	private ArrayList<WordPhraseData.WordInfo> resultData = new ArrayList<>();
 	enumKensakuHouhou kensakuHouhou = starts;
 	
@@ -163,6 +163,26 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
+	public void setData_() {
+		try {
+			allData=WordPhraseData.readData_Kensaku(context);
+			//コピー
+			resultData = new ArrayList<>(allData);
+			SetHatsuonKigou(context);
+			
+			//別スレッドからUIを変更するときに必要
+			activity.runOnUiThread(() -> {
+				try {
+					binding.textViewKensakuResultCount.setText(resultData.size() + "件");
+					setListView(binding.listViewKensakuResult, resultData, null, null);
+				} catch (Exception e) {
+					showException(context, e);
+				}
+			});
+		} catch (Exception e) {
+			showException(context, e);
+		}
+	}
 	public void setData() {
 		try {
 			//ファイルを開いて読み込む
@@ -296,7 +316,6 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		} catch (Exception e) {
 			showException(context, e);
 		}
-		
 	}
 	
 	@Override

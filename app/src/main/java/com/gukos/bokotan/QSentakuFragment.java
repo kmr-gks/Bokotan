@@ -9,6 +9,7 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -31,6 +32,16 @@ import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
 import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
 import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
+import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEx;
+import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
+import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
+import static com.gukos.bokotan.WordPhraseData.PasstanWord;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
+import static com.gukos.bokotan.WordPhraseData.YumeWord;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -70,6 +81,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	public static SwitchMaterial switchQuizOX;
 	public static RadioButton radioButtonEtoJ;
 	static int nWordPhraseOrTest = 1;
+	public static Boolean isReadingData=true;
 	
 	public QSentakuFragment() {
 		super(FragmentQSentakuBinding::inflate);
@@ -83,15 +95,37 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
 			// .penaltyLog().build());
 			
+			new Thread(this::readAllData).start();
 			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
 	}
 	
+	private void readAllData() {
+		//wordphrasedataの読み取り
+		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"}) {
+			WordPhraseData.map.put(PasstanWord+q, WordPhraseData.readToList(PasstanWord + q, context, passTan, q));
+			WordPhraseData.map.put(PasstanPhrase+q, WordPhraseData.readToList(PasstanPhrase + q, context, passTan, q));
+		}
+		for (var q : new String[]{"1q", "p1q"}) {
+			WordPhraseData.map.put(TanjukugoWord+q, WordPhraseData.readToList(TanjukugoWord + q, context, tanjukugo, q));
+			WordPhraseData.map.put(TanjukugoPhrase+q, WordPhraseData.readToList(TanjukugoPhrase + q, context, tanjukugo, q));
+		}
+		for (var q : new String[]{"1q", "p1q"}) {
+			WordPhraseData.map.put(TanjukugoEXWord+q, WordPhraseData.readToList(TanjukugoEXWord + q, context, tanjukugoEx, q));
+		}
+		for (var q : new String[]{"00", "08", "1", "2", "3"}) {
+			WordPhraseData.map.put(YumeWord+q, WordPhraseData.readToList(YumeWord + q, context, yumetan, "y"+q));
+		}
+		printCurrentState("end");
+		synchronized (isReadingData) {
+			isReadingData = false;
+		}
+	}
+	
 	public void initialize() {
 		try {
-			
 			KensakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
 			//バージョン表記

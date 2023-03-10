@@ -1,7 +1,9 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
+import static com.gukos.bokotan.MyLibrary.tangoNumToString;
+import static com.gukos.bokotan.WordPhraseData.DataType.phrase;
+import static com.gukos.bokotan.WordPhraseData.DataType.word;
 import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.getHatsuon;
 
 import android.app.AlertDialog;
@@ -14,7 +16,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class WordPhraseData {
 	//1qのunit=8のfrom=0,8,0; p1qunit=5 to=1,5,1
@@ -48,10 +52,7 @@ public class WordPhraseData {
 		//p1qEX
 		{{1, 216}, {217, 432}, {433, 648}, {649, 864}, {865, 1080}, {1081, 1296}, {1297, 1488}, {1489, 1680}, {1681, 1824}, {1825, 1920}, {1920, 2400}},
 	};
-	static q_num sentakuQ = q_num.testp1q;
-	static q_num.mode WordPhraseOrTest = q_num.mode.word;
-	static q_num.unit sentakuUnit = q_num.unit.all;
-	static q_num.strQ strQenum = q_num.strQ.strp1q;
+	public static TreeMap<String,ArrayList<QuizCreator.QuizWordData>> map=new TreeMap<>();
 	static q_num.skipjouken skipjoken = q_num.skipjouken.kirokunomi;
 	public final String[] e = new String[20000], j = new String[20000];
 	public final static String
@@ -63,6 +64,10 @@ public class WordPhraseData {
 		YumeWord = "Yumetan/WordDataYume",
 		Svl = "SVL/SVL12000",
 		distinction = "distinction/";
+	
+	public static ArrayList<QuizCreator.QuizWordData> getList(String key){
+		return map.get(key);
+	}
 	
 	public WordPhraseData(String strQ, Context context) {
 		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
@@ -78,65 +83,6 @@ public class WordPhraseData {
 			i = 0;
 			while ((str = br2.readLine()) != null) {
 				j[i] = str;
-				i++;
-			}
-			is1.close();
-			is2.close();
-			br1.close();
-			br2.close();
-		} catch (Exception e) {
-			showException(context, e);
-			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
-		}
-	}
-	
-	public static void read(DataBook dataBook, DataQ dataQ, Context context, ArrayList<QuizCreator.QuizWordData> wordDataList, ArrayList<QuizCreator.QuizWordData> phraseDataList, q_num.mode selectMode) {
-		final String strBookName,dirpath;
-		switch (dataBook) {
-			default:
-			case passTan: {
-				strBookName = PasstanWord;
-				dirpath="Passtan/Phrase";
-				break;
-			}
-			case tanjukugo: {
-				strBookName = TanjukugoWord;
-				dirpath="TanjukugoEX/Phrase";
-				break;
-			}
-			case yumetan: {
-				strBookName = YumeWord;
-				dirpath=null;
-				break;
-			}
-		}
-		if (dataBook==yumetan){
-			//ユメタン:単語のみ
-			new WordPhraseData(strBookName + dataQ.toString().substring(1), context, wordDataList, dataBook, dataQ);
-		}else {
-			if(selectMode== q_num.mode.word) {
-				//単語データのみ読み込む
-				new WordPhraseData(strBookName + dataQ.toString(), context, wordDataList, dataBook, dataQ);
-			}else if (selectMode== q_num.mode.phrase){
-				//文データのみ読み込む
-				new WordPhraseData(dirpath + dataQ.toString(), context, phraseDataList, dataBook, dataQ);
-			}else{
-				//両方読み込む
-				new WordPhraseData(strBookName + dataQ.toString(), context, wordDataList, dataBook, dataQ);
-				new WordPhraseData(dirpath + dataQ, context, phraseDataList, dataBook, dataQ);
-			}
-		}
-	}
-	
-	public WordPhraseData(String strQ, Context context, ArrayList<QuizCreator.QuizWordData> list, DataBook dataBook, DataQ dataQ) {
-		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
-		try {
-			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
-			BufferedReader br1 = new BufferedReader(new InputStreamReader(is1)), br2 = new BufferedReader(new InputStreamReader(is2));
-			String dataE, dataJ;
-			int i = 0;
-			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
-				list.add(new QuizCreator.QuizWordData(dataE, dataJ, i, dataBook,dataQ.toString()));
 				i++;
 			}
 			is1.close();
@@ -168,6 +114,133 @@ public class WordPhraseData {
 			showException(context, e);
 			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
 		}
+	}
+	
+	public static ArrayList<QuizCreator.QuizWordData> readToList(String strQ, Context context, DataBook dataBook, String dataQ){
+		ArrayList<QuizCreator.QuizWordData> list=new ArrayList<>();
+		new WordPhraseData(strQ,context,list,dataBook,dataQ);
+		return list;
+	}
+	
+	public static ArrayList<WordPhraseData.WordInfo> readData_Kensaku(Context context){
+		//ファイルを開いて読み込む
+		var trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
+		ArrayList<WordPhraseData.WordInfo> allData=new ArrayList<>();
+		WordPhraseData.WordInfo.size = 0;
+		Map<String, String> mapQName = new HashMap<>() {{
+			put("1q", "1級");
+			put("p1q", "準1級");
+			put("2q", "2級");
+			put("p2q", "準2級");
+			put("3q", "3級");
+			put("4q", "4級");
+			put("5q", "5級");
+			put("00", "ユメタン0基礎");
+			put("08", "ユメタン0");
+			put("1", "ユメタン1");
+			put("2", "ユメタン2");
+			put("3", "ユメタン3");
+			put("-eiken-jukugo", "英検熟語");
+			put("-eikenp1-jukugo", "英検熟語(準1)");
+			put("-Toefl-Chokuzen", "TOEFL直前");
+			put("-Toeic-500ten", "TOEIC500点");
+			put("-Toeic-700ten", "TOEIC700点");
+			put("-Toeic-900ten", "TOEIC900点");
+			put("-Toeic-Chokuzen", "TOEIC直前");
+			put("-Toeic-jukugo", "TOEIC熟語");
+			put("d1phrase12", "1");
+			put("d2phrase1", "2");
+		}};
+		
+		//パス単単語
+		for (String Q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"}) {
+			WordPhraseData w = new WordPhraseData(PasstanWord + Q, context);
+			for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
+				if (w.e[i] != null && w.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
+		}
+		
+		//単熟語EX単語
+		for (String Q : new String[]{"1q", "p1q"}) {
+			WordPhraseData w = new WordPhraseData(TanjukugoWord + Q, context);
+			for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
+				if (w.e[i] != null && w.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, word));
+			WordPhraseData wx = new WordPhraseData(TanjukugoEXWord + Q, context);
+			for (int i = 1; i < Math.min(wx.e.length, wx.j.length); i++)
+				if (wx.e[i] != null && wx.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("単熟語EX" + mapQName.get(Q), "Unit EX", wx.e[i], wx.j[i], i, word));
+		}
+		
+		//ユメタン単語
+		for (String Q : new String[]{"00", "08", "1", "2", "3"}) {
+			WordPhraseData w = new WordPhraseData(YumeWord + Q, context);
+			for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
+				if (w.e[i] != null && w.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo(mapQName.get(Q), "Unit" + ((i - 1) / 100 + 1), w.e[i], w.j[i], i, word));
+		}
+		
+		//語源データも読み込む
+		int gogenNum = 0;
+		for (TreeMap.Entry<String, GogenYomu> map : trGogenYomu.entrySet())
+			allData.add(new WordPhraseData.WordInfo("読む語源学", map.getKey(), map.getValue().wordJpn, ++gogenNum, WordPhraseData.DataType.gogengaku));
+		
+		//英語漬け.comから読み込み
+		for (String Q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q",
+			"-eiken-jukugo", "-eikenp1-jukugo", "-Toefl-Chokuzen", "-Toeic-500ten", "-Toeic-700ten", "-Toeic-900ten",
+			"-Toeic-Chokuzen", "-Toeic-jukugo",}) {
+			WordPhraseData wpd = new WordPhraseData("Eigoduke.com/" + "WordDataEigoduke" + Q, context);
+			for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
+				if (wpd.e[i] != null && wpd.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("英語漬け" + mapQName.get(Q), wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
+		}
+		for (int num = 1; num <= 10; num++) {
+			String Q = "-toeic (" + num + ")";
+			WordPhraseData wpd = new WordPhraseData("Eigoduke.com/" + "WordDataEigoduke" + Q, context);
+			for (int i = 1; i < Math.min(wpd.e.length, wpd.j.length); i++)
+				if (wpd.e[i] != null && wpd.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("英語漬け" + "TOEIC" + num, wpd.e[i], wpd.j[i], i, WordPhraseData.DataType.eigoduke_com));
+		}
+		
+		//distinction
+		for (int d = 1; d <= 4; d++) {
+			WordPhraseData w = new WordPhraseData(WordPhraseData.distinction + "d" + d + "word", context);
+			for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
+				if (w.e[i] != null && w.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("Distinction" + d, tangoNumToString("Distinction" + d, i), w.e[i], w.j[i], i, word));
+		}
+		
+		//フレーズ
+		for (String Q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"}) {
+			WordPhraseData w = new WordPhraseData(PasstanPhrase + Q, context);
+			for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
+				if (w.e[i] != null && w.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("パス単" + mapQName.get(Q), tangoNumToString("パス単" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+		}
+		
+		//単熟語EX単語
+		for (String Q : new String[]{"1q", "p1q"}) {
+			WordPhraseData w = new WordPhraseData(TanjukugoPhrase + Q, context);
+			for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
+				if (w.e[i] != null && w.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("単熟語EX" + mapQName.get(Q), tangoNumToString("単熟語EX" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+		}
+		
+		//distinction
+		for (String Q : new String[]{"d1phrase12", "d2phrase1"}) {
+			WordPhraseData w = new WordPhraseData(WordPhraseData.distinction + Q, context);
+			for (int i = 1; i < Math.min(w.e.length, w.j.length); i++)
+				if (w.e[i] != null && w.j[i] != null)
+					allData.add(new WordPhraseData.WordInfo("Distinction" + mapQName.get(Q), tangoNumToString("Distinction" + mapQName.get(Q), i), w.e[i], w.j[i], i, phrase));
+		}
+		
+		//SVL12000辞書
+		WordPhraseData wordPhraseData = new WordPhraseData(Svl, context);
+		for (int i = 1; i < Math.min(wordPhraseData.e.length, wordPhraseData.j.length); i++)
+			if (wordPhraseData.e[i] != null && wordPhraseData.j[i] != null)
+				allData.add(new WordPhraseData.WordInfo("SVL", Integer.toString((i - 1) / 1000 + 1), wordPhraseData.e[i], wordPhraseData.j[i], i, word));
+		
+		return allData;
 	}
 	
 	public static void SetNumFromAndTo(int lastnum, int unit) {
@@ -321,6 +394,30 @@ public class WordPhraseData {
 		final int toushiNumber, localNumber;
 		final String category, e, j, subCategory;
 		final DataType dataType;
+		private static Map<String, String> mapQName = new HashMap<>() {{
+			put("1q", "1級");
+			put("p1q", "準1級");
+			put("2q", "2級");
+			put("p2q", "準2級");
+			put("3q", "3級");
+			put("4q", "4級");
+			put("5q", "5級");
+			put("00", "ユメタン0基礎");
+			put("08", "ユメタン0");
+			put("1", "ユメタン1");
+			put("2", "ユメタン2");
+			put("3", "ユメタン3");
+			put("-eiken-jukugo", "英検熟語");
+			put("-eikenp1-jukugo", "英検熟語(準1)");
+			put("-Toefl-Chokuzen", "TOEFL直前");
+			put("-Toeic-500ten", "TOEIC500点");
+			put("-Toeic-700ten", "TOEIC700点");
+			put("-Toeic-900ten", "TOEIC900点");
+			put("-Toeic-Chokuzen", "TOEIC直前");
+			put("-Toeic-jukugo", "TOEIC熟語");
+			put("d1phrase12", "1");
+			put("d2phrase1", "2");
+		}};
 		
 		WordInfo(String category, String e, String j, int localNumber, DataType dataType) {
 			this(category, null, e, j, localNumber, dataType);

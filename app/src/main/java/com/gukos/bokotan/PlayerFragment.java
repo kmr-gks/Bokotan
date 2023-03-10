@@ -11,11 +11,9 @@ import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_JPN_SPEED;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_NOW;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
-import static com.gukos.bokotan.WordPhraseData.sentakuQ;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.text.LineBreakConfig;
@@ -33,8 +31,6 @@ import androidx.annotation.NonNull;
 
 import com.gukos.bokotan.databinding.FragmentPlayerBinding;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBinding> {
@@ -148,7 +144,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					binding.textViewJpn.setLineBreakWordStyle(LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE);
 				}
 				
-				binding.buttonNowChange.setOnClickListener(this::onSelectNowButtonClick);
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
 				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
 				binding.seekBarEng.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
@@ -183,100 +178,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");    //1799
 			hashMapKishutu.put("grow into 〜", "p1q");                //1675
 			hashMapKishutu.put("accrue", "pass" + "1q");            //1568
-
-			adapterUnit = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
-			if (sentakuQ.equals(WordPhraseData.q_num.test1q) || sentakuQ.equals(WordPhraseData.q_num.testp1q)) {
-				ArrayList<String> strUnit = new ArrayList<>(Arrays.asList("でる度A動詞", "でる度A名詞", "でる度A形容詞", "でる度B動詞", "でる度B名詞", "でる度B形容詞", "でる度C動詞", "でる度C名詞", "でる度C形容詞", "熟語"));
-				for (int i = 0; i < 10; i++) {
-					WordPhraseData.SetNumFromAndTo(lastnum, i);
-					//adapterUnit.add(strUnit.get(i) + String.format(" (%d-%d)", PlaySound.from,PlaySound.to));
-				}
-			}
-			if (sentakuQ.equals(WordPhraseData.q_num.test1qEx)) {
-				for (int i = 0; i <= 9; i++) {
-					adapterUnit.add("Unit" + (i + 1) + " (" + WordPhraseData.toFindFromAndTo[12][i][0] + "-" + WordPhraseData.toFindFromAndTo[12][i][1] + ")");
-				}
-				adapterUnit.add("UnitEX" + " (" + WordPhraseData.toFindFromAndTo[12][10][0] + "-" + WordPhraseData.toFindFromAndTo[12][10][1] + ")");
-			}
-			if (sentakuQ.equals(WordPhraseData.q_num.testp1qEx)) {
-				for (int i = 0; i <= 9; i++) {
-					adapterUnit.add("Unit" + (i + 1) + " (" + WordPhraseData.toFindFromAndTo[13][i][0] + "-" + WordPhraseData.toFindFromAndTo[13][i][1] + ")");
-				}
-				adapterUnit.add("UnitEX" + " (" + WordPhraseData.toFindFromAndTo[13][10][0] + "-" + WordPhraseData.toFindFromAndTo[13][10][1] + ")");
-			}
-			if (sentakuQ.equals(WordPhraseData.q_num.testy08) || sentakuQ.equals(WordPhraseData.q_num.testy3)) {
-				for (int i = 1; i <= 8; i++) {
-					adapterUnit.add("Unit" + i + " (" + ((i - 1) * 100 + 1) + "-" + i * 100 + ")");
-				}
-			}
-			if (sentakuQ.equals(WordPhraseData.q_num.testy1) || sentakuQ.equals(WordPhraseData.q_num.testy2)) {
-				for (int i = 1; i <= 10; i++) {
-					adapterUnit.add("Unit" + i + " (" + ((i - 1) * 100 + 1) + "-" + i * 100 + ")");
-				}
-			}
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	public void onSelectNowButtonClick(View v) {
-		try {
-			adapterUnit=null;
-			AlertDialog.Builder builder =
-				new AlertDialog.Builder(context).setTitle("選択してください").setSingleChoiceItems(adapterUnit, selectedIndex, (dialog, which) -> {
-				selectedIndex = which;
-				adUnit.dismiss();
-				askTangoNumber(selectedIndex);
-			});
-			adUnit = builder.create();
-			adUnit.show();
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	private void askTangoNumber(int unit) {
-		try {
-			WordPhraseData.SetNumFromAndTo(lastnum, unit);
 			
-			ArrayAdapter<String> adapterWord = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
-			/*
-			if (sentakuQ.equals(WordPhraseData.q_num.testy08)
-				|| sentakuQ.equals(WordPhraseData.q_num.testy1)
-				|| sentakuQ.equals(WordPhraseData.q_num.testy2)
-				|| sentakuQ.equals(WordPhraseData.q_num.testy3)) {
-				PlaySound.from = unit * 100 + 1;
-				PlaySound.to = (unit + 1) * 100;
-			}
-			if (sentakuQ.equals(WordPhraseData.q_num.test1qEx)) {
-				PlaySound.from = WordPhraseData.toFindFromAndTo[12][unit][0];
-				PlaySound.to = WordPhraseData.toFindFromAndTo[12][unit][1];
-			}
-			if (sentakuQ.equals(WordPhraseData.q_num.testp1qEx)) {
-				PlaySound.from = WordPhraseData.toFindFromAndTo[13][unit][0];
-				PlaySound.to = WordPhraseData.toFindFromAndTo[13][unit][1];
-			}
-			for (int i = PlaySound.from; i <= PlaySound.to; i++) {
-				adapterWord.add(i + ":" + PlaySound.wordE[i] + " (" + PlaySound.wordJ[i] + ")");
-			}
-			*/
-			adapterWord.add("aaa");
-			adapterWord.add("bbb");
-			AlertDialog.Builder builder = new AlertDialog.Builder(context);
-			builder.setTitle("単語を選択してください");
-			builder.setSingleChoiceItems(adapterWord, 0, this::onWordSelect);
-			adWord = builder.create();
-			adWord.show();
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
-	public void onWordSelect(DialogInterface dialog, int which) {
-		try {
-			//単語を選んだあと
-			adWord.dismiss();
-			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE,PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW,which));
 		} catch (Exception e) {
 			showException(context, e);
 		}

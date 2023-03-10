@@ -2,13 +2,13 @@ package com.gukos.bokotan;
 
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.WordPhraseData.DataBook;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
-import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugoEx;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataType.word;
@@ -72,7 +72,7 @@ public class QuizCreator {
 		}
 	}
 	
-	private final ArrayList<QuizWordData> list = new ArrayList<>();
+	private ArrayList<QuizWordData> list = new ArrayList<>();
 	
 	//コンストラクタ
 	public static QuizCreator build(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
@@ -138,30 +138,30 @@ public class QuizCreator {
 			String qString = dataQ.toString();
 			switch (dataBook) {
 				case passTan: {
-					new WordPhraseData(PasstanWord + qString, context, list, passTan, qString);
+					list= WordPhraseData.getList(PasstanWord+qString);
 					break;
 				}
 				case tanjukugo: {
-					new WordPhraseData(TanjukugoWord + qString, context, list, tanjukugo, qString);
-					new WordPhraseData(TanjukugoEXWord + qString, context, list, tanjukugoEx, qString);
+					list= WordPhraseData.getList(TanjukugoWord+qString);
+					list.addAll(WordPhraseData.getList(TanjukugoEXWord+qString));
 					break;
 				}
 				case yumetan: {
-					new WordPhraseData(YumeWord + qString.substring(1), context, list, yumetan, qString);
+					list= WordPhraseData.getList(YumeWord+qString.substring(1));
 					break;
 				}
 				default: {
-					for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
-						new WordPhraseData(PasstanWord + q, context, list, passTan, q);
-					for (var q : new String[]{"1q", "p1q"})
-						new WordPhraseData(TanjukugoWord + q, context, list, tanjukugo, q);
-					for (var q : new String[]{"1q", "p1q"})
-						new WordPhraseData(TanjukugoEXWord + q, context, list, tanjukugoEx, q);
-					for (var q : new String[]{"00", "08", "1", "2", "3"})
-						new WordPhraseData(YumeWord + q, context, list, yumetan, q);
+					//全範囲から出題
+					for (var key: WordPhraseData.map.keySet()){
+						list.addAll(WordPhraseData.getList(key));
+					}
 					break;
 				}
 			}
+			for (var key: WordPhraseData.map.keySet()){
+				puts(key+":"+ WordPhraseData.getList(key).size());
+			}
+			printCurrentState(WordPhraseData.map.toString());
 			setMondai();
 		});
 	}

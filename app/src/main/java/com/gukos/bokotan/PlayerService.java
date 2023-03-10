@@ -17,6 +17,12 @@ import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
 import static com.gukos.bokotan.WordPhraseData.DataQ;
+import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
+import static com.gukos.bokotan.WordPhraseData.PasstanWord;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
+import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
+import static com.gukos.bokotan.WordPhraseData.YumeWord;
 import static com.gukos.bokotan.WordPhraseData.q_num;
 
 import android.app.Notification;
@@ -170,7 +176,26 @@ public class PlayerService extends Service {
 				now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);
 			}
 			
-			WordPhraseData.read(dataBook, dataQ, context, wordDataList, phraseDataList, selectMode);
+			String key=null;
+			switch (dataBook) {
+				case passTan: {
+					wordDataList= WordPhraseData.getList(PasstanWord+dataQ);
+					phraseDataList= WordPhraseData.getList(PasstanPhrase+dataQ);
+					break;
+				}
+				case tanjukugo: {
+					wordDataList= WordPhraseData.getList(TanjukugoWord+dataQ);
+					wordDataList.addAll(WordPhraseData.getList(TanjukugoEXWord+dataQ));
+					phraseDataList= WordPhraseData.getList(TanjukugoPhrase+dataQ);
+					phraseDataList.addAll(WordPhraseData.getList(TanjukugoEXWord+dataQ));
+					break;
+				}
+				case yumetan: {
+					wordDataList= WordPhraseData.getList(YumeWord+dataQ.toString().substring(1));
+					break;
+				}
+			}
+			puts("key="+key);
 			if (dataBook == yumetan) phraseDataList = wordDataList;
 			
 			onPlay();

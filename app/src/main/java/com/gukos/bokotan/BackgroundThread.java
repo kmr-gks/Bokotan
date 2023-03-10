@@ -9,7 +9,6 @@ public abstract class BackgroundThread {
 	protected final HandlerThread handlerThread;
 	protected final Handler handler;
 	protected final Context context;
-	
 	public abstract void handleMessage(Message message);
 	public abstract void initialize();
 	
