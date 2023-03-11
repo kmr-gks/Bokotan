@@ -3,6 +3,7 @@ package com.gukos.bokotan;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.contains;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.ends;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.starts;
+import static com.gukos.bokotan.MyLibrary.DisplayOutput.setStringColored;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.tangoNumToString;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
@@ -33,7 +34,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -141,6 +141,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				binding.buttonKensakuHouhou.setText(kensakuHouhou.toString());
 				//人工的に文字を変更して再検索
 				binding.editTextKensakuKey.setText(binding.editTextKensakuKey.getText());
+				onSearchViewTextChange(binding.searchView.getQuery().toString());
 			});
 			binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 				@Override
@@ -150,16 +151,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				
 				@Override
 				public boolean onQueryTextChange(String newText) {
-					//フィルターする
-					//ListView#setFilterTextは内部的にListView#getAdapter#getFilter
-					// を呼び出している。また、ポップアップが表示されてしまう。
-					var a1 = (ArrayAdapter) binding.listViewKensakuResult.getAdapter();
-					//filterの条件を変えられるようにするため、adapterを継承して自作する
-					
-					a1.getFilter().filter(newText, count -> {
-						binding.textViewKensakuResultCount.setText(count + "件");
-					});
-					return false;
+					return onSearchViewTextChange(newText);
 				}
 			});
 			
@@ -190,7 +182,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				put("d2phrase1", "2");
 				
 			}};
-			if (true) {
+			if (false) {
 				//パス単単語
 				for (String Q : new String[]{"1q"}) {
 					WordPhraseData w = new WordPhraseData(PasstanWord + Q, context);
@@ -303,6 +295,49 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
+	private boolean onSearchViewTextChange(String newText){
+		//フィルターする
+		//ListView#setFilterTextは内部的にListView#getAdapter#getFilter
+		// を呼び出している。また、ポップアップが表示されてしまう。
+		
+		var adapter= (WordSearchAdapter<WordPhraseData.WordInfo>)binding.listViewKensakuResult.getAdapter();
+		if (newText.length()>0) {
+			//検索ワードで色をつける
+			adapter.getString = wordPhraseData -> setStringColored(wordPhraseData.toString(), newText);
+			//検索方法を指定する
+			BiFunction<String, String, Boolean> biFunction;
+			switch (kensakuHouhou) {
+				default:
+				case starts: {
+					biFunction = String::startsWith;
+					break;
+				}
+				case contains: {
+					biFunction = String::contains;
+					break;
+				}
+				case ends: {
+					biFunction = String::endsWith;
+					break;
+				}
+			}
+			adapter.filter((wordInfo, key) -> {
+				for (var field : wordInfo.getAllFieldString()) {
+					if (biFunction.apply(field, key)) {
+						return true;
+					}
+				}
+				return false;
+			}, newText, count -> {
+				binding.textViewKensakuResultCount.setText(count + "件");
+			});
+		}else{
+			//検索欄が空、条件をクリアして全単語表示
+			adapter.resetFilter(count -> binding.textViewKensakuResultCount.setText(count + "件"));
+		}
+		return false;
+	}
+	
 	@Override
 	public void onPause() {
 		try {
@@ -317,8 +352,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		try {
 			if (titleList == null || key.length() == 0) {
 				//lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1,wordInfoList));
-				lv.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1,
-				                                      wordInfoList));
+				lv.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1, wordInfoList));
 			}
 			else {
 				//lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1,titleList));
@@ -329,8 +363,8 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				try {
 					WordPhraseData.WordInfo ld = wordInfoList.get(i);
 					new AlertDialog.Builder(context)
-						.setTitle(MyLibrary.DisplayOutput.setStringColored(ld.toushiNumber + " : " + ld.e, key))
-						.setMessage(MyLibrary.DisplayOutput.setStringColored(ld.toDetailedString(), key))
+						.setTitle(setStringColored(ld.toushiNumber + " : " + ld.e, key))
+						.setMessage(setStringColored(ld.toDetailedString(), key))
 						.setPositiveButton("閉じる", null)
 						.setNeutralButton("英→日発音", (dialogInterface, i1) -> playEnglishAndJapanese(ld))
 						.setNegativeButton("英語発音", (dialogInterface, i1) -> playEnglish(ld))
@@ -521,7 +555,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 					for (var field : wordInfo.getAllFieldString()) {
 						if (biFunction.apply(field, key)) {
 							resultData.add(wordInfo);
-							titleList.add(MyLibrary.DisplayOutput.setStringColored(wordInfo.toString(), key));
+							titleList.add(setStringColored(wordInfo.toString(), key));
 							break;
 						}
 					}
