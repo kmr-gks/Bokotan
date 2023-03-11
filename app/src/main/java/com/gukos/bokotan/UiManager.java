@@ -1,6 +1,5 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.Activity;
@@ -66,12 +65,10 @@ public class UiManager {
 			
 			@Override
 			default void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				printCurrentState();
 			}
 			
 			@Override
 			default void onTextChanged(CharSequence s, int start, int before, int count) {
-				printCurrentState();
 			}
 			
 			//これをオーバーロードする

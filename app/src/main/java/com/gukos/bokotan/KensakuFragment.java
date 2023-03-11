@@ -3,7 +3,6 @@ package com.gukos.bokotan;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.contains;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.ends;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.starts;
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.tangoNumToString;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
@@ -151,8 +150,6 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				
 				@Override
 				public boolean onQueryTextChange(String newText) {
-					//入力したとき
-					printCurrentState(newText);
 					//フィルターする
 					//ListView#setFilterTextは内部的にListView#getAdapter#getFilter
 					// を呼び出している。また、ポップアップが表示されてしまう。
@@ -193,7 +190,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				put("d2phrase1", "2");
 				
 			}};
-			if (false) {
+			if (true) {
 				//パス単単語
 				for (String Q : new String[]{"1q"}) {
 					WordPhraseData w = new WordPhraseData(PasstanWord + Q, context);
@@ -319,10 +316,14 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	private void setListView(ListView lv, ArrayList<WordPhraseData.WordInfo> wordInfoList, ArrayList<CharSequence> titleList, String key) {
 		try {
 			if (titleList == null || key.length() == 0) {
-				lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1, wordInfoList));
+				//lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1,wordInfoList));
+				lv.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1,
+				                                      wordInfoList));
 			}
 			else {
-				lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1, titleList));
+				//lv.setAdapter(new ArrayAdapter<>(context, R.layout.my_simple_list_item_1,titleList));
+				lv.setAdapter(new WordSearchAdapter(context, R.layout.my_simple_list_item_1,
+				                                    titleList));
 			}
 			lv.setOnItemClickListener((adapterView, view, i, l) -> {
 				try {
@@ -489,7 +490,6 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	
 	public void EditTextChanged(Editable editable) {
 		try {
-			printCurrentState(editable.toString());
 			//文字入力時
 			ArrayList<CharSequence> titleList = new ArrayList<>();
 			String key = editable.toString().toLowerCase();//小文字に変換
