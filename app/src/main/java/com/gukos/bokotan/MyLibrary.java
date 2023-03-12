@@ -329,10 +329,10 @@ public final class MyLibrary {
 		public static String getPathPs(WordPhraseData.DataBook dataBook, WordPhraseData.DataQ dataQ, WordPhraseData.q_num.mode mode, WordPhraseData.DataLang dataLang, int tangoNum) {
 			try {
 				WordPhraseData.DataType dataType;
-				if (mode== WordPhraseData.q_num.mode.word) dataType= WordPhraseData.DataType.word;
-				else dataType= WordPhraseData.DataType.phrase;
-				String str=dataQ.toString();
-				if (dataBook== WordPhraseData.DataBook.tanjukugo) str="tanjukugo"+str;
+				if (mode == WordPhraseData.q_num.mode.word) dataType = WordPhraseData.DataType.word;
+				else dataType = WordPhraseData.DataType.phrase;
+				String str = dataQ.toString();
+				if (dataBook == WordPhraseData.DataBook.tanjukugo) str = "tanjukugo" + str;
 				return getPath(dataBook, str, dataType, dataLang, tangoNum, true);
 			} catch (Exception e) {
 				ExceptionManager.showException(e);
@@ -561,17 +561,15 @@ public final class MyLibrary {
 			} catch (Exception e) {}
 		}
 		
-		public static CharSequence setStringColored(String stringSource, String stringKey) {
+		public static CharSequence setStringColored(String source, String key) {
 			try {
-				if (stringKey == null || stringKey.equals("")) return stringSource;
-				stringSource = stringSource.replaceAll(System.getProperty("line.separator"), "<br>");
-				int index = stringSource.indexOf(stringKey);
-				if (index == -1) return stringSource;
-				stringSource = stringSource.substring(0, index) + "<font color=\"Red\">" + stringKey + "</font>" + stringSource.substring(index + stringKey.length());
-				return HtmlCompat.fromHtml(stringSource, HtmlCompat.FROM_HTML_MODE_COMPACT);
+				if (key == null || key.equals("") || !source.contains(key)) return source;
+				int index = source.indexOf(key);
+				source = source.substring(0, index) + "<font color=\"Red\">" + key + "</font>" + source.substring(index + key.length());
+				return HtmlCompat.fromHtml(source, HtmlCompat.FROM_HTML_MODE_COMPACT);
 			} catch (Exception e) {
 				ExceptionManager.showException(e);
-				return stringSource;
+				return source;
 			}
 		}
 	}
@@ -633,6 +631,11 @@ public final class MyLibrary {
 		public static void printCurrentState(String string) {
 			//引数のdefaultHierarchyを省略すると正しく動作しない。
 			DebugManager.puts("スレッド" + getNowThreadName() + ",クラス" + DebugManager.getClassName(defaultHierarchy) + ",メソッド" + DebugManager.getMethodName(defaultHierarchy) + ",行" + DebugManager.getNowLine(defaultHierarchy) + ", " + string);
+		}
+		
+		public static void printCurrentState(Object object) {
+			//引数のdefaultHierarchyを省略すると正しく動作しない。
+			DebugManager.puts("スレッド" + getNowThreadName() + ",クラス" + DebugManager.getClassName(defaultHierarchy) + ",メソッド" + DebugManager.getMethodName(defaultHierarchy) + ",行" + DebugManager.getNowLine(defaultHierarchy) + ", " + object);
 		}
 		
 		public static String getDeviceName() {return Build.PRODUCT + "," + Build.VERSION.RELEASE;}
