@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
@@ -66,34 +65,9 @@ public class WordPhraseData {
 		return map.get(key);
 	}
 	
-	public WordPhraseData(String strQ, Context context) {
-		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
-		try {
-			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
-			BufferedReader br1 = new BufferedReader(new InputStreamReader(is1)), br2 = new BufferedReader(new InputStreamReader(is2));
-			String str;
-			int i = 0;
-			while ((str = br1.readLine()) != null) {
-				e[i] = str;
-				i++;
-			}
-			i = 0;
-			while ((str = br2.readLine()) != null) {
-				j[i] = str;
-				i++;
-			}
-			is1.close();
-			is2.close();
-			br1.close();
-			br2.close();
-		} catch (Exception e) {
-			showException(context, e);
-			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
-		}
-	}
-	
-	public WordPhraseData(String strQ, Context context, ArrayList<QuizCreator.QuizWordData> list, DataBook dataBook, String dataQ) {
-		String fileName1 = strQ + ".e.txt", fileName2 = strQ + ".j.txt";
+	public static ArrayList<QuizCreator.QuizWordData> readToList(String fileName, Context context, DataBook dataBook, String dataQ){
+		ArrayList<QuizCreator.QuizWordData> list=new ArrayList<>();
+		String fileName1 = fileName + ".e.txt", fileName2 = fileName + ".j.txt";
 		try {
 			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
 			BufferedReader br1 = new BufferedReader(new InputStreamReader(is1)), br2 = new BufferedReader(new InputStreamReader(is2));
@@ -111,11 +85,6 @@ public class WordPhraseData {
 			showException(context, e);
 			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
 		}
-	}
-	
-	public static ArrayList<QuizCreator.QuizWordData> readToList(String strQ, Context context, DataBook dataBook, String dataQ){
-		ArrayList<QuizCreator.QuizWordData> list=new ArrayList<>();
-		new WordPhraseData(strQ,context,list,dataBook,dataQ);
 		return list;
 	}
 	
@@ -148,7 +117,7 @@ public class WordPhraseData {
 	}
 	
 	enum DataBook {
-		passTan, tanjukugo, tanjukugoEx, yumetan,
+		passTan, tanjukugo, tanjukugoEx, yumetan,eigoduke,distinction,svl12000
 	}
 	
 	enum DataQ {
@@ -193,14 +162,12 @@ public class WordPhraseData {
 		
 		private static final HashMap<String, String> hashMapHatsuonKigou = new HashMap<>();
 		
-		public static void SetHatsuonKigou(Context context) {
+		public static void SetHatsuonKigou(ArrayList<QuizCreator.QuizWordData> list) {
 			try {
 				//発音記号のためにSVL読み込み
 				if (hashMapHatsuonKigou.size() == 0) {
-					WordPhraseData wordPhraseDataSVL = new WordPhraseData(Svl, context);
-					for (int i = 1; i < Math.min(wordPhraseDataSVL.e.length, wordPhraseDataSVL.j.length); i++)
-						if (wordPhraseDataSVL.e[i] != null && wordPhraseDataSVL.j[i] != null)
-							hashMapHatsuonKigou.put(wordPhraseDataSVL.e[i], wordPhraseDataSVL.j[i]);
+					for (int i = 1; i < list.size(); i++)
+						hashMapHatsuonKigou.put(list.get(i).e, list.get(i).j);
 				}
 			} catch (Exception e) {
 				showException(e);
@@ -238,36 +205,20 @@ public class WordPhraseData {
 		final int toushiNumber, localNumber;
 		final String category, e, j, subCategory;
 		final DataType dataType;
-		private static Map<String, String> mapQName = new HashMap<>() {{
-			put("1q", "1級");
-			put("p1q", "準1級");
-			put("2q", "2級");
-			put("p2q", "準2級");
-			put("3q", "3級");
-			put("4q", "4級");
-			put("5q", "5級");
-			put("00", "ユメタン0基礎");
-			put("08", "ユメタン0");
-			put("1", "ユメタン1");
-			put("2", "ユメタン2");
-			put("3", "ユメタン3");
-			put("-eiken-jukugo", "英検熟語");
-			put("-eikenp1-jukugo", "英検熟語(準1)");
-			put("-Toefl-Chokuzen", "TOEFL直前");
-			put("-Toeic-500ten", "TOEIC500点");
-			put("-Toeic-700ten", "TOEIC700点");
-			put("-Toeic-900ten", "TOEIC900点");
-			put("-Toeic-Chokuzen", "TOEIC直前");
-			put("-Toeic-jukugo", "TOEIC熟語");
-			put("d1phrase12", "1");
-			put("d2phrase1", "2");
-		}};
 		
-		WordInfo(String category, String e, String j, int localNumber, DataType dataType) {
-			this(category, null, e, j, localNumber, dataType);
+		WordInfo(String category,ArrayList<QuizCreator.QuizWordData> list, int localNumber, DataType dataType) {
+			this(category, null, list.get(localNumber).e, list.get(localNumber).j, localNumber, dataType);
+		}
+		WordInfo(String category, String subCategory, ArrayList<QuizCreator.QuizWordData> list, int localNumber, DataType dataType) {
+			this(category, subCategory, list.get(localNumber).e, list.get(localNumber).j, localNumber, dataType);
+		}
+		WordInfo(String category,String e,String j, int localNumber, DataType dataType){
+			this(category,null,e,j,localNumber,dataType);
 		}
 		
-		WordInfo(String category, String subCategory, String e, String j, int localNumber, DataType dataType) {
+		//メインのコンストラクタ
+		WordInfo(String category, String subCategory,String e,String j,
+		         int localNumber, DataType dataType) {
 			size++;
 			this.toushiNumber = size;
 			this.category = category;

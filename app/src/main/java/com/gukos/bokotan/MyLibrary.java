@@ -564,6 +564,7 @@ public final class MyLibrary {
 		public static CharSequence setStringColored(String source, String key) {
 			try {
 				if (key == null || key.equals("") || !source.contains(key)) return source;
+				source = source.replaceAll(System.getProperty("line.separator"), "<br>");
 				int index = source.indexOf(key);
 				source = source.substring(0, index) + "<font color=\"Red\">" + key + "</font>" + source.substring(index + key.length());
 				return HtmlCompat.fromHtml(source, HtmlCompat.FROM_HTML_MODE_COMPACT);
