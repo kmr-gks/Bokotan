@@ -1,9 +1,13 @@
 package com.gukos.bokotan;
 
 import static android.media.AudioManager.STREAM_MUSIC;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.viewpager2.widget.ViewPager2;
@@ -19,6 +23,9 @@ public class TabActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
 		
+		printCurrentState();
+		new Thread(() -> loadAllData(savedInstanceState)).start();
+		
 		setVolumeControlStream(STREAM_MUSIC);
 		
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_tab);
@@ -32,6 +39,36 @@ public class TabActivity extends AppCompatActivity {
 		viewPager.setCurrentItem(0);
 		
 		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
+	}
+	
+	//bundleからデータ取り出し
+	private void loadAllData(Bundle bundle){
+		printCurrentState("読み込み開始");
+		WordPhraseData.readAllData(this);
+		printCurrentState("読み込み完了");
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+	
+	@Override
+	public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+		super.onRestoreInstanceState(savedInstanceState, persistentState);
+	}
+	
+	//データ保存
+	@Override
+	protected void onSaveInstanceState(@NonNull Bundle outState) {
+		super.onSaveInstanceState(outState);
+		printCurrentState();
+	}
+	
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+		super.onSaveInstanceState(outState, outPersistentState);
+		printCurrentState();
 	}
 	
 	/**

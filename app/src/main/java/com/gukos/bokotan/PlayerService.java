@@ -278,13 +278,13 @@ public class PlayerService extends Service {
 						else {
 							//文だった
 							nowMode = q_num.mode.word;
-							now++;
+							goNext();
 						}
 					}
 					else {
 						//ずっと単語またはずっと文
 						nowMode = selectMode;
-						now++;
+						goNext();
 					}
 					mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedJpn));
 				}
@@ -293,6 +293,11 @@ public class PlayerService extends Service {
 				showException(context, exception);
 			}
 		}
+	}
+	
+	private void goNext(){
+		if (now>=wordDataList.size()-1) now=1;
+		else now++;
 	}
 	
 	private void sendBroadcastTextChange(PlayerViewName viewName, String text) {
