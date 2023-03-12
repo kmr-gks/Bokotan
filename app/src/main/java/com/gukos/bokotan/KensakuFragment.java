@@ -115,12 +115,6 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 			trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
 			
 			//UI設定
-			binding.editTextKensakuKey.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) this::EditTextChanged);
-			binding.buttonClearKey.setOnClickListener(v -> {
-				binding.editTextKensakuKey.setText("");
-				//SearchViewにはsetTextがないからこれで対応する
-				binding.searchView.setQuery("",false);
-			});
 			kensakuHouhou = kensakuHouhou.toEnumKensakuHouhou(MyLibrary.PreferenceManager.getIntData(context, "enumKensakuHouhou", "kensakuhouhou", kensakuHouhou.toInt()));
 			binding.buttonKensakuHouhou.setText(kensakuHouhou.toString());
 			binding.buttonKensakuHouhou.setOnClickListener(v -> {
@@ -140,7 +134,6 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				}
 				binding.buttonKensakuHouhou.setText(kensakuHouhou.toString());
 				//人工的に文字を変更して再検索
-				binding.editTextKensakuKey.setText(binding.editTextKensakuKey.getText());
 				onSearchViewTextChange(binding.searchView.getQuery().toString());
 			});
 			binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
