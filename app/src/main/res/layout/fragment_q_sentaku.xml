@@ -41,25 +41,11 @@
 				android:layout_height="wrap_content"
 				android:orientation="vertical">
 
-				<TextView
-					android:id="@+id/textViewOtherFetures"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="その他の機能" />
-
 				<LinearLayout
 					android:id="@+id/linearLayoutOtherFetures"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:orientation="horizontal">
-
-					<Button
-						android:id="@+id/buttonQuizservice"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:text="クイズ(β)" />
-
-				</LinearLayout>
+					android:orientation="horizontal"/>
 
 				<TextView
 					android:id="@+id/textViewManageSettings"

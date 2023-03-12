@@ -170,24 +170,6 @@ public class WordPhraseData {
 		}
 	}
 	
-	public static DataQ toDataQ(String string){
-		switch (string){
-			case "1q": return DataQ.q1;
-			case "p1q": return DataQ.qp1;
-			case "2q": return DataQ.q2;
-			case "p2q": return DataQ.qp2;
-			case "3q": return DataQ.q3;
-			case "4q": return DataQ.q4;
-			case "5q": return DataQ.q5;
-			case "y00": return DataQ.y00;
-			case "y08": return DataQ.y08;
-			case "y1": return DataQ.y1;
-			case "y2": return DataQ.y2;
-			case "y3": return DataQ.y3;
-			default:throw new IllegalArgumentException("Qの文字列が不正");
-		}
-	}
-	
 	enum DataType {word, phrase, gogengaku, eigoduke_com}
 	
 	enum DataLang {english, japanese}
@@ -195,22 +177,8 @@ public class WordPhraseData {
 	public enum q_num {
 		test1q(), testp1q(), test2q(), testp2q(), testy00(), testy08(), testy1(), testy2(), testy3(), test1qEx, testp1qEx, testAll;
 		
-		enum strQ {
-			str1q("1q"), strp1q("p1q"), str2q("2q"), strp2q("p2q"), str3q("3q"), str4q("4q"), str5q("5q"), stry00("y00"), stry08("y08"), stry1("y1"), stry2("y2"), stry3("y3"), ex1q("tanjukugo1q"), all("all");
-			
-			strQ(String s) {
-				getQ = s;
-			}
-			
-			final String getQ;
-		}
-		
 		enum mode {
 			word, phrase, randomTest, huseikainomiTest, seitouritsujunTest, wordPlusPhrase
-		}
-		
-		enum unit {
-			deruA, deruB, deruC, Jukugo, all
 		}
 		
 		enum skipjouken {
@@ -321,6 +289,7 @@ public class WordPhraseData {
 			};
 		}
 		
+		@NonNull
 		public String toString() {
 			try {
 				String string = category + " " + subCategory + " " + e + " " + j;

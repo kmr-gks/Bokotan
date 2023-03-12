@@ -1,7 +1,6 @@
 package com.gukos.bokotan;
 
 import static android.media.AudioManager.STREAM_MUSIC;
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 
 import android.os.Bundle;
 
@@ -15,18 +14,10 @@ import com.gukos.bokotan.databinding.ActivityTabBinding;
 public class TabActivity extends AppCompatActivity {
 	private static ActivityTabBinding binding;
 	
-	private String toString(Bundle bundle) {
-		if (bundle == null) return "null";
-		else return bundle.toString();
-	}
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
-		
-		printCurrentState(",bundle=" + toString(savedInstanceState));
 		
 		setVolumeControlStream(STREAM_MUSIC);
 		
