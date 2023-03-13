@@ -30,13 +30,11 @@ import androidx.appcompat.widget.SearchView;
 
 import com.gukos.bokotan.databinding.FragmentKensakuBinding;
 
-import java.util.ArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuBinding> {
 	
-	public static ArrayList<WordPhraseData.WordInfo> allData = new ArrayList<>();
 	enumKensakuHouhou kensakuHouhou = starts;
 	private String key;
 	
@@ -103,12 +101,12 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				}
 			});
 			
-			onKensakuEnd(allData.size());
+			onKensakuEnd(WordPhraseData.allData.size());
 			Function<Integer,Void> a= integer -> {
 				onKensakuEnd(integer);
 				return null;
 			};
-			binding.listViewKensakuResult.setAdapter(new WordSearchAdapter<>(context,R.layout.my_simple_list_item_1, allData, this::onKensakuEnd));
+			binding.listViewKensakuResult.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1, WordPhraseData.allData, this::onKensakuEnd));
 			binding.listViewKensakuResult.setOnItemClickListener(this::onItemClick);
 		} catch (Exception e) {
 			showException(getContext(), e);

@@ -2,12 +2,11 @@ package com.gukos.bokotan;
 
 import static android.media.AudioManager.STREAM_MUSIC;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
+import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.viewpager2.widget.ViewPager2;
@@ -23,7 +22,6 @@ public class TabActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
 		
-		printCurrentState();
 		new Thread(() -> loadAllData(savedInstanceState)).start();
 		
 		setVolumeControlStream(STREAM_MUSIC);
@@ -42,34 +40,30 @@ public class TabActivity extends AppCompatActivity {
 	}
 	
 	//bundleからデータ取り出し
-	private void loadAllData(Bundle bundle){
-		printCurrentState("読み込み開始");
-		WordPhraseData.readAllData(this);
-		printCurrentState("読み込み完了");
+	private void loadAllData(Bundle bundle) {
+		try {
+			printCurrentState("読み込み開始" + bundle);
+			var data=WordPhraseData.builder(this);
+			printCurrentState("読み込み完了");
+		} catch (Exception exception) {
+			showException(this, exception);
+		}
 	}
 	
-	@Override
-	protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-	}
-	
-	@Override
-	public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-		super.onRestoreInstanceState(savedInstanceState, persistentState);
-	}
+	//onCreateの方が先に呼ばれる
+	//protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {}
 	
 	//データ保存
 	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {
-		super.onSaveInstanceState(outState);
-		printCurrentState();
+		try {
+			super.onSaveInstanceState(outState);
+			printCurrentState("データ保存中");
+		} catch (Exception exception) {
+			showException(this, exception);
+		}
 	}
 	
-	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
-		super.onSaveInstanceState(outState, outPersistentState);
-		printCurrentState();
-	}
 	
 	/**
 	 * UIスレッドから呼ばなければならない
@@ -80,7 +74,7 @@ public class TabActivity extends AppCompatActivity {
 		try {
 			TabActivity.binding.tabsMain.getTabAt(n).select();
 		} catch (Exception exception) {
-			MyLibrary.ExceptionManager.showException(exception);
+			showException(exception);
 		}
 	}
 	
@@ -88,7 +82,7 @@ public class TabActivity extends AppCompatActivity {
 		try {
 			return TabActivity.binding.tabsMain.getSelectedTabPosition();
 		} catch (Exception exception) {
-			MyLibrary.ExceptionManager.showException(exception);
+			showException(exception);
 			return 0;
 		}
 	}

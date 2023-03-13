@@ -1,6 +1,6 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.KensakuFragment.allData;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.tangoNumToString;
 import static com.gukos.bokotan.WordPhraseData.DataBook.eigoduke;
@@ -18,6 +18,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -28,7 +31,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-public class WordPhraseData {
+public class WordPhraseData extends ViewModel {
+	private static boolean isEmpty=true;
 	//1qのunit=8のfrom=0,8,0; p1qunit=5 to=1,5,1
 	public static final int[][][] toFindFromAndTo = {
 		//1q
@@ -61,6 +65,7 @@ public class WordPhraseData {
 		{{1, 216}, {217, 432}, {433, 648}, {649, 864}, {865, 1080}, {1081, 1296}, {1297, 1488}, {1489, 1680}, {1681, 1824}, {1825, 1920}, {1920, 2400}},
 	};
 	public static TreeMap<String,ArrayList<QuizCreator.QuizWordData>> map=new TreeMap<>();
+	public static ArrayList<WordInfo> allData = new ArrayList<>();
 	static q_num.skipjouken skipjoken = q_num.skipjouken.kirokunomi;
 	public final String[] e = new String[20000], j = new String[20000];
 	public final static String
@@ -279,9 +284,24 @@ public class WordPhraseData {
 			return "<不明>";
 		}
 	}
+	
+	public static WordPhraseData builder(Context context){
+		if(isEmpty){
+			readAllData(context);
+			isEmpty=false;
+		}
+		return new ViewModelProvider((ViewModelStoreOwner) context).get(WordPhraseData.class);
+	}
+	//削除時
+	@Override
+	protected void onCleared() {
+		super.onCleared();
+	}
+	
 	public static void readAllData(Context context) {
 		//wordphrasedataの読み取り
 		//ファイルを開いて読み込む
+		var startTime=System.currentTimeMillis();
 		WordPhraseData.WordInfo.size = 0;
 		Map<String, String> mapQName = new HashMap<>() {{
 			put("1q", "1級");
@@ -389,5 +409,8 @@ public class WordPhraseData {
 			allData.add(new WordPhraseData.WordInfo("SVL", Integer.toString((i - 1) / 1000 + 1), list, i, word));
 		//コピー
 		SetHatsuonKigou(list);
+		
+		var endTime=System.currentTimeMillis();
+		printCurrentState("経過時間:"+(endTime-startTime)/1000f);
 	}
 }
