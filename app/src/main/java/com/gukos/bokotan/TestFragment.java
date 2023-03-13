@@ -33,7 +33,7 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	}
 	
 	public enum ViewName {
-		Ans, Marubatsu, Editorial, No, Mondaibun, Hint, Select1, Select2, Select3, Select4, Idontknow,
+		monme, Ans, Marubatsu, Editorial, No, Mondaibun, Hint, Select1, Select2, Select3, Select4, Idontknow,
 		Debug
 	}
 	
@@ -46,6 +46,10 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			ViewProperties viewProperties = (ViewProperties) bundle.getSerializable(QUIZ_VIEW_PROPERTIES);
 			final TextView textViewToHandle;
 			switch (viewName) {
+				case monme: {
+					textViewToHandle = binding.textViewMonme;
+					break;
+				}
 				case Ans: {
 					textViewToHandle = binding.textViewAns;
 					break;

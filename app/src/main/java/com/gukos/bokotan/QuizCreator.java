@@ -5,6 +5,7 @@ import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.WordPhraseData.DataBook;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
@@ -16,6 +17,9 @@ import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
+import static com.gukos.bokotan.WordPhraseData.huseikai;
+import static com.gukos.bokotan.WordPhraseData.monme;
+import static com.gukos.bokotan.WordPhraseData.seikai;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -51,6 +55,7 @@ public class QuizCreator {
 	private final ArrayList<String> e = new ArrayList<>(), j = new ArrayList<>();
 	private int nProblems = 0;
 	int ansChoice, problemNum;
+	private String fileName;
 	private final Random random = new Random();
 	
 	static final class QuizWordData {
@@ -105,6 +110,7 @@ public class QuizCreator {
 					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + list.get(problemNum).toString());
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
+					seikai.get(fileName)[problemNum]++;
 				}
 				else {
 					if (QSentakuFragment.switchQuizOX.isChecked()) {
@@ -113,6 +119,7 @@ public class QuizCreator {
 					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解 " + list.get(problemNum).toString());
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
+					huseikai.get(fileName)[problemNum]++;
 				}
 				setMondai();
 			}
@@ -136,32 +143,35 @@ public class QuizCreator {
 			//これを定期的に見る必要がある。
 			if (!onActive) return;
 			String qString = dataQ.toString();
+			if (dataBook == tanjukugo) {
+				fileName = dnTestActivity + "tanjukugo" + qString + "Test";
+			}
+			else {
+				fileName = dnTestActivity + qString + "Test";
+			}
+			printCurrentState("fileName=" + fileName);
 			switch (dataBook) {
 				case passTan: {
-					list= WordPhraseData.getList(PasstanWord+qString);
+					list = WordPhraseData.getList(PasstanWord + qString);
 					break;
 				}
 				case tanjukugo: {
-					list= WordPhraseData.getList(TanjukugoWord+qString);
-					list.addAll(WordPhraseData.getList(TanjukugoEXWord+qString));
+					list = WordPhraseData.getList(TanjukugoWord + qString);
+					list.addAll(WordPhraseData.getList(TanjukugoEXWord + qString));
 					break;
 				}
 				case yumetan: {
-					list= WordPhraseData.getList(YumeWord+qString.substring(1));
+					list = WordPhraseData.getList(YumeWord + qString.substring(1));
 					break;
 				}
 				default: {
 					//全範囲から出題
-					for (var key: WordPhraseData.map.keySet()){
+					for (var key : WordPhraseData.map.keySet()) {
 						list.addAll(WordPhraseData.getList(key));
 					}
 					break;
 				}
 			}
-			for (var key: WordPhraseData.map.keySet()){
-				puts(key+":"+ WordPhraseData.getList(key).size());
-			}
-			printCurrentState(WordPhraseData.map.toString());
 			setMondai();
 		});
 	}
@@ -180,8 +190,14 @@ public class QuizCreator {
 		//正解の選択肢を設定
 		ansChoice = random.nextInt(4) + 1;
 		//出題する単語を決定
-		problemNum = random.nextInt(list.size());
+		problemNum = random.nextInt(100);
 		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + list.get(problemNum).toString());
+		int seikaisu = seikai.get(fileName)[problemNum];
+		int huseikaisu = huseikai.get(fileName)[problemNum];
+		sendBroadcastTextChange(TestFragment.ViewName.monme, monme.get(fileName) + "問目" + " 正解率" + seikaisu + "/" + (seikaisu + huseikaisu));
+		//問目++
+		monme.put(fileName, monme.get(fileName) + 1);
+		
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
 			String mp3Path = null;

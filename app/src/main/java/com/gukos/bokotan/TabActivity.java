@@ -43,7 +43,12 @@ public class TabActivity extends AppCompatActivity {
 	private void loadAllData(Bundle bundle) {
 		try {
 			printCurrentState("読み込み開始" + bundle);
-			var data=WordPhraseData.builder(this);
+			//単語、文のデータはViewModelから取ってくる。
+			//ViewModelが空のときはファイルから読み込む。
+			var wpd = WordPhraseData.loadAssets(this);
+			//正解数、不正解数のデータもViewModelから取ってくる。
+			//ViewModelが空のときはSharedPreferenceから読み込む。
+			//クイズを終了(戻るボタン)したときにViewModelのデータをSharedPreferenceに書き込む。
 			printCurrentState("読み込み完了");
 		} catch (Exception exception) {
 			showException(this, exception);
@@ -90,6 +95,15 @@ public class TabActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		//戻るボタン
+		printCurrentState("tab=" + getTabPageNum());
+		if (getTabPageNum() == 2) {
+			//クイズをしているなら、ViewModelのデータを保存する。
+			printCurrentState();
+			new Thread(() -> {
+				printCurrentState();
+				WordPhraseData.saveQuizData(getApplicationContext());
+			}).start();
+		}
 		if (getTabPageNum() != 0) runOnUiThread(() -> setTabPageNum(0));
 		else super.onBackPressed();
 	}

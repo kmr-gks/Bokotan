@@ -9,6 +9,7 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
+import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -33,6 +34,7 @@ import static com.gukos.bokotan.PipActivity.pipYoko;
 import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -72,7 +74,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	public static RadioButton radioButtonEtoJ;
 	public static TreeMap<String, GogenYomu> trGogenYomu;
 	static int nWordPhraseOrTest = 1;
-	public static Boolean isReadingData=true;
+	public static Boolean isReadingData = true;
 	
 	public QSentakuFragment() {
 		super(FragmentQSentakuBinding::inflate);
@@ -231,7 +233,12 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		try {
 			String content = "";
 			for (var fileName : getAllFileNames()) {
-				content += fileName + "\n" + getAllPreferenceData(context, fileName) + "\n";
+				//content += fileName + "\n" + getAllPreferenceData(context, fileName) + "\n";
+				content += "ファイル名:" + fileName + "\n";
+				puts("filaname=" + fileName);
+				for (var key : context.getSharedPreferences(fileName, Context.MODE_PRIVATE).getAll().keySet()) {
+					content += "\t" + key + "\n";
+				}
 			}
 			new AlertDialog.Builder(context)
 				.setTitle(((Button) view).getText())
@@ -341,12 +348,12 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			q_num.mode mode = q_num.mode.word;
 			if (view == binding.buttonPhrase) mode = q_num.mode.phrase;
 			else if (view == binding.buttonWP) mode = q_num.mode.wordPlusPhrase;
-			Intent intent=new Intent(context, PlayerService.class)
+			Intent intent = new Intent(context, PlayerService.class)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, dataBook)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, dataQ);
-			if(binding.editTextNumber.length()>0){
-				intent.putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, Integer.parseInt(  binding.editTextNumber.getText().toString()));
+			if (binding.editTextNumber.length() > 0) {
+				intent.putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, Integer.parseInt(binding.editTextNumber.getText().toString()));
 			}
 			binding.editTextNumber.setText("");
 			context.startForegroundService(intent);
