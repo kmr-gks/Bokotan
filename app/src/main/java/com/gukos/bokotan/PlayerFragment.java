@@ -23,7 +23,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -37,10 +36,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public static Boolean isInitialized = false;
 	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
 	
-	public static int lastnum, selectedIndex = 0;
-	public static boolean playing = false, nowIsDecided = false;
-	public static TextView tvWordEng, tvWordJpn, tvGenzai, tvsubE, tvsubJ, tvNumSeikaisuu, tvSeikaisu, tvGogen, textViewPath, textViewHatsuonKigou;
-	private static ArrayAdapter<String> adapterUnit;
+	public static int lastnum;
 	AlertDialog adWord, adUnit;
 	
 	public static final String
@@ -127,16 +123,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			try {
 				//UI設定
 				context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE));
-				tvWordEng = binding.textViewEng;
-				tvWordJpn = binding.textViewJpn;
-				tvGenzai = binding.textViewGenzai;
-				tvsubE = binding.textViewSubtitleEng;
-				tvsubJ = binding.textViewSubtitleJpn;
-				tvGogen = binding.textViewGogen;
-				tvNumSeikaisuu = binding.textViewNumSeikairitu;
-				tvSeikaisu = binding.textViewSeikaisuu;
-				textViewPath = binding.textViewPath;
-				textViewHatsuonKigou = binding.textViewHatsuonKigou;
 				
 				//Android13以降 日本語の折り返しに対応
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -171,7 +157,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		try {
 			//再生開始
 			puts(getClassName() + getMethodName() + " start");
-			playing = true;
 			
 			hashMapKishutu.clear();
 			//バグ対策

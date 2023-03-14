@@ -73,8 +73,6 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	public static SwitchMaterial switchQuizOX;
 	public static RadioButton radioButtonEtoJ;
 	public static TreeMap<String, GogenYomu> trGogenYomu;
-	static int nWordPhraseOrTest = 1;
-	public static Boolean isReadingData = true;
 	
 	public QSentakuFragment() {
 		super(FragmentQSentakuBinding::inflate);

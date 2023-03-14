@@ -64,6 +64,7 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_MESSAGE_NOW="ps_mn";
 	Context context;
 	Handler handler;
+	private DrawReceiver drawReceiver;
 	q_num.mode selectMode, nowMode = q_num.mode.word;
 	WordPhraseData.DataLang nowLang = english;
 	ArrayList<QuizCreator.QuizWordData> wordDataList = new ArrayList<>(), phraseDataList = new ArrayList<>();
@@ -141,6 +142,7 @@ public class PlayerService extends Service {
 						sendBroadcastTextChange(PlayerViewName.genzai, "");
 						runOnUiThread(() -> TabActivity.setTabPageNum(0));
 						MyLibrary.PreferenceManager.putIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, now);
+						context.unregisterReceiver(drawReceiver);
 						thisService.stopSelf();
 						break;
 					}
@@ -170,7 +172,8 @@ public class PlayerService extends Service {
 			sendBroadcastTextChange(PlayerViewName.jpn, "読み込み中");
 			isPlaying = true;
 			
-			context.registerReceiver(new DrawReceiver(handler), new IntentFilter(PLAYERSERVICE_ACTION));
+			drawReceiver=new DrawReceiver(handler);
+			context.registerReceiver(drawReceiver, new IntentFilter(PLAYERSERVICE_ACTION));
 			
 			if(now==-1){
 				now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);

@@ -3,7 +3,11 @@ package com.gukos.bokotan;
 import static android.media.AudioManager.STREAM_MUSIC;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -96,16 +100,29 @@ public class TabActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		//戻るボタン
 		printCurrentState("tab=" + getTabPageNum());
-		if (getTabPageNum() == 2) {
-			//クイズをしているなら、ViewModelのデータを保存する。
-			printCurrentState();
-			new Thread(() -> {
-				printCurrentState();
-				WordPhraseData.saveQuizData(getApplicationContext());
-			}).start();
+		switch (getTabPageNum()){
+			default:
+			case 0:{
+				super.onBackPressed();
+				break;
+			}
+			case 1:{
+				runOnUiThread(() -> setTabPageNum(0));
+				//再生中に戻るボタンを押すと停止
+				getApplicationContext().sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP));
+				break;
+			}
+			case 2:{
+				runOnUiThread(() -> setTabPageNum(0));
+				//クイズをしているなら、ViewModelのデータを保存する。
+				new Thread(() -> WordPhraseData.saveQuizData(getApplicationContext())).start();
+				break;
+			}
+			case 3:{
+				runOnUiThread(() -> setTabPageNum(0));
+				break;
+			}
 		}
-		if (getTabPageNum() != 0) runOnUiThread(() -> setTabPageNum(0));
-		else super.onBackPressed();
 	}
 	
 	/*
