@@ -89,7 +89,7 @@ public class UiManager {
 	
 	public static abstract class FragmentBingding<TBinding extends ViewDataBinding> extends Fragment {
 		public TBinding binding;
-		public Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate;
+		public final Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate;
 		
 		Context context;
 		Activity activity;

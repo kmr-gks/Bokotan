@@ -11,6 +11,9 @@ import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_JPN_SPEED;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_NOW;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
+import static com.gukos.bokotan.QSentakuFragment.dataBook;
+import static com.gukos.bokotan.QSentakuFragment.dataQ;
+import static com.gukos.bokotan.Unit.toFindFromAndTo;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -131,6 +134,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				}
 				
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
+				binding.buttonNowChange.setOnClickListener(this::onChangeNumber);
 				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
 				binding.seekBarEng.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarEng.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
@@ -175,12 +179,72 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		context.sendBroadcast(broadcastIntent);
 	}
 	
-	public void onResetButtonClick(View v) {
+	public void onResetButtonClick(View view) {
 		try {
 			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE,PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW,1));
 		} catch (Exception e) {
 			showException(context, e);
 		}
+	}
+	
+	public void onChangeNumber(View view) {
+		final int[][] fromTo;
+		switch (dataBook) {
+			default:
+			case passTan: {
+				if (dataQ == WordPhraseData.DataQ.q1) {
+					fromTo = toFindFromAndTo[0];
+				}
+				else {
+					fromTo = toFindFromAndTo[1];
+				}
+				break;
+			}
+			case yumetan: {
+				switch (dataQ) {
+					case y00: {
+						fromTo = toFindFromAndTo[7];
+						break;
+					}
+					case y08: {
+						fromTo = toFindFromAndTo[8];
+						break;
+					}
+					default:
+					case y1: {
+						fromTo = toFindFromAndTo[9];
+						break;
+					}
+					case y2: {
+						fromTo = toFindFromAndTo[10];
+						break;
+					}
+					case y3: {
+						fromTo = toFindFromAndTo[11];
+						break;
+					}
+				}
+				break;
+			}
+			case tanjukugo: {
+				if (dataQ == WordPhraseData.DataQ.q1) {
+					fromTo = toFindFromAndTo[12];
+				}
+				else {
+					fromTo = toFindFromAndTo[13];
+				}
+				break;
+			}
+		}
+		String content = "";
+		for (var pair : fromTo) {
+			content += pair[0] + "-" + pair[1] + "\n";
+		}
+		new AlertDialog.Builder(context)
+			.setTitle("unit:")
+			.setMessage(content)
+			.create()
+			.show();
 	}
 	
 	public void onPIPButtonClicked(View view) {

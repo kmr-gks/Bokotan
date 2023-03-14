@@ -20,7 +20,8 @@ import com.gukos.bokotan.databinding.ActivityPipBinding;
 
 public class PipActivity extends Activity {
 	static boolean startPIP = false;
-	public static int pipYoko = 16, pipTate = 9;
+	public static int pipYoko = 16;
+	public static int pipTate = 9;
 	private static ActivityPipBinding binding;
 	
 	public static final String

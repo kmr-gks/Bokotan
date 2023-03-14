@@ -52,7 +52,6 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.gukos.bokotan.WordPhraseData.DataBook;
 import com.gukos.bokotan.WordPhraseData.DataQ;
-import com.gukos.bokotan.WordPhraseData.q_num;
 import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
 import java.io.FileWriter;
@@ -73,6 +72,9 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	public static SwitchMaterial switchQuizOX;
 	public static RadioButton radioButtonEtoJ;
 	public static TreeMap<String, GogenYomu> trGogenYomu;
+	
+	public static DataBook dataBook;
+	public static DataQ dataQ;
 	
 	public QSentakuFragment() {
 		super(FragmentQSentakuBinding::inflate);
@@ -297,8 +299,6 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	private void onPlayQuizStart(View view) {
 		//スピナーから本と級を取得
-		DataBook dataBook;
-		DataQ dataQ;
 		switch (binding.spinnerBookQ.getSelectedItemPosition()) {
 			case 0: {
 				dataBook = DataBook.yumetan;
@@ -343,9 +343,9 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		}
 		else {
 			TabActivity.setTabPageNum(1);
-			q_num.mode mode = q_num.mode.word;
-			if (view == binding.buttonPhrase) mode = q_num.mode.phrase;
-			else if (view == binding.buttonWP) mode = q_num.mode.wordPlusPhrase;
+			WordPhraseData.Mode mode = WordPhraseData.Mode.word;
+			if (view == binding.buttonPhrase) mode = WordPhraseData.Mode.phrase;
+			else if (view == binding.buttonWP) mode = WordPhraseData.Mode.wordPlusPhrase;
 			Intent intent = new Intent(context, PlayerService.class)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, dataBook)
@@ -387,19 +387,19 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			switch (i) {
 				default:
 				case 0: {
-					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.kirokunomi;
+					WordPhraseData.skipjoken = WordPhraseData.skipjouken.kirokunomi;
 					break;
 				}
 				case 1: {
-					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.onlyHugoukaku;
+					WordPhraseData.skipjoken = WordPhraseData.skipjouken.onlyHugoukaku;
 					break;
 				}
 				case 2: {
-					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.seikai1;
+					WordPhraseData.skipjoken = WordPhraseData.skipjouken.seikai1;
 					break;
 				}
 				case 3: {
-					WordPhraseData.skipjoken = WordPhraseData.q_num.skipjouken.huseikai2;
+					WordPhraseData.skipjoken = WordPhraseData.skipjouken.huseikai2;
 					break;
 				}
 			}

@@ -3,7 +3,7 @@ package com.gukos.bokotan;
 import static android.content.Context.MODE_PRIVATE;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
-import static com.gukos.bokotan.WordPhraseData.toFindFromAndTo;
+import static com.gukos.bokotan.Unit.toFindFromAndTo;
 import static java.lang.Math.min;
 
 import android.content.Context;
@@ -317,49 +317,39 @@ public final class MyLibrary {
 			return content;
 		}
 		
-		public static String getPathPs(WordPhraseData.DataBook dataBook, WordPhraseData.DataQ dataQ, WordPhraseData.q_num.mode mode, WordPhraseData.DataLang dataLang, int tangoNum) {
+		public static String getPathPs(WordPhraseData.DataBook dataBook, WordPhraseData.DataQ dataQ, WordPhraseData.Mode mode, WordPhraseData.DataLang dataLang, int tangoNum) {
 			try {
-				WordPhraseData.DataType dataType;
-				if (mode == WordPhraseData.q_num.mode.word) dataType = WordPhraseData.DataType.word;
-				else dataType = WordPhraseData.DataType.phrase;
+				WordPhraseData.Mode dataType;
+				if (mode == WordPhraseData.Mode.word) dataType = WordPhraseData.Mode.word;
+				else dataType = WordPhraseData.Mode.phrase;
 				String str = dataQ.toString();
 				if (dataBook == WordPhraseData.DataBook.tanjukugo) str = "tanjukugo" + str;
-				return getPath(dataBook, str, dataType, dataLang, tangoNum, true);
-			} catch (Exception e) {
-				ExceptionManager.showException(e);
-				return "<不明>";
-			}
-		}
-		
-		private static String getPath(WordPhraseData.DataBook dataBook, String strDataQ, WordPhraseData.DataType dataType, WordPhraseData.DataLang dataLang, int tangoNum, boolean dirTougou) {
-			try {
+				String strDataQ = str;
 				String path = strGaibuDataDirectory;
 				String type;
 				switch (dataBook) {
 					case passTan: {
-						if (dataType == WordPhraseData.DataType.word && dataLang == WordPhraseData.DataLang.english)
+						if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.english)
 							type = "英";
-						else if (dataType == WordPhraseData.DataType.word && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.japanese)
 							type = "訳";
-						else if (dataType == WordPhraseData.DataType.phrase && dataLang == WordPhraseData.DataLang.english)
+						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.english)
 							type = "例";
-						else if (dataType == WordPhraseData.DataType.phrase && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.japanese)
 							type = "日";
 						else return null;
-						if (dataType == WordPhraseData.DataType.phrase && !dirTougou && !strDataQ.startsWith("ph"))
-							strDataQ = "ph" + strDataQ;
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
 						path += strDataQ + String.format("/%04d", tangoNum) + type + ".mp3";
 						break;
 					}
 					case yumetan: {
-						if (dataType == WordPhraseData.DataType.word && dataLang == WordPhraseData.DataLang.english)
+						if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.english)
 							type = "W英";
-						else if (dataType == WordPhraseData.DataType.word && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.japanese)
 							type = "W日";
-						else if (dataType == WordPhraseData.DataType.phrase && dataLang == WordPhraseData.DataLang.english)
+						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.english)
 							type = "P英";
-						else if (dataType == WordPhraseData.DataType.phrase && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.japanese)
 							type = "P日";
 						else return null;
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
@@ -367,13 +357,13 @@ public final class MyLibrary {
 						break;
 					}
 					case tanjukugo: {
-						if (dataType == WordPhraseData.DataType.word && dataLang == WordPhraseData.DataLang.english)
+						if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.english)
 							type = "英語";
-						else if (dataType == WordPhraseData.DataType.word && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.japanese)
 							type = "日本語";
-						else if (dataType == WordPhraseData.DataType.phrase && dataLang == WordPhraseData.DataLang.english)
+						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.english)
 							type = "例文";
-						else if (dataType == WordPhraseData.DataType.phrase && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.japanese)
 							type = "例文日本語";
 						else return null;
 						path += strDataQ + "/" + getFileNameForTanjukugoEX(type, strDataQ, tangoNum) + ".mp3";

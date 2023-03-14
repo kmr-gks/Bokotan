@@ -29,6 +29,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -60,18 +62,17 @@ public class QuizCreator {
 		public final String e, j;
 		public final int no;
 		public final DataBook dataBook;
-		public final String dataQ;
 		
-		public QuizWordData(String e, String j, int no, DataBook dataBook, String dataQ) {
+		public QuizWordData(String e, String j, int no, DataBook dataBook) {
 			this.e = e;
 			this.j = j;
 			this.no = no;
 			this.dataBook = dataBook;
-			this.dataQ = dataQ;
 		}
 		
+		@NonNull
 		public String toString() {
-			return "e=" + e + ",no=" + no + ",book=" + dataBook + ",q=" + dataQ;
+			return "e=" + e + ",no=" + no + ",book=" + dataBook;
 		}
 	}
 	
@@ -199,7 +200,7 @@ public class QuizCreator {
 		
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
-			String path = getPathPs(list.get(problemNum).dataBook, dataQ, WordPhraseData.q_num.mode.word, english, list.get(problemNum).no);
+			String path = getPathPs(list.get(problemNum).dataBook, dataQ, WordPhraseData.Mode.word, english, list.get(problemNum).no);
 			soundPool.load(path, 1);
 			sendBroadcastTextChange(TestFragment.ViewName.Debug, path);
 		}

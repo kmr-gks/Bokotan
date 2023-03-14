@@ -23,7 +23,6 @@ import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
-import static com.gukos.bokotan.WordPhraseData.q_num;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -65,7 +64,7 @@ public class PlayerService extends Service {
 	Context context;
 	Handler handler;
 	private DrawReceiver drawReceiver;
-	q_num.mode selectMode, nowMode = q_num.mode.word;
+	WordPhraseData.Mode selectMode, nowMode = WordPhraseData.Mode.word;
 	WordPhraseData.DataLang nowLang = english;
 	ArrayList<QuizCreator.QuizWordData> wordDataList = new ArrayList<>(), phraseDataList = new ArrayList<>();
 	WordPhraseData.DataBook dataBook = passTan;
@@ -83,8 +82,8 @@ public class PlayerService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		selectMode = (q_num.mode) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
-		if (selectMode == q_num.mode.phrase) nowMode = q_num.mode.phrase;
+		selectMode = (WordPhraseData.Mode) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
+		if (selectMode == WordPhraseData.Mode.phrase) nowMode = WordPhraseData.Mode.phrase;
 		dataBook = (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
 		dataQ = (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
 		now=intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW,-1);
@@ -204,11 +203,11 @@ public class PlayerService extends Service {
 		releaseMediaPlayer(mediaPlayer);
 		if (isPlaying) {
 			ArrayList<QuizCreator.QuizWordData> list;
-			if (nowMode == q_num.mode.phrase) list = phraseDataList;
+			if (nowMode == WordPhraseData.Mode.phrase) list = phraseDataList;
 			else list = wordDataList;
 			
 			//助詞の確認
-			if (dataBook == passTan && nowMode == q_num.mode.word && nowLang == japanese && !isJoshiChecked) {
+			if (dataBook == passTan && nowMode == WordPhraseData.Mode.word && nowLang == japanese && !isJoshiChecked) {
 				isJoshiChecked = true;
 				String word = list.get(now).j;
 				if (word.charAt(0) == '～') word = word.substring(1);
@@ -237,7 +236,7 @@ public class PlayerService extends Service {
 			sendBroadcastPipTextChange(PipActivity.PipViewName.eng,list.get(now).e);
 			sendBroadcastPipTextChange(PipActivity.PipViewName.jpn,list.get(now).j);
 			//文を再生しているときは、単語も表示しておく。
-			if (selectMode == q_num.mode.wordPlusPhrase && nowMode == q_num.mode.phrase) {
+			if (selectMode == WordPhraseData.Mode.wordPlusPhrase && nowMode == WordPhraseData.Mode.phrase) {
 				sendBroadcastTextChange(PlayerViewName.subE, wordDataList.get(now).e);
 				sendBroadcastTextChange(PlayerViewName.subJ, wordDataList.get(now).j);
 			}
@@ -259,15 +258,15 @@ public class PlayerService extends Service {
 				else {
 					//現在日本語:英語にする
 					nowLang = english;
-					if (selectMode == q_num.mode.wordPlusPhrase) {
+					if (selectMode == WordPhraseData.Mode.wordPlusPhrase) {
 						//単語->文
-						if (nowMode == q_num.mode.word) {
+						if (nowMode == WordPhraseData.Mode.word) {
 							//現在単語だった
-							nowMode = q_num.mode.phrase;
+							nowMode = WordPhraseData.Mode.phrase;
 						}
 						else {
 							//文だった
-							nowMode = q_num.mode.word;
+							nowMode = WordPhraseData.Mode.word;
 							goNext();
 						}
 					}
