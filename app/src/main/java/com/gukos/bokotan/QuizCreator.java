@@ -3,16 +3,13 @@ package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
-import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.WordPhraseData.DataBook;
-import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
-import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
-import static com.gukos.bokotan.WordPhraseData.DataType.word;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
@@ -53,6 +50,7 @@ public class QuizCreator {
 			.setMaxStreams(2)
 			.build();
 	private final ArrayList<String> e = new ArrayList<>(), j = new ArrayList<>();
+	WordPhraseData.DataQ dataQ;
 	private int nProblems = 0;
 	int ansChoice, problemNum;
 	private String fileName;
@@ -143,6 +141,7 @@ public class QuizCreator {
 			//これを定期的に見る必要がある。
 			if (!onActive) return;
 			String qString = dataQ.toString();
+			this.dataQ = dataQ;
 			if (dataBook == tanjukugo) {
 				fileName = dnTestActivity + "tanjukugo" + qString + "Test";
 			}
@@ -200,25 +199,9 @@ public class QuizCreator {
 		
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
-			String mp3Path = null;
-			String q = list.get(problemNum).dataQ;
-			int no = list.get(problemNum).no;
-			DataBook dataBook = list.get(problemNum).dataBook;
-			//パス単1q,p1qのみ再生
-			if (dataBook == passTan && q.endsWith("1q")) {
-				mp3Path = MyLibrary.FileDirectoryManager.getPath(passTan, q, word, english, no);
-			}
-			if (dataBook == yumetan) {
-				mp3Path = MyLibrary.FileDirectoryManager.getPath(yumetan, q, word, english, no);
-			}
-			if (dataBook == tanjukugo) {
-				puts("getPath:" + tanjukugo + "," + q + "," + word + "," + english + "," + no);
-				mp3Path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugo" + q, word, english, no);
-			}
-			if (mp3Path != null) {
-				soundPool.load(mp3Path, 1);
-				sendBroadcastTextChange(TestFragment.ViewName.Debug, mp3Path);
-			}
+			String path = getPathPs(list.get(problemNum).dataBook, dataQ, WordPhraseData.q_num.mode.word, english, list.get(problemNum).no);
+			soundPool.load(path, 1);
+			sendBroadcastTextChange(TestFragment.ViewName.Debug, path);
 		}
 		
 		var choiceList = new int[4];

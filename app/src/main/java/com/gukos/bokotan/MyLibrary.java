@@ -317,15 +317,6 @@ public final class MyLibrary {
 			return content;
 		}
 		
-		public static String getPath(WordPhraseData.DataBook dataBook, WordPhraseData.DataQ dataQ, WordPhraseData.DataType dataType, WordPhraseData.DataLang dataLang, int tangoNum) {
-			try {
-				return getPath(dataBook, dataQ, dataType, dataLang, tangoNum, true);
-			} catch (Exception e) {
-				ExceptionManager.showException(e);
-				return "<不明>";
-			}
-		}
-		
 		public static String getPathPs(WordPhraseData.DataBook dataBook, WordPhraseData.DataQ dataQ, WordPhraseData.q_num.mode mode, WordPhraseData.DataLang dataLang, int tangoNum) {
 			try {
 				WordPhraseData.DataType dataType;
@@ -340,66 +331,7 @@ public final class MyLibrary {
 			}
 		}
 		
-		public static String getPath(WordPhraseData.DataBook dataBook, String str, WordPhraseData.DataType dataType, WordPhraseData.DataLang dataLang, int tangoNum) {
-			try {
-				return getPath(dataBook, str, dataType, dataLang, tangoNum, true);
-			} catch (Exception e) {
-				ExceptionManager.showException(e);
-				return "<不明>";
-			}
-		}
-		
-		public static String getPath(WordPhraseData.DataBook dataBook, WordPhraseData.DataQ dataQ, WordPhraseData.DataType dataType, WordPhraseData.DataLang dataLang, int tangoNum, boolean dirTougou) {
-			try {
-				String q;
-				switch (dataQ) {
-					case q1: {
-						q = "1q";
-						break;
-					}
-					case qp1: {
-						q = "p1q";
-						break;
-					}
-					case q2: {
-						q = "2q";
-						break;
-					}
-					case qp2: {
-						q = "p2q";
-						break;
-					}
-					case q3: {
-						q = "3q";
-						break;
-					}
-					case q4: {
-						q = "4q";
-						break;
-					}
-					case q5: {
-						q = "5q";
-						break;
-					}
-					case y00:
-					case y08:
-					case y1:
-					case y2:
-					case y3: {
-						q = dataQ.toString();
-						break;
-					}
-					default:
-						return null;
-				}
-				return getPath(dataBook, q, dataType, dataLang, tangoNum, dirTougou);
-			} catch (Exception e) {
-				ExceptionManager.showException(e);
-			}
-			return "<不明>";
-		}
-		
-		public static String getPath(WordPhraseData.DataBook dataBook, String strDataQ, WordPhraseData.DataType dataType, WordPhraseData.DataLang dataLang, int tangoNum, boolean dirTougou) {
+		private static String getPath(WordPhraseData.DataBook dataBook, String strDataQ, WordPhraseData.DataType dataType, WordPhraseData.DataLang dataLang, int tangoNum, boolean dirTougou) {
 			try {
 				String path = strGaibuDataDirectory;
 				String type;

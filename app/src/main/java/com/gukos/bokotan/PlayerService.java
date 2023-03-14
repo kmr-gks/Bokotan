@@ -125,14 +125,7 @@ public class PlayerService extends Service {
 						//サービス停止
 						puts("サービス停止");
 						isPlaying = false;
-						try {
-							if (mediaPlayer != null) {
-								mediaPlayer.stop();
-								mediaPlayer.reset();
-								mediaPlayer.release();
-							}
-							thisService.stopSelf();
-						} catch (Exception ignored) {}
+						releaseMediaPlayer(mediaPlayer);
 						//表示している文字列を削除
 						sendBroadcastTextChange(PlayerViewName.path, "");
 						sendBroadcastTextChange(PlayerViewName.eng, "");
@@ -208,13 +201,7 @@ public class PlayerService extends Service {
 	
 	private void onPlay() {
 		//リソースの開放
-		try {
-			if (mediaPlayer != null) {
-				mediaPlayer.stop();
-				mediaPlayer.reset();
-				mediaPlayer.release();
-			}
-		} catch (Exception ignored) {}
+		releaseMediaPlayer(mediaPlayer);
 		if (isPlaying) {
 			ArrayList<QuizCreator.QuizWordData> list;
 			if (nowMode == q_num.mode.phrase) list = phraseDataList;
@@ -296,6 +283,16 @@ public class PlayerService extends Service {
 				showException(context, exception);
 			}
 		}
+	}
+	
+	private void releaseMediaPlayer(MediaPlayer mediaPlayer){
+		try {
+			if (mediaPlayer != null) {
+				mediaPlayer.stop();
+				mediaPlayer.reset();
+				mediaPlayer.release();
+			}
+		} catch (Exception ignored) {}
 	}
 	
 	private void goNext(){

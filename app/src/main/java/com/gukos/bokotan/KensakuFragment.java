@@ -5,18 +5,9 @@ import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.ends;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.starts;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.setStringColored;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
-import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
-import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
+import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
-import static com.gukos.bokotan.WordPhraseData.DataQ.q1;
-import static com.gukos.bokotan.WordPhraseData.DataQ.qp1;
-import static com.gukos.bokotan.WordPhraseData.DataQ.y08;
-import static com.gukos.bokotan.WordPhraseData.DataQ.y1;
-import static com.gukos.bokotan.WordPhraseData.DataQ.y2;
-import static com.gukos.bokotan.WordPhraseData.DataQ.y3;
-import static com.gukos.bokotan.WordPhraseData.DataType.word;
 
 import android.app.AlertDialog;
 import android.media.MediaPlayer;
@@ -102,7 +93,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 			});
 			
 			onKensakuEnd(WordPhraseData.allData.size());
-			Function<Integer,Void> a= integer -> {
+			Function<Integer, Void> a = integer -> {
 				onKensakuEnd(integer);
 				return null;
 			};
@@ -149,7 +140,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 			}, data -> setStringColored(data.toString(), key));
 		}
 		else {
-			key=null;
+			key = null;
 			//検索欄が空、条件をクリアして全単語表示
 			adapter.resetFilter();
 		}
@@ -163,13 +154,13 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	private void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 		try {
 			var item = adapterView.getItemAtPosition(i);
-			WordPhraseData.WordInfo ld = (WordPhraseData.WordInfo) item;
+			WordPhraseData.WordInfo wordInfo = (WordPhraseData.WordInfo) item;
 			new AlertDialog.Builder(context)
-				.setTitle(setStringColored(ld.toushiNumber + " : " + ld.e, key))
-				.setMessage(setStringColored(ld.toDetailedString(), key))
+				.setTitle(setStringColored(wordInfo.toushiNumber + " : " + wordInfo.e, key))
+				.setMessage(setStringColored(wordInfo.toDetailedString(), key))
 				.setPositiveButton("閉じる", null)
-				.setNeutralButton("英→日発音", (dialogInterface, i1) -> playEnglishAndJapanese(ld))
-				.setNegativeButton("英語発音", (dialogInterface, i1) -> playEnglish(ld))
+				.setNeutralButton("英→日発音", (dialogInterface, i1) -> playEnglishAndJapanese(wordInfo))
+				.setNegativeButton("英語発音", (dialogInterface, i1) -> playEnglish(wordInfo))
 				.create()
 				.show();
 		} catch (Exception e) {
@@ -177,91 +168,13 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
-	void playEnglishAndJapanese(WordPhraseData.WordInfo ld) {
+	void playEnglishAndJapanese(WordPhraseData.WordInfo wordInfo) {
 		try {
-			String path;
-			switch (ld.category) {
-				case "パス単1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, english, ld.localNumber);
-					break;
-				}
-				case "パス単準1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, english, ld.localNumber);
-					break;
-				}
-				case "単熟語EX1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugo1q", ld.dataType, english, ld.localNumber);
-					break;
-				}
-				case "単熟語EX準1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugop1q", ld.dataType, english, ld.localNumber);
-					break;
-				}
-				case "ユメタン0": {
-					path = MyLibrary.FileDirectoryManager.getPath(yumetan, y08, word, english, ld.localNumber);
-					break;
-				}
-				case "ユメタン1": {
-					path = MyLibrary.FileDirectoryManager.getPath(yumetan, y1, word, english, ld.localNumber);
-					break;
-				}
-				case "ユメタン2": {
-					path = MyLibrary.FileDirectoryManager.getPath(yumetan, y2, word, english, ld.localNumber);
-					break;
-				}
-				case "ユメタン3": {
-					path = MyLibrary.FileDirectoryManager.getPath(yumetan, y3, word, english, ld.localNumber);
-					break;
-				}
-				default: {
-					MyLibrary.DisplayOutput.makeToastForShort(context, ld.category + "の音声の再生には対応していません。");
-					return;
-				}
-			}
-			MediaPlayer mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
+			MediaPlayer mediaPlayer = MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber)));
 			mediaPlayer.start();
 			mediaPlayer.setOnCompletionListener(mp -> {
-				String pathJpn;
-				switch (ld.category) {
-					case "パス単1級": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, japanese, ld.localNumber);
-						break;
-					}
-					case "パス単準1級": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, japanese, ld.localNumber);
-						break;
-					}
-					case "単熟語EX1級": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugo1q", ld.dataType, japanese, ld.localNumber);
-						break;
-					}
-					case "単熟語EX準1級": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugop1q", ld.dataType, japanese, ld.localNumber);
-						break;
-					}
-					case "ユメタン0": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(yumetan, y08, word, japanese, ld.localNumber);
-						break;
-					}
-					case "ユメタン1": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(yumetan, y1, word, japanese, ld.localNumber);
-						break;
-					}
-					case "ユメタン2": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(yumetan, y2, word, japanese, ld.localNumber);
-						break;
-					}
-					case "ユメタン3": {
-						pathJpn = MyLibrary.FileDirectoryManager.getPath(yumetan, y3, word, japanese, ld.localNumber);
-						break;
-					}
-					default: {
-						return;
-					}
-				}
 				try {
-					MediaPlayer mpJpn = MediaPlayer.create(context, Uri.parse(pathJpn));
-					mpJpn.start();
+					MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, japanese, wordInfo.localNumber))).start();
 				} catch (Exception e) {
 					showException(context, e);
 				}
@@ -271,50 +184,9 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
-	void playEnglish(WordPhraseData.WordInfo ld) {
+	void playEnglish(WordPhraseData.WordInfo wordInfo) {
 		try {
-			String path;
-			switch (ld.category) {
-				case "パス単1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(passTan, q1, ld.dataType, english, ld.localNumber);
-					break;
-				}
-				case "パス単準1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(passTan, qp1, ld.dataType, english, ld.localNumber);
-					break;
-				}
-				case "単熟語EX1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugo1q", ld.dataType, english, ld.localNumber);
-					break;
-				}
-				case "単熟語EX準1級": {
-					path = MyLibrary.FileDirectoryManager.getPath(tanjukugo, "tanjukugop1q", ld.dataType, english, ld.localNumber);
-					break;
-				}
-				case "ユメタン0": {
-					path = MyLibrary.FileDirectoryManager.getPath(yumetan, y08, word, english, ld.localNumber);
-					break;
-				}
-				case "ユメタン1": {
-					path = MyLibrary.FileDirectoryManager.getPath(yumetan, y1, word, english, ld.localNumber);
-					break;
-				}
-				case "ユメタン2": {
-					path = MyLibrary.FileDirectoryManager.getPath(yumetan, y2, word, english, ld.localNumber);
-					break;
-				}
-				case "ユメタン3": {
-					path = MyLibrary.FileDirectoryManager.getPath(yumetan, y3, word, english, ld.localNumber);
-					break;
-				}
-				default: {
-					MyLibrary.DisplayOutput.makeToastForShort(context, ld.category + "の音声の再生には対応していません。");
-					return;
-				}
-			}
-			
-			MediaPlayer mediaPlayer = MediaPlayer.create(context, Uri.parse(path));
-			mediaPlayer.start();
+			MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber))).start();
 		} catch (Exception e) {
 			showException(context, e);
 		}
