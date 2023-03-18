@@ -8,4 +8,4 @@
 	android:ellipsize="marquee"
 	android:textColor="@color/textcolor"
 	android:background="@color/background"
-	android:textAlignment="center"/>
+	android:textAlignment="viewStart"/>

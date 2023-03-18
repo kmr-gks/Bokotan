@@ -12,41 +12,37 @@
 		android:layout_height="match_parent"
 		android:background="@color/background">
 
-		<LinearLayout
-			android:id="@+id/linearLayoutKensakuOption"
+		<androidx.appcompat.widget.SearchView
+			android:id="@+id/searchView"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			app:layout_constraintEnd_toEndOf="parent"
+			android:inputType="textEmailAddress"
+			app:iconifiedByDefault="false"
+			app:layout_constraintEnd_toStartOf="@+id/buttonKensakuHouhou"
 			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="parent">
+			app:layout_constraintTop_toTopOf="parent"
+			app:queryHint="@string/kensaku">
 
-			<androidx.appcompat.widget.SearchView
-				android:id="@+id/searchView"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.8"
-				android:inputType="textEmailAddress"
-				app:iconifiedByDefault="false"
-				app:queryHint="@string/kensaku" />
+		</androidx.appcompat.widget.SearchView>
 
-			<Button
-				android:id="@+id/buttonKensakuHouhou"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_weight="0"
-				android:autoSizeTextType="none"
-				android:lines="1"
-				android:text="@string/start"
-				android:textColor="@color/buttontext" />
+		<Button
+			android:id="@+id/buttonKensakuHouhou"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:lines="1"
+			android:textColor="@color/buttontext"
+			app:layout_constraintEnd_toStartOf="@+id/textViewKensakuResultCount"
+			app:layout_constraintTop_toTopOf="parent" />
 
-			<TextView
-				android:id="@+id/textViewKensakuResultCount"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.2"
-				android:textAlignment="center"
-				android:textColor="@color/textcolor" />
-		</LinearLayout>
+		<TextView
+			android:id="@+id/textViewKensakuResultCount"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAlignment="center"
+			android:textColor="@color/textcolor"
+			app:layout_constraintBottom_toTopOf="@+id/listViewKensakuResult"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
 
 		<ListView
 			android:id="@+id/listViewKensakuResult"
@@ -55,7 +51,9 @@
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/linearLayoutKensakuOption" />
+			app:layout_constraintTop_toBottomOf="@+id/searchView">
+
+		</ListView>
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

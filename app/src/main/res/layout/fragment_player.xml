@@ -171,18 +171,16 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="0.5"
-				android:text="英語速度:1.5"
-				android:textColor="@color/textcolor"
-				android:textSize="26sp" />
+				android:text="英語 x1.5"
+				android:textColor="@color/textcolor" />
 
 			<TextView
 				android:id="@+id/textViewSeekBarJpn"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="0.5"
-				android:text="日本語速度:1.5"
-				android:textColor="@color/textcolor"
-				android:textSize="26sp" />
+				android:text="日本語 x1.5"
+				android:textColor="@color/textcolor" />
 		</LinearLayout>
 
 		<LinearLayout

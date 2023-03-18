@@ -267,14 +267,14 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			float speed = 1 + sb.getProgress() * 0.1f;
 			if (sb.getId() == R.id.seekBarEng) {
 				//英語
-				binding.textViewSeekBarEng.setText(String.format("英語速度:%.1f", speed));
+				binding.textViewSeekBarEng.setText(String.format("英語 x%.1f", speed));
 				//PlaySound.dPlaySpeedEng = speed;
 				putIntData(context, "SeekBar", "english", sb.getProgress());
 				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_ENG_SPEED).putExtra(PLAYERSERVICE_MESSAGE_ENG_SPEED, speed));
 			}
 			else if (sb.getId() == R.id.seekBarJpn) {
 				//日本語
-				binding.textViewSeekBarJpn.setText(String.format("日本語速度:%.1f", speed));
+				binding.textViewSeekBarJpn.setText(String.format("日本語 x%.1f", speed));
 				//PlaySound.dPlaySpeedJpn = speed;
 				putIntData(context, "SeekBar", "japanese", sb.getProgress());
 				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_JPN_SPEED).putExtra(PLAYERSERVICE_MESSAGE_JPN_SPEED, speed));

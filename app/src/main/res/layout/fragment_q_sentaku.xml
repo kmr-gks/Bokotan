@@ -41,12 +41,6 @@
 				android:layout_height="wrap_content"
 				android:orientation="vertical">
 
-				<LinearLayout
-					android:id="@+id/linearLayoutOtherFetures"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:orientation="horizontal"/>
-
 				<TextView
 					android:id="@+id/textViewManageSettings"
 					android:layout_width="wrap_content"
@@ -55,37 +49,37 @@
 
 				<LinearLayout
 					android:id="@+id/linearLayoutManageSettings"
-					android:layout_width="wrap_content"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:orientation="horizontal">
 
 					<Button
 						android:id="@+id/buttonWriteTest"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_weight="1"
 						android:text="@string/writecheck"
-						android:textColor="@color/buttontext"
-						android:textSize="12sp" />
+						android:textColor="@color/buttontext" />
 
 					<Button
 						android:id="@+id/buttonPrefExport"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_weight="1"
 						android:text="@string/settingshozon"
-						android:textColor="@color/buttontext"
-						android:textSize="12sp" />
+						android:textColor="@color/buttontext" />
 
 					<Button
 						android:id="@+id/buttonPrefImp"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_weight="1"
 						android:text="@string/readsettingsfromfile"
-						android:textColor="@color/buttontext"
-						android:textSize="12sp" />
+						android:textColor="@color/buttontext" />
 
 					<Button
 						android:id="@+id/buttonShowSettingNew"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="設定を表示(新)"
@@ -147,7 +141,7 @@
 
 				<EditText
 					android:id="@+id/editTextNumber"
-					android:layout_width="wrap_content"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:autofillHints="no"
 					android:ems="10"
@@ -164,7 +158,7 @@
 
 				<RadioGroup
 					android:id="@+id/radioGroupEngAndJpn"
-					android:layout_width="wrap_content"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:background="@drawable/border"
 					android:orientation="horizontal">
@@ -199,7 +193,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:minHeight="48dp"
-					android:popupBackground="@color/background" />
+					android:popupBackground="@color/background"/>
 
 				<TextView
 					android:id="@+id/textViewHyojijun"
@@ -279,20 +273,22 @@
 
 				<LinearLayout
 					android:id="@+id/linearLayoutPipOptions"
-					android:layout_width="wrap_content"
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:orientation="horizontal">
 
 					<TextView
 						android:id="@+id/textViewPipAspect"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_weight="1"
 						android:text="PIP縦横比" />
 
 					<EditText
 						android:id="@+id/editTextPipYoko"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_weight="1"
 						android:hint="@string/pipyoko"
 						android:inputType="numberSigned"
 						android:minHeight="48dp"
@@ -300,8 +296,9 @@
 
 					<EditText
 						android:id="@+id/editTextPipTate"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_weight="1"
 						android:hint="@string/piptate"
 						android:inputType="numberSigned"
 						android:minHeight="48dp"
