@@ -24,6 +24,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -36,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 public class WordPhraseData extends ViewModel {
 	private static boolean isEmpty = true;
@@ -66,7 +68,8 @@ public class WordPhraseData extends ViewModel {
 	enum DataQ {
 		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3;
 		
-		public static DataQ parse(String value) {
+		public static DataQ parse(@Nullable String value) {
+			if (value==null) return null;
 			switch (value) {
 				case "1q": {
 					return q1;
@@ -142,6 +145,23 @@ public class WordPhraseData extends ViewModel {
 	
 	enum skipjouken {
 		kirokunomi, seikai1, huseikai2, onlyHugoukaku
+	}
+	
+	private static void putDataToMap(String fileName,Context context,DataBook dataBook,String q, String category,Function<Integer,String> getSubCategory,String qName, boolean mapput) {
+		var list = readToList(fileName, context, dataBook);
+		if (getSubCategory == null) {
+			for (int i = 1; i < list.size(); i++) {
+				allData.add(new WordInfo(dataBook, DataQ.parse(q), Mode.word, category, null, list, i, qName));
+			}
+		}
+		else {
+			for (int i = 1; i < list.size(); i++) {
+				allData.add(new WordInfo(dataBook, DataQ.parse(q), Mode.word, category, getSubCategory.apply(i), list, i, qName));
+			}
+		}
+		if (mapput) {
+			WordPhraseData.map.put(fileName, list);
+		}
 	}
 	
 	public static ArrayList<WordInfo> getList(String key) {
@@ -222,15 +242,46 @@ public class WordPhraseData extends ViewModel {
 		final DataQ dataQ;
 		final Mode mode;
 		
+		/**
+		 * readToListメソッドからのみ参照する
+		 * @param e
+		 * @param j
+		 * @param localNumber
+		 * @param dataBook
+		 */
+		@Deprecated
 		public WordInfo(String e,String j,int localNumber,DataBook dataBook){
 			this(dataBook,null,null,null,null,e,j,localNumber,null);
 		}
 		
+		/**
+		 * String e,jを省略する。
+		 * @param dataBook
+		 * @param dataQ
+		 * @param mode
+		 * @param category
+		 * @param subCategory
+		 * @param list
+		 * @param localNumber
+		 * @param qName
+		 */
 		WordInfo(DataBook dataBook, DataQ dataQ, Mode mode, String category, String subCategory, ArrayList<WordInfo> list, int localNumber, String qName) {
 			this(dataBook, dataQ, mode, category, subCategory, list.get(localNumber).e, list.get(localNumber).j, localNumber, qName);
 		}
 		
-		//メインのコンストラクタ
+		/**
+		 * メインのコンストラクタ
+		 * 全パラメーターを指定する
+		 * @param dataBook
+		 * @param dataQ
+		 * @param mode
+		 * @param category
+		 * @param subCategory
+		 * @param e
+		 * @param j
+		 * @param localNumber
+		 * @param qName
+		 */
 		private WordInfo(DataBook dataBook, DataQ dataQ, Mode mode, String category, String subCategory, String e, String j, int localNumber, String qName) {
 			size++;
 			this.dataBook = dataBook;
@@ -279,12 +330,15 @@ public class WordPhraseData extends ViewModel {
 				else rate = "";
 				
 				return "No. " + this.toushiNumber
-					+ "\nカテゴリ: " + this.category + " " + subCategory
+					+ "\nカテゴリ: " + this.category + " " + this.subCategory
 					+ "\n番号:" + this.localNumber
 					+ rate
 					+ "\n" + this.e
 					+ "\n発音:" + getHatsuon(this.e)
 					+ "\n" + this.j + "\n"
+					+"\nDataBook:"+this.dataBook
+					+"\nDataQ:"+this.dataQ
+					+"\nMode:"+this.mode
 					+ GogenYomuFactory.getGogenString(this.e, true, true);
 			} catch (Exception e) {
 				showException(e);
@@ -364,94 +418,52 @@ public class WordPhraseData extends ViewModel {
 			
 		}};
 		
-		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"}) {
-			var list = readToList(PasstanWord + q, context, passTan);
-			for (int i = 1; i < list.size(); i++) {
-				allData.add(new WordPhraseData.WordInfo(passTan, DataQ.parse(q), Mode.word, "パス単" + mapQName.get(q), tangoNumToString("パス単" + mapQName.get(q), i), list, i, q));
-			}
-			WordPhraseData.map.put(PasstanWord + q, list);
-		}
+		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
+			putDataToMap(PasstanWord + q, context, passTan, q, "パス単" + mapQName.get(q), integer -> tangoNumToString("パス単" + mapQName.get(q), integer), q, true);
 		
-		for (var q : new String[]{"1q", "p1q"}) {
-			var list = readToList(TanjukugoWord + q, context, tanjukugo);
-			for (int i = 1; i < list.size(); i++) {
-				allData.add(new WordPhraseData.WordInfo(tanjukugo, DataQ.parse(q), Mode.word, "単熟語EX" + mapQName.get(q), tangoNumToString("単熟語EX" + mapQName.get(q), i), list, i, "tanjukugo" + q));
-			}
-			WordPhraseData.map.put(TanjukugoWord + q, list);
-		}
+		for (var q : new String[]{"1q", "p1q"})
+			putDataToMap(TanjukugoWord + q, context, tanjukugo, q, "単熟語EX" + mapQName.get(q), integer -> tangoNumToString("単熟語EX" + mapQName.get(q), integer),
+			             "tanjukugo" + q, true);
 		
-		for (var q : new String[]{"1q", "p1q"}) {
-			var list = readToList(TanjukugoEXWord + q, context, tanjukugoEx);
-			for (int i = 1; i < list.size(); i++) {
-				allData.add(new WordPhraseData.WordInfo(tanjukugo, DataQ.parse(q), Mode.word, "単熟語EX" + mapQName.get(q), tangoNumToString("単熟語EX" + mapQName.get(q), i), list, i, "tanjukugo" + q));
-			}
-			WordPhraseData.map.put(TanjukugoEXWord + q, list);
-		}
+		for (var q : new String[]{"1q", "p1q"})
+			putDataToMap(TanjukugoEXWord + q, context, tanjukugoEx, q, "単熟語EX" + mapQName.get(q), integer -> tangoNumToString("単熟語EX" + mapQName.get(q), integer), "tanjukugo" + q, true);
 		
-		for (var q : new String[]{"00", "08", "1", "2", "3"}) {
-			var list = readToList(YumeWord + q, context, yumetan);
-			for (int i = 1; i < list.size(); i++)
-				allData.add(new WordPhraseData.WordInfo(DataBook.yumetan, DataQ.parse(q), Mode.word, mapQName.get(q), "Unit" + ((i - 1) / 100 + 1), list, i, "y" + q));
-			WordPhraseData.map.put(YumeWord + q, list);
-		}
+		for (var q : new String[]{"00", "08", "1", "2", "3"})
+			putDataToMap(YumeWord + q, context, yumetan, q, mapQName.get(q), integer -> "Unit" + ((integer - 1) / 100 + 1), "y" + q, true);
 		
 		//語源データも読み込む
 		int gogenNum = 0;
 		QSentakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
-		for (var map : QSentakuFragment.trGogenYomu.entrySet()) {
-			allData.add(new WordPhraseData.WordInfo(null, null, Mode.word, "読む語源学", null, map.getKey(), map.getValue().wordJpn, ++gogenNum, null));
-		}
+		
+		for (var map : QSentakuFragment.trGogenYomu.entrySet())
+			allData.add(new WordInfo(null, null, Mode.word, "読む語源学", null, map.getKey(), map.getValue().wordJpn, ++gogenNum, null));
 		
 		//英語漬け.comから読み込み
-		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q", "-eiken-jukugo", "-eikenp1-jukugo", "-Toefl-Chokuzen", "-Toeic-500ten", "-Toeic-700ten", "-Toeic-900ten", "-Toeic-Chokuzen", "-Toeic-jukugo",}) {
-			var list = readToList("Eigoduke.com/" + "WordDataEigoduke" + q, context, eigoduke);
-			for (int i = 1; i < list.size(); i++)
-				allData.add(new WordPhraseData.WordInfo(eigoduke, null, Mode.word, "英語漬け" + mapQName.get(q), null, list, i, null));
-		}
+		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q", "-eiken-jukugo", "-eikenp1-jukugo", "-Toefl-Chokuzen", "-Toeic-500ten", "-Toeic-700ten", "-Toeic-900ten", "-Toeic-Chokuzen", "-Toeic-jukugo",})
+			putDataToMap("Eigoduke.com/" + "WordDataEigoduke" + q, context, eigoduke, q, "英語漬け" + mapQName.get(q), null, null, false);
 		
-		for (int num = 1; num <= 10; num++) {
+		for (int num = 1; num <= 10; num++){
 			var q = "-toeic (" + num + ")";
-			var list = readToList("Eigoduke.com/" + "WordDataEigoduke" + q, context, eigoduke);
-			for (int i = 1; i < list.size(); i++)
-				allData.add(new WordPhraseData.WordInfo(eigoduke, null, Mode.word, "英語漬け" + "TOEIC" + num, null, list, i, null));
+			putDataToMap("Eigoduke.com/" + "WordDataEigoduke" + q,context,eigoduke,q,"英語漬け" + "TOEIC" + num,null,null,false);
 		}
 		
 		//distinction
-		for (int d = 1; d <= 4; d++) {
-			var list = readToList(WordPhraseData.distinction + "d" + d + "word", context, DataBook.distinction);
-			for (int i = 1; i < list.size(); i++)
-				allData.add(new WordPhraseData.WordInfo(DataBook.distinction, null, Mode.word, "Distinction" + d, tangoNumToString("Distinction" + d, i), list, i, null));
-		}
+		for (var d:new int[]{1,2,3,4})
+			putDataToMap(WordPhraseData.distinction + "d" + d + "word", context, DataBook.distinction, null, "Distinction" + d, integer -> tangoNumToString("Distinction" + d, integer), null, false);
 		
 		//フレーズ
-		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"}) {
-			var list = readToList(PasstanPhrase + q, context, passTan);
-			for (int i = 1; i < list.size(); i++) {
-				allData.add(new WordPhraseData.WordInfo(passTan, DataQ.parse(q), Mode.phrase, "パス単" + mapQName.get(q), tangoNumToString("パス単" + mapQName.get(q), i), list, i, q));
-			}
-			WordPhraseData.map.put(PasstanPhrase + q, list);
-		}
+		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
+			putDataToMap(PasstanPhrase + q, context, passTan, q, "パス単" + mapQName.get(q), integer -> tangoNumToString("パス単" + mapQName.get(q), integer), q, true);
 		
-		for (var q : new String[]{"1q", "p1q"}) {
-			var list = readToList(TanjukugoPhrase + q, context, tanjukugo);
-			for (int i = 1; i < list.size(); i++) {
-				allData.add(new WordPhraseData.WordInfo(tanjukugo, DataQ.parse(q), Mode.phrase, "単熟語EX" + mapQName.get(q), tangoNumToString("単熟語EX" + mapQName.get(q), i), list, i, "tanjukugo" + q));
-			}
-			WordPhraseData.map.put(TanjukugoPhrase + q, list);
-		}
+		for (var q : new String[]{"1q", "p1q"})
+			putDataToMap(TanjukugoPhrase + q, context, tanjukugo, q, "単熟語EX" + mapQName.get(q), integer -> tangoNumToString("単熟語EX" + mapQName.get(q), integer), "tanjukugo" + q, true);
 		
-		for (var q : new String[]{"d1phrase12", "d2phrase1"}) {
-			var list = readToList(WordPhraseData.distinction + q, context, DataBook.distinction);
-			for (int i = 1; i < list.size(); i++)
-				allData.add(new WordPhraseData.WordInfo(DataBook.distinction, null, Mode.phrase, "Distinction" + mapQName.get(q), tangoNumToString("Distinction" + mapQName.get(q), i), list, i, null));
-		}
+		for (var q : new String[]{"d1phrase12", "d2phrase1"})
+			putDataToMap(WordPhraseData.distinction + q, context, DataBook.distinction, q, "Distinction" + mapQName.get(q), integer -> tangoNumToString("Distinction" + mapQName.get(q), integer), null, false);
 		
 		//SVL12000辞書
-		var list = readToList(Svl, context, svl12000);
-		for (int i = 1; i < list.size(); i++)
-			allData.add(new WordPhraseData.WordInfo(svl12000, null, null, "SVL", Integer.toString((i - 1) / 1000 + 1), list, i, null));
-		//コピー
-		SetHatsuonKigou(list);
+		putDataToMap(Svl,context,svl12000,null,"SVL", integer ->Integer.toString((integer - 1) / 1000 + 1),null,true );
+		SetHatsuonKigou(map.get(Svl));
 		
 		var endTime = System.currentTimeMillis();
 		printCurrentState("経過時間:" + (endTime - startTime) / 1000f);

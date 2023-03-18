@@ -3,6 +3,7 @@ package com.gukos.bokotan;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.contains;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.ends;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.starts;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.setStringColored;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
@@ -170,6 +171,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	
 	void playEnglishAndJapanese(WordPhraseData.WordInfo wordInfo) {
 		try {
+			printCurrentState("path="+getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber));
 			MediaPlayer mediaPlayer = MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber)));
 			mediaPlayer.start();
 			mediaPlayer.setOnCompletionListener(mp -> {
@@ -186,6 +188,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	
 	void playEnglish(WordPhraseData.WordInfo wordInfo) {
 		try {
+			printCurrentState("path="+getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber));
 			MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber))).start();
 		} catch (Exception e) {
 			showException(context, e);
