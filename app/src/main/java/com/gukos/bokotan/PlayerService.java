@@ -66,7 +66,8 @@ public class PlayerService extends Service {
 	private DrawReceiver drawReceiver;
 	WordPhraseData.Mode selectMode, nowMode = WordPhraseData.Mode.word;
 	WordPhraseData.DataLang nowLang = english;
-	ArrayList<QuizCreator.QuizWordData> wordDataList = new ArrayList<>(), phraseDataList = new ArrayList<>();
+	ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
+	ArrayList<WordPhraseData.WordInfo> phraseDataList = new ArrayList<>();
 	WordPhraseData.DataBook dataBook = passTan;
 	DataQ dataQ;
 	float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 1.5f;
@@ -202,7 +203,7 @@ public class PlayerService extends Service {
 		//リソースの開放
 		releaseMediaPlayer(mediaPlayer);
 		if (isPlaying) {
-			ArrayList<QuizCreator.QuizWordData> list;
+			ArrayList<WordPhraseData.WordInfo> list;
 			if (nowMode == WordPhraseData.Mode.phrase) list = phraseDataList;
 			else list = wordDataList;
 			
@@ -229,7 +230,7 @@ public class PlayerService extends Service {
 				isJoshiChecked = false;
 			}
 			
-			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).no);
+			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).localNumber);
 			sendBroadcastTextChange(PlayerViewName.eng, list.get(now).e);
 			sendBroadcastTextChange(PlayerViewName.jpn, list.get(now).j);
 			sendBroadcastPipTextChange(PipActivity.PipViewName.num,"No."+now);

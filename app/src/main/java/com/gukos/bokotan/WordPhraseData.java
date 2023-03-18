@@ -44,7 +44,7 @@ public class WordPhraseData extends ViewModel {
 	public static final TreeMap<String, int[]> huseikai = new TreeMap<>();
 	public static final TreeMap<String, Integer> monme = new TreeMap<>();
 	
-	public static final TreeMap<String, ArrayList<QuizCreator.QuizWordData>> map = new TreeMap<>();
+	public static final TreeMap<String, ArrayList<WordInfo>> map = new TreeMap<>();
 	//TODO:このクラスのメンバはstaticじゃないほうがいい
 	public static final ArrayList<WordInfo> allData = new ArrayList<>();
 	static skipjouken skipjoken = skipjouken.kirokunomi;
@@ -144,12 +144,12 @@ public class WordPhraseData extends ViewModel {
 		kirokunomi, seikai1, huseikai2, onlyHugoukaku
 	}
 	
-	public static ArrayList<QuizCreator.QuizWordData> getList(String key) {
+	public static ArrayList<WordInfo> getList(String key) {
 		return map.get(key);
 	}
 	
-	public static ArrayList<QuizCreator.QuizWordData> readToList(String fileName, Context context, DataBook dataBook) {
-		ArrayList<QuizCreator.QuizWordData> list = new ArrayList<>();
+	public static ArrayList<WordInfo> readToList(String fileName, Context context, DataBook dataBook) {
+		ArrayList<WordInfo> list = new ArrayList<>();
 		String fileName1 = fileName + ".e.txt", fileName2 = fileName + ".j.txt";
 		try {
 			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
@@ -157,7 +157,7 @@ public class WordPhraseData extends ViewModel {
 			String dataE, dataJ;
 			int i = 0;
 			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
-				list.add(new QuizCreator.QuizWordData(dataE, dataJ, i, dataBook));
+				list.add(new WordInfo(dataE, dataJ, i, dataBook));
 				i++;
 			}
 			is1.close();
@@ -175,7 +175,7 @@ public class WordPhraseData extends ViewModel {
 		
 		public static final HashMap<String, String> hashMapHatsuonKigou = new HashMap<>();
 		
-		public static void SetHatsuonKigou(ArrayList<QuizCreator.QuizWordData> list) {
+		public static void SetHatsuonKigou(ArrayList<WordInfo> list) {
 			try {
 				//発音記号のためにSVL読み込み
 				if (hashMapHatsuonKigou.size() == 0) {
@@ -222,7 +222,11 @@ public class WordPhraseData extends ViewModel {
 		final DataQ dataQ;
 		final Mode mode;
 		
-		WordInfo(DataBook dataBook, DataQ dataQ, Mode mode, String category, String subCategory, ArrayList<QuizCreator.QuizWordData> list, int localNumber, String qName) {
+		public WordInfo(String e,String j,int localNumber,DataBook dataBook){
+			this(dataBook,null,null,null,null,e,j,localNumber,null);
+		}
+		
+		WordInfo(DataBook dataBook, DataQ dataQ, Mode mode, String category, String subCategory, ArrayList<WordInfo> list, int localNumber, String qName) {
 			this(dataBook, dataQ, mode, category, subCategory, list.get(localNumber).e, list.get(localNumber).j, localNumber, qName);
 		}
 		
