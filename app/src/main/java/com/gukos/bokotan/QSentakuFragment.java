@@ -44,7 +44,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -62,15 +61,7 @@ import java.util.TreeMap;
 public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentakuBinding> {
 	
 	//他のクラスからアクセス
-	public static SwitchMaterial switchSkipOboe;
-	public static SwitchMaterial swHyojiBeforeRead;
-	public static SwitchMaterial switchSortHanten;
-	public static SwitchMaterial cbAutoStop;
-	public static SwitchMaterial checkBoxHatsuonKigou;
-	public static SwitchMaterial swOnlyFirst;
-	public static SwitchMaterial switchQuizHatsuon;
-	public static SwitchMaterial switchQuizOX;
-	public static RadioButton radioButtonEtoJ;
+	public static SwitchMaterial switchQuizHatsuon, switchQuizOX, switchShouHatsuon;
 	public static TreeMap<String, GogenYomu> trGogenYomu;
 	
 	public static DataBook dataBook;
@@ -157,15 +148,9 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			binding.buttonWriteTest.setOnClickListener(this::onWriteText);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
 			
-			QSentakuFragment.swOnlyFirst = binding.switchOnlyFirst;
-			QSentakuFragment.swHyojiBeforeRead = binding.switchHyojiYakuBeforeRead;
-			QSentakuFragment.switchSkipOboe = binding.switchSkipOboe;
-			QSentakuFragment.switchSortHanten = binding.switchSortHanten;
+			switchShouHatsuon = binding.checkBoxHatsuonkigou;
 			QSentakuFragment.switchQuizHatsuon = binding.switchQuizHatsuon;
 			QSentakuFragment.switchQuizOX = binding.switchQuizOxKoukaon;
-			QSentakuFragment.cbAutoStop = binding.checkBoxAutoStop;
-			QSentakuFragment.checkBoxHatsuonKigou = binding.checkBoxHatsuonkigou;
-			QSentakuFragment.radioButtonEtoJ = binding.radioButtonEtoJ;
 			
 			binding.editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
 			pipYoko = Integer.parseInt(binding.editTextPipYoko.getText().toString());
@@ -195,16 +180,16 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				}
 			});
 			
-			initializeSettingItem(QSentakuFragment.swOnlyFirst, true);
-			initializeSettingItem(QSentakuFragment.swHyojiBeforeRead, true);
-			initializeSettingItem(QSentakuFragment.switchSkipOboe, true);
-			initializeSettingItem(QSentakuFragment.switchSortHanten, false);
-			initializeSettingItem(QSentakuFragment.cbAutoStop, false);
-			initializeSettingItem(QSentakuFragment.checkBoxHatsuonKigou, false);
+			initializeSettingItem(binding.switchOnlyFirst, true);
+			initializeSettingItem(binding.switchHyojiYakuBeforeRead, true);
+			initializeSettingItem(binding.switchSkipOboe, true);
+			initializeSettingItem(binding.switchSortHanten, false);
+			initializeSettingItem(binding.checkBoxAutoStop, false);
+			initializeSettingItem(binding.checkBoxHatsuonkigou, false);
 			initializeSettingItem(binding.switchQuizHatsuon, true);
 			initializeSettingItem(binding.switchQuizOxKoukaon, true);
 			
-			for (var v : new SwitchMaterial[]{QSentakuFragment.swOnlyFirst, QSentakuFragment.swHyojiBeforeRead, QSentakuFragment.switchSkipOboe, QSentakuFragment.switchSortHanten, QSentakuFragment.cbAutoStop, QSentakuFragment.checkBoxHatsuonKigou, binding.switchQuizHatsuon, binding.switchQuizOxKoukaon}) {
+			for (var v : new SwitchMaterial[]{binding.switchOnlyFirst, binding.switchHyojiYakuBeforeRead, binding.switchSkipOboe, binding.switchSortHanten, binding.checkBoxAutoStop, binding.checkBoxHatsuonkigou, binding.switchQuizHatsuon, binding.switchQuizOxKoukaon}) {
 				v.setOnCheckedChangeListener(UiManager.Listener::onClickSettingItem);
 			}
 			
@@ -269,7 +254,9 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		try {
 			putAllSetting(context, readFromFile(context, stringBokotanDirPath + fnAppSettings + ".txt"));
 			
-			for (var sw : new SwitchMaterial[]{swOnlyFirst, swHyojiBeforeRead, switchSkipOboe, switchSortHanten, cbAutoStop, checkBoxHatsuonKigou}) {
+			for (var sw : new SwitchMaterial[]{binding.switchOnlyFirst,
+				binding.switchHyojiYakuBeforeRead, binding.switchSkipOboe, binding.switchSortHanten
+				, binding.checkBoxAutoStop, binding.checkBoxHatsuonkigou}) {
 				sw.setChecked(getSetting(context, "id" + sw.getId(), true));
 			}
 			for (var fileName : getAllFileNames()) {

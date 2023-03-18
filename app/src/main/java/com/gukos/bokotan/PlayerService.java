@@ -54,19 +54,19 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_EXTRA_MODE = "ps_em",
 		PLAYERSERVICE_EXTRA_BOOK = "ps_eb",
 		PLAYERSERVICE_EXTRA_DATA_Q = "ps_edq",
-		PLAYERSERVICE_EXTRA_NOW="ps_en",
+		PLAYERSERVICE_EXTRA_NOW = "ps_en",
 		PLAYERSERVICE_ACTION = "playerservice_action",
 		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
 		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
 		PLAYERSERVICE_MESSAGE_JPN_SPEED = "playerservice_message_jpn_speed",
 		PLAYERSERVICE_MESSAGE_ENG_SPEED = "playerservice_message_eng_speed",
-		PLAYERSERVICE_MESSAGE_NOW="ps_mn";
+		PLAYERSERVICE_MESSAGE_NOW = "ps_mn";
 	Context context;
 	Handler handler;
 	private DrawReceiver drawReceiver;
 	WordPhraseData.Mode selectMode, nowMode = WordPhraseData.Mode.word;
 	WordPhraseData.DataLang nowLang = english;
-	ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
+	static ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
 	ArrayList<WordPhraseData.WordInfo> phraseDataList = new ArrayList<>();
 	WordPhraseData.DataBook dataBook = passTan;
 	DataQ dataQ;
@@ -87,7 +87,7 @@ public class PlayerService extends Service {
 		if (selectMode == WordPhraseData.Mode.phrase) nowMode = WordPhraseData.Mode.phrase;
 		dataBook = (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
 		dataQ = (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
-		now=intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW,-1);
+		now = intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW, -1);
 		
 		context = getApplicationContext();
 		String channelId = "default";
@@ -147,8 +147,8 @@ public class PlayerService extends Service {
 						dPlaySpeedEng = bundle.getFloat(PLAYERSERVICE_MESSAGE_ENG_SPEED);
 						break;
 					}
-					case PLAYERSERVICE_MESSAGE_NOW:{
-						now=bundle.getInt(PLAYERSERVICE_MESSAGE_NOW);
+					case PLAYERSERVICE_MESSAGE_NOW: {
+						now = bundle.getInt(PLAYERSERVICE_MESSAGE_NOW);
 					}
 				}
 			}
@@ -165,33 +165,33 @@ public class PlayerService extends Service {
 			sendBroadcastTextChange(PlayerViewName.jpn, "読み込み中");
 			isPlaying = true;
 			
-			drawReceiver=new DrawReceiver(handler);
+			drawReceiver = new DrawReceiver(handler);
 			context.registerReceiver(drawReceiver, new IntentFilter(PLAYERSERVICE_ACTION));
 			
-			if(now==-1){
+			if (now == -1) {
 				now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);
 			}
 			
-			String key=null;
+			String key = null;
 			switch (dataBook) {
 				case passTan: {
-					wordDataList= WordPhraseData.getList(PasstanWord+dataQ);
-					phraseDataList= WordPhraseData.getList(PasstanPhrase+dataQ);
+					wordDataList = WordPhraseData.getList(PasstanWord + dataQ);
+					phraseDataList = WordPhraseData.getList(PasstanPhrase + dataQ);
 					break;
 				}
 				case tanjukugo: {
-					wordDataList= WordPhraseData.getList(TanjukugoWord+dataQ);
-					wordDataList.addAll(WordPhraseData.getList(TanjukugoEXWord+dataQ));
-					phraseDataList= WordPhraseData.getList(TanjukugoPhrase+dataQ);
-					phraseDataList.addAll(WordPhraseData.getList(TanjukugoEXWord+dataQ));
+					wordDataList = WordPhraseData.getList(TanjukugoWord + dataQ);
+					wordDataList.addAll(WordPhraseData.getList(TanjukugoEXWord + dataQ));
+					phraseDataList = WordPhraseData.getList(TanjukugoPhrase + dataQ);
+					phraseDataList.addAll(WordPhraseData.getList(TanjukugoEXWord + dataQ));
 					break;
 				}
 				case yumetan: {
-					wordDataList= WordPhraseData.getList(YumeWord+dataQ.toString().substring(1));
+					wordDataList = WordPhraseData.getList(YumeWord + dataQ.toString().substring(1));
 					break;
 				}
 			}
-			puts("key="+key);
+			puts("key=" + key);
 			if (dataBook == yumetan) phraseDataList = wordDataList;
 			
 			onPlay();
@@ -233,9 +233,15 @@ public class PlayerService extends Service {
 			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).localNumber);
 			sendBroadcastTextChange(PlayerViewName.eng, list.get(now).e);
 			sendBroadcastTextChange(PlayerViewName.jpn, list.get(now).j);
-			sendBroadcastPipTextChange(PipActivity.PipViewName.num,"No."+now);
-			sendBroadcastPipTextChange(PipActivity.PipViewName.eng,list.get(now).e);
-			sendBroadcastPipTextChange(PipActivity.PipViewName.jpn,list.get(now).j);
+			if (nowMode == WordPhraseData.Mode.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
+				sendBroadcastTextChange(PlayerViewName.hatsuon, WordPhraseData.HatsuonKigou.getHatsuon(list.get(now).e));
+			}
+			else {
+				sendBroadcastTextChange(PlayerViewName.hatsuon, null);
+			}
+			sendBroadcastPipTextChange(PipActivity.PipViewName.num, "No." + now);
+			sendBroadcastPipTextChange(PipActivity.PipViewName.eng, list.get(now).e);
+			sendBroadcastPipTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
 			//文を再生しているときは、単語も表示しておく。
 			if (selectMode == WordPhraseData.Mode.wordPlusPhrase && nowMode == WordPhraseData.Mode.phrase) {
 				sendBroadcastTextChange(PlayerViewName.subE, wordDataList.get(now).e);
@@ -285,7 +291,7 @@ public class PlayerService extends Service {
 		}
 	}
 	
-	private void releaseMediaPlayer(MediaPlayer mediaPlayer){
+	private void releaseMediaPlayer(MediaPlayer mediaPlayer) {
 		try {
 			if (mediaPlayer != null) {
 				mediaPlayer.stop();
@@ -295,8 +301,8 @@ public class PlayerService extends Service {
 		} catch (Exception ignored) {}
 	}
 	
-	private void goNext(){
-		if (now>=wordDataList.size()-1) now=1;
+	private void goNext() {
+		if (now >= wordDataList.size() - 1) now = 1;
 		else now++;
 	}
 	

@@ -2,6 +2,7 @@ package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
@@ -26,6 +27,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -181,70 +183,108 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	
 	public void onResetButtonClick(View view) {
 		try {
-			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE,PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW,1));
+			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, 1));
 		} catch (Exception e) {
 			showException(context, e);
 		}
 	}
 	
 	public void onChangeNumber(View view) {
-		final int[][] fromTo;
-		switch (dataBook) {
-			default:
-			case passTan: {
-				if (dataQ == WordPhraseData.DataQ.q1) {
-					fromTo = toFindFromAndTo[0];
+		try {
+			final int[][] fromTo;
+			final String[] unit = new String[20];
+			switch (dataBook) {
+				default:
+				case passTan: {
+					int i = 0;
+					for (var derudo : new String[]{"出る度A", "出る度B", "出る度C"}) {
+						for (var hinshi : new String[]{"動詞", "名詞", "形容詞"}) {
+							unit[i] = derudo + hinshi;
+							i++;
+						}
+					}
+					unit[i] = "熟語";
+					if (dataQ == WordPhraseData.DataQ.q1) {
+						fromTo = toFindFromAndTo[0];
+					}
+					else {
+						fromTo = toFindFromAndTo[1];
+					}
+					break;
 				}
-				else {
-					fromTo = toFindFromAndTo[1];
+				case yumetan: {
+					for (int i = 0; i < 10; i++) {
+						unit[i] = "Unit" + (i + 1);
+					}
+					switch (dataQ) {
+						case y00: {
+							fromTo = toFindFromAndTo[7];
+							break;
+						}
+						case y08: {
+							fromTo = toFindFromAndTo[8];
+							break;
+						}
+						default:
+						case y1: {
+							fromTo = toFindFromAndTo[9];
+							break;
+						}
+						case y2: {
+							fromTo = toFindFromAndTo[10];
+							break;
+						}
+						case y3: {
+							fromTo = toFindFromAndTo[11];
+							break;
+						}
+					}
+					break;
 				}
-				break;
+				case tanjukugo: {
+					for (int i = 0; i < 10; i++) {
+						unit[i] = "Unit" + (i + 1);
+					}
+					unit[10] = "Unit Ex";
+					if (dataQ == WordPhraseData.DataQ.q1) {
+						fromTo = toFindFromAndTo[12];
+					}
+					else {
+						fromTo = toFindFromAndTo[13];
+					}
+					break;
+				}
 			}
-			case yumetan: {
-				switch (dataQ) {
-					case y00: {
-						fromTo = toFindFromAndTo[7];
-						break;
-					}
-					case y08: {
-						fromTo = toFindFromAndTo[8];
-						break;
-					}
-					default:
-					case y1: {
-						fromTo = toFindFromAndTo[9];
-						break;
-					}
-					case y2: {
-						fromTo = toFindFromAndTo[10];
-						break;
-					}
-					case y3: {
-						fromTo = toFindFromAndTo[11];
-						break;
-					}
-				}
-				break;
+			var unitAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
+			for (int i = 0; i < fromTo.length; i++) {
+				var pair = fromTo[i];
+				unitAdapter.add(unit[i] + " (" + pair[0] + "～" + pair[1] + ")");
 			}
-			case tanjukugo: {
-				if (dataQ == WordPhraseData.DataQ.q1) {
-					fromTo = toFindFromAndTo[12];
-				}
-				else {
-					fromTo = toFindFromAndTo[13];
-				}
-				break;
-			}
+			new AlertDialog.Builder(context)
+				.setTitle("unit:")
+				.setSingleChoiceItems(unitAdapter, 0, (dialogInterface, index) -> {
+					puts("i=" + index);
+					dialogInterface.dismiss();
+					var wordAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
+					for (int i = fromTo[index][0]; i <= fromTo[index][1]; i++) {
+						var data = PlayerService.wordDataList.get(i);
+						wordAdapter.add(i + " " + data.e + " " + data.j);
+					}
+					new AlertDialog.Builder(context)
+						.setTitle("単語を選択してください。")
+						.setSingleChoiceItems(wordAdapter, 0, (dialog, i) -> {
+							printCurrentState("select:" + (fromTo[index][0] + i));
+							dialog.dismiss();
+							context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, fromTo[index][0] + i));
+						})
+						.create()
+						.show();
+				})
+				.create()
+				.show();
+		} catch (Exception exception) {
+			showException(context, exception);
 		}
-		String content = "";
-		for (var pair : fromTo) {
-			content += pair[0] + "-" + pair[1] + "\n";
-		}
-		new AlertDialog.Builder(context)
-			.setTitle("unit:")
-			.setMessage(content)
-			.create()
-			.show();
 	}
 	
 	public void onPIPButtonClicked(View view) {
