@@ -78,6 +78,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="ヒント"
+			android:textColor="@color/buttontext"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect1"
 			app:layout_constraintEnd_toEndOf="parent" />
 
@@ -142,6 +143,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="わからない"
+			android:textColor="@color/buttontext"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />

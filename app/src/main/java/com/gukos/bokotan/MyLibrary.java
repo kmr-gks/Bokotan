@@ -227,6 +227,7 @@ public final class MyLibrary {
 				Iterator<String> iterator = jsonObject.keys();
 				while (iterator.hasNext()) {
 					String key = iterator.next();
+					//DebugManager.puts("filename="+strFileName+",key="+key);
 					Object value = jsonObject.get(key);
 					if (value instanceof Boolean) {
 						//DisplayOutput.puts("file="+strFileName+" ,key="+key+" ,bool

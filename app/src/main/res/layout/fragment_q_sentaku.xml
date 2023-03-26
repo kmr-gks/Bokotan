@@ -109,28 +109,32 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="単語" />
+						android:text="単語"
+						android:textColor="@color/buttontext" />
 
 					<Button
 						android:id="@+id/buttonPhrase"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="文" />
+						android:text="文"
+						android:textColor="@color/buttontext" />
 
 					<Button
 						android:id="@+id/buttonWP"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="単語+文" />
+						android:text="単語+文"
+						android:textColor="@color/buttontext" />
 
 					<Button
 						android:id="@+id/buttonQuiz"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="テスト" />
+						android:text="テスト"
+						android:textColor="@color/buttontext" />
 				</LinearLayout>
 
 				<TextView
@@ -255,13 +259,15 @@
 					android:id="@+id/switchQuizHatsuon"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="@string/quiz_word_hatsuon" />
+					android:text="@string/quiz_word_hatsuon"
+					android:textColor="@color/textcolor" />
 
 				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/switchQuizOxKoukaon"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="@string/quiz_ox_hatsuon" />
+					android:text="@string/quiz_ox_hatsuon"
+					android:textColor="@color/textcolor" />
 
 				<com.google.android.material.switchmaterial.SwitchMaterial
 					android:id="@+id/checkBoxAutoStop"
