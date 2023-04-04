@@ -41,9 +41,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public static Boolean isInitialized = false;
 	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
 	
-	public static int lastnum;
-	AlertDialog adWord, adUnit;
-	
 	public static final String
 		PLAYER_ACTION_UI_CHANGE = "player_action_ui_change",
 		PLAYER_VIEW_TEXT = "player_view_text",
@@ -56,8 +53,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	}
 	
 	public enum PlayerViewName {
-		genzai, hatsuon, subJ, subE, eng, jpn, path,
-		Debug
+		genzai, tvcount, hatsuon, subJ, subE, eng, jpn, path, Debug
 	}
 	
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
@@ -70,6 +66,10 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			switch (viewName) {
 				case genzai: {
 					textViewToHandle = binding.textViewGenzai;
+					break;
+				}
+				case tvcount: {
+					textViewToHandle = binding.textViewCount;
 					break;
 				}
 				case hatsuon: {

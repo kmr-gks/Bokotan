@@ -31,6 +31,7 @@ import static com.gukos.bokotan.MyLibrary.strExceptionFIlePath;
 import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
 import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_SHOW_APPEARED;
 import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 
 import android.app.AlertDialog;
@@ -336,7 +337,8 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			Intent intent = new Intent(context, PlayerService.class)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
 				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, dataBook)
-				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, dataQ);
+				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, dataQ)
+				.putExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, binding.switchOnlyFirst.isChecked());
 			if (binding.editTextNumber.length() > 0) {
 				intent.putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, Integer.parseInt(binding.editTextNumber.getText().toString()));
 			}

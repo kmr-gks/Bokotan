@@ -13,16 +13,24 @@ import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.Text;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
+import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
 import static com.gukos.bokotan.WordPhraseData.DataQ;
+import static com.gukos.bokotan.WordPhraseData.DataQ.q1;
+import static com.gukos.bokotan.WordPhraseData.DataQ.qp1;
+import static com.gukos.bokotan.WordPhraseData.DataQ.y00;
+import static com.gukos.bokotan.WordPhraseData.DataQ.y1;
+import static com.gukos.bokotan.WordPhraseData.DataQ.y2;
+import static com.gukos.bokotan.WordPhraseData.DataQ.y3;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
+import static com.gukos.bokotan.WordPhraseData.getList;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -47,6 +55,7 @@ import androidx.annotation.NonNull;
 import com.gukos.bokotan.PlayerFragment.PlayerViewName;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class PlayerService extends Service {
 	public static final String
@@ -55,6 +64,7 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_EXTRA_BOOK = "ps_eb",
 		PLAYERSERVICE_EXTRA_DATA_Q = "ps_edq",
 		PLAYERSERVICE_EXTRA_NOW = "ps_en",
+		PLAYERSERVICE_EXTRA_SHOW_APPEARED = "ps_esa",
 		PLAYERSERVICE_ACTION = "playerservice_action",
 		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
 		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
@@ -68,10 +78,11 @@ public class PlayerService extends Service {
 	WordPhraseData.DataLang nowLang = english;
 	static ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
 	ArrayList<WordPhraseData.WordInfo> phraseDataList = new ArrayList<>();
+	private final HashSet<String> appearedWords = new HashSet<>();
 	WordPhraseData.DataBook dataBook = passTan;
 	DataQ dataQ;
 	float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 1.5f;
-	int now = 1;
+	private int now = 1, count = 1;
 	MediaPlayer mediaPlayer;
 	String path;
 	boolean isPlaying, isJoshiChecked = false;
@@ -88,6 +99,24 @@ public class PlayerService extends Service {
 		dataBook = (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
 		dataQ = (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
 		now = intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW, -1);
+		if (intent.getBooleanExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, false)) {
+			//既出の単語を飛ばす
+			if (dataBook == passTan || dataBook == tanjukugo) {
+				getList(YumeWord + y00.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+				getList(YumeWord + y1.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+				getList(YumeWord + y2.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+				getList(YumeWord + y3.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+			}
+			if ((dataBook == passTan && dataQ == q1) || dataBook == tanjukugo) {
+				getList(PasstanWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
+			}
+			if (dataBook == tanjukugo) {
+				getList(PasstanWord + q1).stream().map(info -> info.e).forEach(appearedWords::add);
+			}
+			if (dataBook == tanjukugo && dataQ == q1) {
+				getList(TanjukugoWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
+			}
+		}
 		
 		context = getApplicationContext();
 		String channelId = "default";
@@ -126,6 +155,7 @@ public class PlayerService extends Service {
 						puts("サービス停止");
 						isPlaying = false;
 						releaseMediaPlayer(mediaPlayer);
+						appearedWords.clear();
 						//表示している文字列を削除
 						sendBroadcastTextChange(PlayerViewName.path, "");
 						sendBroadcastTextChange(PlayerViewName.eng, "");
@@ -231,6 +261,7 @@ public class PlayerService extends Service {
 			}
 			
 			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).localNumber);
+			sendBroadcastTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
 			sendBroadcastTextChange(PlayerViewName.eng, list.get(now).e);
 			sendBroadcastTextChange(PlayerViewName.jpn, list.get(now).j);
 			if (nowMode == WordPhraseData.Mode.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
@@ -302,8 +333,12 @@ public class PlayerService extends Service {
 	}
 	
 	private void goNext() {
-		if (now >= wordDataList.size() - 1) now = 1;
-		else now++;
+		count++;
+		if (now >= wordDataList.size() - 1) now = 0;
+		//既出の単語を飛ばす
+		do {
+			now++;
+		} while (appearedWords.contains(wordDataList.get(now).e) && now < wordDataList.size() - 1);
 	}
 	
 	private void sendBroadcastTextChange(PlayerViewName viewName, String text) {
