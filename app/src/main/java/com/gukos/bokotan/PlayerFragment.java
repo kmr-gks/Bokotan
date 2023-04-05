@@ -2,7 +2,6 @@ package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
@@ -35,12 +34,10 @@ import androidx.annotation.NonNull;
 
 import com.gukos.bokotan.databinding.FragmentPlayerBinding;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBinding> {
 	public static Boolean isInitialized = false;
-	public static final HashMap<String, String> hashMapKishutu = new HashMap<>();
-	
 	public static final String
 		PLAYER_ACTION_UI_CHANGE = "player_action_ui_change",
 		PLAYER_VIEW_TEXT = "player_view_text",
@@ -140,10 +137,10 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
 				binding.seekBarEng.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarEng.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
-				onSpeedSeekBar(binding.seekBarEng);
+				onSpeedSeekBar(binding.seekBarEng, binding.seekBarEng.getProgress(), true);
 				binding.seekBarJpn.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
 				binding.seekBarJpn.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
-				onSpeedSeekBar(binding.seekBarJpn);
+				onSpeedSeekBar(binding.seekBarJpn, binding.seekBarJpn.getProgress(), true);
 				binding.buttonStopService.setOnClickListener(this::onPlayerServiceStop);
 				
 				synchronized (isInitialized) {
@@ -164,11 +161,12 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			//再生開始
 			puts(getClassName() + getMethodName() + " start");
 			
-			hashMapKishutu.clear();
-			//バグ対策
-			hashMapKishutu.put("smooth out 〜", "pass" + "p1q");    //1799
-			hashMapKishutu.put("grow into 〜", "p1q");                //1675
-			hashMapKishutu.put("accrue", "pass" + "1q");            //1568
+			//バグ対策は不要になった
+			/*
+			put("smooth out 〜", "pass" + "p1q");//1799
+			put("grow into 〜", "p1q");          //1675
+			put("accrue", "pass" + "1q");        //1568
+			*/
 			
 		} catch (Exception e) {
 			showException(context, e);
@@ -192,7 +190,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public void onChangeNumber(View view) {
 		try {
 			final int[][] fromTo;
-			final String[] unit = new String[20];
+			final String[] unit = new String[100];
 			switch (dataBook) {
 				default:
 				case passTan: {
@@ -254,6 +252,36 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					}
 					break;
 				}
+				case all: {
+					ArrayList<String> listUnit = new ArrayList<>();
+					for (int i = 1; i < 10 + 1; i++) {
+						listUnit.add("ユメタン1:Unit" + i);
+					}
+					for (int i = 1; i < 10 + 1; i++) {
+						listUnit.add("ユメタン2:Unit" + i);
+					}
+					for (int i = 1; i < 8 + 1; i++) {
+						listUnit.add("ユメタン3:Unit" + i);
+					}
+					for (var derudo : new String[]{"出る度A", "出る度B", "出る度C"}) {
+						for (var hinshi : new String[]{"動詞", "名詞", "形容詞"}) {
+							listUnit.add("パス単準1級" + derudo + hinshi);
+						}
+					}
+					listUnit.add("パス単準1級" + "熟語");
+					for (var derudo : new String[]{"出る度A", "出る度B", "出る度C"}) {
+						for (var hinshi : new String[]{"動詞", "名詞", "形容詞"}) {
+							listUnit.add("パス単1級" + derudo + hinshi);
+						}
+					}
+					listUnit.add("パス単1級" + "熟語");
+					
+					for (int i = 0; i < listUnit.size(); i++) {
+						unit[i] = listUnit.get(i);
+					}
+					fromTo = toFindFromAndTo[14];
+					break;
+				}
 			}
 			var unitAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 			for (int i = 0; i < fromTo.length; i++) {
@@ -268,12 +296,11 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					var wordAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 					for (int i = fromTo[index][0]; i <= fromTo[index][1]; i++) {
 						var data = PlayerService.wordDataList.get(i);
-						wordAdapter.add(i + " " + data.e + " " + data.j);
+						wordAdapter.add(i + "," + data.localNumber + ", " + data.e + " " + data.j);
 					}
 					new AlertDialog.Builder(context)
 						.setTitle("単語を選択してください。")
 						.setSingleChoiceItems(wordAdapter, 0, (dialog, i) -> {
-							printCurrentState("select:" + (fromTo[index][0] + i));
 							dialog.dismiss();
 							context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, fromTo[index][0] + i));
 						})
@@ -301,30 +328,23 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		}
 	}
 	
-	public void onSpeedSeekBar(View v) {
+	private void onSpeedSeekBar(SeekBar seekBar, int i, boolean b) {
 		try {
-			SeekBar sb = (SeekBar) v;
-			float speed = 1 + sb.getProgress() * 0.1f;
-			if (sb.getId() == R.id.seekBarEng) {
+			float speed = 1 + i * 0.1f;
+			if (seekBar.getId() == R.id.seekBarEng) {
 				//英語
 				binding.textViewSeekBarEng.setText(String.format("英語 x%.1f", speed));
-				//PlaySound.dPlaySpeedEng = speed;
-				putIntData(context, "SeekBar", "english", sb.getProgress());
+				putIntData(context, "SeekBar", "english", i);
 				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_ENG_SPEED).putExtra(PLAYERSERVICE_MESSAGE_ENG_SPEED, speed));
 			}
-			else if (sb.getId() == R.id.seekBarJpn) {
+			else if (seekBar.getId() == R.id.seekBarJpn) {
 				//日本語
 				binding.textViewSeekBarJpn.setText(String.format("日本語 x%.1f", speed));
-				//PlaySound.dPlaySpeedJpn = speed;
-				putIntData(context, "SeekBar", "japanese", sb.getProgress());
+				putIntData(context, "SeekBar", "japanese", i);
 				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_JPN_SPEED).putExtra(PLAYERSERVICE_MESSAGE_JPN_SPEED, speed));
 			}
 		} catch (Exception e) {
 			showException(context, e);
 		}
-	}
-	
-	private void onSpeedSeekBar(SeekBar seekBar, int i, boolean b) {
-		onSpeedSeekBar(seekBar);
 	}
 }

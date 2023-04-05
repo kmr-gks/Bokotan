@@ -62,11 +62,11 @@ public class WordPhraseData extends ViewModel {
 		distinction = "distinction/";
 	
 	enum DataBook {
-		passTan, tanjukugo, tanjukugoEx, yumetan, eigoduke, distinction, svl12000
+		passTan, tanjukugo, tanjukugoEx, yumetan, eigoduke, distinction, svl12000,all
 	}
 	
 	enum DataQ {
-		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3;
+		q1, qp1, q2, qp2, q3, q4, q5, y00, y08, y1, y2, y3,all;
 		
 		public static DataQ parse(@Nullable String value) {
 			if (value==null) return null;
@@ -148,7 +148,7 @@ public class WordPhraseData extends ViewModel {
 	}
 	
 	private static void putDataToMap(String fileName,Context context,DataBook dataBook,String q, String category,Function<Integer,String> getSubCategory,String qName, boolean mapput) {
-		var list = readToList(fileName, context, dataBook);
+		var list = readToList(fileName, context, dataBook,q);
 		if (getSubCategory == null) {
 			for (int i = 1; i < list.size(); i++) {
 				allData.add(new WordInfo(dataBook, DataQ.parse(q), Mode.word, category, null, list, i, qName));
@@ -168,7 +168,7 @@ public class WordPhraseData extends ViewModel {
 		return map.get(key);
 	}
 	
-	public static ArrayList<WordInfo> readToList(String fileName, Context context, DataBook dataBook) {
+	public static ArrayList<WordInfo> readToList(String fileName, Context context, DataBook dataBook,String dataQ) {
 		ArrayList<WordInfo> list = new ArrayList<>();
 		String fileName1 = fileName + ".e.txt", fileName2 = fileName + ".j.txt";
 		try {
@@ -177,7 +177,7 @@ public class WordPhraseData extends ViewModel {
 			String dataE, dataJ;
 			int i = 0;
 			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
-				list.add(new WordInfo(dataE, dataJ, i, dataBook));
+				list.add(new WordInfo(dataE, dataJ, i, dataBook,dataQ));
 				i++;
 			}
 			is1.close();
@@ -250,8 +250,8 @@ public class WordPhraseData extends ViewModel {
 		 * @param dataBook
 		 */
 		@Deprecated
-		public WordInfo(String e,String j,int localNumber,DataBook dataBook){
-			this(dataBook,null,null,null,null,e,j,localNumber,null);
+		private WordInfo(String e,String j,int localNumber,DataBook dataBook,String dataQ){
+			this(dataBook, DataQ.parse(dataQ), null, null, null, e, j, localNumber, null);
 		}
 		
 		/**
@@ -265,7 +265,7 @@ public class WordPhraseData extends ViewModel {
 		 * @param localNumber
 		 * @param qName
 		 */
-		WordInfo(DataBook dataBook, DataQ dataQ, Mode mode, String category, String subCategory, ArrayList<WordInfo> list, int localNumber, String qName) {
+		private WordInfo(DataBook dataBook, DataQ dataQ, Mode mode, String category, String subCategory, ArrayList<WordInfo> list, int localNumber, String qName) {
 			this(dataBook, dataQ, mode, category, subCategory, list.get(localNumber).e, list.get(localNumber).j, localNumber, qName);
 		}
 		
@@ -500,5 +500,13 @@ class Unit {
 		{{1, 276}, {277, 588}, {589, 840}, {841, 1080}, {1081, 1320}, {1321, 1560}, {1561, 1800}, {1801, 2040}, {2041, 2208}, {2209, 2364}, {2365, 2811}},
 		//p1qEX
 		{{1, 216}, {217, 432}, {433, 648}, {649, 864}, {865, 1080}, {1081, 1296}, {1297, 1488}, {1489, 1680}, {1681, 1824}, {1825, 1920}, {1920, 2400}},
+		//総合
+		{
+			{1, 100}, {101, 200}, {201, 300}, {301, 400}, {401, 500}, {501, 600}, {601, 700}, {701, 800}, {801, 900}, {901, 1000},
+			{1001, 1100}, {1101, 200}, {1201, 1300}, {1301, 1400}, {1401, 1500}, {1501, 1600}, {1601, 1700}, {1701, 1800}, {1801, 1900}, {1901, 2000},
+			{2001, 2100}, {2101, 2200}, {2201, 2300}, {2301, 2400}, {2401, 2500}, {2501, 2600}, {2601, 2700}, {2701, 2800},
+			{2801, 2892}, {2893, 3162}, {3163, 3330}, {3331, 3482}, {3483, 3683}, {3684, 3850}, {3851, 4062}, {4063, 4211}, {4212, 4350}, {4351, 4650},
+			{4651, 4883}, {4884, 5122}, {5123, 5350}, {5351, 5569}, {5570, 5827}, {5828, 6050}, {6051, 6269}, {6270, 6511}, {6512, 6750}, {6751, 7050},
+		},
 	};
 }

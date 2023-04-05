@@ -544,7 +544,11 @@ public final class MyLibrary {
 		}
 		
 		public static String getNowThreadName() {
-			return Thread.currentThread().getName();
+			String name = Thread.currentThread().getName();
+			if (name.startsWith("Thread")) {
+				name = name.substring(6);
+			}
+			return name;
 		}
 		
 		public static void printCurrentState() {
@@ -672,5 +676,4 @@ public final class MyLibrary {
 			MyLibrary.ExceptionManager.showException(exception);
 		}
 	}
-	
 }

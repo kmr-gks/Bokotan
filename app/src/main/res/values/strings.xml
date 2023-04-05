@@ -65,30 +65,6 @@
 	<string name="quiz_word_hatsuon">クイズで出題される単語を発音</string>
 	<string name="quiz_ox_hatsuon">クイズでマルバツの効果音を再生</string>
 
-	<string-array name="spinner_hanni">
-		<item>A</item>
-		<item>B</item>
-		<item>C</item>
-		<item>熟語</item>
-		<item>全て</item>
-	</string-array>
-
-	<string-array name="spinner_hinsi">
-		<item>動詞</item>
-		<item>名詞</item>
-		<item>形容詞</item>
-		<item>まとめ</item>
-	</string-array>
-
-	<string-array name="spinner_mode">
-		<item>単語</item>
-		<item>文</item>
-		<item>単語+文</item>
-		<item>テスト(ランダム)</item>
-		<item>テスト(不正解のみ)</item>
-		<item>テスト(正答率順)</item>
-	</string-array>
-
 	<string-array name="spinner_kuuhaku">
 		<item>オリジナル</item>
 		<item>自動空白検出</item>
@@ -110,6 +86,7 @@
 		<item>パス単準1級</item>
 		<item>単熟語1級</item>
 		<item>単熟語準1級</item>
+		<item>総合</item>
 	</string-array>
 
 </resources>

@@ -324,6 +324,11 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				dataQ = DataQ.qp1;
 				break;
 			}
+			case 7: {
+				dataBook = DataBook.all;
+				dataQ = DataQ.all;
+				break;
+			}
 		}
 		if (view == binding.buttonQuiz) {
 			TabActivity.setTabPageNum(2);

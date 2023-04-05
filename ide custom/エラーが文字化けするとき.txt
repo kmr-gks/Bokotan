@@ -1,0 +1,5 @@
+Help
+Edit Custom VM Options..
+
+-Dfile.encoding=UTF-8
+を追加する

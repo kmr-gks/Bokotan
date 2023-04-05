@@ -160,6 +160,7 @@ public class PlayerService extends Service {
 						sendBroadcastTextChange(PlayerViewName.path, "");
 						sendBroadcastTextChange(PlayerViewName.eng, "");
 						sendBroadcastTextChange(PlayerViewName.jpn, "");
+						sendBroadcastTextChange(PlayerViewName.hatsuon, "");
 						sendBroadcastTextChange(PlayerViewName.subE, "");
 						sendBroadcastTextChange(PlayerViewName.subJ, "");
 						sendBroadcastTextChange(PlayerViewName.genzai, "");
@@ -204,6 +205,7 @@ public class PlayerService extends Service {
 			
 			String key = null;
 			switch (dataBook) {
+				default:
 				case passTan: {
 					wordDataList = WordPhraseData.getList(PasstanWord + dataQ);
 					phraseDataList = WordPhraseData.getList(PasstanPhrase + dataQ);
@@ -218,6 +220,18 @@ public class PlayerService extends Service {
 				}
 				case yumetan: {
 					wordDataList = WordPhraseData.getList(YumeWord + dataQ.toString().substring(1));
+					break;
+				}
+				case all: {
+					wordDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y1.toString().substring(1)));
+					wordDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y2.toString().substring(1)).subList(1, 1000 + 1));
+					wordDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y3.toString().substring(1)).subList(1, 800 + 1));
+					
+					wordDataList.addAll(WordPhraseData.getList(PasstanWord + qp1).subList(1, 1850 + 1));
+					wordDataList.addAll(WordPhraseData.getList(PasstanWord + q1).subList(1, 2400 + 1));
+					
+					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + qp1));
+					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + q1));
 					break;
 				}
 			}
@@ -283,7 +297,7 @@ public class PlayerService extends Service {
 				sendBroadcastTextChange(PlayerViewName.subJ, "");
 			}
 			
-			path = getPathPs(dataBook, dataQ, nowMode, nowLang, now);
+			path = getPathPs(wordDataList.get(now).dataBook, wordDataList.get(now).dataQ, nowMode, nowLang, wordDataList.get(now).localNumber);
 			sendBroadcastTextChange(PlayerViewName.path, path);
 			try {
 				mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
