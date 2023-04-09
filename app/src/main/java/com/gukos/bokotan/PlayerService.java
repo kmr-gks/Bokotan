@@ -232,6 +232,18 @@ public class PlayerService extends Service {
 					
 					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + qp1));
 					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + q1));
+					
+					if (selectMode == WordPhraseData.Mode.phrase || selectMode == WordPhraseData.Mode.wordPlusPhrase) {
+						phraseDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y1.toString().substring(1)));
+						phraseDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y2.toString().substring(1)).subList(1, 1000 + 1));
+						phraseDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y3.toString().substring(1)).subList(1, 800 + 1));
+						
+						phraseDataList.addAll(WordPhraseData.getList(PasstanPhrase + qp1).subList(1, 1850 + 1));
+						phraseDataList.addAll(WordPhraseData.getList(PasstanPhrase + q1).subList(1, 2400 + 1));
+						
+						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + qp1));
+						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + q1));
+					}
 					break;
 				}
 			}

@@ -98,8 +98,11 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 		
 		@Override
 		protected void publishResults(CharSequence constraint, FilterResults results) {
-			// noinspection unchecked
-			mObjects = (List<T>) results.values;
+			if (results.values == null) mObjects = new ArrayList<>();
+			else {
+				// noinspection unchecked
+				mObjects = (List<T>) results.values;
+			}
 			if (results.count > 0) {
 				notifyDataSetChanged();
 			}
