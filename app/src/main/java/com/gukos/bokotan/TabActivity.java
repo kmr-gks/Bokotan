@@ -10,7 +10,6 @@ import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.viewpager2.widget.ViewPager2;
@@ -59,21 +58,6 @@ public class TabActivity extends AppCompatActivity {
 		}
 	}
 	
-	//onCreateの方が先に呼ばれる
-	//protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {}
-	
-	//データ保存
-	@Override
-	protected void onSaveInstanceState(@NonNull Bundle outState) {
-		try {
-			super.onSaveInstanceState(outState);
-			printCurrentState("データ保存中");
-		} catch (Exception exception) {
-			showException(this, exception);
-		}
-	}
-	
-	
 	/**
 	 * UIスレッドから呼ばなければならない
 	 *
@@ -100,25 +84,25 @@ public class TabActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		//戻るボタン
 		printCurrentState("tab=" + getTabPageNum());
-		switch (getTabPageNum()){
+		switch (getTabPageNum()) {
 			default:
-			case 0:{
+			case 0: {
 				super.onBackPressed();
 				break;
 			}
-			case 1:{
+			case 1: {
 				runOnUiThread(() -> setTabPageNum(0));
 				//再生中に戻るボタンを押すと停止
 				getApplicationContext().sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP));
 				break;
 			}
-			case 2:{
+			case 2: {
 				runOnUiThread(() -> setTabPageNum(0));
 				//クイズをしているなら、ViewModelのデータを保存する。
 				new Thread(() -> WordPhraseData.saveQuizData(getApplicationContext())).start();
 				break;
 			}
-			case 3:{
+			case 3: {
 				runOnUiThread(() -> setTabPageNum(0));
 				break;
 			}

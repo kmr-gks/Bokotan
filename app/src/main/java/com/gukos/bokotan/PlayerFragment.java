@@ -4,10 +4,9 @@ import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
-import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_ENG_SPEED;
-import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_JPN_SPEED;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_NOW;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
@@ -136,10 +135,10 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				binding.buttonNowChange.setOnClickListener(this::onChangeNumber);
 				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
 				binding.seekBarEng.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
-				binding.seekBarEng.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "english", 5));
+				binding.seekBarEng.setProgress(getIntData(context, "SeekBar", "english", 5));
 				onSpeedSeekBar(binding.seekBarEng, binding.seekBarEng.getProgress(), true);
 				binding.seekBarJpn.setOnSeekBarChangeListener((UiManager.UiInterface.OnSeekBarProgressChange) this::onSpeedSeekBar);
-				binding.seekBarJpn.setProgress(MyLibrary.PreferenceManager.getIntData(context, "SeekBar", "japanese", 10));
+				binding.seekBarJpn.setProgress(getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(binding.seekBarJpn, binding.seekBarJpn.getProgress(), true);
 				binding.buttonStopService.setOnClickListener(this::onPlayerServiceStop);
 				
@@ -330,18 +329,18 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	
 	private void onSpeedSeekBar(SeekBar seekBar, int i, boolean b) {
 		try {
-			float speed = 1 + i * 0.1f;
+			final float speed = 1 + i * 0.1f;
 			if (seekBar.getId() == R.id.seekBarEng) {
 				//英語
 				binding.textViewSeekBarEng.setText(String.format("英語 x%.1f", speed));
 				putIntData(context, "SeekBar", "english", i);
-				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_ENG_SPEED).putExtra(PLAYERSERVICE_MESSAGE_ENG_SPEED, speed));
+				PlayerService.dPlaySpeedEng = speed;
 			}
 			else if (seekBar.getId() == R.id.seekBarJpn) {
 				//日本語
 				binding.textViewSeekBarJpn.setText(String.format("日本語 x%.1f", speed));
 				putIntData(context, "SeekBar", "japanese", i);
-				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_JPN_SPEED).putExtra(PLAYERSERVICE_MESSAGE_JPN_SPEED, speed));
+				PlayerService.dPlaySpeedJpn = speed;
 			}
 		} catch (Exception e) {
 			showException(context, e);

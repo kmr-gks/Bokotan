@@ -33,7 +33,16 @@
 		tools:targetApi="tiramisu">
 
 		<service android:name=".PlayerService"/>
+		<receiver
+			android:name=".StartPipBroadcastReceiver"
+			android:exported="true"
+			android:permission="TODO">
+			<intent-filter>
+				<action android:name="com.gukos.bokotan" />
 
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</receiver>
 		<activity
 			android:name=".PipActivity"
 			android:launchMode="singleTask"

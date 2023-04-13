@@ -68,8 +68,6 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_ACTION = "playerservice_action",
 		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
 		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
-		PLAYERSERVICE_MESSAGE_JPN_SPEED = "playerservice_message_jpn_speed",
-		PLAYERSERVICE_MESSAGE_ENG_SPEED = "playerservice_message_eng_speed",
 		PLAYERSERVICE_MESSAGE_NOW = "ps_mn";
 	Context context;
 	Handler handler;
@@ -81,7 +79,7 @@ public class PlayerService extends Service {
 	private final HashSet<String> appearedWords = new HashSet<>();
 	WordPhraseData.DataBook dataBook = passTan;
 	DataQ dataQ;
-	float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 1.5f;
+	public static float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 2f;
 	private int now = 1, count = 1;
 	MediaPlayer mediaPlayer;
 	String path;
@@ -121,23 +119,34 @@ public class PlayerService extends Service {
 		context = getApplicationContext();
 		String channelId = "default";
 		String title = context.getString(R.string.app_name);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 101, intent, PendingIntent.FLAG_IMMUTABLE);
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 101, new Intent(context, TabActivity.class).setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT), PendingIntent.FLAG_IMMUTABLE);
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		// Notification Channel 設定
 		NotificationChannel channel = new NotificationChannel(channelId, title, NotificationManager.IMPORTANCE_DEFAULT);
 		
 		if (notificationManager != null) {
 			notificationManager.createNotificationChannel(channel);
+			Intent sendStopIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
+			/*
+			Intent sendStopIntent =new Intent(this, StopPlayBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
+			*/
+			Intent sendPipIntent = new Intent(this, StartPipBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
+			PendingIntent sendStopPendingIntent = PendingIntent.getBroadcast(this, 0, sendStopIntent, PendingIntent.FLAG_IMMUTABLE);
+			PendingIntent sendPipPendingIntent = PendingIntent.getBroadcast(this, 10, sendPipIntent, PendingIntent.FLAG_IMMUTABLE);
+			
 			Notification notification = new Notification.Builder(context, channelId)
 				.setContentTitle(title)
 				// android標準アイコンから
 				.setSmallIcon(android.R.drawable.ic_media_play)
 				.setContentText("MyApplication")
 				.setAutoCancel(true)
+				.addAction(R.drawable.ic_launcher_foreground, "停止", sendStopPendingIntent)
+				.addAction(R.mipmap.launcher_new_icon, "小窓で表示", sendPipPendingIntent)
 				.setContentIntent(pendingIntent)
 				.setWhen(System.currentTimeMillis())
 				.build();
-			// startForeground
+			//Notification.FLAG_NO_CLEARだと消える(Android13)
+			notification.flags |= Notification.FLAG_ONGOING_EVENT;
 			startForeground(1, notification);
 		}
 		
@@ -168,14 +177,6 @@ public class PlayerService extends Service {
 						MyLibrary.PreferenceManager.putIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, now);
 						context.unregisterReceiver(drawReceiver);
 						thisService.stopSelf();
-						break;
-					}
-					case PLAYERSERVICE_MESSAGE_JPN_SPEED: {
-						dPlaySpeedJpn = bundle.getFloat(PLAYERSERVICE_MESSAGE_JPN_SPEED);
-						break;
-					}
-					case PLAYERSERVICE_MESSAGE_ENG_SPEED: {
-						dPlaySpeedEng = bundle.getFloat(PLAYERSERVICE_MESSAGE_ENG_SPEED);
 						break;
 					}
 					case PLAYERSERVICE_MESSAGE_NOW: {

@@ -1,10 +1,17 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
+import android.app.RemoteAction;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +25,8 @@ import androidx.databinding.DataBindingUtil;
 
 import com.gukos.bokotan.databinding.ActivityPipBinding;
 
+import java.util.ArrayList;
+
 public class PipActivity extends Activity {
 	static boolean startPIP = false;
 	public static int pipYoko = 16;
@@ -25,13 +34,14 @@ public class PipActivity extends Activity {
 	private static ActivityPipBinding binding;
 	
 	public static final String
-		PIP_ACTION_UI="pau",
-		PIP_VIEW_TEXT="pvt",
-		PIP_VIEW_NAME="pvn";
+		PIP_ACTION_UI = "pau",
+		PIP_VIEW_TEXT = "pvt",
+		PIP_VIEW_NAME = "pvn";
 	
 	public enum PipViewName {
-		num,eng,jpn
+		num, eng, jpn
 	}
+	
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
@@ -40,16 +50,16 @@ public class PipActivity extends Activity {
 				(PipViewName) bundle.getSerializable(PIP_VIEW_NAME);
 			final TextView textViewToHandle;
 			switch (pipViewName) {
-				case num:{
-					textViewToHandle=binding.textViewNo;
+				case num: {
+					textViewToHandle = binding.textViewNo;
 					break;
 				}
-				case eng:{
-					textViewToHandle=binding.textViewPipEng;
+				case eng: {
+					textViewToHandle = binding.textViewPipEng;
 					break;
 				}
-				case jpn:{
-					textViewToHandle=binding.textViewPipJpn;
+				case jpn: {
+					textViewToHandle = binding.textViewPipJpn;
 					break;
 				}
 				default: {
@@ -70,8 +80,8 @@ public class PipActivity extends Activity {
 				return;
 			}
 			super.onCreate(savedInstanceState);
-			binding= DataBindingUtil.setContentView(this,R.layout.activity_pip);
-			this.registerReceiver(new DrawReceiver(drawHandler),new IntentFilter(PIP_ACTION_UI));
+			binding = DataBindingUtil.setContentView(this, R.layout.activity_pip);
+			this.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PIP_ACTION_UI));
 			
 			//pip
 			PictureInPictureParams.Builder pictureInPictureParams = new PictureInPictureParams.Builder();
@@ -82,13 +92,14 @@ public class PipActivity extends Activity {
 			else {
 				pictureInPictureParams.setAspectRatio(new Rational(16, 9));
 			}
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-				pictureInPictureParams.setTitle("ボコ単稼働中");
-				pictureInPictureParams.setSubtitle("PIPで表示しています");
-			}
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 				pictureInPictureParams.setSeamlessResizeEnabled(true);
 			}
+			final ArrayList<RemoteAction> actions = new ArrayList<>();
+			actions.add(
+				new RemoteAction(Icon.createWithResource(PipActivity.this, android.R.drawable.ic_media_pause), "ends", "content:", PendingIntent.getBroadcast(this, 0, new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP), PendingIntent.FLAG_IMMUTABLE))
+			);
+			pictureInPictureParams.setActions(actions);
 			enterPictureInPictureMode(pictureInPictureParams.build());
 			
 		} catch (Exception e) {
