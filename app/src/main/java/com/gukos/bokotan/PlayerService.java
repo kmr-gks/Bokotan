@@ -1,6 +1,7 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
@@ -12,6 +13,7 @@ import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_PROPERTIES;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.Text;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
+import static com.gukos.bokotan.WordPhraseData.DataBook.all;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
@@ -77,6 +79,7 @@ public class PlayerService extends Service {
 	static ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
 	ArrayList<WordPhraseData.WordInfo> phraseDataList = new ArrayList<>();
 	private final HashSet<String> appearedWords = new HashSet<>();
+	private boolean skipAppeared = false;
 	WordPhraseData.DataBook dataBook = passTan;
 	DataQ dataQ;
 	public static float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 2f;
@@ -97,22 +100,29 @@ public class PlayerService extends Service {
 		dataBook = (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
 		dataQ = (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
 		now = intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW, -1);
-		if (intent.getBooleanExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, false)) {
+		skipAppeared = intent.getBooleanExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, false);
+		if (skipAppeared) {
 			//既出の単語を飛ばす
-			if (dataBook == passTan || dataBook == tanjukugo) {
-				getList(YumeWord + y00.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
-				getList(YumeWord + y1.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
-				getList(YumeWord + y2.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
-				getList(YumeWord + y3.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+			appearedWords.clear();
+			if (dataBook != all) {
+				if (dataBook == passTan || dataBook == tanjukugo) {
+					getList(YumeWord + y00.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+					getList(YumeWord + y1.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+					getList(YumeWord + y2.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+					getList(YumeWord + y3.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+				}
+				if ((dataBook == passTan && dataQ == q1) || dataBook == tanjukugo) {
+					getList(PasstanWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
+				}
+				if (dataBook == tanjukugo) {
+					getList(PasstanWord + q1).stream().map(info -> info.e).forEach(appearedWords::add);
+				}
+				if (dataBook == tanjukugo && dataQ == q1) {
+					getList(TanjukugoWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
+				}
 			}
-			if ((dataBook == passTan && dataQ == q1) || dataBook == tanjukugo) {
-				getList(PasstanWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
-			}
-			if (dataBook == tanjukugo) {
-				getList(PasstanWord + q1).stream().map(info -> info.e).forEach(appearedWords::add);
-			}
-			if (dataBook == tanjukugo && dataQ == q1) {
-				getList(TanjukugoWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
+			else {
+				now = 1;
 			}
 		}
 		
@@ -286,6 +296,12 @@ public class PlayerService extends Service {
 			else {
 				isJoshiChecked = false;
 			}
+			
+			//全範囲を再生していて、既出スキップをしている場合
+			if (skipAppeared && dataBook == all) {
+				appearedWords.add(list.get(now).e);
+			}
+			printCurrentState("appearedWords.size()=" + appearedWords.size());
 			
 			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).localNumber);
 			sendBroadcastTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
