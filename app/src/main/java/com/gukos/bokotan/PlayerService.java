@@ -7,11 +7,17 @@ import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.fnAppSettings;
 import static com.gukos.bokotan.MyLibrary.sleep;
+import static com.gukos.bokotan.PipActivity.PIP_ACTION_UI;
+import static com.gukos.bokotan.PipActivity.PIP_VIEW_NAME;
+import static com.gukos.bokotan.PipActivity.PIP_VIEW_SINGLE_LINE;
+import static com.gukos.bokotan.PipActivity.PIP_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_ACTION_UI_CHANGE;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_NAME;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_PROPERTIES;
+import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_SINGLE_LINE;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.Text;
+import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.line;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
 import static com.gukos.bokotan.WordPhraseData.DataBook.all;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
@@ -176,13 +182,13 @@ public class PlayerService extends Service {
 						releaseMediaPlayer(mediaPlayer);
 						appearedWords.clear();
 						//表示している文字列を削除
-						sendBroadcastTextChange(PlayerViewName.path, "");
-						sendBroadcastTextChange(PlayerViewName.eng, "");
-						sendBroadcastTextChange(PlayerViewName.jpn, "");
-						sendBroadcastTextChange(PlayerViewName.hatsuon, "");
-						sendBroadcastTextChange(PlayerViewName.subE, "");
-						sendBroadcastTextChange(PlayerViewName.subJ, "");
-						sendBroadcastTextChange(PlayerViewName.genzai, "");
+						sendBcTextChange(PlayerViewName.path, "");
+						sendBcTextChange(PlayerViewName.eng, "");
+						sendBcTextChange(PlayerViewName.jpn, "");
+						sendBcTextChange(PlayerViewName.hatsuon, "");
+						sendBcTextChange(PlayerViewName.subE, "");
+						sendBcTextChange(PlayerViewName.subJ, "");
+						sendBcTextChange(PlayerViewName.genzai, "");
 						runOnUiThread(() -> TabActivity.setTabPageNum(0));
 						MyLibrary.PreferenceManager.putIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, now);
 						context.unregisterReceiver(drawReceiver);
@@ -203,8 +209,8 @@ public class PlayerService extends Service {
 				}
 				sleep(100);
 			}
-			sendBroadcastTextChange(PlayerViewName.eng, "読み込み中");
-			sendBroadcastTextChange(PlayerViewName.jpn, "読み込み中");
+			sendBcTextChange(PlayerViewName.eng, "読み込み中");
+			sendBcTextChange(PlayerViewName.jpn, "読み込み中");
 			isPlaying = true;
 			
 			drawReceiver = new DrawReceiver(handler);
@@ -303,31 +309,42 @@ public class PlayerService extends Service {
 			}
 			printCurrentState("appearedWords.size()=" + appearedWords.size());
 			
-			sendBroadcastTextChange(PlayerViewName.genzai, "No." + list.get(now).localNumber);
-			sendBroadcastTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
-			sendBroadcastTextChange(PlayerViewName.eng, list.get(now).e);
-			sendBroadcastTextChange(PlayerViewName.jpn, list.get(now).j);
+			sendBcTextChange(PlayerViewName.genzai, "No." + list.get(now).localNumber);
+			sendBcTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
+			sendBcTextChange(PlayerViewName.eng, list.get(now).e);
+			sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
+			
 			if (nowMode == WordPhraseData.Mode.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
-				sendBroadcastTextChange(PlayerViewName.hatsuon, WordPhraseData.HatsuonKigou.getHatsuon(list.get(now).e));
+				sendBcTextChange(PlayerViewName.hatsuon, WordPhraseData.HatsuonKigou.getHatsuon(list.get(now).e));
 			}
 			else {
-				sendBroadcastTextChange(PlayerViewName.hatsuon, null);
+				sendBcTextChange(PlayerViewName.hatsuon, null);
 			}
-			sendBroadcastPipTextChange(PipActivity.PipViewName.num, "No." + now);
-			sendBroadcastPipTextChange(PipActivity.PipViewName.eng, list.get(now).e);
-			sendBroadcastPipTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
+			sendBcTextChange(PipActivity.PipViewName.num, "No." + now);
+			sendBcTextChange(PipActivity.PipViewName.eng, list.get(now).e);
+			sendBcTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
 			//文を再生しているときは、単語も表示しておく。
 			if (selectMode == WordPhraseData.Mode.wordPlusPhrase && nowMode == WordPhraseData.Mode.phrase) {
-				sendBroadcastTextChange(PlayerViewName.subE, wordDataList.get(now).e);
-				sendBroadcastTextChange(PlayerViewName.subJ, wordDataList.get(now).j);
+				sendBcTextChange(PlayerViewName.subE, wordDataList.get(now).e);
+				sendBcTextChange(PlayerViewName.subJ, wordDataList.get(now).j);
 			}
 			else {
-				sendBroadcastTextChange(PlayerViewName.subE, "");
-				sendBroadcastTextChange(PlayerViewName.subJ, "");
+				sendBcTextChange(PlayerViewName.subE, "");
+				sendBcTextChange(PlayerViewName.subJ, "");
+			}
+			
+			//英単語を表示するときは、英語の表示を一行にする
+			if (nowMode == WordPhraseData.Mode.word) {
+				sendBcLinesChange(PlayerViewName.eng, true);
+				sendBcLinesChange(PipActivity.PipViewName.eng, true);
+			}
+			else {
+				sendBcLinesChange(PlayerViewName.eng, false);
+				sendBcLinesChange(PipActivity.PipViewName.eng, false);
 			}
 			
 			path = getPathPs(wordDataList.get(now).dataBook, wordDataList.get(now).dataQ, nowMode, nowLang, wordDataList.get(now).localNumber);
-			sendBroadcastTextChange(PlayerViewName.path, path);
+			sendBcTextChange(PlayerViewName.path, path);
 			try {
 				mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
 				mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
@@ -384,7 +401,13 @@ public class PlayerService extends Service {
 		} while (appearedWords.contains(wordDataList.get(now).e) && now < wordDataList.size() - 1);
 	}
 	
-	private void sendBroadcastTextChange(PlayerViewName viewName, String text) {
+	/**
+	 * fragment_playerのビューの文字を変更
+	 *
+	 * @param viewName
+	 * @param text
+	 */
+	private void sendBcTextChange(PlayerViewName viewName, String text) {
 		Intent broadcastIntent =
 			new Intent(PLAYER_ACTION_UI_CHANGE)
 				.putExtra(PLAYER_VIEW_PROPERTIES, Text)
@@ -393,11 +416,46 @@ public class PlayerService extends Service {
 		context.sendBroadcast(broadcastIntent);
 	}
 	
-	private void sendBroadcastPipTextChange(PipActivity.PipViewName viewName, String text) {
+	/**
+	 * activity_pipのビューの文字を変更
+	 *
+	 * @param viewName
+	 * @param text
+	 */
+	private void sendBcTextChange(PipActivity.PipViewName viewName, String text) {
 		Intent broadcastIntent =
-			new Intent(PipActivity.PIP_ACTION_UI)
-				.putExtra(PipActivity.PIP_VIEW_TEXT, text)
-				.putExtra(PipActivity.PIP_VIEW_NAME, viewName);
+			new Intent(PIP_ACTION_UI)
+				.putExtra(PIP_VIEW_NAME, viewName)
+				.putExtra(PIP_VIEW_TEXT, text);
+		context.sendBroadcast(broadcastIntent);
+	}
+	
+	/**
+	 * fragment_playerのビューの文字表示を一行にするか複数行にするか設定
+	 *
+	 * @param viewName
+	 * @param isSingleLine
+	 */
+	private void sendBcLinesChange(PlayerViewName viewName, boolean isSingleLine) {
+		Intent broadcastIntent =
+			new Intent(PLAYER_ACTION_UI_CHANGE)
+				.putExtra(PLAYER_VIEW_PROPERTIES, line)
+				.putExtra(PLAYER_VIEW_NAME, viewName)
+				.putExtra(PLAYER_VIEW_SINGLE_LINE, isSingleLine);
+		context.sendBroadcast(broadcastIntent);
+	}
+	
+	/**
+	 * activity_pipのビューの文字表示を一行にするか複数行にするか設定
+	 *
+	 * @param viewName
+	 * @param isSingleLine
+	 */
+	private void sendBcLinesChange(PipActivity.PipViewName viewName, boolean isSingleLine) {
+		Intent broadcastIntent =
+			new Intent(PIP_ACTION_UI)
+				.putExtra(PIP_VIEW_NAME, viewName)
+				.putExtra(PIP_VIEW_SINGLE_LINE, isSingleLine);
 		context.sendBroadcast(broadcastIntent);
 	}
 	

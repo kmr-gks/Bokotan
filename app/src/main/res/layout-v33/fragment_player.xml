@@ -228,6 +228,9 @@
 				android:textAlignment="center"
 				android:textColor="@color/textcolor" />
 
+			<!--
+			Android13ではlineBreakWordStyleが使える
+			-->
 			<TextView
 				android:id="@+id/textViewJpn"
 				android:layout_width="match_parent"
@@ -236,6 +239,7 @@
 				android:autoSizeMaxTextSize="60sp"
 				android:autoSizeTextType="uniform"
 				android:text="再生停止"
+				android:lineBreakWordStyle="phrase"
 				android:textAlignment="center"
 				android:textColor="@color/textcolor"
 				android:textStyle="bold" />

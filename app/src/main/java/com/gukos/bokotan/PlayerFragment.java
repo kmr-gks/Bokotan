@@ -18,8 +18,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.text.LineBreakConfig;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -39,13 +37,15 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public static Boolean isInitialized = false;
 	public static final String
 		PLAYER_ACTION_UI_CHANGE = "player_action_ui_change",
+		PLAYER_VIEW_PROPERTIES = "player_view_properties",
+	
+	PLAYER_VIEW_NAME = "player_view_name",
 		PLAYER_VIEW_TEXT = "player_view_text",
 		PLAYER_VIEW_COLOR = "player_view_color",
-		PLAYER_VIEW_PROPERTIES = "player_view_properties",
-		PLAYER_VIEW_NAME = "player_view_name";
+		PLAYER_VIEW_SINGLE_LINE = "pvsl";
 	
 	public enum PlayerViewProperties {
-		Text, TextColor
+		Text, TextColor, line
 	}
 	
 	public enum PlayerViewName {
@@ -107,6 +107,17 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				}
 				case TextColor: {
 					textViewToHandle.setTextColor(bundle.getInt(PLAYER_VIEW_COLOR));
+					break;
+				}
+				case line: {
+					//setSingleLineを使用すると後半が表示されない場合があるため使わない
+					if (bundle.getBoolean(PLAYER_VIEW_SINGLE_LINE)) {
+						textViewToHandle.setLines(1);
+					}
+					else {
+						textViewToHandle.setMaxLines(5);
+					}
+					break;
 				}
 			}
 		}
@@ -124,12 +135,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			try {
 				//UI設定
 				context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE));
-				
-				//Android13以降 日本語の折り返しに対応
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-					binding.textViewJpn.setLineBreakStyle(LineBreakConfig.LINE_BREAK_STYLE_NORMAL);
-					binding.textViewJpn.setLineBreakWordStyle(LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE);
-				}
 				
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
 				binding.buttonNowChange.setOnClickListener(this::onChangeNumber);
@@ -319,7 +324,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				//PIPを終了したい
 			}
 			else {
-				startActivity(new Intent(context, PipActivity.class));
+				startActivity(new Intent(context, PipActivity.class).putExtra(PipActivity.PIP_TV_FIRST_ENG, binding.textViewEng.getText()).putExtra(PipActivity.PIP_TV_FIRST_JPN, binding.textViewJpn.getText()));
 			}
 			PipActivity.startPIP = !PipActivity.startPIP;
 		} catch (Exception e) {

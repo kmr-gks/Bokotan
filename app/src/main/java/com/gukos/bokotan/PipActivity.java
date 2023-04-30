@@ -33,9 +33,22 @@ public class PipActivity extends Activity {
 	public static int pipTate = 9;
 	private static ActivityPipBinding binding;
 	
+	/**
+	 * //最初に渡す値(putExtraやgetStringExtraで使用)
+	 * PIP_TV_FIRST_ENG //pip画面に最初に表示する英語
+	 * PIP_TV_FIRST_JPN //pip画面に最初に表示する日本語
+	 * //PIPのUIを別スレッドから変更するハンドラーで使用:
+	 * PIP_ACTION_UI
+	 * PIP_VIEW_TEXT
+	 * PIP_VIEW_SINGLE_LINE
+	 * PIP_VIEW_NAME
+	 */
 	public static final String
+		PIP_TV_FIRST_ENG = "ptve",
+		PIP_TV_FIRST_JPN = "ptvfj",
 		PIP_ACTION_UI = "pau",
 		PIP_VIEW_TEXT = "pvt",
+		PIP_VIEW_SINGLE_LINE = "pvsl",
 		PIP_VIEW_NAME = "pvn";
 	
 	public enum PipViewName {
@@ -67,8 +80,18 @@ public class PipActivity extends Activity {
 				}
 			}
 			
-			textViewToHandle.setText(bundle.getString(PIP_VIEW_TEXT));
-			
+			if (bundle.containsKey(PIP_VIEW_TEXT)) {
+				textViewToHandle.setText(bundle.getString(PIP_VIEW_TEXT));
+			}
+			if (bundle.containsKey(PIP_VIEW_SINGLE_LINE)) {
+				//setSingleLineを使用すると後半が表示されない場合があるため使わない
+				if (bundle.getBoolean(PIP_VIEW_SINGLE_LINE)) {
+					textViewToHandle.setLines(1);
+				}
+				else {
+					textViewToHandle.setMaxLines(5);
+				}
+			}
 		}
 	};
 	
@@ -82,6 +105,10 @@ public class PipActivity extends Activity {
 			super.onCreate(savedInstanceState);
 			binding = DataBindingUtil.setContentView(this, R.layout.activity_pip);
 			this.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PIP_ACTION_UI));
+			
+			//最初に表示する文字列を取得
+			binding.textViewPipEng.setText(getIntent().getStringExtra(PIP_TV_FIRST_ENG));
+			binding.textViewPipJpn.setText(getIntent().getStringExtra(PIP_TV_FIRST_JPN));
 			
 			//pip
 			PictureInPictureParams.Builder pictureInPictureParams = new PictureInPictureParams.Builder();
