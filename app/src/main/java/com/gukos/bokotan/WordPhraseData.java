@@ -3,7 +3,7 @@ package com.gukos.bokotan;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.現在何問目;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.N_GENZAI_NAN_MONME;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getStringData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.intArrayToString;
@@ -361,7 +361,7 @@ public class WordPhraseData extends ViewModel {
 				array = stringToIntArray(getStringData(context, fileName, keyHuseikai, ""));
 				if (array == null) array = new int[3000];
 				huseikai.put(fileName, array);
-				monme.put(fileName, getIntData(context, fileName, 現在何問目, 1));
+				monme.put(fileName, getIntData(context, fileName, N_GENZAI_NAN_MONME, 1));
 			}
 			isEmpty = false;
 		}
@@ -375,7 +375,7 @@ public class WordPhraseData extends ViewModel {
 			var fileName = dnTestActivity + q + "Test";
 			putStringData(context, fileName, keySeikai, intArrayToString(seikai.get(fileName)));
 			putStringData(context, fileName, keyHuseikai, intArrayToString(huseikai.get(fileName)));
-			putIntData(context, fileName, 現在何問目, monme.get(fileName));
+			putIntData(context, fileName, N_GENZAI_NAN_MONME, monme.get(fileName));
 		}
 	}
 	

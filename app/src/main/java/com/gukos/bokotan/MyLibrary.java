@@ -278,14 +278,19 @@ public final class MyLibrary {
 			public static final String
 				dnTestActivity = "testActivity",
 				dnQSentakuActivity = "qSentakuActivity",
-				現在何問目 = "nGenzaiNanMonme",
-				単語正解数 = "nWordSeikaisuu",
-				単語不正解数 = "nWordHuseikaisuu";
+				N_GENZAI_NAN_MONME = "nGenzaiNanMonme";
 		}
 	}
 	
 	public static final class FileDirectoryManager {
 		public static String strDirectoryNameForKuuhaku = "";
+		
+		/**
+		 * 再生する音声ファイルの拡張子 <br>
+		 * btvはbokotan voiceの略 <br>
+		 * .mp3にすると音楽アプリが大量の単語の音声データ楽曲と認識してしまうため。
+		 */
+		private static final String fileExtension =".btv";
 		
 		public static FileWriter openWriteFileWithExistCheck(Context context, String stringFileName, boolean append) {
 			try {
@@ -340,7 +345,7 @@ public final class MyLibrary {
 							type = "日";
 						else return null;
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
-						path += strDataQ + String.format("/%04d", tangoNum) + type + ".mp3";
+						path += strDataQ + String.format("/%04d", tangoNum) + type + fileExtension;
 						break;
 					}
 					case yumetan: {
@@ -354,7 +359,7 @@ public final class MyLibrary {
 							type = "P日";
 						else return null;
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
-						path += strDataQ + "/" + type + String.format("%04d", tangoNum) + ".mp3";
+						path += strDataQ + "/" + type + String.format("%04d", tangoNum) + fileExtension;
 						break;
 					}
 					case tanjukugo: {
@@ -367,7 +372,7 @@ public final class MyLibrary {
 						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.japanese)
 							type = "例文日本語";
 						else return null;
-						path += strDataQ + "/" + getFileNameForTanjukugoEX(type, strDataQ, tangoNum) + ".mp3";
+						path += strDataQ + "/" + getFileNameForTanjukugoEX(type, strDataQ, tangoNum) + fileExtension;
 						break;
 					}
 					default:
@@ -403,7 +408,7 @@ public final class MyLibrary {
 					default:
 						return null;
 				}
-				path += ".mp3";
+				path += fileExtension;
 				return path;
 			} catch (Exception e) {
 				ExceptionManager.showException(e);
@@ -475,13 +480,17 @@ public final class MyLibrary {
 		public static void makeToastForShort(Context context, String strMessage) {
 			try {
 				Toast.makeText(context, strMessage.substring(0, min(strMessage.length(), nMaxLengthOfToastString)), Toast.LENGTH_SHORT).show();
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				DebugManager.printCurrentState(e.getMessage());
+			}
 		}
 		
 		public static void makeToastForLong(Context context, String strMessage) {
 			try {
 				Toast.makeText(context, strMessage.substring(0, min(strMessage.length(), nMaxLengthOfToastString)), Toast.LENGTH_LONG).show();
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				DebugManager.printCurrentState(e.getMessage());
+			}
 		}
 		
 		public static CharSequence setStringColored(String source, String key) {
