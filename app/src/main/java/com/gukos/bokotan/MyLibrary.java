@@ -55,7 +55,7 @@ public final class MyLibrary {
 			e.printStackTrace(new PrintWriter(stringWriter));
 			
 			String strMessage =
-				"例外:" + stringAdditional + "\nメッセージ:" + e.getMessage() + "\n型名(" + e.getClass().getTypeName() + ")\nメソッド名" + DebugManager.getClassName(5) + DebugManager.getMethodName(5) + "\n発生箇所\n" + stringWriter;
+				"例外 " + stringAdditional + "\nメッセージ:" + e.getMessage() + "\n型名 " + e.getClass().getTypeName() + "\nクラス " + DebugManager.getClassName(5) + "\nメソッド " + DebugManager.getMethodName(5) + "\n発生箇所\n" + stringWriter;
 			Log.e(debug_tag, strMessage);
 			if (context != null) DisplayOutput.makeToastForLong(context, strMessage);
 			

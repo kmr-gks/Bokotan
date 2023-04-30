@@ -16,7 +16,7 @@ public class StartPipBroadcastReceiver extends BroadcastReceiver {
 				//PIPを終了したい
 			}
 			else {
-				context.startActivity(new Intent(context, PipActivity.class));
+				context.startActivity(new Intent(context, PipActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 			}
 			PipActivity.startPIP = !PipActivity.startPIP;
 		} catch (Exception e) {

@@ -63,6 +63,7 @@ import androidx.annotation.NonNull;
 import com.gukos.bokotan.PlayerFragment.PlayerViewName;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class PlayerService extends Service {
@@ -85,7 +86,7 @@ public class PlayerService extends Service {
 	static ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
 	ArrayList<WordPhraseData.WordInfo> phraseDataList = new ArrayList<>();
 	private final HashSet<String> appearedWords = new HashSet<>();
-	private boolean skipAppeared = false;
+	private final HashMap<String, Integer> knownWordMap = new HashMap<>();
 	WordPhraseData.DataBook dataBook = passTan;
 	DataQ dataQ;
 	public static float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 2f;
@@ -106,8 +107,7 @@ public class PlayerService extends Service {
 		dataBook = (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
 		dataQ = (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
 		now = intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW, -1);
-		skipAppeared = intent.getBooleanExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, false);
-		if (skipAppeared) {
+		if (intent.getBooleanExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, false)) {
 			//既出の単語を飛ばす
 			appearedWords.clear();
 			if (dataBook != all) {
@@ -128,7 +128,7 @@ public class PlayerService extends Service {
 				}
 			}
 			else {
-				now = 1;
+				//knownWordMap.clear();
 			}
 		}
 		
@@ -142,7 +142,8 @@ public class PlayerService extends Service {
 		
 		if (notificationManager != null) {
 			notificationManager.createNotificationChannel(channel);
-			Intent sendStopIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
+			Intent sendStopIntent =
+				new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
 			/*
 			Intent sendStopIntent =new Intent(this, StopPlayBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			*/
@@ -221,6 +222,7 @@ public class PlayerService extends Service {
 			}
 			
 			String key = null;
+			wordDataList.clear();
 			switch (dataBook) {
 				default:
 				case passTan: {
@@ -261,6 +263,14 @@ public class PlayerService extends Service {
 						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + qp1));
 						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + q1));
 					}
+					
+					//単語データをmapに格納
+					for (int i = 0; i < wordDataList.size(); i++) {
+						if (!knownWordMap.containsKey(wordDataList.get(i).e)) {
+							knownWordMap.put(wordDataList.get(i).e, i);
+						}
+					}
+					//IntStream.range(0, wordDataList.size()).filter(i -> !knownWordMap.containsKey(wordDataList.get(i).e)).forEach(i -> knownWordMap.put(wordDataList.get(i).e, i));
 					break;
 				}
 			}
@@ -303,14 +313,8 @@ public class PlayerService extends Service {
 				isJoshiChecked = false;
 			}
 			
-			//全範囲を再生していて、既出スキップをしている場合
-			if (skipAppeared && dataBook == all) {
-				appearedWords.add(list.get(now).e);
-			}
-			printCurrentState("appearedWords.size()=" + appearedWords.size());
-			
-			sendBcTextChange(PlayerViewName.genzai, "No." + list.get(now).localNumber);
 			sendBcTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
+			sendBcTextChange(PlayerViewName.genzai, "No." + now);
 			sendBcTextChange(PlayerViewName.eng, list.get(now).e);
 			sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
 			
@@ -320,6 +324,8 @@ public class PlayerService extends Service {
 			else {
 				sendBcTextChange(PlayerViewName.hatsuon, null);
 			}
+			
+			printCurrentState("now=" + now + ",map=" + knownWordMap.get(wordDataList.get(now).e));
 			sendBcTextChange(PipActivity.PipViewName.num, "No." + now);
 			sendBcTextChange(PipActivity.PipViewName.eng, list.get(now).e);
 			sendBcTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
@@ -396,9 +402,17 @@ public class PlayerService extends Service {
 		count++;
 		if (now >= wordDataList.size() - 1) now = 0;
 		//既出の単語を飛ばす
-		do {
-			now++;
-		} while (appearedWords.contains(wordDataList.get(now).e) && now < wordDataList.size() - 1);
+		if (dataBook == all) {
+			do {
+				now++;
+			} while (now != knownWordMap.get(wordDataList.get(now).e) && now < wordDataList.size() - 1);
+		}
+		else {
+			do {
+				now++;
+			} while (appearedWords.contains(wordDataList.get(now).e) && now < wordDataList.size() - 1);
+		}
+		printCurrentState("now=" + now + ",map=" + knownWordMap.get(wordDataList.get(now).e));
 	}
 	
 	/**
