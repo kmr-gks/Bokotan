@@ -10,7 +10,8 @@
 	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		tools:context=".TabActivity">
+		tools:context=".TabActivity"
+		android:keepScreenOn="true">
 
 		<androidx.constraintlayout.widget.ConstraintLayout
 			android:layout_width="match_parent"
@@ -21,6 +22,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="@color/background"
+				android:contentDescription="@string/app_name"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +38,7 @@
 				app:layout_constraintBottom_toTopOf="@+id/tabsMain"
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
-				app:layout_constraintTop_toTopOf="parent"></androidx.viewpager2.widget.ViewPager2>
+				app:layout_constraintTop_toTopOf="parent" />
 		</androidx.constraintlayout.widget.ConstraintLayout>
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>

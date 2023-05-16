@@ -155,38 +155,6 @@
 					android:textColor="@color/textcolor" />
 
 				<TextView
-					android:id="@+id/textViewEngAndJpn"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="問題出題方法" />
-
-				<RadioGroup
-					android:id="@+id/radioGroupEngAndJpn"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:background="@drawable/border"
-					android:orientation="horizontal">
-
-					<RadioButton
-						android:id="@+id/radioButtonEtoJ"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_weight="1"
-						android:checked="true"
-						android:text="@string/etoj"
-						android:textColor="@color/textcolor" />
-
-					<RadioButton
-						android:id="@+id/radioButtonJtoE"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_weight="1"
-						android:text="@string/jtoe"
-						android:textColor="@color/textcolor" />
-
-				</RadioGroup>
-
-				<TextView
 					android:id="@+id/textViewSpaceOptions"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
