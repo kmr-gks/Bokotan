@@ -313,44 +313,44 @@ public class PlayerService extends Service {
 				isJoshiChecked = false;
 			}
 			
-			sendBcTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
-			sendBcTextChange(PlayerViewName.genzai, "No." + now);
-			sendBcTextChange(PlayerViewName.eng, list.get(now).e);
-			sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
-			
-			if (nowMode == WordPhraseData.Mode.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
-				sendBcTextChange(PlayerViewName.hatsuon, WordPhraseData.HatsuonKigou.getHatsuon(list.get(now).e));
-			}
-			else {
-				sendBcTextChange(PlayerViewName.hatsuon, null);
-			}
-			
-			printCurrentState("now=" + now + ",map=" + knownWordMap.get(wordDataList.get(now).e));
-			sendBcTextChange(PipActivity.PipViewName.num, "No." + now);
-			sendBcTextChange(PipActivity.PipViewName.eng, list.get(now).e);
-			sendBcTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
-			//文を再生しているときは、単語も表示しておく。
-			if (selectMode == WordPhraseData.Mode.wordPlusPhrase && nowMode == WordPhraseData.Mode.phrase) {
-				sendBcTextChange(PlayerViewName.subE, wordDataList.get(now).e);
-				sendBcTextChange(PlayerViewName.subJ, wordDataList.get(now).j);
-			}
-			else {
-				sendBcTextChange(PlayerViewName.subE, "");
-				sendBcTextChange(PlayerViewName.subJ, "");
-			}
-			
-			//英単語を表示するときは、英語の表示を一行にする
-			if (nowMode == WordPhraseData.Mode.word) {
-				sendBcLinesChange(PlayerViewName.eng, true);
-				sendBcLinesChange(PipActivity.PipViewName.eng, true);
-			}
-			else {
-				sendBcLinesChange(PlayerViewName.eng, false);
-				sendBcLinesChange(PipActivity.PipViewName.eng, false);
+			if (nowLang == english) {
+				sendBcTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
+				sendBcTextChange(PlayerViewName.genzai, "No." + now);
+				sendBcTextChange(PlayerViewName.eng, list.get(now).e);
+				sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
+				
+				if (nowMode == WordPhraseData.Mode.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
+					sendBcTextChange(PlayerViewName.hatsuon, WordPhraseData.HatsuonKigou.getHatsuon(list.get(now).e));
+				}
+				else {
+					sendBcTextChange(PlayerViewName.hatsuon, null);
+				}
+				
+				printCurrentState("now=" + now + ",map=" + knownWordMap.get(wordDataList.get(now).e));
+				sendBcTextChange(PipActivity.PipViewName.num, "No." + now);
+				sendBcTextChange(PipActivity.PipViewName.eng, list.get(now).e);
+				sendBcTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
+				//文を再生しているときは、単語も表示しておく。
+				if (selectMode == WordPhraseData.Mode.wordPlusPhrase && nowMode == WordPhraseData.Mode.phrase) {
+					sendBcTextChange(PlayerViewName.subE, wordDataList.get(now).e);
+					sendBcTextChange(PlayerViewName.subJ, wordDataList.get(now).j);
+				}
+				else {
+					sendBcTextChange(PlayerViewName.subE, "");
+					sendBcTextChange(PlayerViewName.subJ, "");
+				}
+				//英単語を表示するときは、英語の表示を一行にする
+				if (nowMode == WordPhraseData.Mode.word) {
+					sendBcLinesChange(PlayerViewName.eng, true);
+					sendBcLinesChange(PipActivity.PipViewName.eng, true);
+				}
+				else {
+					sendBcLinesChange(PlayerViewName.eng, false);
+					sendBcLinesChange(PipActivity.PipViewName.eng, false);
+				}
 			}
 			
 			path = getPathPs(wordDataList.get(now).dataBook, wordDataList.get(now).dataQ, nowMode, nowLang, wordDataList.get(now).localNumber);
-			sendBcTextChange(PlayerViewName.path, path);
 			try {
 				mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
 				mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));

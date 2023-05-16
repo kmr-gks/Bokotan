@@ -10,6 +10,7 @@ import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.viewpager2.widget.ViewPager2;
@@ -40,6 +41,36 @@ public class TabActivity extends AppCompatActivity {
 		viewPager.setCurrentItem(0);
 		
 		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
+		
+		var backPressedCallback = new OnBackPressedCallback(true) {
+			@Override
+			public void handleOnBackPressed() {
+				switch (getTabPageNum()) {
+					default:
+					case 0: {
+						finish();
+						break;
+					}
+					case 1: {
+						runOnUiThread(() -> setTabPageNum(0));
+						//再生中に戻るボタンを押すと停止
+						getApplicationContext().sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP));
+						break;
+					}
+					case 2: {
+						runOnUiThread(() -> setTabPageNum(0));
+						//クイズをしているなら、ViewModelのデータを保存する。
+						new Thread(() -> WordPhraseData.saveQuizData(getApplicationContext())).start();
+						break;
+					}
+					case 3: {
+						runOnUiThread(() -> setTabPageNum(0));
+						break;
+					}
+				}
+			}
+		};
+		getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 	}
 	
 	//bundleからデータ取り出し
@@ -77,35 +108,6 @@ public class TabActivity extends AppCompatActivity {
 		} catch (Exception exception) {
 			showException(exception);
 			return 0;
-		}
-	}
-	
-	@Override
-	public void onBackPressed() {
-		//戻るボタン
-		printCurrentState("tab=" + getTabPageNum());
-		switch (getTabPageNum()) {
-			default:
-			case 0: {
-				super.onBackPressed();
-				break;
-			}
-			case 1: {
-				runOnUiThread(() -> setTabPageNum(0));
-				//再生中に戻るボタンを押すと停止
-				getApplicationContext().sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP));
-				break;
-			}
-			case 2: {
-				runOnUiThread(() -> setTabPageNum(0));
-				//クイズをしているなら、ViewModelのデータを保存する。
-				new Thread(() -> WordPhraseData.saveQuizData(getApplicationContext())).start();
-				break;
-			}
-			case 3: {
-				runOnUiThread(() -> setTabPageNum(0));
-				break;
-			}
 		}
 	}
 	
