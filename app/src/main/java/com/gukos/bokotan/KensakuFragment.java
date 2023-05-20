@@ -11,24 +11,38 @@ import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
-
-import com.gukos.bokotan.databinding.FragmentKensakuBinding;
+import androidx.fragment.app.Fragment;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuBinding> {
+//UiManager.FragmentBingdingを継承するとメモリが開放されたときに
+//java.lang.RuntimeException: Unable to start activity ComponentInfo{com.gukos.bokotan/com.gukos.bokotan.TabActivity}: androidx.fragment.app.Fragment$InstantiationException: Unable to instantiate fragment com.gukos.bokotan.KensakuFragment: could not find Fragment constructor
+//が発生するので、継承しない
+public class KensakuFragment extends Fragment {
 	
 	enumKensakuHouhou kensakuHouhou = starts;
 	private String key;
+	private Button buttonKensakuHouhou;
+	private SearchView searchView;
+	private ListView listViewKensakuResult;
+	private TextView textViewKensakuResultCount;
+	private Context context;
 	
 	enum enumKensakuHouhou {
 		starts, contains, ends;
@@ -50,8 +64,10 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		}
 	}
 	
-	KensakuFragment() {
-		super(FragmentKensakuBinding::inflate);
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.fragment_kensaku, container, false);
 	}
 	
 	@Override
@@ -60,9 +76,16 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 			super.onViewCreated(view, savedInstanceState);
 			
 			//UI設定
+			
+			buttonKensakuHouhou=view.findViewById(R.id.buttonKensakuHouhou);
+			searchView=view.findViewById(R.id.searchView);
+			listViewKensakuResult=view.findViewById(R.id.listViewKensakuResult);
+			textViewKensakuResultCount=view.findViewById(R.id.textViewKensakuResultCount);
+			context=getContext();
+			
 			kensakuHouhou = starts;
-			binding.buttonKensakuHouhou.setText(kensakuHouhou.toString());
-			binding.buttonKensakuHouhou.setOnClickListener(v -> {
+			buttonKensakuHouhou.setText(kensakuHouhou.toString());
+			buttonKensakuHouhou.setOnClickListener(v -> {
 				switch (kensakuHouhou) {
 					case starts: {
 						kensakuHouhou = contains;
@@ -77,11 +100,11 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 						break;
 					}
 				}
-				binding.buttonKensakuHouhou.setText(kensakuHouhou.toString());
+				buttonKensakuHouhou.setText(kensakuHouhou.toString());
 				//人工的に文字を変更して再検索
-				onSearchViewTextChange(binding.searchView.getQuery().toString());
+				onSearchViewTextChange(searchView.getQuery().toString());
 			});
-			binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+			searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 				@Override
 				public boolean onQueryTextSubmit(String query) {
 					return false;
@@ -98,8 +121,8 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 				onKensakuEnd(integer);
 				return null;
 			};
-			binding.listViewKensakuResult.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1, WordPhraseData.allData, this::onKensakuEnd));
-			binding.listViewKensakuResult.setOnItemClickListener(this::onItemClick);
+			listViewKensakuResult.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1, WordPhraseData.allData, this::onKensakuEnd));
+			listViewKensakuResult.setOnItemClickListener(this::onItemClick);
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
@@ -110,7 +133,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 		//ListView#setFilterTextは内部的にListView#getAdapter#getFilter
 		// を呼び出している。また、ポップアップが表示されてしまう。
 		
-		var adapter = (WordSearchAdapter<WordPhraseData.WordInfo>) binding.listViewKensakuResult.getAdapter();
+		var adapter = (WordSearchAdapter<WordPhraseData.WordInfo>) listViewKensakuResult.getAdapter();
 		if (newText.length() > 0) {
 			key = newText.toLowerCase();
 			//検索方法を指定する
@@ -149,7 +172,7 @@ public class KensakuFragment extends UiManager.FragmentBingding<FragmentKensakuB
 	}
 	
 	private void onKensakuEnd(int count) {
-		binding.textViewKensakuResultCount.setText(count + "件");
+		textViewKensakuResultCount.setText(count + "件");
 	}
 	
 	private void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
