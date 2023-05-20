@@ -10,6 +10,7 @@ import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.WordPhraseData.DataBook;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
+import static com.gukos.bokotan.WordPhraseData.DataQ.all;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
@@ -57,6 +58,11 @@ public class QuizCreator {
 	private final Random random = new Random();
 	
 	private ArrayList<WordPhraseData.WordInfo> list = new ArrayList<>();
+	
+	//全範囲から問題を出す時に使用する。全体の通し番号から、本の名前と、その本の中の通し番号を返す。
+	private ArrayList<String> keyForBook=null;
+	private ArrayList<Integer> sizeForBook=null;
+	private ArrayList<String> fileNameForBook=null;
 	
 	//コンストラクタ
 	public static QuizCreator build(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
@@ -146,8 +152,32 @@ public class QuizCreator {
 				}
 				default: {
 					//全範囲から出題
-					for (var key : WordPhraseData.map.keySet()) {
+					keyForBook=new ArrayList<>(Arrays.asList(
+							PasstanWord + WordPhraseData.DataQ.q1,
+							PasstanWord + WordPhraseData.DataQ.qp1,
+							TanjukugoWord+ WordPhraseData.DataQ.q1,
+							TanjukugoWord+ WordPhraseData.DataQ.qp1,
+							YumeWord+ WordPhraseData.DataQ.y1.toString().substring(1),
+							YumeWord+ WordPhraseData.DataQ.y2.toString().substring(1),
+							YumeWord+ WordPhraseData.DataQ.y3.toString().substring(1)
+						));
+					fileNameForBook=new ArrayList<>(Arrays.asList(
+						dnTestActivity+"1q"+"Test",
+						dnTestActivity+"p1q"+"Test",
+						dnTestActivity+"tanjukugo1q"+"Test",
+						dnTestActivity+"tanjukugop1q"+"Test",
+						dnTestActivity+"y1"+"Test",
+						dnTestActivity+"y2"+"Test",
+						dnTestActivity+"y3"+"Test"
+					));
+					sizeForBook= new ArrayList<>();
+					for (var key : keyForBook) {
 						list.addAll(WordPhraseData.getList(key));
+						sizeForBook.add(WordPhraseData.getList(key).size());
+					}
+					
+					for (var k:seikai.keySet()){
+						printCurrentState("seikai key="+k+" size="+seikai.get(k).length);
 					}
 					break;
 				}
@@ -170,10 +200,29 @@ public class QuizCreator {
 		//正解の選択肢を設定
 		ansChoice = random.nextInt(4) + 1;
 		//出題する単語を決定
-		problemNum = random.nextInt(100);
+		problemNum = random.nextInt(list.size());
+		int seikaisu=0,huseikaisu=0;
+		if (dataQ==all){
+			printCurrentState("data:"+list.get(problemNum).toString());
+			//全範囲から出題
+			int sum=0;
+			for (int i=0;i<sizeForBook.size();i++){
+				sum+=sizeForBook.get(i);
+				if (problemNum<sum){
+					//i番目の本から出題
+					list=WordPhraseData.getList(keyForBook.get(i));
+					problemNum-=sum-sizeForBook.get(i);
+					printCurrentState("fileName="+fileNameForBook.get(i));
+					printCurrentState("i="+i+" problemNum="+problemNum+" key="+keyForBook.get(i)+",info="+list.get(problemNum).toString());
+					fileName=fileNameForBook.get(i);
+					break;
+				}
+			}
+		}
+			seikaisu = seikai.get(fileName)[problemNum];
+			huseikaisu = huseikai.get(fileName)[problemNum];
+		
 		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + list.get(problemNum).toString());
-		int seikaisu = seikai.get(fileName)[problemNum];
-		int huseikaisu = huseikai.get(fileName)[problemNum];
 		sendBroadcastTextChange(TestFragment.ViewName.monme, monme.get(fileName) + "問目" + " 正解率" + seikaisu + "/" + (seikaisu + huseikaisu));
 		//問目++
 		monme.put(fileName, monme.get(fileName) + 1);
@@ -181,7 +230,11 @@ public class QuizCreator {
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
 			String path = getPathPs(list.get(problemNum).dataBook, dataQ, WordPhraseData.Mode.word, english, list.get(problemNum).localNumber);
-			soundPool.load(path, 1);
+			try {
+				soundPool.load(path, 1);
+			} catch (Exception exception) {
+				showException(context, exception);
+			}
 			sendBroadcastTextChange(TestFragment.ViewName.Debug, path);
 		}
 		
@@ -193,6 +246,7 @@ public class QuizCreator {
 				else choiceList[i] = random.nextInt(list.size());
 			}
 		} while (Arrays.stream(choiceList).distinct().count() != 4);
+		
 		sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, list.get(problemNum).e);
 		sendBroadcastTextChange(TestFragment.ViewName.Select1, list.get(choiceList[0]).j);
 		sendBroadcastTextChange(TestFragment.ViewName.Select2, list.get(choiceList[1]).j);

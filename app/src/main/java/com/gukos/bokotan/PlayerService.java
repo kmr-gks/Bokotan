@@ -353,6 +353,12 @@ public class PlayerService extends Service {
 			path = getPathPs(wordDataList.get(now).dataBook, wordDataList.get(now).dataQ, nowMode, nowLang, wordDataList.get(now).localNumber);
 			try {
 				mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
+				if (mediaPlayer==null){
+					//ファイルが存在しない
+					//new AlertDialog.Builder(getApplicationContext()).setMessage
+					// ("ファイルが存在しません。\n" + path).setPositiveButton("OK", null).show();
+					return;
+				}
 				mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
 				if (nowLang == english) {
 					//現在英語:日本語にする
@@ -412,7 +418,7 @@ public class PlayerService extends Service {
 				now++;
 			} while (appearedWords.contains(wordDataList.get(now).e) && now < wordDataList.size() - 1);
 		}
-		printCurrentState("now=" + now + ",map=" + knownWordMap.get(wordDataList.get(now).e));
+		printCurrentState("now=" + now+", max="+wordDataList.size() + ",map=" + knownWordMap.get(wordDataList.get(now).e));
 	}
 	
 	/**
