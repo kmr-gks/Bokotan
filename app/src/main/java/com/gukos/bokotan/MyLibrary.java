@@ -537,7 +537,12 @@ public final class MyLibrary {
 		
 		public static String getMethodName(int hierarchyOfStack) {
 			//return new Object(){}.getClass().getEnclosingMethod().getName();
-			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
+			//return Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
+			String name=Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
+			if (name.startsWith("lambda$")) {
+				name="lambda";
+			}
+			return name;
 		}
 		
 		public static String getMethodName() {

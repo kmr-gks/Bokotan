@@ -1,7 +1,6 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
@@ -31,12 +30,12 @@ import static com.gukos.bokotan.WordPhraseData.DataQ.y2;
 import static com.gukos.bokotan.WordPhraseData.DataQ.y3;
 import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
-import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
 import static com.gukos.bokotan.WordPhraseData.getList;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -194,7 +193,7 @@ public class PlayerService extends Service {
 							now = bundle.getInt(PLAYERSERVICE_MESSAGE_NOW);
 						}
 					}
-				}catch (Exception exception){
+				} catch (Exception exception) {
 					showException(context, exception);
 				}
 			}
@@ -219,7 +218,8 @@ public class PlayerService extends Service {
 			}
 			
 			String key = null;
-			wordDataList.clear();
+			wordDataList = new ArrayList<>();
+			phraseDataList = new ArrayList<>();
 			switch (dataBook) {
 				default:
 				case passTan: {
@@ -229,13 +229,11 @@ public class PlayerService extends Service {
 				}
 				case tanjukugo: {
 					wordDataList = WordPhraseData.getList(TanjukugoWord + dataQ);
-					wordDataList.addAll(WordPhraseData.getList(TanjukugoEXWord + dataQ));
 					phraseDataList = WordPhraseData.getList(TanjukugoPhrase + dataQ);
-					phraseDataList.addAll(WordPhraseData.getList(TanjukugoEXWord + dataQ));
 					break;
 				}
 				case yumetan: {
-					wordDataList = WordPhraseData.getList(YumeWord + dataQ.toString().substring(1));
+					phraseDataList = wordDataList = WordPhraseData.getList(YumeWord + dataQ.toString().substring(1));
 					break;
 				}
 				case all: {
@@ -246,8 +244,9 @@ public class PlayerService extends Service {
 					wordDataList.addAll(WordPhraseData.getList(PasstanWord + qp1).subList(1, 1850 + 1));
 					wordDataList.addAll(WordPhraseData.getList(PasstanWord + q1).subList(1, 2400 + 1));
 					
-					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + qp1));
-					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + q1));
+					//todo 単熟語ex準1級のデータはunit8までしかない。
+					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + qp1).subList(1, 1680 + 1));
+					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + q1).subList(1, 2364 + 1));
 					
 					if (selectMode == WordPhraseData.Mode.phrase || selectMode == WordPhraseData.Mode.wordPlusPhrase) {
 						phraseDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y1.toString().substring(1)));
@@ -257,8 +256,8 @@ public class PlayerService extends Service {
 						phraseDataList.addAll(WordPhraseData.getList(PasstanPhrase + qp1).subList(1, 1850 + 1));
 						phraseDataList.addAll(WordPhraseData.getList(PasstanPhrase + q1).subList(1, 2400 + 1));
 						
-						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + qp1));
-						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + q1));
+						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + qp1).subList(1, 1680 + 1));
+						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + q1).subList(1, 2364 + 1));
 					}
 					
 					//単語データをmapに格納
@@ -267,11 +266,9 @@ public class PlayerService extends Service {
 							knownWordMap.put(wordDataList.get(i).e, i);
 						}
 					}
-					//IntStream.range(0, wordDataList.size()).filter(i -> !knownWordMap.containsKey(wordDataList.get(i).e)).forEach(i -> knownWordMap.put(wordDataList.get(i).e, i));
 					break;
 				}
 			}
-			puts("key=" + key);
 			if (dataBook == yumetan) phraseDataList = wordDataList;
 			
 			onPlay();
@@ -286,6 +283,13 @@ public class PlayerService extends Service {
 			ArrayList<WordPhraseData.WordInfo> list;
 			if (nowMode == WordPhraseData.Mode.phrase) list = phraseDataList;
 			else list = wordDataList;
+			
+			if (wordDataList.size()==0){
+				puts("データがありません。");
+				new AlertDialog.Builder(context).setMessage("データがありません。").setPositiveButton("OK", (dialog, which) -> {
+					stopSelf();
+				}).create().show();
+			}
 			
 			//助詞の確認
 			if (dataBook == passTan && nowMode == WordPhraseData.Mode.word && nowLang == japanese && !isJoshiChecked) {
@@ -322,7 +326,6 @@ public class PlayerService extends Service {
 					sendBcTextChange(PlayerViewName.hatsuon, null);
 				}
 				
-				printCurrentState("now=" + now + ",map=" + knownWordMap.get(wordDataList.get(now).e));
 				sendBcTextChange(PipActivity.PipViewName.num, "No." + now);
 				sendBcTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
 				//文を再生しているときは、単語も表示しておく。
@@ -413,7 +416,6 @@ public class PlayerService extends Service {
 				now++;
 			} while (appearedWords.contains(wordDataList.get(now).e) && now < wordDataList.size() - 1);
 		}
-		printCurrentState("now=" + now+", max="+wordDataList.size() + ",map=" + knownWordMap.get(wordDataList.get(now).e));
 	}
 	
 	/**
