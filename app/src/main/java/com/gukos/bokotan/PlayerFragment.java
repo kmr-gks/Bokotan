@@ -49,7 +49,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	}
 	
 	public enum PlayerViewName {
-		genzai, tvcount, hatsuon, subJ, subE, eng, jpn, path, Debug
+		genzai, tvcount, hatsuon, subJ, subE, eng, jpn, path
 	}
 	
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
@@ -57,7 +57,6 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
 			PlayerViewName viewName = (PlayerViewName) bundle.getSerializable(PLAYER_VIEW_NAME);
-			PlayerViewProperties viewProperties = (PlayerViewProperties) bundle.getSerializable(PLAYER_VIEW_PROPERTIES);
 			final TextView textViewToHandle;
 			switch (viewName) {
 				case genzai: {
@@ -92,32 +91,20 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					textViewToHandle = binding.textViewPath;
 					break;
 				}
-				case Debug: {
-					//textViewToHandle=binding.
-					//break;
-				}
 				default: {
 					throw new IllegalStateException("view name is invalid");
 				}
 			}
-			switch (viewProperties) {
-				case Text: {
-					textViewToHandle.setText(bundle.getString(PLAYER_VIEW_TEXT));
-					break;
+			if (bundle.containsKey(PLAYER_VIEW_TEXT)) {
+				textViewToHandle.setText(bundle.getString(PLAYER_VIEW_TEXT));
+			}
+			if (bundle.containsKey(PLAYER_VIEW_SINGLE_LINE)) {
+				//setSingleLineを使用すると後半が表示されない場合があるため使わない
+				if (bundle.getBoolean(PLAYER_VIEW_SINGLE_LINE)) {
+					textViewToHandle.setLines(1);
 				}
-				case TextColor: {
-					textViewToHandle.setTextColor(bundle.getInt(PLAYER_VIEW_COLOR));
-					break;
-				}
-				case line: {
-					//setSingleLineを使用すると後半が表示されない場合があるため使わない
-					if (bundle.getBoolean(PLAYER_VIEW_SINGLE_LINE)) {
-						textViewToHandle.setLines(1);
-					}
-					else {
-						textViewToHandle.setMaxLines(5);
-					}
-					break;
+				else {
+					textViewToHandle.setMaxLines(5);
 				}
 			}
 		}

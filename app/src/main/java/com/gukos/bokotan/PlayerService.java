@@ -13,11 +13,8 @@ import static com.gukos.bokotan.PipActivity.PIP_VIEW_SINGLE_LINE;
 import static com.gukos.bokotan.PipActivity.PIP_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_ACTION_UI_CHANGE;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_NAME;
-import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_PROPERTIES;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_SINGLE_LINE;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_TEXT;
-import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.Text;
-import static com.gukos.bokotan.PlayerFragment.PlayerViewProperties.line;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
 import static com.gukos.bokotan.WordPhraseData.DataBook.all;
 import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
@@ -173,32 +170,32 @@ public class PlayerService extends Service {
 		handler = new Handler(handlerThread.getLooper()) {
 			@Override
 			public void handleMessage(@NonNull Message msg) {
-				Bundle bundle = msg.getData();
-				String messageType = bundle.getString(PLAYERSERVICE_MESSAGE_TYPE);
-				switch (messageType) {
-					case PLAYERSERVICE_MESSAGE_STOP: {
-						//サービス停止
-						puts("サービス停止");
-						isPlaying = false;
-						releaseMediaPlayer(mediaPlayer);
-						appearedWords.clear();
-						//表示している文字列を削除
-						sendBcTextChange(PlayerViewName.path, "");
-						sendBcTextChange(PlayerViewName.eng, "");
-						sendBcTextChange(PlayerViewName.jpn, "");
-						sendBcTextChange(PlayerViewName.hatsuon, "");
-						sendBcTextChange(PlayerViewName.subE, "");
-						sendBcTextChange(PlayerViewName.subJ, "");
-						sendBcTextChange(PlayerViewName.genzai, "");
-						runOnUiThread(() -> TabActivity.setTabPageNum(0));
-						MyLibrary.PreferenceManager.putIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, now);
-						context.unregisterReceiver(drawReceiver);
-						thisService.stopSelf();
-						break;
+				try {
+					Bundle bundle = msg.getData();
+					String messageType = bundle.getString(PLAYERSERVICE_MESSAGE_TYPE);
+					switch (messageType) {
+						case PLAYERSERVICE_MESSAGE_STOP: {
+							//サービス停止
+							puts("サービス停止");
+							isPlaying = false;
+							releaseMediaPlayer(mediaPlayer);
+							appearedWords.clear();
+							//表示している文字列を削除
+							for (var playerViewName : PlayerViewName.values()) {
+								sendBcTextChange(playerViewName, "");
+							}
+							runOnUiThread(() -> TabActivity.setTabPageNum(0));
+							MyLibrary.PreferenceManager.putIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, now);
+							context.unregisterReceiver(drawReceiver);
+							thisService.stopSelf();
+							break;
+						}
+						case PLAYERSERVICE_MESSAGE_NOW: {
+							now = bundle.getInt(PLAYERSERVICE_MESSAGE_NOW);
+						}
 					}
-					case PLAYERSERVICE_MESSAGE_NOW: {
-						now = bundle.getInt(PLAYERSERVICE_MESSAGE_NOW);
-					}
+				}catch (Exception exception){
+					showException(context, exception);
 				}
 			}
 		};
@@ -316,7 +313,6 @@ public class PlayerService extends Service {
 			if (nowLang == english) {
 				sendBcTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
 				sendBcTextChange(PlayerViewName.genzai, "No." + now);
-				sendBcTextChange(PlayerViewName.eng, list.get(now).e);
 				sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
 				
 				if (nowMode == WordPhraseData.Mode.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
@@ -328,7 +324,6 @@ public class PlayerService extends Service {
 				
 				printCurrentState("now=" + now + ",map=" + knownWordMap.get(wordDataList.get(now).e));
 				sendBcTextChange(PipActivity.PipViewName.num, "No." + now);
-				sendBcTextChange(PipActivity.PipViewName.eng, list.get(now).e);
 				sendBcTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
 				//文を再生しているときは、単語も表示しておく。
 				if (selectMode == WordPhraseData.Mode.wordPlusPhrase && nowMode == WordPhraseData.Mode.phrase) {
@@ -341,12 +336,12 @@ public class PlayerService extends Service {
 				}
 				//英単語を表示するときは、英語の表示を一行にする
 				if (nowMode == WordPhraseData.Mode.word) {
-					sendBcLinesChange(PlayerViewName.eng, true);
-					sendBcLinesChange(PipActivity.PipViewName.eng, true);
+					sendBcTextLinesChange(PlayerViewName.eng,list.get(now).e,true);
+					sendBcTextLinesChange(PipActivity.PipViewName.eng,list.get(now).e,true);
 				}
 				else {
-					sendBcLinesChange(PlayerViewName.eng, false);
-					sendBcLinesChange(PipActivity.PipViewName.eng, false);
+					sendBcTextLinesChange(PlayerViewName.eng,list.get(now).e,false);
+					sendBcTextLinesChange(PipActivity.PipViewName.eng,list.get(now).e,false);
 				}
 			}
 			
@@ -430,9 +425,8 @@ public class PlayerService extends Service {
 	private void sendBcTextChange(PlayerViewName viewName, String text) {
 		Intent broadcastIntent =
 			new Intent(PLAYER_ACTION_UI_CHANGE)
-				.putExtra(PLAYER_VIEW_PROPERTIES, Text)
-				.putExtra(PLAYER_VIEW_TEXT, text)
-				.putExtra(PLAYER_VIEW_NAME, viewName);
+				.putExtra(PLAYER_VIEW_NAME, viewName)
+				.putExtra(PLAYER_VIEW_TEXT, text);
 		context.sendBroadcast(broadcastIntent);
 	}
 	
@@ -451,30 +445,35 @@ public class PlayerService extends Service {
 	}
 	
 	/**
-	 * fragment_playerのビューの文字表示を一行にするか複数行にするか設定
+	 * fragment_playerのビューに表示する文字列と行数を指定する
+	 *  以前は文字列の変更時に呼び出し、その後行数を指定する関数を呼び出していたが、そうするとテキストが変更されてから行数が変更されるまでに少しのラグがあり、長い文が一瞬一行で小さく表示されてしまう問題があった。
+	 * <br> ※単語を表示するときは(どれだけ長くても)一行で表示し、英文を表示するときは複数行で表示するため、行数の指定が必要。
 	 *
 	 * @param viewName
+	 * @param text
 	 * @param isSingleLine
 	 */
-	private void sendBcLinesChange(PlayerViewName viewName, boolean isSingleLine) {
+	private void sendBcTextLinesChange(PlayerViewName viewName,String text, boolean isSingleLine) {
 		Intent broadcastIntent =
 			new Intent(PLAYER_ACTION_UI_CHANGE)
-				.putExtra(PLAYER_VIEW_PROPERTIES, line)
 				.putExtra(PLAYER_VIEW_NAME, viewName)
+				.putExtra(PLAYER_VIEW_TEXT, text)
 				.putExtra(PLAYER_VIEW_SINGLE_LINE, isSingleLine);
 		context.sendBroadcast(broadcastIntent);
 	}
 	
 	/**
-	 * activity_pipのビューの文字表示を一行にするか複数行にするか設定
+	 * activity_pipのビューに表示する文字列と行数を指定する
 	 *
 	 * @param viewName
+	 * @param text
 	 * @param isSingleLine
 	 */
-	private void sendBcLinesChange(PipActivity.PipViewName viewName, boolean isSingleLine) {
+	private void sendBcTextLinesChange(PipActivity.PipViewName viewName,String text, boolean isSingleLine) {
 		Intent broadcastIntent =
 			new Intent(PIP_ACTION_UI)
 				.putExtra(PIP_VIEW_NAME, viewName)
+				.putExtra(PIP_VIEW_TEXT, text)
 				.putExtra(PIP_VIEW_SINGLE_LINE, isSingleLine);
 		context.sendBroadcast(broadcastIntent);
 	}

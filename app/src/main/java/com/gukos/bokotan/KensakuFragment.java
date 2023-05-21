@@ -33,7 +33,8 @@ import java.util.function.Function;
 
 //UiManager.FragmentBingdingを継承するとメモリが開放されたときに
 //java.lang.RuntimeException: Unable to start activity ComponentInfo{com.gukos.bokotan/com.gukos.bokotan.TabActivity}: androidx.fragment.app.Fragment$InstantiationException: Unable to instantiate fragment com.gukos.bokotan.KensakuFragment: could not find Fragment constructor
-//が発生するので、継承しない
+//が発生するので、継承せず、データバインディングを使用しない
+//TODO: データバインディングを使用し、UiManager.FragmentBingdingを継承しながら、メモリ解放後に落ちないようにする。
 public class KensakuFragment extends Fragment {
 	
 	enumKensakuHouhou kensakuHouhou = starts;
@@ -77,11 +78,11 @@ public class KensakuFragment extends Fragment {
 			
 			//UI設定
 			
-			buttonKensakuHouhou=view.findViewById(R.id.buttonKensakuHouhou);
-			searchView=view.findViewById(R.id.searchView);
-			listViewKensakuResult=view.findViewById(R.id.listViewKensakuResult);
-			textViewKensakuResultCount=view.findViewById(R.id.textViewKensakuResultCount);
-			context=getContext();
+			buttonKensakuHouhou = view.findViewById(R.id.buttonKensakuHouhou);
+			searchView = view.findViewById(R.id.searchView);
+			listViewKensakuResult = view.findViewById(R.id.listViewKensakuResult);
+			textViewKensakuResultCount = view.findViewById(R.id.textViewKensakuResultCount);
+			context = getContext();
 			
 			kensakuHouhou = starts;
 			buttonKensakuHouhou.setText(kensakuHouhou.toString());
@@ -168,6 +169,7 @@ public class KensakuFragment extends Fragment {
 			//検索欄が空、条件をクリアして全単語表示
 			adapter.resetFilter();
 		}
+		getActivity().runOnUiThread(adapter::notifyDataSetChanged);
 		return false;
 	}
 	
@@ -194,7 +196,7 @@ public class KensakuFragment extends Fragment {
 	
 	void playEnglishAndJapanese(WordPhraseData.WordInfo wordInfo) {
 		try {
-			printCurrentState("path="+getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber));
+			printCurrentState("path=" + getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber));
 			MediaPlayer mediaPlayer = MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber)));
 			mediaPlayer.start();
 			mediaPlayer.setOnCompletionListener(mp -> {
@@ -211,7 +213,7 @@ public class KensakuFragment extends Fragment {
 	
 	void playEnglish(WordPhraseData.WordInfo wordInfo) {
 		try {
-			printCurrentState("path="+getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber));
+			printCurrentState("path=" + getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber));
 			MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber))).start();
 		} catch (Exception e) {
 			showException(context, e);
