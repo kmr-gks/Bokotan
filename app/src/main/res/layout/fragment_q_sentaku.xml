@@ -162,14 +162,75 @@
 
 				<RadioGroup
 					android:layout_width="match_parent"
-					android:layout_height="match_parent" >
+					android:layout_height="match_parent"
+					android:orientation="horizontal">
 
 					<RadioButton
 						android:id="@+id/radioButtonPlayAll"
-						android:layout_width="match_parent"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_weight="1"
 						android:text="全再生" />
+
+					<RadioButton
+						android:id="@+id/radioButtonSeikai"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:text="正解数" />
+
+					<RadioButton
+						android:id="@+id/radioButtonHuseikai"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:text="不正解数" />
+
+					<RadioButton
+						android:id="@+id/radioButtonSeikaiRate"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:text="正解率" />
+
 				</RadioGroup>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:orientation="horizontal">
+
+					<EditText
+						android:id="@+id/editNumberThreshold"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_weight="1"
+						android:ems="10"
+						android:hint="しきい値"
+						android:inputType="number|numberDecimal"
+						android:minHeight="48dp" />
+
+					<RadioGroup
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:layout_weight="1"
+						android:orientation="horizontal">
+
+						<RadioButton
+							android:id="@+id/radioButtonEqOrMore"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:text="以上" />
+
+						<RadioButton
+							android:id="@+id/radioButtonEqOrLess"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="1"
+							android:text="以下" />
+					</RadioGroup>
+				</LinearLayout>
 
 				<TextView
 					android:id="@+id/textViewSpaceOptions"

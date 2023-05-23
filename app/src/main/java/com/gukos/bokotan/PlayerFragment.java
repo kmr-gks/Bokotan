@@ -37,16 +37,10 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 	public static Boolean isInitialized = false;
 	public static final String
 		PLAYER_ACTION_UI_CHANGE = "player_action_ui_change",
-		PLAYER_VIEW_PROPERTIES = "player_view_properties",
-	
-	PLAYER_VIEW_NAME = "player_view_name",
+		PLAYER_VIEW_NAME = "player_view_name",
 		PLAYER_VIEW_TEXT = "player_view_text",
 		PLAYER_VIEW_COLOR = "player_view_color",
 		PLAYER_VIEW_SINGLE_LINE = "pvsl";
-	
-	public enum PlayerViewProperties {
-		Text, TextColor, line
-	}
 	
 	public enum PlayerViewName {
 		genzai, tvcount, hatsuon, subJ, subE, eng, jpn, path
