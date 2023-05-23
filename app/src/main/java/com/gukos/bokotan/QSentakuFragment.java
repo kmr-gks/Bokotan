@@ -33,7 +33,13 @@ import static com.gukos.bokotan.MyLibrary.strExceptionFIlePath;
 import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
 import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_BOOK;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_DATA_Q;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_MODE;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_SHOW_APPEARED;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_SKIP_COND;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_SKIP_THRES_COMP;
+import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_SKIP_THRES_NUM;
 import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 
 import android.app.AlertDialog;
@@ -307,6 +313,8 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	}
 	
 	private void onPlayQuizStart(View view) {
+		PlayerService.SkipContidion skipContidion;
+		PlayerService.SkipThreshold skipThreshold;
 		//スピナーから本と級を取得
 		switch (binding.spinnerBookQ.getSelectedItemPosition()) {
 			case 0: {
@@ -351,23 +359,58 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				break;
 			}
 		}
+		switch (binding.radioGroupSkipCondition.getCheckedRadioButtonId()){
+			default:
+			case R.id.radioButtonPlayAll:{
+				skipContidion = PlayerService.SkipContidion.all;
+				break;
+			}
+			case R.id.radioButtonSeikai:{
+				skipContidion = PlayerService.SkipContidion.seikaisu;
+				break;
+			}
+			case R.id.radioButtonHuseikai:{
+				skipContidion = PlayerService.SkipContidion.huseikai;
+				break;
+			}
+			case R.id.radioButtonSeikaiRate:{
+				skipContidion = PlayerService.SkipContidion.seikairate;
+				break;
+			}
+		}
+		switch (binding.radioGroupSkipCompare.getCheckedRadioButtonId()){
+			default:
+			case R.id.radioButtonEqOrMore:{
+				skipThreshold = PlayerService.SkipThreshold.eqormore;
+				break;
+			}
+			case R.id.radioButtonEqOrLess:{
+				skipThreshold = PlayerService.SkipThreshold.eqorless;
+				break;
+			}
+		}
 		//しきい値が設定されている場合
 		if (binding.editNumberThreshold.length() > 0) {
 			putStringData(getContext(), settingFileName, skipThresholdNum, binding.editNumberThreshold.getText().toString());
 		}
 		if (view == binding.buttonQuiz) {
+			//問題出題を開始
 			TabActivity.setTabPageNum(2);
-			QuizCreator.build(context, dataBook, dataQ);
+			QuizCreator.build(context, dataBook, dataQ,skipContidion, Double.parseDouble(binding.editNumberThreshold.getText().toString()),skipThreshold);
 		}
 		else {
+			//再生開始
 			TabActivity.setTabPageNum(1);
 			WordPhraseData.Mode mode = WordPhraseData.Mode.word;
 			if (view == binding.buttonPhrase) mode = WordPhraseData.Mode.phrase;
 			else if (view == binding.buttonWP) mode = WordPhraseData.Mode.wordPlusPhrase;
 			Intent intent = new Intent(context, PlayerService.class)
-				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, mode)
-				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, dataBook)
-				.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, dataQ)
+				.putExtra(PLAYERSERVICE_EXTRA_MODE, mode)
+				.putExtra(PLAYERSERVICE_EXTRA_BOOK, dataBook)
+				.putExtra(PLAYERSERVICE_EXTRA_DATA_Q, dataQ)
+				.putExtra(PLAYERSERVICE_EXTRA_SKIP_COND, skipContidion)
+				.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, Double.parseDouble(binding.editNumberThreshold.getText().toString()))
+				.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_COMP, skipThreshold)
 				.putExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, binding.switchOnlyFirst.isChecked());
 			//開始位置が設定されている場合
 			if (binding.editTextNumber.length() > 0) {

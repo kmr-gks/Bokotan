@@ -161,6 +161,7 @@
 					android:text="再生を飛ばす条件" />
 
 				<RadioGroup
+					android:id="@+id/radioGroupSkipCondition"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:orientation="horizontal">
@@ -211,6 +212,7 @@
 						android:minHeight="48dp" />
 
 					<RadioGroup
+						android:id="@+id/radioGroupSkipCompare"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
 						android:layout_weight="1"

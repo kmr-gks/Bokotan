@@ -19,6 +19,7 @@ import static com.gukos.bokotan.WordPhraseData.huseikai;
 import static com.gukos.bokotan.WordPhraseData.monme;
 import static com.gukos.bokotan.WordPhraseData.seikai;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +34,7 @@ import android.os.Message;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.BiFunction;
 
 public class QuizCreator {
 	private static QuizCreator instance = null;
@@ -60,26 +62,60 @@ public class QuizCreator {
 	private ArrayList<WordPhraseData.WordInfo> list = new ArrayList<>();
 	
 	//全範囲から問題を出す時に使用する。全体の通し番号から、本の名前と、その本の中の通し番号を返す。
-	private ArrayList<String> keyForBook=null;
-	private ArrayList<Integer> sizeForBook=null;
-	private ArrayList<String> fileNameForBook=null;
+	private ArrayList<String> keyForBook = null;
+	private ArrayList<Integer> sizeForBook = null;
+	private ArrayList<String> fileNameForBook = null;
+	private PlayerService.SkipContidion skipContidion;
+	private double thresholdNum;
+	private PlayerService.SkipThreshold skipThreshold;
+	private BiFunction<Integer, Integer, Boolean> skipChecker;
 	
 	//コンストラクタ
-	public static QuizCreator build(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
+	public static QuizCreator build(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ, PlayerService.SkipContidion skipContidion, double skipThresholdNum, PlayerService.SkipThreshold skipThreshold) {
 		synchronized (QuizCreator.class) {
 			if (instance == null) {
-				instance = new QuizCreator(context, dataBook, dataQ);
+				instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
 			}
 			else {
 				instance.stop();
-				instance = new QuizCreator(context, dataBook, dataQ);
+				instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
 			}
 			return instance;
 		}
 	}
 	
-	private QuizCreator(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ) {
+	private QuizCreator(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ, PlayerService.SkipContidion skipContidion, double thresholdNum, PlayerService.SkipThreshold skipThreshold) {
 		this.context = context;
+		this.skipContidion = skipContidion;
+		this.thresholdNum = thresholdNum;
+		this.skipThreshold = skipThreshold;
+		switch (skipContidion) {
+			case all: {
+				skipChecker = (seikai, huseikai) -> true;
+				break;
+			}
+			case seikaisu: {
+				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
+					skipChecker = (seikai, huseikai) -> seikai >= thresholdNum;
+				else
+					skipChecker = (seikai, huseikai) -> seikai <= thresholdNum;
+				break;
+			}
+			case huseikai: {
+				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
+					skipChecker = (seikai, huseikai) -> huseikai >= thresholdNum;
+				else
+					skipChecker = (seikai, huseikai) -> huseikai <= thresholdNum;
+				break;
+			}
+			case seikairate: {
+				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
+					skipChecker = (seikai, huseikai) -> (double) seikai / (seikai + huseikai) >= thresholdNum;
+				else
+					skipChecker = (seikai, huseikai) -> (double) seikai / (seikai + huseikai) <= thresholdNum;
+				break;
+			}
+		}
 		handlerThread = new HandlerThread(getClassName());
 		handlerThread.start();
 		handler = new Handler(handlerThread.getLooper()) {
@@ -152,32 +188,32 @@ public class QuizCreator {
 				}
 				default: {
 					//全範囲から出題
-					keyForBook=new ArrayList<>(Arrays.asList(
-							PasstanWord + WordPhraseData.DataQ.q1,
-							PasstanWord + WordPhraseData.DataQ.qp1,
-							TanjukugoWord+ WordPhraseData.DataQ.q1,
-							TanjukugoWord+ WordPhraseData.DataQ.qp1,
-							YumeWord+ WordPhraseData.DataQ.y1.toString().substring(1),
-							YumeWord+ WordPhraseData.DataQ.y2.toString().substring(1),
-							YumeWord+ WordPhraseData.DataQ.y3.toString().substring(1)
-						));
-					fileNameForBook=new ArrayList<>(Arrays.asList(
-						dnTestActivity+"1q"+"Test",
-						dnTestActivity+"p1q"+"Test",
-						dnTestActivity+"tanjukugo1q"+"Test",
-						dnTestActivity+"tanjukugop1q"+"Test",
-						dnTestActivity+"y1"+"Test",
-						dnTestActivity+"y2"+"Test",
-						dnTestActivity+"y3"+"Test"
+					keyForBook = new ArrayList<>(Arrays.asList(
+						PasstanWord + WordPhraseData.DataQ.q1,
+						PasstanWord + WordPhraseData.DataQ.qp1,
+						TanjukugoWord + WordPhraseData.DataQ.q1,
+						TanjukugoWord + WordPhraseData.DataQ.qp1,
+						YumeWord + WordPhraseData.DataQ.y1.toString().substring(1),
+						YumeWord + WordPhraseData.DataQ.y2.toString().substring(1),
+						YumeWord + WordPhraseData.DataQ.y3.toString().substring(1)
 					));
-					sizeForBook= new ArrayList<>();
+					fileNameForBook = new ArrayList<>(Arrays.asList(
+						dnTestActivity + "1q" + "Test",
+						dnTestActivity + "p1q" + "Test",
+						dnTestActivity + "tanjukugo1q" + "Test",
+						dnTestActivity + "tanjukugop1q" + "Test",
+						dnTestActivity + "y1" + "Test",
+						dnTestActivity + "y2" + "Test",
+						dnTestActivity + "y3" + "Test"
+					));
+					sizeForBook = new ArrayList<>();
 					for (var key : keyForBook) {
 						list.addAll(WordPhraseData.getList(key));
 						sizeForBook.add(WordPhraseData.getList(key).size());
 					}
 					
-					for (var k:seikai.keySet()){
-						printCurrentState("seikai key="+k+" size="+seikai.get(k).length);
+					for (var k : seikai.keySet()) {
+						printCurrentState("seikai key=" + k + " size=" + seikai.get(k).length);
 					}
 					break;
 				}
@@ -197,32 +233,41 @@ public class QuizCreator {
 	//クイズスレッド
 	private void setMondai() {
 		nProblems++;
+		int seikaisu = 0, huseikaisu = 0;
+		int loopCount=0;
 		//正解の選択肢を設定
-		ansChoice = random.nextInt(4) + 1;
-		//出題する単語を決定
-		problemNum = random.nextInt(list.size());
-		int seikaisu=0,huseikaisu=0;
-		if (dataQ==all){
-			printCurrentState("data:"+list.get(problemNum).toString());
-			//全範囲から出題
-			int sum=0;
-			for (int i=0;i<sizeForBook.size();i++){
-				sum+=sizeForBook.get(i);
-				if (problemNum<sum){
-					//i番目の本から出題
-					list=WordPhraseData.getList(keyForBook.get(i));
-					problemNum-=sum-sizeForBook.get(i);
-					printCurrentState("fileName="+fileNameForBook.get(i));
-					printCurrentState("i="+i+" problemNum="+problemNum+" key="+keyForBook.get(i)+",info="+list.get(problemNum).toString());
-					fileName=fileNameForBook.get(i);
-					break;
+		do {
+			loopCount++;
+			ansChoice = random.nextInt(4) + 1;
+			//出題する単語を決定
+			problemNum = random.nextInt(list.size());
+			if (dataQ == all) {
+				//printCurrentState("data:" + list.get(problemNum).toString());
+				//全範囲から出題
+				int sum = 0;
+				for (int i = 0; i < sizeForBook.size(); i++) {
+					sum += sizeForBook.get(i);
+					if (problemNum < sum) {
+						//i番目の本から出題
+						list = WordPhraseData.getList(keyForBook.get(i));
+						problemNum -= sum - sizeForBook.get(i);
+						//printCurrentState("fileName=" + fileNameForBook.get(i));
+						//printCurrentState("i=" + i + " problemNum=" + problemNum + " key=" +
+						// keyForBook.get(i) + ",info=" + list.get(problemNum).toString());
+						fileName = fileNameForBook.get(i);
+						break;
+					}
 				}
 			}
-		}
 			seikaisu = seikai.get(fileName)[problemNum];
 			huseikaisu = huseikai.get(fileName)[problemNum];
+		}while (!skipChecker.apply(seikaisu, huseikaisu)&&loopCount<100);
+		if (loopCount>=100){
+			new AlertDialog.Builder(context).setMessage("出題できる問題がありません。条件を変えてやり直してください。").setPositiveButton("OK",null).create().show();
+			return;
+		}
 		
-		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum + "list:" + list.get(problemNum).toString());
+		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum);
 		sendBroadcastTextChange(TestFragment.ViewName.monme, monme.get(fileName) + "問目" + " 正解率" + seikaisu + "/" + (seikaisu + huseikaisu));
 		//問目++
 		monme.put(fileName, monme.get(fileName) + 1);

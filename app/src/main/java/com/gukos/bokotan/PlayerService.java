@@ -61,6 +61,7 @@ import com.gukos.bokotan.PlayerFragment.PlayerViewName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.function.BiFunction;
 
 public class PlayerService extends Service {
 	public static final String
@@ -68,12 +69,21 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_EXTRA_MODE = "ps_em",
 		PLAYERSERVICE_EXTRA_BOOK = "ps_eb",
 		PLAYERSERVICE_EXTRA_DATA_Q = "ps_edq",
+		PLAYERSERVICE_EXTRA_SKIP_COND = "psesc",
+		PLAYERSERVICE_EXTRA_SKIP_THRES_NUM = "psestn",
+		PLAYERSERVICE_EXTRA_SKIP_THRES_COMP = "psestc",
 		PLAYERSERVICE_EXTRA_NOW = "ps_en",
 		PLAYERSERVICE_EXTRA_SHOW_APPEARED = "ps_esa",
 		PLAYERSERVICE_ACTION = "playerservice_action",
 		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
 		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
 		PLAYERSERVICE_MESSAGE_NOW = "ps_mn";
+	public enum SkipContidion {
+		all,seikaisu,huseikai,seikairate
+	}
+	public enum SkipThreshold {
+		eqormore,eqorless
+	}
 	Context context;
 	Handler handler;
 	private DrawReceiver drawReceiver;
@@ -90,6 +100,10 @@ public class PlayerService extends Service {
 	MediaPlayer mediaPlayer;
 	String path;
 	boolean isPlaying, isJoshiChecked = false;
+	PlayerService.SkipContidion skipContidion;
+	PlayerService.SkipThreshold skipThreshold;
+	private double thresholdNum;
+	BiFunction<Integer, Integer, Boolean> skipChecker;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -103,6 +117,36 @@ public class PlayerService extends Service {
 		dataBook = (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
 		dataQ = (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
 		now = intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW, -1);
+		skipContidion = (SkipContidion) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_COND);
+		thresholdNum = intent.getDoubleExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, 0);
+		skipThreshold = (SkipThreshold) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_COMP);
+		switch (skipContidion){
+			case all:{
+				skipChecker = (seikai,huseikai) -> true;
+				break;
+			}
+			case seikaisu:{
+				if (skipThreshold == SkipThreshold.eqormore)
+					skipChecker = (seikai,huseikai) -> seikai >= thresholdNum;
+				else
+					skipChecker = (seikai,huseikai) -> seikai <= thresholdNum;
+				break;
+			}
+			case huseikai:{
+				if (skipThreshold == SkipThreshold.eqormore)
+					skipChecker = (seikai,huseikai) -> huseikai >= thresholdNum;
+				else
+					skipChecker = (seikai,huseikai) -> huseikai <= thresholdNum;
+				break;
+			}
+			case seikairate:{
+				if (skipThreshold == SkipThreshold.eqormore)
+					skipChecker = (seikai,huseikai) -> (double) seikai / (seikai + huseikai) >= thresholdNum;
+				else
+					skipChecker = (seikai,huseikai) -> (double) seikai / (seikai + huseikai) <= thresholdNum;
+				break;
+			}
+		}
 		if (intent.getBooleanExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, false)) {
 			//既出の単語を飛ばす
 			appearedWords.clear();
