@@ -137,22 +137,28 @@
 						android:textColor="@color/buttontext" />
 				</LinearLayout>
 
-				<TextView
-					android:id="@+id/textViewNowInput"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/now" />
-
-				<EditText
-					android:id="@+id/editTextNumber"
+				<LinearLayout
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:autofillHints="no"
-					android:ems="10"
-					android:hint="@string/editNumberText"
-					android:inputType="number"
-					android:minHeight="48dp"
-					android:textColor="@color/textcolor" />
+					android:layout_height="match_parent"
+					android:orientation="horizontal">
+
+					<TextView
+						android:id="@+id/textViewNowInput"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@string/now" />
+
+					<EditText
+						android:id="@+id/editTextNumber"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:autofillHints="no"
+						android:ems="10"
+						android:hint="@string/editNumberText"
+						android:inputType="number"
+						android:minHeight="48dp"
+						android:textColor="@color/textcolor" />
+				</LinearLayout>
 
 				<TextView
 					android:id="@+id/textViewSkipPlayCond"
@@ -171,28 +177,32 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="全再生" />
+						android:text="全再生"
+						android:textColor="@color/textcolor" />
 
 					<RadioButton
 						android:id="@+id/radioButtonSeikai"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="正解数" />
+						android:text="正解数"
+						android:textColor="@color/textcolor" />
 
 					<RadioButton
 						android:id="@+id/radioButtonHuseikai"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="不正解数" />
+						android:text="不正解数"
+						android:textColor="@color/textcolor" />
 
 					<RadioButton
 						android:id="@+id/radioButtonSeikaiRate"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="正解率" />
+						android:text="正解率"
+						android:textColor="@color/textcolor" />
 
 				</RadioGroup>
 
@@ -209,7 +219,8 @@
 						android:ems="10"
 						android:hint="しきい値"
 						android:inputType="number|numberDecimal"
-						android:minHeight="48dp" />
+						android:minHeight="48dp"
+						android:textColor="@color/textcolor" />
 
 					<RadioGroup
 						android:id="@+id/radioGroupSkipCompare"
@@ -223,14 +234,16 @@
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_weight="1"
-							android:text="以上" />
+							android:text="以上"
+							android:textColor="@color/textcolor" />
 
 						<RadioButton
 							android:id="@+id/radioButtonEqOrLess"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_weight="1"
-							android:text="以下" />
+							android:text="未満"
+							android:textColor="@color/textcolor" />
 					</RadioGroup>
 				</LinearLayout>
 

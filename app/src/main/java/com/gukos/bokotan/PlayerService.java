@@ -1,9 +1,11 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
+import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.fnAppSettings;
 import static com.gukos.bokotan.MyLibrary.sleep;
 import static com.gukos.bokotan.PipActivity.PIP_ACTION_UI;
@@ -34,6 +36,8 @@ import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
 import static com.gukos.bokotan.WordPhraseData.getList;
+import static com.gukos.bokotan.WordPhraseData.huseikai;
+import static com.gukos.bokotan.WordPhraseData.seikai;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -59,6 +63,7 @@ import androidx.annotation.NonNull;
 import com.gukos.bokotan.PlayerFragment.PlayerViewName;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.function.BiFunction;
@@ -104,6 +109,10 @@ public class PlayerService extends Service {
 	PlayerService.SkipThreshold skipThreshold;
 	private double thresholdNum;
 	BiFunction<Integer, Integer, Boolean> skipChecker;
+	int seikaisu = 0, huseikaisu = 0;
+	ArrayList<String> fileNames;
+	String fileName;
+	ArrayList<Integer> sizeForBook=null;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -129,21 +138,21 @@ public class PlayerService extends Service {
 				if (skipThreshold == SkipThreshold.eqormore)
 					skipChecker = (seikai,huseikai) -> seikai >= thresholdNum;
 				else
-					skipChecker = (seikai,huseikai) -> seikai <= thresholdNum;
+					skipChecker = (seikai,huseikai) -> seikai < thresholdNum;
 				break;
 			}
 			case huseikai:{
 				if (skipThreshold == SkipThreshold.eqormore)
 					skipChecker = (seikai,huseikai) -> huseikai >= thresholdNum;
 				else
-					skipChecker = (seikai,huseikai) -> huseikai <= thresholdNum;
+					skipChecker = (seikai,huseikai) -> huseikai < thresholdNum;
 				break;
 			}
 			case seikairate:{
 				if (skipThreshold == SkipThreshold.eqormore)
 					skipChecker = (seikai,huseikai) -> (double) seikai / (seikai + huseikai) >= thresholdNum;
 				else
-					skipChecker = (seikai,huseikai) -> (double) seikai / (seikai + huseikai) <= thresholdNum;
+					skipChecker = (seikai,huseikai) -> (double) seikai / (seikai + huseikai) < thresholdNum;
 				break;
 			}
 		}
@@ -166,10 +175,14 @@ public class PlayerService extends Service {
 				if (dataBook == tanjukugo && dataQ == q1) {
 					getList(TanjukugoWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
 				}
+				
 			}
-			else {
-				//knownWordMap.clear();
-			}
+		}
+		
+		if (dataBook==tanjukugo){
+			fileName=dnTestActivity+"tanjukugo"+dataQ.toString()+"Test";
+		}else{
+			fileName=dnTestActivity+dataQ.toString()+"Test";
 		}
 		
 		context = getApplicationContext();
@@ -302,6 +315,18 @@ public class PlayerService extends Service {
 						
 						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + qp1).subList(1, 1680 + 1));
 						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + q1).subList(1, 2364 + 1));
+					}
+					
+					if(dataBook==all){
+						sizeForBook=new ArrayList<>(Arrays.asList(1001,1000,800,1850,2400,1680, 2364));
+						fileNames=new ArrayList<>();
+						fileNames.add(dnTestActivity+DataQ.y1+"Test");
+						fileNames.add(dnTestActivity+DataQ.y2+"Test");
+						fileNames.add(dnTestActivity+DataQ.y3+"Test");
+						fileNames.add(dnTestActivity+qp1+"Test");
+						fileNames.add(dnTestActivity+q1+"Test");
+						fileNames.add(dnTestActivity+"tanjukugo"+qp1+"Test");
+						fileNames.add(dnTestActivity+"tanjukugo"+q1+"Test");
 					}
 					
 					//単語データをmapに格納
@@ -448,17 +473,52 @@ public class PlayerService extends Service {
 	
 	private void goNext() {
 		count++;
+		int loopCount=0;
+		int i;
 		if (now >= wordDataList.size() - 1) now = 0;
 		//既出の単語を飛ばす
 		if (dataBook == all) {
+			int seikaisu,huseikaisu;
+			int index=0;
 			do {
+				loopCount++;
 				now++;
-			} while (now != knownWordMap.get(wordDataList.get(now).e) && now < wordDataList.size() - 1);
+				int sum=0;
+				for (i=0;i<sizeForBook.size();i++){
+					sum+=sizeForBook.get(i);
+					if (now<sum){
+						index=now-(sum-sizeForBook.get(i));
+						break;
+					}
+				}
+				try {
+					seikaisu = (seikai.get(fileNames.get(i)))[index];
+					huseikaisu = huseikai.get(fileNames.get(i))[index];
+				}catch (NullPointerException exception){
+					showException(context,exception);
+					seikaisu=0;
+					huseikaisu=0;
+				}
+			} while ((now != knownWordMap.get(wordDataList.get(now).e)||!skipChecker.apply(seikaisu,huseikaisu) )&& now < wordDataList.size() - 1&&loopCount<1000);
+			printCurrentState("index="+index+"e"+wordDataList.get(now)
+			 +"正解"+"不正解"+"filename="+fileNames.get(i));
+			printCurrentState("正解"+seikaisu+"不正解"+huseikaisu);
 		}
 		else {
 			do {
+				loopCount++;
 				now++;
-			} while (appearedWords.contains(wordDataList.get(now).e) && now < wordDataList.size() - 1);
+				printCurrentState("fileName="+fileName);
+				seikaisu=seikai.get(fileName)[now];
+				huseikaisu=huseikai.get(fileName)[now];
+			} while ((appearedWords.contains(wordDataList.get(now).e)||!skipChecker.apply(seikaisu,huseikaisu) )&& now < wordDataList.size() - 1&&loopCount<1000);
+			printCurrentState("e"+wordDataList.get(now).e+"seikaisu="+seikaisu+" huseikaisu="+huseikaisu);
+		}
+		if (loopCount>=1000){
+			//アクティビティのコンテキストが必要
+			//new AlertDialog.Builder(context).setMessage("出題できる問題がありません。条件を変えてやり直してください。")
+			// .setPositiveButton("OK",null).create().show();
+			sleep(1000);
 		}
 	}
 	

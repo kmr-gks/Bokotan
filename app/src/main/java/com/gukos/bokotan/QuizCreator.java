@@ -11,8 +11,8 @@ import static com.gukos.bokotan.WordPhraseData.DataBook;
 import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataQ.all;
+import static com.gukos.bokotan.WordPhraseData.DataQ.qp1;
 import static com.gukos.bokotan.WordPhraseData.PasstanWord;
-import static com.gukos.bokotan.WordPhraseData.TanjukugoEXWord;
 import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
 import static com.gukos.bokotan.WordPhraseData.YumeWord;
 import static com.gukos.bokotan.WordPhraseData.huseikai;
@@ -98,21 +98,21 @@ public class QuizCreator {
 				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
 					skipChecker = (seikai, huseikai) -> seikai >= thresholdNum;
 				else
-					skipChecker = (seikai, huseikai) -> seikai <= thresholdNum;
+					skipChecker = (seikai, huseikai) -> seikai < thresholdNum;
 				break;
 			}
 			case huseikai: {
 				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
 					skipChecker = (seikai, huseikai) -> huseikai >= thresholdNum;
 				else
-					skipChecker = (seikai, huseikai) -> huseikai <= thresholdNum;
+					skipChecker = (seikai, huseikai) -> huseikai < thresholdNum;
 				break;
 			}
 			case seikairate: {
 				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
 					skipChecker = (seikai, huseikai) -> (double) seikai / (seikai + huseikai) >= thresholdNum;
 				else
-					skipChecker = (seikai, huseikai) -> (double) seikai / (seikai + huseikai) <= thresholdNum;
+					skipChecker = (seikai, huseikai) -> (double) seikai / (seikai + huseikai) < thresholdNum;
 				break;
 			}
 		}
@@ -179,7 +179,10 @@ public class QuizCreator {
 				}
 				case tanjukugo: {
 					list = WordPhraseData.getList(TanjukugoWord + qString);
-					list.addAll(WordPhraseData.getList(TanjukugoEXWord + qString));
+					if (dataQ == qp1) {
+						list = new ArrayList<>(list.subList(0, 1680 + 1));
+					}
+					//list.addAll(WordPhraseData.getList(TanjukugoEXWord + qString));
 					break;
 				}
 				case yumetan: {
@@ -208,8 +211,13 @@ public class QuizCreator {
 					));
 					sizeForBook = new ArrayList<>();
 					for (var key : keyForBook) {
-						list.addAll(WordPhraseData.getList(key));
-						sizeForBook.add(WordPhraseData.getList(key).size());
+						var addList = WordPhraseData.getList(key);
+						if (key.equals(TanjukugoWord + WordPhraseData.DataQ.qp1)) {
+							addList = new ArrayList<>(list.subList(0, 1680 + 1));
+						}
+						list.addAll(addList);
+						sizeForBook.add(addList.size());
+						printCurrentState("key=" + key + " size=" + addList.size());
 					}
 					
 					for (var k : seikai.keySet()) {
@@ -234,7 +242,7 @@ public class QuizCreator {
 	private void setMondai() {
 		nProblems++;
 		int seikaisu = 0, huseikaisu = 0;
-		int loopCount=0;
+		int loopCount = 0;
 		//正解の選択肢を設定
 		do {
 			loopCount++;
@@ -251,9 +259,8 @@ public class QuizCreator {
 						//i番目の本から出題
 						list = WordPhraseData.getList(keyForBook.get(i));
 						problemNum -= sum - sizeForBook.get(i);
-						//printCurrentState("fileName=" + fileNameForBook.get(i));
-						//printCurrentState("i=" + i + " problemNum=" + problemNum + " key=" +
-						// keyForBook.get(i) + ",info=" + list.get(problemNum).toString());
+						printCurrentState("fileName=" + fileNameForBook.get(i));
+						printCurrentState("i=" + i + " problemNum=" + problemNum + " key=" + keyForBook.get(i) + ",info=" + list.get(problemNum).toString());
 						fileName = fileNameForBook.get(i);
 						break;
 					}
@@ -261,9 +268,9 @@ public class QuizCreator {
 			}
 			seikaisu = seikai.get(fileName)[problemNum];
 			huseikaisu = huseikai.get(fileName)[problemNum];
-		}while (!skipChecker.apply(seikaisu, huseikaisu)&&loopCount<100);
-		if (loopCount>=100){
-			new AlertDialog.Builder(context).setMessage("出題できる問題がありません。条件を変えてやり直してください。").setPositiveButton("OK",null).create().show();
+		} while (!skipChecker.apply(seikaisu, huseikaisu) && loopCount < 1000);
+		if (loopCount >= 1000) {
+			new AlertDialog.Builder(context).setMessage("出題できる問題がありません。条件を変えてやり直してください。").setPositiveButton("OK", null).create().show();
 			return;
 		}
 		
