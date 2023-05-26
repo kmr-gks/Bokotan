@@ -56,6 +56,7 @@ public class QuizCreator {
 	WordPhraseData.DataQ dataQ;
 	private int nProblems = 0;
 	int ansChoice, problemNum;
+	private int[] choiceList = new int[4];
 	private String fileName;
 	private final Random random = new Random();
 	
@@ -128,7 +129,8 @@ public class QuizCreator {
 					if (QSentakuFragment.switchQuizOX.isChecked()) {
 						soundPool.load(context, R.raw.seikai, 1);
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + list.get(problemNum).toString());
+					var info = list.get(problemNum);
+					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + info.e + " " + info.j);
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
 					seikai.get(fileName)[problemNum]++;
@@ -137,11 +139,18 @@ public class QuizCreator {
 					if (QSentakuFragment.switchQuizOX.isChecked()) {
 						soundPool.load(context, R.raw.huseikai, 1);
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解 " + list.get(problemNum).toString());
+					var info = list.get(problemNum);
+					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解" + info.e + " " + info.j);
 					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
 					huseikai.get(fileName)[problemNum]++;
 				}
+				String editorial = "";
+				for (var i = 0; i < 4; i++) {
+					var info = list.get(choiceList[i]);
+					editorial += info.e + " " + info.j + "\n";
+				}
+				sendBroadcastTextChange(TestFragment.ViewName.Editorial, editorial);
 				setMondai();
 			}
 		};
@@ -287,10 +296,8 @@ public class QuizCreator {
 			} catch (Exception exception) {
 				showException(context, exception);
 			}
-			sendBroadcastTextChange(TestFragment.ViewName.Debug, path);
 		}
 		
-		var choiceList = new int[4];
 		//4つの選択肢はそれぞれ異なる
 		do {
 			for (int i = 0; i < 4; i++) {
