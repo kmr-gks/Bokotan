@@ -111,9 +111,9 @@ public class QuizCreator {
 			}
 			case seikairate: {
 				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
-					skipChecker = (seikai, huseikai) -> (double) seikai / (seikai + huseikai) >= thresholdNum;
+					skipChecker = (seikai, huseikai) -> (double) seikai / ((seikai + huseikai) == 0 ? 1 : (seikai + huseikai)) >= thresholdNum;
 				else
-					skipChecker = (seikai, huseikai) -> (double) seikai / (seikai + huseikai) < thresholdNum;
+					skipChecker = (seikai, huseikai) -> (double) seikai / ((seikai + huseikai) == 0 ? 1 : (seikai + huseikai)) < thresholdNum;
 				break;
 			}
 		}

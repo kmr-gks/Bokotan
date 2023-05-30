@@ -150,9 +150,9 @@ public class PlayerService extends Service {
 			}
 			case seikairate:{
 				if (skipThreshold == SkipThreshold.eqormore)
-					skipChecker = (seikai,huseikai) -> (double) seikai / (seikai + huseikai) >= thresholdNum;
+					skipChecker = (seikai, huseikai) -> (double) seikai / ((seikai + huseikai) == 0 ? 1 : (seikai + huseikai)) >= thresholdNum;
 				else
-					skipChecker = (seikai,huseikai) -> (double) seikai / (seikai + huseikai) < thresholdNum;
+					skipChecker = (seikai, huseikai) -> (double) seikai / ((seikai + huseikai) == 0 ? 1 : (seikai + huseikai)) < thresholdNum;
 				break;
 			}
 		}
@@ -384,7 +384,7 @@ public class PlayerService extends Service {
 			}
 			
 			if (nowLang == english) {
-				sendBcTextChange(PlayerViewName.tvcount, "再生回数:" + count + "回");
+				sendBcTextChange(PlayerViewName.tvcount, seikaisu+"/"+(seikaisu+huseikaisu)+" 再生回数:" + count + "回");
 				sendBcTextChange(PlayerViewName.genzai, "No." + now);
 				sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
 				
@@ -478,31 +478,29 @@ public class PlayerService extends Service {
 		if (now >= wordDataList.size() - 1) now = 0;
 		//既出の単語を飛ばす
 		if (dataBook == all) {
-			int seikaisu,huseikaisu;
-			int index=0;
+			int index = 0;
 			do {
 				loopCount++;
 				now++;
-				int sum=0;
-				for (i=0;i<sizeForBook.size();i++){
-					sum+=sizeForBook.get(i);
-					if (now<sum){
-						index=now-(sum-sizeForBook.get(i));
+				int sum = 0;
+				for (i = 0; i < sizeForBook.size(); i++) {
+					sum += sizeForBook.get(i);
+					if (now < sum) {
+						index = now - (sum - sizeForBook.get(i));
 						break;
 					}
 				}
 				try {
 					seikaisu = (seikai.get(fileNames.get(i)))[index];
 					huseikaisu = huseikai.get(fileNames.get(i))[index];
-				}catch (NullPointerException exception){
-					showException(context,exception);
-					seikaisu=0;
-					huseikaisu=0;
+				} catch (NullPointerException exception) {
+					showException(context, exception);
+					seikaisu = 0;
+					huseikaisu = 0;
 				}
-			} while ((now != knownWordMap.get(wordDataList.get(now).e)||!skipChecker.apply(seikaisu,huseikaisu) )&& now < wordDataList.size() - 1&&loopCount<1000);
-			printCurrentState("index="+index+"e"+wordDataList.get(now)
-			 +"正解"+"不正解"+"filename="+fileNames.get(i));
-			printCurrentState("正解"+seikaisu+"不正解"+huseikaisu);
+			} while ((now != knownWordMap.get(wordDataList.get(now).e) || !skipChecker.apply(seikaisu, huseikaisu)) && now < wordDataList.size() - 1 && loopCount < 1000);
+			//printCurrentState("index="+index+"e"+wordDataList.get(now)+"正解"+"不正解"+"filename="+fileNames.get(i));
+			//printCurrentState("正解"+seikaisu+"不正解"+huseikaisu);
 		}
 		else {
 			do {
@@ -512,7 +510,7 @@ public class PlayerService extends Service {
 				seikaisu=seikai.get(fileName)[now];
 				huseikaisu=huseikai.get(fileName)[now];
 			} while ((appearedWords.contains(wordDataList.get(now).e)||!skipChecker.apply(seikaisu,huseikaisu) )&& now < wordDataList.size() - 1&&loopCount<1000);
-			printCurrentState("e"+wordDataList.get(now).e+"seikaisu="+seikaisu+" huseikaisu="+huseikaisu);
+			//printCurrentState("e"+wordDataList.get(now).e+"seikaisu="+seikaisu+"huseikaisu="+huseikaisu);
 		}
 		if (loopCount>=1000){
 			//アクティビティのコンテキストが必要
