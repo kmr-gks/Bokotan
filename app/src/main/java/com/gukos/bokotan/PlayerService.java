@@ -129,30 +129,30 @@ public class PlayerService extends Service {
 		skipContidion = (SkipContidion) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_COND);
 		thresholdNum = intent.getDoubleExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, 0);
 		skipThreshold = (SkipThreshold) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_COMP);
-		switch (skipContidion){
-			case all:{
-				skipChecker = (seikai,huseikai) -> true;
+		switch (skipContidion) {
+			case all: {
+				skipChecker = (seikai, huseikai) -> true;
 				break;
 			}
-			case seikaisu:{
+			case seikaisu: {
 				if (skipThreshold == SkipThreshold.eqormore)
-					skipChecker = (seikai,huseikai) -> seikai >= thresholdNum;
+					skipChecker = (seikai, huseikai) -> seikai >= thresholdNum;
 				else
-					skipChecker = (seikai,huseikai) -> seikai < thresholdNum;
+					skipChecker = (seikai, huseikai) -> seikai < thresholdNum;
 				break;
 			}
-			case huseikai:{
+			case huseikai: {
 				if (skipThreshold == SkipThreshold.eqormore)
-					skipChecker = (seikai,huseikai) -> huseikai >= thresholdNum;
+					skipChecker = (seikai, huseikai) -> huseikai >= thresholdNum;
 				else
-					skipChecker = (seikai,huseikai) -> huseikai < thresholdNum;
+					skipChecker = (seikai, huseikai) -> huseikai < thresholdNum;
 				break;
 			}
-			case seikairate:{
-				if (skipThreshold == SkipThreshold.eqormore)
-					skipChecker = (seikai, huseikai) -> (double) seikai / ((seikai + huseikai) == 0 ? 1 : (seikai + huseikai)) >= thresholdNum;
+			case seikairate: {
+				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
+					skipChecker = (seikai, huseikai) -> (seikai + huseikai == 0 ? -1 : (double) seikai / (seikai + huseikai)) >= thresholdNum;
 				else
-					skipChecker = (seikai, huseikai) -> (double) seikai / ((seikai + huseikai) == 0 ? 1 : (seikai + huseikai)) < thresholdNum;
+					skipChecker = (seikai, huseikai) -> (seikai + huseikai == 0 ? -1 : (double) seikai / (seikai + huseikai)) < thresholdNum;
 				break;
 			}
 		}

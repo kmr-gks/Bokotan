@@ -66,9 +66,6 @@ public class QuizCreator {
 	private ArrayList<String> keyForBook = null;
 	private ArrayList<Integer> sizeForBook = null;
 	private ArrayList<String> fileNameForBook = null;
-	private PlayerService.SkipContidion skipContidion;
-	private double thresholdNum;
-	private PlayerService.SkipThreshold skipThreshold;
 	private BiFunction<Integer, Integer, Boolean> skipChecker;
 	
 	//コンストラクタ
@@ -87,9 +84,6 @@ public class QuizCreator {
 	
 	private QuizCreator(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ, PlayerService.SkipContidion skipContidion, double thresholdNum, PlayerService.SkipThreshold skipThreshold) {
 		this.context = context;
-		this.skipContidion = skipContidion;
-		this.thresholdNum = thresholdNum;
-		this.skipThreshold = skipThreshold;
 		switch (skipContidion) {
 			case all: {
 				skipChecker = (seikai, huseikai) -> true;
@@ -111,9 +105,9 @@ public class QuizCreator {
 			}
 			case seikairate: {
 				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
-					skipChecker = (seikai, huseikai) -> (double) seikai / ((seikai + huseikai) == 0 ? 1 : (seikai + huseikai)) >= thresholdNum;
+					skipChecker = (seikai, huseikai) -> (seikai + huseikai == 0 ? -1 : (double) seikai / (seikai + huseikai)) >= thresholdNum;
 				else
-					skipChecker = (seikai, huseikai) -> (double) seikai / ((seikai + huseikai) == 0 ? 1 : (seikai + huseikai)) < thresholdNum;
+					skipChecker = (seikai, huseikai) -> (seikai + huseikai == 0 ? -1 : (double) seikai / (seikai + huseikai)) < thresholdNum;
 				break;
 			}
 		}
