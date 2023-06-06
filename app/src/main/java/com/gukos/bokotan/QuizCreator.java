@@ -45,7 +45,8 @@ public class QuizCreator {
 	private BroadcastReceiver broadcastReceiver;
 	public static final String
 		QTHREAD_ACTION_CLICKED = "qthread_action_clicked",
-		QTHREAD_EXTRA_CHOICE = "qthread_extra_choice";
+		QTHREAD_EXTRA_CHOICE = "qthread_extra_choice",
+		QTHREAD_EXTRA_STOP = "qes";
 	private boolean onActive = true;
 	private final SoundPool soundPool =
 		new SoundPool.Builder()
@@ -118,34 +119,45 @@ public class QuizCreator {
 			//選択肢のボタンをクリックしたときの処理
 			@Override
 			public void handleMessage(Message message) {
-				int choice = message.getData().getInt(QTHREAD_EXTRA_CHOICE, -1);
-				if (ansChoice == choice) {
-					if (QSentakuFragment.switchQuizOX.isChecked()) {
-						soundPool.load(context, R.raw.seikai, 1);
+				var bundle = message.getData();
+				if (bundle.containsKey(QTHREAD_EXTRA_CHOICE)) {
+					//選択肢を押した時
+					int choice = bundle.getInt(QTHREAD_EXTRA_CHOICE, -1);
+					printCurrentState("choice:" + choice);
+					if (ansChoice == choice) {
+						if (QSentakuFragment.switchQuizOX.isChecked()) {
+							soundPool.load(context, R.raw.seikai, 1);
+						}
+						var info = list.get(problemNum);
+						sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + info.e + " " + info.j);
+						sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
+						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
+						seikai.get(fileName)[problemNum]++;
 					}
-					var info = list.get(problemNum);
-					sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + info.e + " " + info.j);
-					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
-					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
-					seikai.get(fileName)[problemNum]++;
-				}
-				else {
-					if (QSentakuFragment.switchQuizOX.isChecked()) {
-						soundPool.load(context, R.raw.huseikai, 1);
+					else {
+						if (QSentakuFragment.switchQuizOX.isChecked()) {
+							soundPool.load(context, R.raw.huseikai, 1);
+						}
+						var info = list.get(problemNum);
+						sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解" + info.e + " " + info.j);
+						sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
+						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
+						huseikai.get(fileName)[problemNum]++;
 					}
-					var info = list.get(problemNum);
-					sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解" + info.e + " " + info.j);
-					sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
-					sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
-					huseikai.get(fileName)[problemNum]++;
+					String editorial = "";
+					for (var i = 0; i < 4; i++) {
+						var info = list.get(choiceList[i]);
+						editorial += info.e + " " + info.j + "\n";
+					}
+					sendBroadcastTextChange(TestFragment.ViewName.Editorial, editorial);
+					setMondai();
 				}
-				String editorial = "";
-				for (var i = 0; i < 4; i++) {
-					var info = list.get(choiceList[i]);
-					editorial += info.e + " " + info.j + "\n";
+				else if (bundle.containsKey(QTHREAD_EXTRA_STOP)) {
+					//クイズを終了する処理 表示を消す
+					for (var viewName : TestFragment.ViewName.values()) {
+						sendBroadcastTextChange(viewName, null);
+					}
 				}
-				sendBroadcastTextChange(TestFragment.ViewName.Editorial, editorial);
-				setMondai();
 			}
 		};
 		//handler.post()はクイズスレッドで、最初に実行される

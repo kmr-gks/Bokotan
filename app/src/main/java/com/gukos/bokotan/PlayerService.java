@@ -238,7 +238,7 @@ public class PlayerService extends Service {
 							appearedWords.clear();
 							//表示している文字列を削除
 							for (var playerViewName : PlayerViewName.values()) {
-								sendBcTextChange(playerViewName, "");
+								sendBcTextChange(playerViewName, null);
 							}
 							runOnUiThread(() -> TabActivity.setTabPageNum(0));
 							MyLibrary.PreferenceManager.putIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, now);

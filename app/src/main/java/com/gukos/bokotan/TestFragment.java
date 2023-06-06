@@ -153,9 +153,6 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			choice = 4;
 		}
 		
-		Intent broadcastIntent =
-			new Intent(QuizCreator.QTHREAD_ACTION_CLICKED)
-				.putExtra(QuizCreator.QTHREAD_EXTRA_CHOICE, choice);
-		context.sendBroadcast(broadcastIntent);
+		context.sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_CHOICE, choice));
 	}
 }
