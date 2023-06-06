@@ -30,6 +30,7 @@ import android.media.SoundPool;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.text.Html;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,7 +130,6 @@ public class QuizCreator {
 							soundPool.load(context, R.raw.seikai, 1);
 						}
 						var info = list.get(problemNum);
-						sendBroadcastTextChange(TestFragment.ViewName.Ans, "正解" + info.e + " " + info.j);
 						sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
 						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
 						seikai.get(fileName)[problemNum]++;
@@ -139,7 +139,6 @@ public class QuizCreator {
 							soundPool.load(context, R.raw.huseikai, 1);
 						}
 						var info = list.get(problemNum);
-						sendBroadcastTextChange(TestFragment.ViewName.Ans, "不正解" + info.e + " " + info.j);
 						sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
 						huseikai.get(fileName)[problemNum]++;
@@ -147,9 +146,14 @@ public class QuizCreator {
 					String editorial = "";
 					for (var i = 0; i < 4; i++) {
 						var info = list.get(choiceList[i]);
-						editorial += info.e + " " + info.j + "\n";
+						if (i == ansChoice - 1) {
+							editorial += "<font color=\"red\">" + info.e + " " + info.j + "</font>" + "<br>";
+						}
+						else {
+							editorial += info.e + " " + info.j + "<br>";
+						}
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Editorial, editorial);
+					sendBroadcastTextChange(TestFragment.ViewName.Editorial, Html.fromHtml(editorial, Html.FROM_HTML_MODE_COMPACT));
 					setMondai();
 				}
 				else if (bundle.containsKey(QTHREAD_EXTRA_STOP)) {
@@ -325,11 +329,19 @@ public class QuizCreator {
 	
 	//TestFragment内のviewに表示する文字を変更させるためのintentを送信する。クイズスレッド
 	private void sendBroadcastTextChange(TestFragment.ViewName viewName, String text) {
-		//printCurrentState(",view=" + viewName + ",text=" + text);
 		Intent broadcastIntent =
 			new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
 				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES, TestFragment.ViewProperties.Text)
-				.putExtra(TestFragment.QUIZ_VIEW_TEXT, text)
+				.putExtra(TestFragment.QUIZ_VIEW_TEXT_STRING, text)
+				.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
+		context.sendBroadcast(broadcastIntent);
+	}
+	
+	private void sendBroadcastTextChange(TestFragment.ViewName viewName, CharSequence text) {
+		Intent broadcastIntent =
+			new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
+				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES, TestFragment.ViewProperties.Text)
+				.putExtra(TestFragment.QUIZ_VIEW_TEXT_CHARSEQ, text)
 				.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
 		context.sendBroadcast(broadcastIntent);
 	}

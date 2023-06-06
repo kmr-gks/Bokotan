@@ -23,7 +23,8 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	
 	public static final String
 		QUIZ_ACTION_UI_CHANGE = "quiz_action_ui_change",
-		QUIZ_VIEW_TEXT = "quiz_view_text",
+		QUIZ_VIEW_TEXT_STRING = "quiz_view_text",
+		QUIZ_VIEW_TEXT_CHARSEQ = "qvtcs",
 		QUIZ_VIEW_COLOR = "quiz_view_color",
 		QUIZ_VIEW_PROPERTIES = "quiz_view_properties",
 		QUIZ_VIEW_NAME = "quiz_view_name";
@@ -33,7 +34,7 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	}
 	
 	public enum ViewName {
-		monme, Ans, Marubatsu, Editorial, No, Mondaibun, Hint, Select1, Select2, Select3, Select4, Idontknow,
+		monme, Marubatsu, Editorial, No, Mondaibun, Hint, Select1, Select2, Select3, Select4, Idontknow,
 		Debug
 	}
 	
@@ -48,10 +49,6 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			switch (viewName) {
 				case monme: {
 					textViewToHandle = binding.textViewMonme;
-					break;
-				}
-				case Ans: {
-					textViewToHandle = binding.textViewAns;
 					break;
 				}
 				case Marubatsu: {
@@ -104,7 +101,12 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 			}
 			switch (viewProperties) {
 				case Text: {
-					textViewToHandle.setText(bundle.getString(QUIZ_VIEW_TEXT));
+					if (bundle.containsKey(QUIZ_VIEW_TEXT_CHARSEQ)) {
+						textViewToHandle.setText(bundle.getCharSequence(QUIZ_VIEW_TEXT_CHARSEQ));
+					}
+					else {
+						textViewToHandle.setText(bundle.getString(QUIZ_VIEW_TEXT_STRING));
+					}
 					break;
 				}
 				case TextColor: {

@@ -20,22 +20,12 @@
 			app:layout_constraintTop_toTopOf="parent" />
 
 		<TextView
-			android:id="@+id/textViewAns"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:autoSizeTextType="uniform"
-			android:textColor="#FF0000"
-			android:textSize="24sp"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/textViewMonme" />
-
-		<TextView
 			android:id="@+id/textViewDebug"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:textColor="#00FF0A"
 			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/textViewAns" />
+			app:layout_constraintTop_toBottomOf="@id/textViewMonme" />
 
 		<TextView
 			android:id="@+id/textViewMaruBatsu"
@@ -50,9 +40,8 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:textSize="18sp"
-			app:layout_constraintBottom_toTopOf="@+id/textViewNo"
 			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@+id/textViewAns" />
+			app:layout_constraintTop_toBottomOf="@+id/textViewDebug" />
 
 		<TextView
 			android:id="@+id/textViewNo"
