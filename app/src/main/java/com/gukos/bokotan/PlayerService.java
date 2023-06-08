@@ -424,6 +424,8 @@ public class PlayerService extends Service {
 					//ファイルが存在しない
 					//new AlertDialog.Builder(getApplicationContext()).setMessage
 					// ("ファイルが存在しません。\n" + path).setPositiveButton("OK", null).show();
+					sendBcTextChange(PlayerViewName.eng, "ファイルが存在しません。" + path);
+					sendBcTextChange(PlayerViewName.jpn, "ファイルが存在しません。" + path);
 					return;
 				}
 				mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
