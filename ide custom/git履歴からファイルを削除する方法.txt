@@ -1,0 +1,5 @@
+クローンしたフォルダでcmdを開く
+git filter-branch --force --index-filter "git rm --cached --ignore-unmatch 相対パス" -- --all
+git push --all --force origin
+
+https://zenn.dev/flyingbarbarian/articles/aaf59c07b71a34
