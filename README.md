@@ -23,6 +23,26 @@ Androidで動く英単語学習アプリです。
 * テストモードでは、英単語が表示されるので日本語訳4択から一つ選んで答えます。
 * 検索モードでは、全単語とその訳から一括検索できます。
 
+![screen1](imgs/home.png)
+
+起動時の画面
+
+
+![screen2](imgs/playing.png)
+
+再生画面
+
+
+![screen3](imgs/quiz.png)
+
+テストの画面
+
+
+![screen4](imgs/search.png)
+
+検索画面
+
+
 # ビルドする方法
 
 クローンしたフォルダをAndroid Studioで開きます(画像はWindows 10で開いた場合です)。
