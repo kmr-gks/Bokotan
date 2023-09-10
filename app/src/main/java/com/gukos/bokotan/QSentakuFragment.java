@@ -214,10 +214,9 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			binding.radioButtonSeikai.setOnClickListener(this::onSkipConditionChanged);
 			binding.radioButtonHuseikai.setOnClickListener(this::onSkipConditionChanged);
 			binding.radioButtonSeikaiRate.setOnClickListener(this::onSkipConditionChanged);
-			double thresholdNum = Double.parseDouble(getStringData(context, settingFileName, skipThresholdNum, "-1"));
-			if (thresholdNum >= 0) {
-				binding.editNumberThreshold.setText(String.valueOf(thresholdNum));
-			}
+			double thresholdNum = Double.parseDouble(getStringData(context, settingFileName, skipThresholdNum, "1"));
+			binding.editNumberThreshold.setText(String.valueOf(thresholdNum));
+			
 			binding.radioButtonEqOrMore.setOnClickListener(this::onSkipThresholdChanged);
 			binding.radioButtonEqOrLess.setOnClickListener(this::onSkipThresholdChanged);
 			
