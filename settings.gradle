@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Bokotan"
 include ':app'
+include ':assetstest'
