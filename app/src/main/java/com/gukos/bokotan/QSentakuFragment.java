@@ -358,32 +358,32 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				break;
 			}
 		}
-		switch (binding.radioGroupSkipCondition.getCheckedRadioButtonId()){
+		switch (binding.radioGroupSkipCondition.getCheckedRadioButtonId()) {
 			default:
-			case R.id.radioButtonPlayAll:{
+			case R.id.radioButtonPlayAll: {
 				skipContidion = PlayerService.SkipContidion.all;
 				break;
 			}
-			case R.id.radioButtonSeikai:{
+			case R.id.radioButtonSeikai: {
 				skipContidion = PlayerService.SkipContidion.seikaisu;
 				break;
 			}
-			case R.id.radioButtonHuseikai:{
+			case R.id.radioButtonHuseikai: {
 				skipContidion = PlayerService.SkipContidion.huseikai;
 				break;
 			}
-			case R.id.radioButtonSeikaiRate:{
+			case R.id.radioButtonSeikaiRate: {
 				skipContidion = PlayerService.SkipContidion.seikairate;
 				break;
 			}
 		}
-		switch (binding.radioGroupSkipCompare.getCheckedRadioButtonId()){
+		switch (binding.radioGroupSkipCompare.getCheckedRadioButtonId()) {
 			default:
-			case R.id.radioButtonEqOrMore:{
+			case R.id.radioButtonEqOrMore: {
 				skipThreshold = PlayerService.SkipThreshold.eqormore;
 				break;
 			}
-			case R.id.radioButtonEqOrLess:{
+			case R.id.radioButtonEqOrLess: {
 				skipThreshold = PlayerService.SkipThreshold.eqorless;
 				break;
 			}
@@ -395,7 +395,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		if (view == binding.buttonQuiz) {
 			//問題出題を開始
 			TabActivity.setTabPageNum(2);
-			QuizCreator.build(context, dataBook, dataQ,skipContidion, Double.parseDouble(binding.editNumberThreshold.getText().toString()),skipThreshold);
+			QuizCreator.build(context, dataBook, dataQ, skipContidion, Double.parseDouble(binding.editNumberThreshold.getText().toString()), skipThreshold);
 		}
 		else {
 			//再生開始

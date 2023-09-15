@@ -26,6 +26,7 @@ public class MyLibrary {
 		strGaibuDataDirectory = stringDownloadPath + "data/",
 		strExceptionFIlePath = stringBokotanDirPath + "exceptions.txt",
 		packageName = MyLibrary.class.getPackage().getName();
+	
 	public static final class ExceptionManager {
 		
 		public static final String debug_tag = "tagexception";
@@ -70,6 +71,7 @@ public class MyLibrary {
 			showException(null, e, stringAdditional);
 		}
 	}
+	
 	public static final class DisplayOutput {
 		private static final int nMaxLengthOfToastString = 50;
 		
@@ -134,9 +136,9 @@ public class MyLibrary {
 		public static String getMethodName(int hierarchyOfStack) {
 			//return new Object(){}.getClass().getEnclosingMethod().getName();
 			//return Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
-			String name=Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
+			String name = Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
 			if (name.startsWith("lambda$")) {
-				name="lambda";
+				name = "lambda";
 			}
 			return name;
 		}
@@ -178,6 +180,7 @@ public class MyLibrary {
 		
 		public static String getDeviceName() {return Build.PRODUCT + "," + Build.VERSION.RELEASE;}
 	}
+	
 	public static String getNowTime() {
 		return getNowTime("yyyy年MM月dd日 H:mm");
 	}

@@ -75,7 +75,7 @@ class BluetoothEarPhoneReceiver extends BroadcastReceiver {
 
 class WiredEarPhoneReceiver extends BroadcastReceiver {
 	Runnable funcWiredEarPhoneConnected, funcWiredEarPhoneDisconnected;
-
+	
 	//本当はRunnableじゃなくてFunction<void,void>としたい。
 	public WiredEarPhoneReceiver(Runnable funcWiredEarPhoneConnected, Runnable funcWiredEarPhoneDisconnected) {
 		try {
@@ -85,7 +85,7 @@ class WiredEarPhoneReceiver extends BroadcastReceiver {
 			showException(e);
 		}
 	}
-
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
