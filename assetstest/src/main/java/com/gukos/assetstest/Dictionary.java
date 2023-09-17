@@ -54,14 +54,6 @@ public class Dictionary {
 	public enum Folder {
 		distinction,
 		eigoduke,
-		IELTS,
-		TOEFL,
-		kikujuku,
-		kikutan_TOEIC,
-		
-		kikutan_kaitei_2,
-		kikutan_bunnya,
-		business,
 		yumetan,
 		ei3,
 		eitango_joukyuu,
@@ -75,20 +67,6 @@ public class Dictionary {
 					return "Distinction";
 				case eigoduke:
 					return "Eigoduke.com";
-				case IELTS:
-					return "IELTS";
-				case TOEFL:
-					return "TOEFL";
-				case kikujuku:
-					return "キクジュク";
-				case kikutan_TOEIC:
-					return "キクタンTOEIC";
-				case kikutan_kaitei_2:
-					return "キクタン改訂第2版";
-				case kikutan_bunnya:
-					return "キクタン分野";
-				case business:
-					return "ビジネス";
 				case ei3:
 					return "英英英単語";
 				case eitango_joukyuu:
@@ -124,7 +102,24 @@ public class Dictionary {
 		WordEigoduke_Toeic_900ten,
 		WordEigoduke_Toeic_Chokuzen,
 		WordEigoduke_Toeic_jukugo,
-		kanzenkouryaku_ielts_3500,
+		PasstanWordData,
+		PasstanPhrase,
+		SVL12000,
+		tanjukugoWord,
+		tanjukugoPhrase,
+		tanjukugoExWord,
+		yumetanWord,
+		yumetanPhrase,
+		ei3_jukugo_shokyu,
+		ei3_jukugo_chukyu,
+		ei3_tango_toeic800,
+		ei3_tango_toeic990,
+		ei3_tango_shokyu,
+		ei3_tango_chukyu,
+		ei3_tango_jokyu,
+		ei3_tango_chojyokyu,
+		kyukyoku_premium_vol1,
+		kyukyoku_premium_vol2,
 		;
 		
 		public String toFileName() {
@@ -155,8 +150,42 @@ public class Dictionary {
 					return "WordEigoduke-Toeic-Chokuzen";
 				case WordEigoduke_Toeic_jukugo:
 					return "WordEigoduke-Toeic-jukugo";
-				case kanzenkouryaku_ielts_3500:
-					return "完全攻略！IELTS英単語3500.txt";
+				case PasstanWordData:
+					return "WordData";
+				case PasstanPhrase:
+					return "Phrase";
+				case SVL12000:
+					return "SVL12000";
+				case tanjukugoWord:
+					return "Word";
+				case tanjukugoPhrase:
+					return "Phrase";
+				case tanjukugoExWord:
+					return "EXWord";
+				case yumetanWord:
+					return "WordDataYume";
+				case yumetanPhrase:
+					return "PhraseDataYume";
+				case ei3_jukugo_shokyu:
+					return "英英英熟語初級編.txt";
+				case ei3_jukugo_chukyu:
+					return "英英英熟語中級編.txt";
+				case ei3_tango_toeic800:
+					return "英英英単語TOEICスコア800.txt";
+				case ei3_tango_toeic990:
+					return "英英英単語TOEICスコア990.txt";
+				case ei3_tango_shokyu:
+					return "英英英単語初級編.txt";
+				case ei3_tango_chukyu:
+					return "英英英単語中級編.txt";
+				case ei3_tango_jokyu:
+					return "英英英単語上級編.txt";
+				case ei3_tango_chojyokyu:
+					return "英英英単語超上級編.txt";
+				case kyukyoku_premium_vol1:
+					return "究極の英単語プレミアムVol1.txt";
+				case kyukyoku_premium_vol2:
+					return "究極の英単語プレミアムVol.2_EJ（英日）.txt";
 				default:
 					return "";
 			}
@@ -174,6 +203,11 @@ public class Dictionary {
 		q3,
 		q4,
 		q5,
+		y00,
+		y08,
+		y1,
+		y2,
+		y3,
 		
 		none;
 		
@@ -193,6 +227,16 @@ public class Dictionary {
 					return "4q";
 				case q5:
 					return "5q";
+				case y00:
+					return "00";
+				case y08:
+					return "08";
+				case y1:
+					return "1";
+				case y2:
+					return "2";
+				case y3:
+					return "3";
 				default:
 					return "";
 			}
@@ -216,6 +260,16 @@ public class Dictionary {
 					return "4級";
 				case q5:
 					return "5級";
+				case y00:
+					return "00";
+				case y08:
+					return "08";
+				case y1:
+					return "1";
+				case y2:
+					return "2";
+				case y3:
+					return "3";
 				case none:
 					return "級なし";
 				default:

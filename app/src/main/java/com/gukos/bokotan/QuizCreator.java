@@ -1,6 +1,12 @@
 package com.gukos.bokotan;
 
 
+import static com.gukos.bokotan.Dictionary.QuizData.PasstanWord;
+import static com.gukos.bokotan.Dictionary.QuizData.TanjukugoWord;
+import static com.gukos.bokotan.Dictionary.QuizData.YumeWord;
+import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
+import static com.gukos.bokotan.Dictionary.QuizData.monme;
+import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -12,12 +18,6 @@ import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
 import static com.gukos.bokotan.WordPhraseData.DataLang.english;
 import static com.gukos.bokotan.WordPhraseData.DataQ.all;
 import static com.gukos.bokotan.WordPhraseData.DataQ.qp1;
-import static com.gukos.bokotan.WordPhraseData.PasstanWord;
-import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
-import static com.gukos.bokotan.WordPhraseData.YumeWord;
-import static com.gukos.bokotan.WordPhraseData.huseikai;
-import static com.gukos.bokotan.WordPhraseData.monme;
-import static com.gukos.bokotan.WordPhraseData.seikai;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;

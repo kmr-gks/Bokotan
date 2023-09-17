@@ -1,5 +1,12 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.Dictionary.QuizData.PasstanPhrase;
+import static com.gukos.bokotan.Dictionary.QuizData.PasstanWord;
+import static com.gukos.bokotan.Dictionary.QuizData.TanjukugoPhrase;
+import static com.gukos.bokotan.Dictionary.QuizData.TanjukugoWord;
+import static com.gukos.bokotan.Dictionary.QuizData.YumeWord;
+import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
+import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
@@ -30,14 +37,7 @@ import static com.gukos.bokotan.WordPhraseData.DataQ.y00;
 import static com.gukos.bokotan.WordPhraseData.DataQ.y1;
 import static com.gukos.bokotan.WordPhraseData.DataQ.y2;
 import static com.gukos.bokotan.WordPhraseData.DataQ.y3;
-import static com.gukos.bokotan.WordPhraseData.PasstanPhrase;
-import static com.gukos.bokotan.WordPhraseData.PasstanWord;
-import static com.gukos.bokotan.WordPhraseData.TanjukugoPhrase;
-import static com.gukos.bokotan.WordPhraseData.TanjukugoWord;
-import static com.gukos.bokotan.WordPhraseData.YumeWord;
 import static com.gukos.bokotan.WordPhraseData.getList;
-import static com.gukos.bokotan.WordPhraseData.huseikai;
-import static com.gukos.bokotan.WordPhraseData.seikai;
 
 import android.app.AlertDialog;
 import android.app.Notification;

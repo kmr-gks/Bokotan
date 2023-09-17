@@ -290,7 +290,7 @@ public final class MyLibrary {
 		 * btvはbokotan voiceの略 <br>
 		 * .mp3にすると音楽アプリが大量の単語の音声データ楽曲と認識してしまうため。
 		 */
-		private static final String fileExtension =".btv";
+		public static final String fileExtension = ".btv";
 		
 		public static FileWriter openWriteFileWithExistCheck(Context context, String stringFileName, boolean append) {
 			try {
@@ -416,7 +416,7 @@ public final class MyLibrary {
 			}
 		}
 		
-		private static String getFileNameForTanjukugoEX(String strType, String strQTanjukugo, int num) {
+		public static String getFileNameForTanjukugoEX(String strType, String strQTanjukugo, int num) {
 			try {
 				String ans = null;
 				final int[][] dfNum = {

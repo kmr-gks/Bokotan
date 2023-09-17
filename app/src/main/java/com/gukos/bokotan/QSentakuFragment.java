@@ -471,19 +471,19 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			switch (i) {
 				default:
 				case 0: {
-					WordPhraseData.skipjoken = WordPhraseData.skipjouken.kirokunomi;
+					Dictionary.QuizData.skipjoken = Dictionary.QuizData.skipjouken.kirokunomi;
 					break;
 				}
 				case 1: {
-					WordPhraseData.skipjoken = WordPhraseData.skipjouken.onlyHugoukaku;
+					Dictionary.QuizData.skipjoken = Dictionary.QuizData.skipjouken.onlyHugoukaku;
 					break;
 				}
 				case 2: {
-					WordPhraseData.skipjoken = WordPhraseData.skipjouken.seikai1;
+					Dictionary.QuizData.skipjoken = Dictionary.QuizData.skipjouken.seikai1;
 					break;
 				}
 				case 3: {
-					WordPhraseData.skipjoken = WordPhraseData.skipjouken.huseikai2;
+					Dictionary.QuizData.skipjoken = Dictionary.QuizData.skipjouken.huseikai2;
 					break;
 				}
 			}

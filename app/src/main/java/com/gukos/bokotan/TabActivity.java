@@ -81,6 +81,7 @@ public class TabActivity extends AppCompatActivity {
 			//単語、文のデータはViewModelから取ってくる。
 			//ViewModelが空のときはファイルから読み込む。
 			var wpd = WordPhraseData.loadAssets(this);
+			Dictionary.initialize(this);
 			//正解数、不正解数のデータもViewModelから取ってくる。
 			//ViewModelが空のときはSharedPreferenceから読み込む。
 			//クイズを終了(戻るボタン)したときにViewModelのデータをSharedPreferenceに書き込む。

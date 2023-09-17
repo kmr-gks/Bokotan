@@ -6,9 +6,6 @@ import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.starts;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.setStringColored;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
-import static com.gukos.bokotan.WordPhraseData.DataLang.english;
-import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -29,7 +26,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 //UiManager.FragmentBingdingを継承するとメモリが開放されたときに
 //java.lang.RuntimeException: Unable to start activity ComponentInfo{com.gukos.bokotan/com.gukos.bokotan.TabActivity}: androidx.fragment.app.Fragment$InstantiationException: Unable to instantiate fragment com.gukos.bokotan.KensakuFragment: could not find Fragment constructor
@@ -117,12 +113,9 @@ public class KensakuFragment extends Fragment {
 				}
 			});
 			
-			onKensakuEnd(WordPhraseData.allData.size());
-			Function<Integer, Void> a = integer -> {
-				onKensakuEnd(integer);
-				return null;
-			};
-			listViewKensakuResult.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1, WordPhraseData.allData, this::onKensakuEnd));
+			printCurrentState("Dictionary.allData.size()=" + Dictionary.allData.size());
+			onKensakuEnd(Dictionary.allData.size());
+			listViewKensakuResult.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1, Dictionary.allData, this::onKensakuEnd));
 			listViewKensakuResult.setOnItemClickListener(this::onItemClick);
 		} catch (Exception e) {
 			showException(getContext(), e);
@@ -134,7 +127,7 @@ public class KensakuFragment extends Fragment {
 		//ListView#setFilterTextは内部的にListView#getAdapter#getFilter
 		// を呼び出している。また、ポップアップが表示されてしまう。
 		
-		var adapter = (WordSearchAdapter<WordPhraseData.WordInfo>) listViewKensakuResult.getAdapter();
+		var adapter = (WordSearchAdapter<Dictionary.Entry>) listViewKensakuResult.getAdapter();
 		if (newText.length() > 0) {
 			key = newText.toLowerCase();
 			//検索方法を指定する
@@ -180,9 +173,9 @@ public class KensakuFragment extends Fragment {
 	private void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 		try {
 			var item = adapterView.getItemAtPosition(i);
-			WordPhraseData.WordInfo wordInfo = (WordPhraseData.WordInfo) item;
+			Dictionary.Entry wordInfo = (Dictionary.Entry) item;
 			new AlertDialog.Builder(context)
-				.setTitle(setStringColored(wordInfo.toushiNumber + " : " + wordInfo.e, key))
+				.setTitle(setStringColored(wordInfo.numberInBook + " : " + wordInfo.content, key))
 				.setMessage(setStringColored(wordInfo.toDetailedString(), key))
 				.setPositiveButton("閉じる", null)
 				.setNeutralButton("英→日発音", (dialogInterface, i1) -> playEnglishAndJapanese(wordInfo))
@@ -194,29 +187,27 @@ public class KensakuFragment extends Fragment {
 		}
 	}
 	
-	void playEnglishAndJapanese(WordPhraseData.WordInfo wordInfo) {
+	void playEnglishAndJapanese(Dictionary.Entry wordInfo) {
 		try {
-			printCurrentState("path=" + getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber));
-			MediaPlayer mediaPlayer = MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber)));
+			var mediaPlayer = MediaPlayer.create(context, Uri.parse(wordInfo.toPath(Dictionary.DataLang.english)));
 			mediaPlayer.start();
 			mediaPlayer.setOnCompletionListener(mp -> {
 				try {
-					MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, japanese, wordInfo.localNumber))).start();
+					MediaPlayer.create(context, Uri.parse(wordInfo.toPath(Dictionary.DataLang.japanese))).start();
 				} catch (Exception e) {
-					showException(context, e);
+					//showException(context, e);
 				}
 			});
 		} catch (Exception e) {
-			showException(context, e);
+			//showException(context, e);
 		}
 	}
 	
-	void playEnglish(WordPhraseData.WordInfo wordInfo) {
+	void playEnglish(Dictionary.Entry wordInfo) {
 		try {
-			printCurrentState("path=" + getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber));
-			MediaPlayer.create(context, Uri.parse(getPathPs(wordInfo.dataBook, wordInfo.dataQ, wordInfo.mode, english, wordInfo.localNumber))).start();
+			MediaPlayer.create(context, Uri.parse(wordInfo.toPath(Dictionary.DataLang.english))).start();
 		} catch (Exception e) {
-			showException(context, e);
+			//showException(context, e);
 		}
 	}
 }
