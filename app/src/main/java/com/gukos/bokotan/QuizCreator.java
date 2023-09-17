@@ -1,6 +1,12 @@
 package com.gukos.bokotan;
 
 
+import static com.gukos.bokotan.Dictionary.BookQ;
+import static com.gukos.bokotan.Dictionary.BookQ.all;
+import static com.gukos.bokotan.Dictionary.BookQ.qp1;
+import static com.gukos.bokotan.Dictionary.DataLang.english;
+import static com.gukos.bokotan.Dictionary.Folder;
+import static com.gukos.bokotan.Dictionary.Folder.tanjukugo;
 import static com.gukos.bokotan.Dictionary.QuizData.PasstanWord;
 import static com.gukos.bokotan.Dictionary.QuizData.TanjukugoWord;
 import static com.gukos.bokotan.Dictionary.QuizData.YumeWord;
@@ -13,11 +19,6 @@ import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.sleep;
-import static com.gukos.bokotan.WordPhraseData.DataBook;
-import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
-import static com.gukos.bokotan.WordPhraseData.DataLang.english;
-import static com.gukos.bokotan.WordPhraseData.DataQ.all;
-import static com.gukos.bokotan.WordPhraseData.DataQ.qp1;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -55,7 +56,7 @@ public class QuizCreator {
 			.setMaxStreams(2)
 			.build();
 	private final ArrayList<String> e = new ArrayList<>(), j = new ArrayList<>();
-	WordPhraseData.DataQ dataQ;
+	BookQ dataQ;
 	private int nProblems = 0;
 	int ansChoice, problemNum;
 	private int[] choiceList = new int[4];
@@ -70,21 +71,7 @@ public class QuizCreator {
 	private ArrayList<String> fileNameForBook = null;
 	private BiFunction<Integer, Integer, Boolean> skipChecker;
 	
-	//コンストラクタ
-	public static QuizCreator build(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ, PlayerService.SkipContidion skipContidion, double skipThresholdNum, PlayerService.SkipThreshold skipThreshold) {
-		synchronized (QuizCreator.class) {
-			if (instance == null) {
-				instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
-			}
-			else {
-				instance.stop();
-				instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
-			}
-			return instance;
-		}
-	}
-	
-	private QuizCreator(Context context, DataBook dataBook, WordPhraseData.DataQ dataQ, PlayerService.SkipContidion skipContidion, double thresholdNum, PlayerService.SkipThreshold skipThreshold) {
+	private QuizCreator(Context context, Folder dataBook, BookQ dataQ, PlayerService.SkipContidion skipContidion, double thresholdNum, PlayerService.SkipThreshold skipThreshold) {
 		this.context = context;
 		switch (skipContidion) {
 			case all: {
@@ -192,7 +179,7 @@ public class QuizCreator {
 			}
 			printCurrentState("fileName=" + fileName);
 			switch (dataBook) {
-				case passTan: {
+				case passtan: {
 					list = WordPhraseData.getList(PasstanWord + qString);
 					break;
 				}
@@ -211,13 +198,13 @@ public class QuizCreator {
 				default: {
 					//全範囲から出題
 					keyForBook = new ArrayList<>(Arrays.asList(
-						PasstanWord + WordPhraseData.DataQ.q1,
-						PasstanWord + WordPhraseData.DataQ.qp1,
-						TanjukugoWord + WordPhraseData.DataQ.q1,
-						TanjukugoWord + WordPhraseData.DataQ.qp1,
-						YumeWord + WordPhraseData.DataQ.y1.toString().substring(1),
-						YumeWord + WordPhraseData.DataQ.y2.toString().substring(1),
-						YumeWord + WordPhraseData.DataQ.y3.toString().substring(1)
+						PasstanWord + Dictionary.BookQ.q1,
+						PasstanWord + Dictionary.BookQ.qp1,
+						TanjukugoWord + Dictionary.BookQ.q1,
+						TanjukugoWord + Dictionary.BookQ.qp1,
+						YumeWord + Dictionary.BookQ.y1.toString().substring(1),
+						YumeWord + Dictionary.BookQ.y2.toString().substring(1),
+						YumeWord + Dictionary.BookQ.y3.toString().substring(1)
 					));
 					fileNameForBook = new ArrayList<>(Arrays.asList(
 						dnTestActivity + "1q" + "Test",
@@ -231,7 +218,7 @@ public class QuizCreator {
 					sizeForBook = new ArrayList<>();
 					for (var key : keyForBook) {
 						var addList = WordPhraseData.getList(key);
-						if (key.equals(TanjukugoWord + WordPhraseData.DataQ.qp1)) {
+						if (key.equals(TanjukugoWord + Dictionary.BookQ.qp1)) {
 							addList = new ArrayList<>(list.subList(0, 1680 + 1));
 						}
 						list.addAll(addList);
@@ -247,6 +234,20 @@ public class QuizCreator {
 			}
 			setMondai();
 		});
+	}
+	
+	//コンストラクタ
+	public static QuizCreator build(Context context, Folder dataBook, BookQ dataQ, PlayerService.SkipContidion skipContidion, double skipThresholdNum, PlayerService.SkipThreshold skipThreshold) {
+		synchronized (QuizCreator.class) {
+			if (instance == null) {
+				instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
+			}
+			else {
+				instance.stop();
+				instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
+			}
+			return instance;
+		}
 	}
 	
 	private void stop() {
@@ -300,7 +301,7 @@ public class QuizCreator {
 		
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
-			String path = getPathPs(list.get(problemNum).dataBook, dataQ, WordPhraseData.Mode.word, english, list.get(problemNum).localNumber);
+			String path = getPathPs(list.get(problemNum).dataBook, dataQ, Dictionary.Datatype.word, english, list.get(problemNum).localNumber);
 			try {
 				soundPool.load(path, 1);
 			} catch (Exception exception) {

@@ -178,7 +178,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			final String[] unit = new String[100];
 			switch (dataBook) {
 				default:
-				case passTan: {
+				case passtan: {
 					int i = 0;
 					for (var derudo : new String[]{"出る度A", "出る度B", "出る度C"}) {
 						for (var hinshi : new String[]{"動詞", "名詞", "形容詞"}) {
@@ -187,7 +187,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 						}
 					}
 					unit[i] = "熟語";
-					if (dataQ == WordPhraseData.DataQ.q1) {
+					if (dataQ == Dictionary.BookQ.q1) {
 						fromTo = toFindFromAndTo[0];
 					}
 					else {
@@ -229,7 +229,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 						unit[i] = "Unit" + (i + 1);
 					}
 					unit[10] = "Unit Ex";
-					if (dataQ == WordPhraseData.DataQ.q1) {
+					if (dataQ == Dictionary.BookQ.q1) {
 						fromTo = toFindFromAndTo[12];
 					}
 					else {

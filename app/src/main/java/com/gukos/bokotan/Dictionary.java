@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.io.BufferedReader;
@@ -244,7 +245,9 @@ public class Dictionary extends ViewModel {
 		eitango_joukyuu,
 		passtan,
 		svl,
-		tanjukugo;
+		tanjukugo,
+		tanjukugoEx,
+		all;
 		
 		public String toDirName() {
 			switch (this) {
@@ -393,6 +396,7 @@ public class Dictionary extends ViewModel {
 		y1,
 		y2,
 		y3,
+		all,
 		
 		none;
 		
@@ -427,9 +431,53 @@ public class Dictionary extends ViewModel {
 			}
 		}
 		
+		public static BookQ parse(@Nullable String value) {
+			if (value == null) return null;
+			switch (value) {
+				case "1q": {
+					return q1;
+				}
+				case "p1q": {
+					return qp1;
+				}
+				case "2q": {
+					return q2;
+				}
+				case "p2q": {
+					return qp2;
+				}
+				case "3q": {
+					return q3;
+				}
+				case "4q": {
+					return q4;
+				}
+				case "5q": {
+					return q5;
+				}
+				case "00": {
+					return y00;
+				}
+				case "08": {
+					return y08;
+				}
+				case "1": {
+					return y1;
+				}
+				case "2": {
+					return y2;
+				}
+				case "3": {
+					return y3;
+				}
+				default: {
+					return null;
+				}
+			}
+		}
+		
 		@NonNull
-		@Override
-		public String toString() {
+		public String toJapanString() {
 			switch (this) {
 				case q1:
 					return "1級";
@@ -459,6 +507,28 @@ public class Dictionary extends ViewModel {
 					return "級なし";
 				default:
 					return "";
+			}
+		}
+		
+		@NonNull
+		public String toString() {
+			switch (this) {
+				case q1:
+					return "1q";
+				case qp1:
+					return "p1q";
+				case q2:
+					return "2q";
+				case qp2:
+					return "p2q";
+				case q3:
+					return "3q";
+				case q4:
+					return "4q";
+				case q5:
+					return "5q";
+				default:
+					return super.toString();
 			}
 		}
 	}
@@ -555,7 +625,7 @@ public class Dictionary extends ViewModel {
 				this.content,
 				this.folder.toString(),
 				this.bookName.toString(),
-				this.bookQ.toString(),
+				this.bookQ.toJapanString(),
 				//String.valueOf(this.numberInBook),
 				this.datatype.toString(),
 				this.dataLang.toString(),

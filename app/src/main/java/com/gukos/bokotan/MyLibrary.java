@@ -1,6 +1,8 @@
 package com.gukos.bokotan;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.gukos.bokotan.Dictionary.BookQ;
+import static com.gukos.bokotan.Dictionary.Datatype;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.Unit.toFindFromAndTo;
@@ -323,25 +325,25 @@ public final class MyLibrary {
 			return content;
 		}
 		
-		public static String getPathPs(WordPhraseData.DataBook dataBook, WordPhraseData.DataQ dataQ, WordPhraseData.Mode mode, WordPhraseData.DataLang dataLang, int tangoNum) {
+		public static String getPathPs(Dictionary.Folder dataBook, BookQ dataQ, Datatype mode, Dictionary.DataLang dataLang, int tangoNum) {
 			try {
-				WordPhraseData.Mode dataType;
-				if (mode == WordPhraseData.Mode.word) dataType = WordPhraseData.Mode.word;
-				else dataType = WordPhraseData.Mode.phrase;
+				Datatype dataType;
+				if (mode == Datatype.word) dataType = Datatype.word;
+				else dataType = Datatype.phrase;
 				String str = dataQ.toString();
-				if (dataBook == WordPhraseData.DataBook.tanjukugo) str = "tanjukugo" + str;
+				if (dataBook == Dictionary.Folder.tanjukugo) str = "tanjukugo" + str;
 				String strDataQ = str;
 				String path = strGaibuDataDirectory;
 				String type;
 				switch (dataBook) {
-					case passTan: {
-						if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.english)
+					case passtan: {
+						if (dataType == Datatype.word && dataLang == Dictionary.DataLang.english)
 							type = "英";
-						else if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == Datatype.word && dataLang == Dictionary.DataLang.japanese)
 							type = "訳";
-						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.english)
+						else if (dataType == Datatype.phrase && dataLang == Dictionary.DataLang.english)
 							type = "例";
-						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == Datatype.phrase && dataLang == Dictionary.DataLang.japanese)
 							type = "日";
 						else return null;
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
@@ -349,13 +351,13 @@ public final class MyLibrary {
 						break;
 					}
 					case yumetan: {
-						if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.english)
+						if (dataType == Datatype.word && dataLang == Dictionary.DataLang.english)
 							type = "W英";
-						else if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == Datatype.word && dataLang == Dictionary.DataLang.japanese)
 							type = "W日";
-						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.english)
+						else if (dataType == Datatype.phrase && dataLang == Dictionary.DataLang.english)
 							type = "P英";
-						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == Datatype.phrase && dataLang == Dictionary.DataLang.japanese)
 							type = "P日";
 						else return null;
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
@@ -363,13 +365,13 @@ public final class MyLibrary {
 						break;
 					}
 					case tanjukugo: {
-						if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.english)
+						if (dataType == Datatype.word && dataLang == Dictionary.DataLang.english)
 							type = "英語";
-						else if (dataType == WordPhraseData.Mode.word && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == Datatype.word && dataLang == Dictionary.DataLang.japanese)
 							type = "日本語";
-						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.english)
+						else if (dataType == Datatype.phrase && dataLang == Dictionary.DataLang.english)
 							type = "例文";
-						else if (dataType == WordPhraseData.Mode.phrase && dataLang == WordPhraseData.DataLang.japanese)
+						else if (dataType == Datatype.phrase && dataLang == Dictionary.DataLang.japanese)
 							type = "例文日本語";
 						else return null;
 						path += strDataQ + "/" + getFileNameForTanjukugoEX(type, strDataQ, tangoNum) + fileExtension;

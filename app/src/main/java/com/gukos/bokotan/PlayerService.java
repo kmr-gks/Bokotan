@@ -1,5 +1,18 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.Dictionary.BookQ;
+import static com.gukos.bokotan.Dictionary.BookQ.q1;
+import static com.gukos.bokotan.Dictionary.BookQ.qp1;
+import static com.gukos.bokotan.Dictionary.BookQ.y00;
+import static com.gukos.bokotan.Dictionary.BookQ.y1;
+import static com.gukos.bokotan.Dictionary.BookQ.y2;
+import static com.gukos.bokotan.Dictionary.BookQ.y3;
+import static com.gukos.bokotan.Dictionary.DataLang.english;
+import static com.gukos.bokotan.Dictionary.DataLang.japanese;
+import static com.gukos.bokotan.Dictionary.Folder.all;
+import static com.gukos.bokotan.Dictionary.Folder.passtan;
+import static com.gukos.bokotan.Dictionary.Folder.tanjukugo;
+import static com.gukos.bokotan.Dictionary.Folder.yumetan;
 import static com.gukos.bokotan.Dictionary.QuizData.PasstanPhrase;
 import static com.gukos.bokotan.Dictionary.QuizData.PasstanWord;
 import static com.gukos.bokotan.Dictionary.QuizData.TanjukugoPhrase;
@@ -24,19 +37,6 @@ import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_NAME;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_SINGLE_LINE;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
-import static com.gukos.bokotan.WordPhraseData.DataBook.all;
-import static com.gukos.bokotan.WordPhraseData.DataBook.passTan;
-import static com.gukos.bokotan.WordPhraseData.DataBook.tanjukugo;
-import static com.gukos.bokotan.WordPhraseData.DataBook.yumetan;
-import static com.gukos.bokotan.WordPhraseData.DataLang.english;
-import static com.gukos.bokotan.WordPhraseData.DataLang.japanese;
-import static com.gukos.bokotan.WordPhraseData.DataQ;
-import static com.gukos.bokotan.WordPhraseData.DataQ.q1;
-import static com.gukos.bokotan.WordPhraseData.DataQ.qp1;
-import static com.gukos.bokotan.WordPhraseData.DataQ.y00;
-import static com.gukos.bokotan.WordPhraseData.DataQ.y1;
-import static com.gukos.bokotan.WordPhraseData.DataQ.y2;
-import static com.gukos.bokotan.WordPhraseData.DataQ.y3;
 import static com.gukos.bokotan.WordPhraseData.getList;
 
 import android.app.AlertDialog;
@@ -83,48 +83,39 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
 		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
 		PLAYERSERVICE_MESSAGE_NOW = "ps_mn";
-	public enum SkipContidion {
-		all,seikaisu,huseikai,seikairate
-	}
-	public enum SkipThreshold {
-		eqormore,eqorless
-	}
+	
+	public static float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 2f;
+	static ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
+	
 	Context context;
 	Handler handler;
 	private DrawReceiver drawReceiver;
-	WordPhraseData.Mode selectMode, nowMode = WordPhraseData.Mode.word;
-	WordPhraseData.DataLang nowLang = english;
-	static ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
-	ArrayList<WordPhraseData.WordInfo> phraseDataList = new ArrayList<>();
 	private final HashSet<String> appearedWords = new HashSet<>();
 	private final HashMap<String, Integer> knownWordMap = new HashMap<>();
-	WordPhraseData.DataBook dataBook = passTan;
-	DataQ dataQ;
-	public static float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 2f;
-	private int now = 1, count = 1;
+	Dictionary.Datatype selectMode, nowMode = Dictionary.Datatype.word;
+	Dictionary.Folder dataBook = passtan;
+	Dictionary.DataLang nowLang = english;
+	ArrayList<WordPhraseData.WordInfo> phraseDataList = new ArrayList<>();
+	BookQ dataQ;
 	MediaPlayer mediaPlayer;
 	String path;
 	boolean isPlaying, isJoshiChecked = false;
 	PlayerService.SkipContidion skipContidion;
 	PlayerService.SkipThreshold skipThreshold;
-	private double thresholdNum;
 	BiFunction<Integer, Integer, Boolean> skipChecker;
 	int seikaisu = 0, huseikaisu = 0;
 	ArrayList<String> fileNames;
 	String fileName;
-	ArrayList<Integer> sizeForBook=null;
-	
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
+	ArrayList<Integer> sizeForBook = null;
+	private int now = 1, count = 1;
+	private double thresholdNum;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		selectMode = (WordPhraseData.Mode) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
-		if (selectMode == WordPhraseData.Mode.phrase) nowMode = WordPhraseData.Mode.phrase;
-		dataBook = (WordPhraseData.DataBook) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
-		dataQ = (DataQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
+		selectMode = (Dictionary.Datatype) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
+		if (selectMode == Dictionary.Datatype.phrase) nowMode = Dictionary.Datatype.phrase;
+		dataBook = (Dictionary.Folder) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
+		dataQ = (BookQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
 		now = intent.getIntExtra(PLAYERSERVICE_EXTRA_NOW, -1);
 		skipContidion = (SkipContidion) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_COND);
 		thresholdNum = intent.getDoubleExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, 0);
@@ -160,13 +151,13 @@ public class PlayerService extends Service {
 			//既出の単語を飛ばす
 			appearedWords.clear();
 			if (dataBook != all) {
-				if (dataBook == passTan || dataBook == tanjukugo) {
+				if (dataBook == passtan || dataBook == tanjukugo) {
 					getList(YumeWord + y00.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
 					getList(YumeWord + y1.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
 					getList(YumeWord + y2.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
 					getList(YumeWord + y3.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
 				}
-				if ((dataBook == passTan && dataQ == q1) || dataBook == tanjukugo) {
+				if ((dataBook == passtan && dataQ == q1) || dataBook == tanjukugo) {
 					getList(PasstanWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
 				}
 				if (dataBook == tanjukugo) {
@@ -180,9 +171,9 @@ public class PlayerService extends Service {
 		}
 		
 		if (dataBook==tanjukugo){
-			fileName=dnTestActivity+"tanjukugo"+dataQ.toString()+"Test";
+			fileName = dnTestActivity + "tanjukugo" + dataQ.toString() + "Test";
 		}else{
-			fileName=dnTestActivity+dataQ.toString()+"Test";
+			fileName = dnTestActivity + dataQ.toString() + "Test";
 		}
 		
 		context = getApplicationContext();
@@ -279,7 +270,7 @@ public class PlayerService extends Service {
 			phraseDataList = new ArrayList<>();
 			switch (dataBook) {
 				default:
-				case passTan: {
+				case passtan: {
 					wordDataList = WordPhraseData.getList(PasstanWord + dataQ);
 					phraseDataList = WordPhraseData.getList(PasstanPhrase + dataQ);
 					break;
@@ -294,9 +285,9 @@ public class PlayerService extends Service {
 					break;
 				}
 				case all: {
-					wordDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y1.toString().substring(1)));
-					wordDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y2.toString().substring(1)).subList(1, 1000 + 1));
-					wordDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y3.toString().substring(1)).subList(1, 800 + 1));
+					wordDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y1.toString().substring(1)));
+					wordDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y2.toString().substring(1)).subList(1, 1000 + 1));
+					wordDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y3.toString().substring(1)).subList(1, 800 + 1));
 					
 					wordDataList.addAll(WordPhraseData.getList(PasstanWord + qp1).subList(1, 1850 + 1));
 					wordDataList.addAll(WordPhraseData.getList(PasstanWord + q1).subList(1, 2400 + 1));
@@ -305,10 +296,10 @@ public class PlayerService extends Service {
 					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + qp1).subList(1, 1680 + 1));
 					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + q1).subList(1, 2364 + 1));
 					
-					if (selectMode == WordPhraseData.Mode.phrase || selectMode == WordPhraseData.Mode.wordPlusPhrase) {
-						phraseDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y1.toString().substring(1)));
-						phraseDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y2.toString().substring(1)).subList(1, 1000 + 1));
-						phraseDataList.addAll(WordPhraseData.getList(YumeWord + DataQ.y3.toString().substring(1)).subList(1, 800 + 1));
+					if (selectMode == Dictionary.Datatype.phrase || selectMode == Dictionary.Datatype.mix) {
+						phraseDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y1.toString().substring(1)));
+						phraseDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y2.toString().substring(1)).subList(1, 1000 + 1));
+						phraseDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y3.toString().substring(1)).subList(1, 800 + 1));
 						
 						phraseDataList.addAll(WordPhraseData.getList(PasstanPhrase + qp1).subList(1, 1850 + 1));
 						phraseDataList.addAll(WordPhraseData.getList(PasstanPhrase + q1).subList(1, 2400 + 1));
@@ -317,16 +308,16 @@ public class PlayerService extends Service {
 						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + q1).subList(1, 2364 + 1));
 					}
 					
-					if(dataBook==all){
-						sizeForBook=new ArrayList<>(Arrays.asList(1001,1000,800,1850,2400,1680, 2364));
-						fileNames=new ArrayList<>();
-						fileNames.add(dnTestActivity+DataQ.y1+"Test");
-						fileNames.add(dnTestActivity+DataQ.y2+"Test");
-						fileNames.add(dnTestActivity+DataQ.y3+"Test");
-						fileNames.add(dnTestActivity+qp1+"Test");
-						fileNames.add(dnTestActivity+q1+"Test");
-						fileNames.add(dnTestActivity+"tanjukugo"+qp1+"Test");
-						fileNames.add(dnTestActivity+"tanjukugo"+q1+"Test");
+					if (dataBook == all) {
+						sizeForBook = new ArrayList<>(Arrays.asList(1001, 1000, 800, 1850, 2400, 1680, 2364));
+						fileNames = new ArrayList<>();
+						fileNames.add(dnTestActivity + BookQ.y1 + "Test");
+						fileNames.add(dnTestActivity + BookQ.y2 + "Test");
+						fileNames.add(dnTestActivity + BookQ.y3 + "Test");
+						fileNames.add(dnTestActivity + qp1 + "Test");
+						fileNames.add(dnTestActivity + q1 + "Test");
+						fileNames.add(dnTestActivity + "tanjukugo" + qp1 + "Test");
+						fileNames.add(dnTestActivity + "tanjukugo" + q1 + "Test");
 					}
 					
 					//単語データをmapに格納
@@ -344,16 +335,16 @@ public class PlayerService extends Service {
 		});
 		return START_NOT_STICKY;
 	}
-	
+
 	private void onPlay() {
 		//リソースの開放
 		releaseMediaPlayer(mediaPlayer);
 		if (isPlaying) {
 			ArrayList<WordPhraseData.WordInfo> list;
-			if (nowMode == WordPhraseData.Mode.phrase) list = phraseDataList;
+			if (nowMode == Dictionary.Datatype.phrase) list = phraseDataList;
 			else list = wordDataList;
 			
-			if (wordDataList.size()==0){
+			if (wordDataList.size() == 0) {
 				puts("データがありません。");
 				new AlertDialog.Builder(context).setMessage("データがありません。").setPositiveButton("OK", (dialog, which) -> {
 					stopSelf();
@@ -361,7 +352,7 @@ public class PlayerService extends Service {
 			}
 			
 			//助詞の確認
-			if (dataBook == passTan && nowMode == WordPhraseData.Mode.word && nowLang == japanese && !isJoshiChecked) {
+			if (dataBook == passtan && nowMode == Dictionary.Datatype.word && nowLang == japanese && !isJoshiChecked) {
 				isJoshiChecked = true;
 				String word = list.get(now).j;
 				if (word.charAt(0) == '～') word = word.substring(1);
@@ -388,7 +379,7 @@ public class PlayerService extends Service {
 				sendBcTextChange(PlayerViewName.genzai, "No." + now);
 				sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
 				
-				if (nowMode == WordPhraseData.Mode.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
+				if (nowMode == Dictionary.Datatype.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
 					sendBcTextChange(PlayerViewName.hatsuon, WordPhraseData.HatsuonKigou.getHatsuon(list.get(now).e));
 				}
 				else {
@@ -398,7 +389,7 @@ public class PlayerService extends Service {
 				sendBcTextChange(PipActivity.PipViewName.num, "No." + now);
 				sendBcTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
 				//文を再生しているときは、単語も表示しておく。
-				if (selectMode == WordPhraseData.Mode.wordPlusPhrase && nowMode == WordPhraseData.Mode.phrase) {
+				if (selectMode == Dictionary.Datatype.mix && nowMode == Dictionary.Datatype.phrase) {
 					sendBcTextChange(PlayerViewName.subE, wordDataList.get(now).e);
 					sendBcTextChange(PlayerViewName.subJ, wordDataList.get(now).j);
 				}
@@ -407,13 +398,13 @@ public class PlayerService extends Service {
 					sendBcTextChange(PlayerViewName.subJ, "");
 				}
 				//英単語を表示するときは、英語の表示を一行にする
-				if (nowMode == WordPhraseData.Mode.word) {
-					sendBcTextLinesChange(PlayerViewName.eng,list.get(now).e,true);
-					sendBcTextLinesChange(PipActivity.PipViewName.eng,list.get(now).e,true);
+				if (nowMode == Dictionary.Datatype.word) {
+					sendBcTextLinesChange(PlayerViewName.eng, list.get(now).e, true);
+					sendBcTextLinesChange(PipActivity.PipViewName.eng, list.get(now).e, true);
 				}
 				else {
-					sendBcTextLinesChange(PlayerViewName.eng,list.get(now).e,false);
-					sendBcTextLinesChange(PipActivity.PipViewName.eng,list.get(now).e,false);
+					sendBcTextLinesChange(PlayerViewName.eng, list.get(now).e, false);
+					sendBcTextLinesChange(PipActivity.PipViewName.eng, list.get(now).e, false);
 				}
 			}
 			
@@ -437,15 +428,15 @@ public class PlayerService extends Service {
 				else {
 					//現在日本語:英語にする
 					nowLang = english;
-					if (selectMode == WordPhraseData.Mode.wordPlusPhrase) {
+					if (selectMode == Dictionary.Datatype.mix) {
 						//単語->文
-						if (nowMode == WordPhraseData.Mode.word) {
+						if (nowMode == Dictionary.Datatype.word) {
 							//現在単語だった
-							nowMode = WordPhraseData.Mode.phrase;
+							nowMode = Dictionary.Datatype.phrase;
 						}
 						else {
 							//文だった
-							nowMode = WordPhraseData.Mode.word;
+							nowMode = Dictionary.Datatype.word;
 							goNext();
 						}
 					}
@@ -461,6 +452,19 @@ public class PlayerService extends Service {
 				showException(context, exception);
 			}
 		}
+	}
+	
+	@Override
+	public IBinder onBind(Intent intent) {
+		return null;
+	}
+	
+	public enum SkipContidion {
+		all, seikaisu, huseikai, seikairate
+	}
+	
+	public enum SkipThreshold {
+		eqormore, eqorless
 	}
 	
 	private void releaseMediaPlayer(MediaPlayer mediaPlayer) {

@@ -9,6 +9,9 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
+import static com.gukos.bokotan.Dictionary.BookQ;
+import static com.gukos.bokotan.Dictionary.Datatype;
+import static com.gukos.bokotan.Dictionary.Folder;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
@@ -59,8 +62,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
-import com.gukos.bokotan.WordPhraseData.DataBook;
-import com.gukos.bokotan.WordPhraseData.DataQ;
 import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
 import java.io.FileWriter;
@@ -78,8 +79,8 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	public static SwitchMaterial switchQuizHatsuon, switchQuizOX, switchShouHatsuon;
 	public static TreeMap<String, GogenYomu> trGogenYomu;
 	
-	public static DataBook dataBook;
-	public static DataQ dataQ;
+	public static Folder dataBook;
+	public static BookQ dataQ;
 	
 	public QSentakuFragment() {
 		super(FragmentQSentakuBinding::inflate);
@@ -317,44 +318,44 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		//スピナーから本と級を取得
 		switch (binding.spinnerBookQ.getSelectedItemPosition()) {
 			case 0: {
-				dataBook = DataBook.yumetan;
-				dataQ = DataQ.y1;
+				dataBook = Folder.yumetan;
+				dataQ = BookQ.y1;
 				break;
 			}
 			case 1: {
-				dataBook = DataBook.yumetan;
-				dataQ = DataQ.y2;
+				dataBook = Folder.yumetan;
+				dataQ = BookQ.y2;
 				break;
 			}
 			case 2: {
-				dataBook = DataBook.yumetan;
-				dataQ = DataQ.y3;
+				dataBook = Folder.yumetan;
+				dataQ = BookQ.y3;
 				break;
 			}
 			case 3: {
-				dataBook = DataBook.passTan;
-				dataQ = DataQ.q1;
+				dataBook = Folder.passtan;
+				dataQ = BookQ.q1;
 				break;
 			}
 			default:
 			case 4: {
-				dataBook = DataBook.passTan;
-				dataQ = DataQ.qp1;
+				dataBook = Folder.passtan;
+				dataQ = BookQ.qp1;
 				break;
 			}
 			case 5: {
-				dataBook = DataBook.tanjukugo;
-				dataQ = DataQ.q1;
+				dataBook = Folder.tanjukugo;
+				dataQ = BookQ.q1;
 				break;
 			}
 			case 6: {
-				dataBook = DataBook.tanjukugo;
-				dataQ = DataQ.qp1;
+				dataBook = Folder.tanjukugo;
+				dataQ = BookQ.qp1;
 				break;
 			}
 			case 7: {
-				dataBook = DataBook.all;
-				dataQ = DataQ.all;
+				dataBook = Folder.all;
+				dataQ = BookQ.all;
 				break;
 			}
 		}
@@ -400,9 +401,9 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		else {
 			//再生開始
 			TabActivity.setTabPageNum(1);
-			WordPhraseData.Mode mode = WordPhraseData.Mode.word;
-			if (view == binding.buttonPhrase) mode = WordPhraseData.Mode.phrase;
-			else if (view == binding.buttonWP) mode = WordPhraseData.Mode.wordPlusPhrase;
+			Datatype mode = Datatype.word;
+			if (view == binding.buttonPhrase) mode = Datatype.phrase;
+			else if (view == binding.buttonWP) mode = Datatype.mix;
 			Intent intent = new Intent(context, PlayerService.class)
 				.putExtra(PLAYERSERVICE_EXTRA_MODE, mode)
 				.putExtra(PLAYERSERVICE_EXTRA_BOOK, dataBook)
