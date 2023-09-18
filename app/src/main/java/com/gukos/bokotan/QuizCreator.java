@@ -1,22 +1,21 @@
 package com.gukos.bokotan;
 
 
+import static com.gukos.bokotan.Dictionary.BookName.PasstanWordData;
+import static com.gukos.bokotan.Dictionary.BookName.tanjukugoWord;
+import static com.gukos.bokotan.Dictionary.BookName.yumetanWord;
 import static com.gukos.bokotan.Dictionary.BookQ;
 import static com.gukos.bokotan.Dictionary.BookQ.all;
+import static com.gukos.bokotan.Dictionary.BookQ.q1;
 import static com.gukos.bokotan.Dictionary.BookQ.qp1;
 import static com.gukos.bokotan.Dictionary.DataLang.english;
 import static com.gukos.bokotan.Dictionary.Folder;
 import static com.gukos.bokotan.Dictionary.Folder.tanjukugo;
-import static com.gukos.bokotan.Dictionary.QuizData.PasstanWord;
-import static com.gukos.bokotan.Dictionary.QuizData.TanjukugoWord;
-import static com.gukos.bokotan.Dictionary.QuizData.YumeWord;
 import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
 import static com.gukos.bokotan.Dictionary.QuizData.monme;
 import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getPathPs;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.sleep;
 
@@ -62,8 +61,7 @@ public class QuizCreator {
 	private int[] choiceList = new int[4];
 	private String fileName;
 	private final Random random = new Random();
-	
-	private ArrayList<WordPhraseData.WordInfo> list = new ArrayList<>();
+	private ArrayList<Dictionary.Entry> list = new ArrayList<>();
 	
 	//全範囲から問題を出す時に使用する。全体の通し番号から、本の名前と、その本の中の通し番号を返す。
 	private ArrayList<String> keyForBook = null;
@@ -111,12 +109,10 @@ public class QuizCreator {
 				if (bundle.containsKey(QTHREAD_EXTRA_CHOICE)) {
 					//選択肢を押した時
 					int choice = bundle.getInt(QTHREAD_EXTRA_CHOICE, -1);
-					printCurrentState("choice:" + choice);
 					if (ansChoice == choice) {
 						if (QSentakuFragment.switchQuizOX.isChecked()) {
 							soundPool.load(context, R.raw.seikai, 1);
 						}
-						var info = list.get(problemNum);
 						sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
 						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
 						seikai.get(fileName)[problemNum]++;
@@ -125,7 +121,6 @@ public class QuizCreator {
 						if (QSentakuFragment.switchQuizOX.isChecked()) {
 							soundPool.load(context, R.raw.huseikai, 1);
 						}
-						var info = list.get(problemNum);
 						sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
 						huseikai.get(fileName)[problemNum]++;
@@ -177,34 +172,34 @@ public class QuizCreator {
 			else {
 				fileName = dnTestActivity + qString + "Test";
 			}
-			printCurrentState("fileName=" + fileName);
 			switch (dataBook) {
 				case passtan: {
-					list = WordPhraseData.getList(PasstanWord + qString);
+					list = Dictionary.getList(PasstanWordData, dataQ);
 					break;
 				}
 				case tanjukugo: {
-					list = WordPhraseData.getList(TanjukugoWord + qString);
+					list = Dictionary.getList(tanjukugoWord, dataQ);
+					/*
 					if (dataQ == qp1) {
 						list = new ArrayList<>(list.subList(0, 1680 + 1));
 					}
-					//list.addAll(WordPhraseData.getList(TanjukugoEXWord + qString));
+					*/
 					break;
 				}
 				case yumetan: {
-					list = WordPhraseData.getList(YumeWord + qString.substring(1));
+					list = Dictionary.getList(yumetanWord, dataQ);
 					break;
 				}
 				default: {
 					//全範囲から出題
 					keyForBook = new ArrayList<>(Arrays.asList(
-						PasstanWord + Dictionary.BookQ.q1,
-						PasstanWord + Dictionary.BookQ.qp1,
-						TanjukugoWord + Dictionary.BookQ.q1,
-						TanjukugoWord + Dictionary.BookQ.qp1,
-						YumeWord + Dictionary.BookQ.y1.toString().substring(1),
-						YumeWord + Dictionary.BookQ.y2.toString().substring(1),
-						YumeWord + Dictionary.BookQ.y3.toString().substring(1)
+						PasstanWordData.toString() + q1,
+						PasstanWordData.toString() + qp1,
+						tanjukugoWord.toString() + q1,
+						tanjukugoWord.toString() + qp1,
+						yumetanWord.toString() + Dictionary.BookQ.y1,
+						yumetanWord.toString() + Dictionary.BookQ.y2,
+						yumetanWord.toString() + Dictionary.BookQ.y3
 					));
 					fileNameForBook = new ArrayList<>(Arrays.asList(
 						dnTestActivity + "1q" + "Test",
@@ -217,18 +212,21 @@ public class QuizCreator {
 					));
 					sizeForBook = new ArrayList<>();
 					for (var key : keyForBook) {
-						var addList = WordPhraseData.getList(key);
+						var addList = Dictionary.getList(key);
+						/*
 						if (key.equals(TanjukugoWord + Dictionary.BookQ.qp1)) {
 							addList = new ArrayList<>(list.subList(0, 1680 + 1));
 						}
-						list.addAll(addList);
+						 */
 						sizeForBook.add(addList.size());
-						printCurrentState("key=" + key + " size=" + addList.size());
 					}
-					
-					for (var k : seikai.keySet()) {
-						printCurrentState("seikai key=" + k + " size=" + seikai.get(k).length);
-					}
+					list.addAll(Dictionary.getList(PasstanWordData, q1));
+					list.addAll(Dictionary.getList(PasstanWordData, qp1));
+					list.addAll(Dictionary.getList(tanjukugoWord, q1));
+					list.addAll(Dictionary.getList(tanjukugoWord, qp1));
+					list.addAll(Dictionary.getList(yumetanWord, BookQ.y1));
+					list.addAll(Dictionary.getList(yumetanWord, BookQ.y2));
+					list.addAll(Dictionary.getList(yumetanWord, BookQ.y3));
 					break;
 				}
 			}
@@ -270,17 +268,14 @@ public class QuizCreator {
 			//出題する単語を決定
 			problemNum = random.nextInt(list.size());
 			if (dataQ == all) {
-				//printCurrentState("data:" + list.get(problemNum).toString());
 				//全範囲から出題
 				int sum = 0;
 				for (int i = 0; i < sizeForBook.size(); i++) {
 					sum += sizeForBook.get(i);
 					if (problemNum < sum) {
 						//i番目の本から出題
-						list = WordPhraseData.getList(keyForBook.get(i));
+						list = Dictionary.getList(keyForBook.get(i));
 						problemNum -= sum - sizeForBook.get(i);
-						printCurrentState("fileName=" + fileNameForBook.get(i));
-						printCurrentState("i=" + i + " problemNum=" + problemNum + " key=" + keyForBook.get(i) + ",info=" + list.get(problemNum).toString());
 						fileName = fileNameForBook.get(i);
 						break;
 					}
@@ -301,7 +296,7 @@ public class QuizCreator {
 		
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生
-			String path = getPathPs(list.get(problemNum).dataBook, dataQ, Dictionary.Datatype.word, english, list.get(problemNum).localNumber);
+			var path = list.get(problemNum).toPath(english);
 			try {
 				soundPool.load(path, 1);
 			} catch (Exception exception) {
@@ -313,7 +308,9 @@ public class QuizCreator {
 		do {
 			for (int i = 0; i < 4; i++) {
 				if (ansChoice - 1 == i) choiceList[i] = problemNum;
-				else choiceList[i] = random.nextInt(list.size());
+				else {
+					choiceList[i] = random.nextInt(list.size());
+				}
 			}
 		} while (Arrays.stream(choiceList).distinct().count() != 4);
 		
@@ -348,7 +345,6 @@ public class QuizCreator {
 	}
 	
 	private void sendBroadcastColorChange(TestFragment.ViewName viewName, int color) {
-		//printCurrentState(",view=" + viewName + ",text=" + text);
 		Intent broadcastIntent =
 			new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
 				.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES, TestFragment.ViewProperties.TextColor)

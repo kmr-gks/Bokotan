@@ -281,7 +281,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					var wordAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
 					for (int i = fromTo[index][0]; i <= fromTo[index][1]; i++) {
 						var data = PlayerService.wordDataList.get(i);
-						wordAdapter.add(i + "," + data.localNumber + ", " + data.e + " " + data.j);
+						wordAdapter.add(i + "," + data.numberInBook + ", " + data.e + " " + data.j);
 					}
 					new AlertDialog.Builder(context)
 						.setTitle("単語を選択してください。")

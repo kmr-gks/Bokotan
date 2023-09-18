@@ -408,7 +408,7 @@ public class PlayerService extends Service {
 				}
 			}
 			
-			path = getPathPs(wordDataList.get(now).dataBook, wordDataList.get(now).dataQ, nowMode, nowLang, wordDataList.get(now).localNumber);
+			path = getPathPs(wordDataList.get(now).folder, wordDataList.get(now).bookQ, nowMode, nowLang, wordDataList.get(now).numberInBook);
 			try {
 				mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
 				if (mediaPlayer==null){

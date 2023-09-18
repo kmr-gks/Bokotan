@@ -95,7 +95,6 @@ public class GogenYomuFactory {
 			GogenYomu gy = trGogenYomu.get(word);
 			return gy == null ? "" : gy.getGogenString(containsBunrui, containsSankou);
 		} catch (Exception e) {
-			MyLibrary.ExceptionManager.showException(e);
 			return "(null string)";
 		}
 	}

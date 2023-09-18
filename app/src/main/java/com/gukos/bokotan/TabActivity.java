@@ -60,7 +60,7 @@ public class TabActivity extends AppCompatActivity {
 					case 2: {
 						runOnUiThread(() -> setTabPageNum(0));
 						//クイズをしているなら、ViewModelのデータを保存する。
-						new Thread(() -> WordPhraseData.saveQuizData(getApplicationContext())).start();
+						new Thread(() -> Dictionary.QuizData.saveQuizData(getApplicationContext())).start();
 						getApplicationContext().sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_STOP, 0));
 						break;
 					}

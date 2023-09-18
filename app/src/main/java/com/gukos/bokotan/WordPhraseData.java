@@ -15,9 +15,6 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.N_GENZAI_NA
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getStringData;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.intArrayToString;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.putStringData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.stringToIntArray;
 import static com.gukos.bokotan.MyLibrary.tangoNumToString;
 import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.SetHatsuonKigou;
@@ -42,8 +39,27 @@ import java.util.function.Function;
 public class WordPhraseData extends ViewModel {
 	private static boolean isEmpty = true;
 	
-	private static void putDataToMap(String fileName, Context context, Folder dataBook, String q, String category, Function<Integer, String> getSubCategory, String qName, boolean mapput) {
-		var list = readToList(fileName, context, dataBook, q);
+	public static void putDataToMap(String fileName, Context context, Folder dataBook, String q, String category, Function<Integer, String> getSubCategory, String qName, boolean mapput) {
+		ArrayList<WordInfo> list1 = new ArrayList<>();
+		String fileName1 = fileName + ".e.txt", fileName2 = fileName + ".j.txt";
+		try {
+			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
+			BufferedReader br1 = new BufferedReader(new InputStreamReader(is1)), br2 = new BufferedReader(new InputStreamReader(is2));
+			String dataE, dataJ;
+			int i1 = 0;
+			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
+				list1.add(new WordInfo(dataE, dataJ, i1, dataBook, q));
+				i1++;
+			}
+			is1.close();
+			is2.close();
+			br1.close();
+			br2.close();
+		} catch (Exception e) {
+			showException(context, e);
+			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
+		}
+		var list = list1;
 		if (getSubCategory == null) {
 			for (int i = 1; i < list.size(); i++) {
 				Dictionary.QuizData.allData.add(new WordInfo(dataBook, BookQ.parse(q), Datatype.word, category, null, list, i, qName));
@@ -59,111 +75,6 @@ public class WordPhraseData extends ViewModel {
 		}
 	}
 	
-	public static ArrayList<WordInfo> readToList(String fileName, Context context, Folder dataBook, String dataQ) {
-		ArrayList<WordInfo> list = new ArrayList<>();
-		String fileName1 = fileName + ".e.txt", fileName2 = fileName + ".j.txt";
-		try {
-			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
-			BufferedReader br1 = new BufferedReader(new InputStreamReader(is1)), br2 = new BufferedReader(new InputStreamReader(is2));
-			String dataE, dataJ;
-			int i = 0;
-			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
-				list.add(new WordInfo(dataE, dataJ, i, dataBook, dataQ));
-				i++;
-			}
-			is1.close();
-			is2.close();
-			br1.close();
-			br2.close();
-		} catch (Exception e) {
-			showException(context, e);
-			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
-		}
-		return list;
-	}
-	
-	public static void readAllData(Context context) {
-		//wordphrasedataの読み取り
-		//ファイルを開いて読み込む
-		var startTime = System.currentTimeMillis();
-		WordPhraseData.WordInfo.size = 0;
-		Map<String, String> mapQName = new HashMap<>() {{
-			put("1q", "1級");
-			put("p1q", "準1級");
-			put("2q", "2級");
-			put("p2q", "準2級");
-			put("3q", "3級");
-			put("4q", "4級");
-			put("5q", "5級");
-			put("00", "ユメタン0基礎");
-			put("08", "ユメタン0");
-			put("1", "ユメタン1");
-			put("2", "ユメタン2");
-			put("3", "ユメタン3");
-			put("-eiken-jukugo", "英検熟語");
-			put("-eikenp1-jukugo", "英検熟語(準1)");
-			put("-Toefl-Chokuzen", "TOEFL直前");
-			put("-Toeic-500ten", "TOEIC500点");
-			put("-Toeic-700ten", "TOEIC700点");
-			put("-Toeic-900ten", "TOEIC900点");
-			put("-Toeic-Chokuzen", "TOEIC直前");
-			put("-Toeic-jukugo", "TOEIC熟語");
-			put("d1phrase12", "1");
-			put("d2phrase1", "2");
-			
-		}};
-		
-		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
-			putDataToMap(Dictionary.QuizData.PasstanWord + q, context, passtan, q, "パス単" + mapQName.get(q), integer -> tangoNumToString("パス単" + mapQName.get(q), integer), q, true);
-		
-		for (var q : new String[]{"1q", "p1q"})
-			putDataToMap(Dictionary.QuizData.TanjukugoWord + q, context, tanjukugo, q, "単熟語EX" + mapQName.get(q), integer -> tangoNumToString("単熟語EX" + mapQName.get(q), integer),
-			             "tanjukugo" + q, true);
-		
-		for (var q : new String[]{"1q", "p1q"})
-			putDataToMap(Dictionary.QuizData.TanjukugoEXWord + q, context, tanjukugoEx, q, "単熟語EX" + mapQName.get(q), integer -> tangoNumToString("単熟語EX" + mapQName.get(q), integer), "tanjukugo" + q, true);
-		
-		for (var q : new String[]{"00", "08", "1", "2", "3"})
-			putDataToMap(Dictionary.QuizData.YumeWord + q, context, yumetan, q, mapQName.get(q), integer -> "Unit" + ((integer - 1) / 100 + 1), "y" + q, true);
-		
-		//語源データも読み込む
-		int gogenNum = 0;
-		QSentakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
-		
-		for (var map : QSentakuFragment.trGogenYomu.entrySet())
-			Dictionary.QuizData.allData.add(new WordInfo(null, null, Datatype.word, "読む語源学", null, map.getKey(), map.getValue().wordJpn, ++gogenNum, null));
-		
-		//英語漬け.comから読み込み
-		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q", "-eiken-jukugo", "-eikenp1-jukugo", "-Toefl-Chokuzen", "-Toeic-500ten", "-Toeic-700ten", "-Toeic-900ten", "-Toeic-Chokuzen", "-Toeic-jukugo",})
-			putDataToMap("Eigoduke.com/" + "WordDataEigoduke" + q, context, eigoduke, q, "英語漬け" + mapQName.get(q), null, null, false);
-		
-		for (int num = 1; num <= 10; num++) {
-			var q = "-toeic (" + num + ")";
-			putDataToMap("Eigoduke.com/" + "WordDataEigoduke" + q, context, eigoduke, q, "英語漬け" + "TOEIC" + num, null, null, false);
-		}
-		
-		//distinction
-		for (var d : new int[]{1, 2, 3, 4})
-			putDataToMap(Dictionary.QuizData.distinction + "d" + d + "word", context, Folder.distinction, null, "Distinction" + d, integer -> tangoNumToString("Distinction" + d, integer), null, false);
-		
-		//フレーズ
-		for (var q : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
-			putDataToMap(Dictionary.QuizData.PasstanPhrase + q, context, passtan, q, "パス単" + mapQName.get(q), integer -> tangoNumToString("パス単" + mapQName.get(q), integer), q, true);
-		
-		for (var q : new String[]{"1q", "p1q"})
-			putDataToMap(Dictionary.QuizData.TanjukugoPhrase + q, context, tanjukugo, q, "単熟語EX" + mapQName.get(q), integer -> tangoNumToString("単熟語EX" + mapQName.get(q), integer), "tanjukugo" + q, true);
-		
-		for (var q : new String[]{"d1phrase12", "d2phrase1"})
-			putDataToMap(Dictionary.QuizData.distinction + q, context, Folder.distinction, q, "Distinction" + mapQName.get(q), integer -> tangoNumToString("Distinction" + mapQName.get(q), integer), null, false);
-		
-		//SVL12000辞書
-		putDataToMap(Dictionary.QuizData.Svl, context, svl, null, "SVL", integer -> Integer.toString((integer - 1) / 1000 + 1), null, true);
-		SetHatsuonKigou(Dictionary.QuizData.map.get(Dictionary.QuizData.Svl));
-		
-		var endTime = System.currentTimeMillis();
-		printCurrentState("経過時間:" + (endTime - startTime) / 1000f);
-	}
-	
 	public static ArrayList<WordInfo> getList(String key) {
 		return Dictionary.QuizData.map.get(key);
 	}
@@ -172,7 +83,85 @@ public class WordPhraseData extends ViewModel {
 	//ViewMOdelによりデータが保持されている場合は何もしない。
 	public static WordPhraseData loadAssets(Context context) {
 		if (isEmpty) {
-			readAllData(context);
+			//wordphrasedataの読み取り
+			//ファイルを開いて読み込む
+			var startTime = System.currentTimeMillis();
+			WordInfo.size = 0;
+			Map<String, String> mapQName = new HashMap<>() {{
+				put("1q", "1級");
+				put("p1q", "準1級");
+				put("2q", "2級");
+				put("p2q", "準2級");
+				put("3q", "3級");
+				put("4q", "4級");
+				put("5q", "5級");
+				put("00", "ユメタン0基礎");
+				put("08", "ユメタン0");
+				put("1", "ユメタン1");
+				put("2", "ユメタン2");
+				put("3", "ユメタン3");
+				put("-eiken-jukugo", "英検熟語");
+				put("-eikenp1-jukugo", "英検熟語(準1)");
+				put("-Toefl-Chokuzen", "TOEFL直前");
+				put("-Toeic-500ten", "TOEIC500点");
+				put("-Toeic-700ten", "TOEIC700点");
+				put("-Toeic-900ten", "TOEIC900点");
+				put("-Toeic-Chokuzen", "TOEIC直前");
+				put("-Toeic-jukugo", "TOEIC熟語");
+				put("d1phrase12", "1");
+				put("d2phrase1", "2");
+				
+			}};
+			
+			for (var q1 : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
+				putDataToMap(Dictionary.QuizData.PasstanWord + q1, context, passtan, q1, "パス単" + mapQName.get(q1), integer -> tangoNumToString("パス単" + mapQName.get(q1), integer), q1, true);
+			
+			for (var q1 : new String[]{"1q", "p1q"})
+				putDataToMap(Dictionary.QuizData.TanjukugoWord + q1, context, tanjukugo, q1, "単熟語EX" + mapQName.get(q1), integer -> tangoNumToString("単熟語EX" + mapQName.get(q1), integer),
+				             "tanjukugo" + q1, true);
+			
+			for (var q1 : new String[]{"1q", "p1q"})
+				putDataToMap(Dictionary.QuizData.TanjukugoEXWord + q1, context, tanjukugoEx, q1, "単熟語EX" + mapQName.get(q1), integer -> tangoNumToString("単熟語EX" + mapQName.get(q1), integer), "tanjukugo" + q1, true);
+			
+			for (var q1 : new String[]{"00", "08", "1", "2", "3"})
+				putDataToMap(Dictionary.QuizData.YumeWord + q1, context, yumetan, q1, mapQName.get(q1), integer -> "Unit" + ((integer - 1) / 100 + 1), "y" + q1, true);
+			
+			//語源データも読み込む
+			int gogenNum = 0;
+			QSentakuFragment.trGogenYomu = new GogenYomuFactory(context).getTrGogenYomu();
+			
+			for (var map : QSentakuFragment.trGogenYomu.entrySet())
+				Dictionary.QuizData.allData.add(new WordInfo(null, null, Datatype.word, "読む語源学", null, map.getKey(), map.getValue().wordJpn, ++gogenNum, null));
+			
+			//英語漬け.comから読み込み
+			for (var q1 : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q", "-eiken-jukugo", "-eikenp1-jukugo", "-Toefl-Chokuzen", "-Toeic-500ten", "-Toeic-700ten", "-Toeic-900ten", "-Toeic-Chokuzen", "-Toeic-jukugo",})
+				putDataToMap("Eigoduke.com/" + "WordDataEigoduke" + q1, context, eigoduke, q1, "英語漬け" + mapQName.get(q1), null, null, false);
+			
+			for (int num = 1; num <= 10; num++) {
+				var q1 = "-toeic (" + num + ")";
+				putDataToMap("Eigoduke.com/" + "WordDataEigoduke" + q1, context, eigoduke, q1, "英語漬け" + "TOEIC" + num, null, null, false);
+			}
+			
+			//distinction
+			for (var d : new int[]{1, 2, 3, 4})
+				putDataToMap(Dictionary.QuizData.distinction + "d" + d + "word", context, Folder.distinction, null, "Distinction" + d, integer -> tangoNumToString("Distinction" + d, integer), null, false);
+			
+			//フレーズ
+			for (var q1 : new String[]{"1q", "p1q", "2q", "p2q", "3q", "4q", "5q"})
+				putDataToMap(Dictionary.QuizData.PasstanPhrase + q1, context, passtan, q1, "パス単" + mapQName.get(q1), integer -> tangoNumToString("パス単" + mapQName.get(q1), integer), q1, true);
+			
+			for (var q1 : new String[]{"1q", "p1q"})
+				putDataToMap(Dictionary.QuizData.TanjukugoPhrase + q1, context, tanjukugo, q1, "単熟語EX" + mapQName.get(q1), integer -> tangoNumToString("単熟語EX" + mapQName.get(q1), integer), "tanjukugo" + q1, true);
+			
+			for (var q1 : new String[]{"d1phrase12", "d2phrase1"})
+				putDataToMap(Dictionary.QuizData.distinction + q1, context, Folder.distinction, q1, "Distinction" + mapQName.get(q1), integer -> tangoNumToString("Distinction" + mapQName.get(q1), integer), null, false);
+			
+			//SVL12000辞書
+			putDataToMap(Dictionary.QuizData.Svl, context, svl, null, "SVL", integer -> Integer.toString((integer - 1) / 1000 + 1), null, true);
+			SetHatsuonKigou(Dictionary.QuizData.map.get(Dictionary.QuizData.Svl));
+			
+			var endTime = System.currentTimeMillis();
+			printCurrentState("経過時間:" + (endTime - startTime) / 1000f);
 			final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
 			for (var q : new String[]{"1q", "p1q", "y1", "y2", "y3", "tanjukugo1q", "tanjukugop1q"}) {
 				var fileName = dnTestActivity + q + "Test";
@@ -187,17 +176,6 @@ public class WordPhraseData extends ViewModel {
 			isEmpty = false;
 		}
 		return new ViewModelProvider((ViewModelStoreOwner) context).get(WordPhraseData.class);
-	}
-	
-	public static void saveQuizData(Context context) {
-		printCurrentState("quizの情報を保存しています。");
-		final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
-		for (var q : new String[]{"1q", "p1q", "y1", "y2", "y3", "tanjukugo1q", "tanjukugop1q"}) {
-			var fileName = dnTestActivity + q + "Test";
-			putStringData(context, fileName, keySeikai, intArrayToString(Dictionary.QuizData.seikai.get(fileName)));
-			putStringData(context, fileName, keyHuseikai, intArrayToString(Dictionary.QuizData.huseikai.get(fileName)));
-			putIntData(context, fileName, N_GENZAI_NAN_MONME, Dictionary.QuizData.monme.get(fileName));
-		}
 	}
 	
 	//削除時
@@ -252,12 +230,12 @@ public class WordPhraseData extends ViewModel {
 	
 	static class WordInfo {
 		static int size = 0;
-		final int toushiNumber, localNumber;
+		final int toushiNumber, numberInBook;
 		//qNameは問題の正解数不正解数を表示するためにtreemapを参照するキーに使う。
 		final String category, e, j, subCategory, qName;
-		final Folder dataBook;
-		final BookQ dataQ;
-		final Datatype mode;
+		final Folder folder;
+		final BookQ bookQ;
+		final Datatype datatype;
 		
 		/**
 		 * readToListメソッドからのみ参照する
@@ -304,16 +282,16 @@ public class WordPhraseData extends ViewModel {
 		 */
 		private WordInfo(Folder dataBook, BookQ dataQ, Datatype mode, String category, String subCategory, String e, String j, int localNumber, String qName) {
 			size++;
-			this.dataBook = dataBook;
-			this.dataQ = dataQ;
-			this.mode = mode;
+			this.folder = dataBook;
+			this.bookQ = dataQ;
+			this.datatype = mode;
 			this.toushiNumber = size;
 			this.category = category;
 			if (Objects.isNull(subCategory)) this.subCategory = "";
 			else this.subCategory = subCategory;
 			this.e = e;
 			this.j = j;
-			this.localNumber = localNumber;
+			this.numberInBook = localNumber;
 			this.qName = qName;
 		}
 		
@@ -327,7 +305,6 @@ public class WordPhraseData extends ViewModel {
 			}
 			return "<不明>";
 		}
-		
 	}
 }
 
