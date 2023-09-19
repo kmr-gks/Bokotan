@@ -40,7 +40,7 @@ public class WordPhraseData extends ViewModel {
 	private static boolean isEmpty = true;
 	
 	public static void putDataToMap(String fileName, Context context, Folder dataBook, String q, String category, Function<Integer, String> getSubCategory, String qName, boolean mapput) {
-		ArrayList<WordInfo> list1 = new ArrayList<>();
+		var list = new ArrayList<WordInfo>();
 		String fileName1 = fileName + ".e.txt", fileName2 = fileName + ".j.txt";
 		try {
 			InputStream is1 = context.getAssets().open(fileName1), is2 = context.getAssets().open(fileName2);
@@ -48,7 +48,7 @@ public class WordPhraseData extends ViewModel {
 			String dataE, dataJ;
 			int i1 = 0;
 			while ((dataE = br1.readLine()) != null && (dataJ = br2.readLine()) != null) {
-				list1.add(new WordInfo(dataE, dataJ, i1, dataBook, q));
+				list.add(new WordInfo(dataE, dataJ, i1, dataBook, q));
 				i1++;
 			}
 			is1.close();
@@ -59,7 +59,6 @@ public class WordPhraseData extends ViewModel {
 			showException(context, e);
 			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName1 + "または" + fileName2 + "が見つかりません。").setPositiveButton("ok", null).create().show();
 		}
-		var list = list1;
 		if (getSubCategory == null) {
 			for (int i = 1; i < list.size(); i++) {
 				Dictionary.QuizData.allData.add(new WordInfo(dataBook, BookQ.parse(q), Datatype.word, category, null, list, i, qName));
@@ -73,10 +72,6 @@ public class WordPhraseData extends ViewModel {
 		if (mapput) {
 			Dictionary.QuizData.map.put(fileName, list);
 		}
-	}
-	
-	public static ArrayList<WordInfo> getList(String key) {
-		return Dictionary.QuizData.map.get(key);
 	}
 	
 	//assetsフォルダーからデータを読み込む

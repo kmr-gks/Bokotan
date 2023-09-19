@@ -38,8 +38,7 @@ import java.util.TreeMap;
 public class Dictionary extends ViewModel {
 	public static ArrayList<Entry> allData = new ArrayList<>();
 	private static boolean isEmpty = true;
-	
-	public static TreeMap<String, ArrayList<Entry>> booknameToList = new TreeMap<>();
+	public static TreeMap<String, ArrayList<Entry>> listsPerBook = new TreeMap<>();
 	
 	/**
 	 * 言語を指定してファイルからデータを読み込む
@@ -67,6 +66,11 @@ public class Dictionary extends ViewModel {
 			var br = new BufferedReader(new InputStreamReader(is));
 			String content;
 			var i = 0;
+			//ユメタンフレーズのときは最初の空白行が含まれていないため手動で追加する
+			if (bookName == BookName.yumetanPhrase) {
+				list.add(new Entry("null string", folder, bookName, bookQ, i, datatype, dataLang));
+				i++;
+			}
 			while ((content = br.readLine()) != null) {
 				list.add(new Entry(content, folder, bookName, bookQ, i, datatype, dataLang));
 				i++;
@@ -102,6 +106,11 @@ public class Dictionary extends ViewModel {
 			var brJ = new BufferedReader(new InputStreamReader(isJ));
 			String contentE, contentJ;
 			var i = 0;
+			//ユメタンフレーズのときは最初の空白行が含まれていないため手動で追加する
+			if (bookName == BookName.yumetanPhrase) {
+				list.add(new Entry("null string", "null string", folder, bookName, bookQ, i, datatype));
+				i++;
+			}
 			while ((contentE = brE.readLine()) != null && (contentJ = brJ.readLine()) != null) {
 				list.add(new Entry(contentE, contentJ, folder, bookName, bookQ, i, datatype));
 				i++;
@@ -534,90 +543,6 @@ public class Dictionary extends ViewModel {
 		}
 	}
 	
-	public static void initialize_old(Context context) {
-		if (isEmpty) {
-			var entries = new ArrayList<Dictionary.Entry>();
-			
-			//Distinction
-			for (var book : new BookName[]{BookName.distinction1, BookName.distinction2, BookName.distinction3}) {
-				entries.addAll(readToList(context, Folder.distinction, book, BookQ.none, Datatype.word, DataLang.other).subList(0, 5));
-			}
-			
-			//Eigoduke
-			for (var q : new BookQ[]{BookQ.q1, BookQ.qp1, BookQ.q2, BookQ.qp2, BookQ.q3, BookQ.q4, BookQ.q5}) {
-				entries.addAll(readToList(context, Folder.eigoduke, BookName.WordEigoduke, q, Datatype.word, DataLang.english).subList(0, 5));
-				entries.addAll(readToList(context, Folder.eigoduke, BookName.WordEigoduke, q, Datatype.word, DataLang.japanese).subList(0, 5));
-			}
-			
-			//Eigoduke
-			for (var book : new BookName[]{BookName.WordEigoduke_eiken_jukugo, BookName.WordEigoduke_eikenp1_jukugo, BookName.WordEigoduke_Toefl_Chokuzen, BookName.WordEigoduke_Toeic_500ten, BookName.WordEigoduke_Toeic_700ten, BookName.WordEigoduke_Toeic_900ten, BookName.WordEigoduke_Toeic_Chokuzen, BookName.WordEigoduke_Toeic_jukugo}) {
-				entries.addAll(readToList(context, Folder.eigoduke, book, BookQ.none, Datatype.word, DataLang.english).subList(0, 5));
-				entries.addAll(readToList(context, Folder.eigoduke, book, BookQ.none, Datatype.word, DataLang.japanese).subList(0, 5));
-			}
-			
-			//Passtan
-			for (var q : new BookQ[]{BookQ.q1, BookQ.qp1, BookQ.q2, BookQ.qp2, BookQ.q3, BookQ.q4, BookQ.q5}) {
-				for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-					entries.addAll(readToList(context, Folder.passtan, BookName.PasstanWordData, q, Datatype.word, lang).subList(0, 5));
-				}
-				for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-					entries.addAll(readToList(context, Folder.passtan, BookName.PasstanPhrase, q, Datatype.phrase, lang).subList(0, 5));
-				}
-			}
-			
-			//svl
-			for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-				entries.addAll(readToList(context, Folder.svl, BookName.SVL12000, BookQ.none, Datatype.mix, lang).subList(0, 5));
-			}
-			
-			//単熟語ex
-			for (var q : new BookQ[]{BookQ.q1, BookQ.qp1}) {
-				for (var book : new BookName[]{BookName.tanjukugoWord, BookName.tanjukugoPhrase, BookName.tanjukugoExWord}) {
-					for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-						entries.addAll(readToList(context, Folder.tanjukugo, book, q, (book == BookName.tanjukugoPhrase ? Datatype.phrase : Datatype.word), lang).subList(0, 5));
-					}
-				}
-			}
-			
-			//ユメタン単語
-			for (var q : new BookQ[]{BookQ.y00, BookQ.y08, BookQ.y1, BookQ.y2, BookQ.y3}) {
-				for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-					entries.addAll(readToList(context, Folder.yumetan, BookName.yumetanWord, q, Datatype.word, lang).subList(0, 5));
-				}
-			}
-			
-			//ユメタン文
-			for (var q : new BookQ[]{BookQ.y08, BookQ.y1, BookQ.y2, BookQ.y3}) {
-				for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-					entries.addAll(readToList(context, Folder.yumetan, BookName.yumetanPhrase, q, Datatype.phrase, lang).subList(0, 5));
-				}
-			}
-			
-			//英英英単語
-			for (var book : new BookName[]{BookName.ei3_jukugo_shokyu, BookName.ei3_jukugo_chukyu, BookName.ei3_tango_toeic800, BookName.ei3_tango_toeic990, BookName.ei3_tango_shokyu, BookName.ei3_tango_chukyu, BookName.ei3_tango_jokyu, BookName.ei3_tango_chojyokyu}) {
-				entries.addAll(readToList(context, Folder.ei3, book, BookQ.none, Datatype.word, DataLang.other).subList(0, 5));
-			}
-			
-			//究極の英単語プレミアム
-			for (var book : new BookName[]{BookName.kyukyoku_premium_vol1, BookName.kyukyoku_premium_vol2}) {
-				entries.addAll(readToList(context, Folder.eitango_joukyuu, book, BookQ.none, Datatype.mix, DataLang.other).subList(0, 5));
-			}
-			final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
-			for (var q : new String[]{"1q", "p1q", "y1", "y2", "y3", "tanjukugo1q", "tanjukugop1q"}) {
-				var fileName = dnTestActivity + q + "Test";
-				var array = stringToIntArray(getStringData(context, fileName, keySeikai, ""));
-				if (array == null) array = new int[3000];
-				seikai.put(fileName, array);
-				array = stringToIntArray(getStringData(context, fileName, keyHuseikai, ""));
-				if (array == null) array = new int[3000];
-				huseikai.put(fileName, array);
-				monme.put(fileName, getIntData(context, fileName, N_GENZAI_NAN_MONME, 1));
-			}
-			allData = entries;
-		}
-		isEmpty = false;
-	}
-	
 	public static void initialize(Context context) {
 		if (isEmpty) {
 			var entries = new ArrayList<Dictionary.Entry>();
@@ -695,15 +620,15 @@ public class Dictionary extends ViewModel {
 	}
 	
 	private static void addList(BookName bookName, BookQ bookQ, ArrayList<Entry> list) {
-		booknameToList.put(bookName.toString() + bookQ.toString(), list);
+		listsPerBook.put(bookName.toString() + bookQ.toString(), list);
 	}
 	
 	public static ArrayList<Entry> getList(BookName bookName, BookQ bookQ) {
-		return booknameToList.get(bookName.toString() + bookQ.toString());
+		return listsPerBook.get(bookName.toString() + bookQ.toString());
 	}
 	
 	public static ArrayList<Entry> getList(String key) {
-		return booknameToList.get(key);
+		return listsPerBook.get(key);
 	}
 	
 	/**

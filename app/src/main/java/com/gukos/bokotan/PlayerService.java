@@ -3,7 +3,7 @@ package com.gukos.bokotan;
 import static com.gukos.bokotan.Dictionary.BookQ;
 import static com.gukos.bokotan.Dictionary.BookQ.q1;
 import static com.gukos.bokotan.Dictionary.BookQ.qp1;
-import static com.gukos.bokotan.Dictionary.BookQ.y00;
+import static com.gukos.bokotan.Dictionary.BookQ.y08;
 import static com.gukos.bokotan.Dictionary.BookQ.y1;
 import static com.gukos.bokotan.Dictionary.BookQ.y2;
 import static com.gukos.bokotan.Dictionary.BookQ.y3;
@@ -12,12 +12,6 @@ import static com.gukos.bokotan.Dictionary.DataLang.japanese;
 import static com.gukos.bokotan.Dictionary.Folder.all;
 import static com.gukos.bokotan.Dictionary.Folder.passtan;
 import static com.gukos.bokotan.Dictionary.Folder.tanjukugo;
-import static com.gukos.bokotan.Dictionary.Folder.yumetan;
-import static com.gukos.bokotan.Dictionary.QuizData.PasstanPhrase;
-import static com.gukos.bokotan.Dictionary.QuizData.PasstanWord;
-import static com.gukos.bokotan.Dictionary.QuizData.TanjukugoPhrase;
-import static com.gukos.bokotan.Dictionary.QuizData.TanjukugoWord;
-import static com.gukos.bokotan.Dictionary.QuizData.YumeWord;
 import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
 import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
@@ -37,7 +31,6 @@ import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_NAME;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_SINGLE_LINE;
 import static com.gukos.bokotan.PlayerFragment.PLAYER_VIEW_TEXT;
 import static com.gukos.bokotan.PlayerFragment.isInitialized;
-import static com.gukos.bokotan.WordPhraseData.getList;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -85,7 +78,7 @@ public class PlayerService extends Service {
 		PLAYERSERVICE_MESSAGE_NOW = "ps_mn";
 	
 	public static float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 2f;
-	static ArrayList<WordPhraseData.WordInfo> wordDataList = new ArrayList<>();
+	static ArrayList<Dictionary.Entry> wordDataList = new ArrayList<>(), phraseDataList = new ArrayList<>();
 	
 	Context context;
 	Handler handler;
@@ -95,7 +88,6 @@ public class PlayerService extends Service {
 	Dictionary.Datatype selectMode, nowMode = Dictionary.Datatype.word;
 	Dictionary.Folder dataBook = passtan;
 	Dictionary.DataLang nowLang = english;
-	ArrayList<WordPhraseData.WordInfo> phraseDataList = new ArrayList<>();
 	BookQ dataQ;
 	MediaPlayer mediaPlayer;
 	String path;
@@ -152,21 +144,19 @@ public class PlayerService extends Service {
 			appearedWords.clear();
 			if (dataBook != all) {
 				if (dataBook == passtan || dataBook == tanjukugo) {
-					getList(YumeWord + y00.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
-					getList(YumeWord + y1.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
-					getList(YumeWord + y2.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
-					getList(YumeWord + y3.toString().substring(1)).stream().map(info -> info.e).forEach(appearedWords::add);
+					for (var q : new BookQ[]{y08, y1, y2, y3}) {
+						Dictionary.getList(Dictionary.BookName.yumetanWord, q).stream().map(entry -> entry.e).forEach(appearedWords::add);
+					}
 				}
 				if ((dataBook == passtan && dataQ == q1) || dataBook == tanjukugo) {
-					getList(PasstanWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
+					Dictionary.getList(Dictionary.BookName.PasstanWordData, qp1).stream().map(entry -> entry.e).forEach(appearedWords::add);
 				}
 				if (dataBook == tanjukugo) {
-					getList(PasstanWord + q1).stream().map(info -> info.e).forEach(appearedWords::add);
+					Dictionary.getList(Dictionary.BookName.PasstanWordData, q1).stream().map(entry -> entry.e).forEach(appearedWords::add);
 				}
 				if (dataBook == tanjukugo && dataQ == q1) {
-					getList(TanjukugoWord + qp1).stream().map(info -> info.e).forEach(appearedWords::add);
+					Dictionary.getList(Dictionary.BookName.tanjukugoWord, qp1).stream().map(entry -> entry.e).forEach(appearedWords::add);
 				}
-				
 			}
 		}
 		
@@ -265,47 +255,47 @@ public class PlayerService extends Service {
 				now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);
 			}
 			
-			String key = null;
 			wordDataList = new ArrayList<>();
 			phraseDataList = new ArrayList<>();
 			switch (dataBook) {
 				default:
 				case passtan: {
-					wordDataList = WordPhraseData.getList(PasstanWord + dataQ);
-					phraseDataList = WordPhraseData.getList(PasstanPhrase + dataQ);
+					wordDataList = Dictionary.getList(Dictionary.BookName.PasstanWordData, dataQ);
+					phraseDataList = Dictionary.getList(Dictionary.BookName.PasstanPhrase, dataQ);
 					break;
 				}
 				case tanjukugo: {
-					wordDataList = WordPhraseData.getList(TanjukugoWord + dataQ);
-					phraseDataList = WordPhraseData.getList(TanjukugoPhrase + dataQ);
+					wordDataList = Dictionary.getList(Dictionary.BookName.tanjukugoWord, dataQ);
+					phraseDataList = Dictionary.getList(Dictionary.BookName.tanjukugoPhrase, dataQ);
 					break;
 				}
 				case yumetan: {
-					phraseDataList = wordDataList = WordPhraseData.getList(YumeWord + dataQ.toString().substring(1));
+					wordDataList = Dictionary.getList(Dictionary.BookName.yumetanWord, dataQ);
+					phraseDataList = Dictionary.getList(Dictionary.BookName.yumetanPhrase, dataQ);
 					break;
 				}
 				case all: {
-					wordDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y1.toString().substring(1)));
-					wordDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y2.toString().substring(1)).subList(1, 1000 + 1));
-					wordDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y3.toString().substring(1)).subList(1, 800 + 1));
-					
-					wordDataList.addAll(WordPhraseData.getList(PasstanWord + qp1).subList(1, 1850 + 1));
-					wordDataList.addAll(WordPhraseData.getList(PasstanWord + q1).subList(1, 2400 + 1));
-					
+					for (var q : new BookQ[]{y1, y2, y3}) {
+						wordDataList.addAll(Dictionary.getList(Dictionary.BookName.yumetanWord, q));
+					}
+					for (var q : new BookQ[]{qp1, q1}) {
+						wordDataList.addAll(Dictionary.getList(Dictionary.BookName.PasstanWordData, q));
+					}
 					//todo 単熟語ex準1級のデータはunit8までしかない。
-					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + qp1).subList(1, 1680 + 1));
-					wordDataList.addAll(WordPhraseData.getList(TanjukugoWord + q1).subList(1, 2364 + 1));
+					for (var q : new BookQ[]{qp1, q1}) {
+						wordDataList.addAll(Dictionary.getList(Dictionary.BookName.tanjukugoWord, q));
+					}
 					
 					if (selectMode == Dictionary.Datatype.phrase || selectMode == Dictionary.Datatype.mix) {
-						phraseDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y1.toString().substring(1)));
-						phraseDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y2.toString().substring(1)).subList(1, 1000 + 1));
-						phraseDataList.addAll(WordPhraseData.getList(YumeWord + BookQ.y3.toString().substring(1)).subList(1, 800 + 1));
-						
-						phraseDataList.addAll(WordPhraseData.getList(PasstanPhrase + qp1).subList(1, 1850 + 1));
-						phraseDataList.addAll(WordPhraseData.getList(PasstanPhrase + q1).subList(1, 2400 + 1));
-						
-						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + qp1).subList(1, 1680 + 1));
-						phraseDataList.addAll(WordPhraseData.getList(TanjukugoPhrase + q1).subList(1, 2364 + 1));
+						for (var q : new BookQ[]{y1, y2, y3}) {
+							phraseDataList.addAll(Dictionary.getList(Dictionary.BookName.yumetanPhrase, q));
+						}
+						for (var q : new BookQ[]{qp1, q1}) {
+							phraseDataList.addAll(Dictionary.getList(Dictionary.BookName.PasstanPhrase, q));
+						}
+						for (var q : new BookQ[]{qp1, q1}) {
+							phraseDataList.addAll(Dictionary.getList(Dictionary.BookName.tanjukugoPhrase, q));
+						}
 					}
 					
 					if (dataBook == all) {
@@ -329,8 +319,6 @@ public class PlayerService extends Service {
 					break;
 				}
 			}
-			if (dataBook == yumetan) phraseDataList = wordDataList;
-			
 			onPlay();
 		});
 		return START_NOT_STICKY;
@@ -340,7 +328,7 @@ public class PlayerService extends Service {
 		//リソースの開放
 		releaseMediaPlayer(mediaPlayer);
 		if (isPlaying) {
-			ArrayList<WordPhraseData.WordInfo> list;
+			ArrayList<Dictionary.Entry> list;
 			if (nowMode == Dictionary.Datatype.phrase) list = phraseDataList;
 			else list = wordDataList;
 			
@@ -512,10 +500,10 @@ public class PlayerService extends Service {
 			do {
 				loopCount++;
 				now++;
-				printCurrentState("fileName="+fileName);
-				seikaisu=seikai.get(fileName)[now];
-				huseikaisu=huseikai.get(fileName)[now];
-			} while ((appearedWords.contains(wordDataList.get(now).e)||!skipChecker.apply(seikaisu,huseikaisu) )&& now < wordDataList.size() - 1&&loopCount<1000);
+				printCurrentState("fileName=" + fileName);
+				seikaisu = seikai.get(fileName)[now];
+				huseikaisu = huseikai.get(fileName)[now];
+			} while ((appearedWords.contains(wordDataList.get(now).e) || !skipChecker.apply(seikaisu, huseikaisu)) && now < wordDataList.size() - 1 && loopCount < 1000);
 			//printCurrentState("e"+wordDataList.get(now).e+"seikaisu="+seikaisu+"huseikaisu="+huseikaisu);
 		}
 		if (loopCount>=1000){
