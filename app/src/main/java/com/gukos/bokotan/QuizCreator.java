@@ -54,11 +54,10 @@ public class QuizCreator {
 			.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
 			.setMaxStreams(2)
 			.build();
-	private final ArrayList<String> e = new ArrayList<>(), j = new ArrayList<>();
 	BookQ dataQ;
 	private int nProblems = 0;
 	int ansChoice, problemNum;
-	private int[] choiceList = new int[4];
+	private final int[] choiceList = new int[4];
 	private String fileName;
 	private final Random random = new Random();
 	private ArrayList<Dictionary.Entry> list = new ArrayList<>();
@@ -125,17 +124,17 @@ public class QuizCreator {
 						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
 						huseikai.get(fileName)[problemNum]++;
 					}
-					String editorial = "";
+					var editorial = new StringBuilder();
 					for (var i = 0; i < 4; i++) {
 						var info = list.get(choiceList[i]);
 						if (i == ansChoice - 1) {
-							editorial += "<font color=\"red\">" + info.e + " " + info.j + "</font>" + "<br>";
+							editorial.append("<font color=\"red\">").append(info.e).append(" ").append(info.j).append("</font>").append("<br>");
 						}
 						else {
-							editorial += info.e + " " + info.j + "<br>";
+							editorial.append(info.e).append(" ").append(info.j).append("<br>");
 						}
 					}
-					sendBroadcastTextChange(TestFragment.ViewName.Editorial, Html.fromHtml(editorial, Html.FROM_HTML_MODE_COMPACT));
+					sendBroadcastTextChange(TestFragment.ViewName.Editorial, Html.fromHtml(editorial.toString(), Html.FROM_HTML_MODE_COMPACT));
 					setMondai();
 				}
 				else if (bundle.containsKey(QTHREAD_EXTRA_STOP)) {
@@ -237,13 +236,10 @@ public class QuizCreator {
 	//コンストラクタ
 	public static QuizCreator build(Context context, Folder dataBook, BookQ dataQ, PlayerService.SkipContidion skipContidion, double skipThresholdNum, PlayerService.SkipThreshold skipThreshold) {
 		synchronized (QuizCreator.class) {
-			if (instance == null) {
-				instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
-			}
-			else {
+			if (instance != null) {
 				instance.stop();
-				instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
 			}
+			instance = new QuizCreator(context, dataBook, dataQ, skipContidion, skipThresholdNum, skipThreshold);
 			return instance;
 		}
 	}
@@ -259,7 +255,7 @@ public class QuizCreator {
 	//クイズスレッド
 	private void setMondai() {
 		nProblems++;
-		int seikaisu = 0, huseikaisu = 0;
+		int seikaisu, huseikaisu;
 		int loopCount = 0;
 		//正解の選択肢を設定
 		do {

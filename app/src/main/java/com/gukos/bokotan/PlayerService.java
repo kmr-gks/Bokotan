@@ -334,9 +334,7 @@ public class PlayerService extends Service {
 			
 			if (wordDataList.size() == 0) {
 				puts("データがありません。");
-				new AlertDialog.Builder(context).setMessage("データがありません。").setPositiveButton("OK", (dialog, which) -> {
-					stopSelf();
-				}).create().show();
+				new AlertDialog.Builder(context).setMessage("データがありません。").setPositiveButton("OK", (dialog, which) -> stopSelf()).create().show();
 			}
 			
 			//助詞の確認

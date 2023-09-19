@@ -12,10 +12,8 @@ public class StartPipBroadcastReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		try {
 			printCurrentState();
-			if (PipActivity.startPIP) {
-				//PIPを終了したい
-			}
-			else {
+			//todo PIPを利用しているときに受信したときは、終了するようにしたい。
+			if (!PipActivity.startPIP) {
 				context.startActivity(new Intent(context, PipActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 			}
 			PipActivity.startPIP = !PipActivity.startPIP;

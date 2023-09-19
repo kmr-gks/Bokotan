@@ -3,7 +3,6 @@ package com.gukos.bokotan;
 import static android.content.Context.MODE_PRIVATE;
 import static com.gukos.bokotan.Dictionary.BookQ;
 import static com.gukos.bokotan.Dictionary.Datatype;
-import static com.gukos.bokotan.Dictionary.Unit.toFindFromAndTo;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static java.lang.Math.min;
@@ -606,70 +605,6 @@ public final class MyLibrary {
 		} catch (Exception e) {
 			ExceptionManager.showException(context, e);
 			return " Build:不明";
-		}
-	}
-	
-	public static String tangoNumToString(String category, int num) {
-		try {
-			String ans = null;
-			String[] derudo = {"出る度A", "出る度B", "出る度C", "熟語"};
-			String[] hinsi = {"動詞", "名詞", "形容詞", ""};
-			if (category.startsWith("パス単")) {
-				int qnum;
-				switch (category) {
-					case "パス単" + "1級": {
-						qnum = 0;
-						break;
-					}
-					case "パス単" + "準1級": {
-						qnum = 1;
-						break;
-					}
-					case "パス単" + "2級": {
-						qnum = 2;
-						break;
-					}
-					case "パス単" + "準2級": {
-						qnum = 3;
-						break;
-					}
-					default:
-						return null;
-				}
-				for (int i = 0; i < 10; i++) {
-					if (isIn(num, toFindFromAndTo[qnum][i][0], toFindFromAndTo[qnum][i][1])) {
-						ans = derudo[i / 3];
-						if (i != 9) ans += hinsi[i % 3];
-						break;
-					}
-				}
-			}
-			if (category.startsWith("単熟語EX")) {
-				int qnum;
-				switch (category) {
-					case "単熟語EX" + "1級": {
-						qnum = 12;
-						break;
-					}
-					case "単熟語EX" + "準1級": {
-						qnum = 13;
-						break;
-					}
-					default:
-						return null;
-				}
-				for (int i = 0; i <= 10; i++) {
-					if (isIn(num, toFindFromAndTo[qnum][i][0], toFindFromAndTo[qnum][i][1])) {
-						ans = "Unit" + (i + 1);
-						if (i == 10) ans = "UnitEX";
-						break;
-					}
-				}
-			}
-			return ans;
-		} catch (Exception e) {
-			ExceptionManager.showException(e);
-			return "<不明>";
 		}
 	}
 	

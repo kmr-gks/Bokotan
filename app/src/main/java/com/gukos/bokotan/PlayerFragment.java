@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import com.gukos.bokotan.databinding.FragmentPlayerBinding;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBinding> {
 	public static Boolean isInitialized = false;
@@ -318,13 +319,13 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			final float speed = 1 + i * 0.1f;
 			if (seekBar.getId() == R.id.seekBarEng) {
 				//英語
-				binding.textViewSeekBarEng.setText(String.format("英語 x%.1f", speed));
+				binding.textViewSeekBarEng.setText(String.format(Locale.getDefault(), "英語 x%.1f", speed));
 				putIntData(context, "SeekBar", "english", i);
 				PlayerService.dPlaySpeedEng = speed;
 			}
 			else if (seekBar.getId() == R.id.seekBarJpn) {
 				//日本語
-				binding.textViewSeekBarJpn.setText(String.format("日本語 x%.1f", speed));
+				binding.textViewSeekBarJpn.setText(String.format(Locale.getDefault(), "日本語 x%.1f", speed));
 				putIntData(context, "SeekBar", "japanese", i);
 				PlayerService.dPlaySpeedJpn = speed;
 			}

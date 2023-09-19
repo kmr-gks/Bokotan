@@ -67,7 +67,6 @@ import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentakuBinding> {
 	private final String keySkipCondition = "skipCondition",
@@ -77,7 +76,6 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	//他のクラスからアクセス
 	public static SwitchMaterial switchQuizHatsuon, switchQuizOX, switchShouHatsuon;
-	public static TreeMap<String, GogenYomu> trGogenYomu;
 	
 	public static Folder dataBook;
 	public static BookQ dataQ;
@@ -244,18 +242,17 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 	
 	private void onShowSettingNew(View view) {
 		try {
-			String content = "";
+			var content = new StringBuilder();
 			for (var fileName : getAllFileNames()) {
-				//content += fileName + "\n" + getAllPreferenceData(context, fileName) + "\n";
-				content += "ファイル名:" + fileName + "\n";
+				content.append("ファイル名:").append(fileName).append("\n");
 				puts("filaname=" + fileName);
 				for (var key : context.getSharedPreferences(fileName, Context.MODE_PRIVATE).getAll().keySet()) {
-					content += "\t" + key + "\n";
+					content.append("\t").append(key).append("\n");
 				}
 			}
 			new AlertDialog.Builder(context)
 				.setTitle(((Button) view).getText())
-				.setMessage(content)
+				.setMessage(content.toString())
 				.create()
 				.show();
 		} catch (Exception exception) {
