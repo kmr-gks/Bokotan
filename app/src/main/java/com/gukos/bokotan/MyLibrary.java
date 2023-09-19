@@ -3,9 +3,9 @@ package com.gukos.bokotan;
 import static android.content.Context.MODE_PRIVATE;
 import static com.gukos.bokotan.Dictionary.BookQ;
 import static com.gukos.bokotan.Dictionary.Datatype;
+import static com.gukos.bokotan.Dictionary.Unit.toFindFromAndTo;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
-import static com.gukos.bokotan.Unit.toFindFromAndTo;
 import static java.lang.Math.min;
 
 import android.content.Context;

@@ -1,5 +1,6 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.Dictionary.Unit.toFindFromAndTo;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
@@ -12,7 +13,6 @@ import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
 import static com.gukos.bokotan.QSentakuFragment.dataBook;
 import static com.gukos.bokotan.QSentakuFragment.dataQ;
-import static com.gukos.bokotan.Unit.toFindFromAndTo;
 
 import android.app.AlertDialog;
 import android.content.Context;

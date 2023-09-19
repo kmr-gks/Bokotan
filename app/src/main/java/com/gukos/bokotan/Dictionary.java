@@ -131,81 +131,6 @@ public class Dictionary extends ViewModel {
 		return list;
 	}
 	
-	public static String getSampleText(Context context) {
-		var entries = new ArrayList<Dictionary.Entry>();
-		
-		//Distinction
-		for (var book : new BookName[]{BookName.distinction1, BookName.distinction2, BookName.distinction3}) {
-			entries.addAll(readToList(context, Folder.distinction, book, BookQ.none, Datatype.word
-				, DataLang.other).subList(0, 5));
-		}
-		
-		//Eigoduke
-		for (var q : new BookQ[]{BookQ.q1, BookQ.qp1, BookQ.q2, BookQ.qp2, BookQ.q3, BookQ.q4, BookQ.q5}) {
-			entries.addAll(readToList(context, Folder.eigoduke, BookName.WordEigoduke, q, Datatype.word, DataLang.english).subList(0, 5));
-			entries.addAll(readToList(context, Folder.eigoduke, BookName.WordEigoduke, q, Datatype.word, DataLang.japanese).subList(0, 5));
-		}
-		
-		//Eigoduke
-		for (var book : new BookName[]{BookName.WordEigoduke_eiken_jukugo, BookName.WordEigoduke_eikenp1_jukugo, BookName.WordEigoduke_Toefl_Chokuzen, BookName.WordEigoduke_Toeic_500ten, BookName.WordEigoduke_Toeic_700ten, BookName.WordEigoduke_Toeic_900ten, BookName.WordEigoduke_Toeic_Chokuzen, BookName.WordEigoduke_Toeic_jukugo}) {
-			entries.addAll(readToList(context, Folder.eigoduke, book, BookQ.none, Datatype.word, DataLang.english).subList(0, 5));
-			entries.addAll(readToList(context, Folder.eigoduke, book, BookQ.none, Datatype.word, DataLang.japanese).subList(0, 5));
-		}
-		
-		//Passtan
-		for (var q : new BookQ[]{BookQ.q1, BookQ.qp1, BookQ.q2, BookQ.qp2, BookQ.q3, BookQ.q4, BookQ.q5}) {
-			for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-				entries.addAll(readToList(context, Folder.passtan, BookName.PasstanWordData, q, Datatype.word, lang).subList(0, 5));
-			}
-			for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-				entries.addAll(readToList(context, Folder.passtan, BookName.PasstanPhrase, q, Datatype.phrase, lang).subList(0, 5));
-			}
-		}
-		
-		//svl
-		for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-			entries.addAll(readToList(context, Folder.svl, BookName.SVL12000, BookQ.none, Datatype.mix, lang).subList(0, 5));
-		}
-		
-		//単熟語ex
-		for (var q : new BookQ[]{BookQ.q1, BookQ.qp1}) {
-			for (var book : new BookName[]{BookName.tanjukugoWord, BookName.tanjukugoPhrase, BookName.tanjukugoExWord}) {
-				for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-					entries.addAll(readToList(context, Folder.tanjukugo, book, q, (book == BookName.tanjukugoPhrase ? Datatype.phrase : Datatype.word), lang).subList(0, 5));
-				}
-			}
-		}
-		
-		//ユメタン単語
-		for (var q : new BookQ[]{BookQ.y00, BookQ.y08, BookQ.y1, BookQ.y2, BookQ.y3}) {
-			for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-				entries.addAll(readToList(context, Folder.yumetan, BookName.yumetanWord, q, Datatype.word, lang).subList(0, 5));
-			}
-		}
-		
-		//ユメタン文
-		for (var q : new BookQ[]{BookQ.y08, BookQ.y1, BookQ.y2, BookQ.y3}) {
-			for (var lang : new DataLang[]{DataLang.english, DataLang.japanese}) {
-				entries.addAll(readToList(context, Folder.yumetan, BookName.yumetanPhrase, q, Datatype.phrase, lang).subList(0, 5));
-			}
-		}
-		
-		//英英英単語
-		for (var book : new BookName[]{BookName.ei3_jukugo_shokyu, BookName.ei3_jukugo_chukyu, BookName.ei3_tango_toeic800, BookName.ei3_tango_toeic990, BookName.ei3_tango_shokyu, BookName.ei3_tango_chukyu, BookName.ei3_tango_jokyu, BookName.ei3_tango_chojyokyu}) {
-			entries.addAll(readToList(context, Folder.ei3, book, BookQ.none, Datatype.word, DataLang.other).subList(0, 5));
-		}
-		
-		//究極の英単語プレミアム
-		for (var book : new BookName[]{BookName.kyukyoku_premium_vol1, BookName.kyukyoku_premium_vol2}) {
-			entries.addAll(readToList(context, Folder.eitango_joukyuu, book, BookQ.none, Datatype.mix, DataLang.other).subList(0, 5));
-		}
-		
-		StringBuilder content = new StringBuilder();
-		for (var entry : entries) content.append(entry).append("\n");
-		
-		return content.toString();
-	}
-	
 	//削除時
 	@Override
 	protected void onCleared() {
@@ -548,6 +473,7 @@ public class Dictionary extends ViewModel {
 		}
 	}
 	
+	//assetsフォルダーからデータを読み込む。ViewModelによりデータが保持されている場合は何もしない。
 	public static Dictionary initialize(Context context) {
 		if (isEmpty) {
 			var entries = new ArrayList<Dictionary.Entry>();
@@ -832,11 +758,7 @@ public class Dictionary extends ViewModel {
 		public static final TreeMap<String, int[]> seikai = new TreeMap<>(), huseikai =
 			new TreeMap<>();
 		public static final TreeMap<String, Integer> monme = new TreeMap<>();
-		public static final TreeMap<String, ArrayList<WordPhraseData.WordInfo>> map = new TreeMap<>();
 		//TODO:このクラスのメンバはstaticじゃないほうがいい
-		public static final ArrayList<WordPhraseData.WordInfo> allData = new ArrayList<>();
-		public final static String
-			PasstanWord = "Passtan/WordData", PasstanPhrase = "Passtan/Phrase", TanjukugoWord = "TanjukugoEX/Word", TanjukugoEXWord = "TanjukugoEX/EXWord", TanjukugoPhrase = "TanjukugoEX/Phrase", YumeWord = "Yumetan/WordDataYume", Svl = "SVL/SVL12000", distinction = "distinction/";
 		static skipjouken skipjoken = skipjouken.kirokunomi;
 		
 		public static void saveQuizData(Context context) {
@@ -895,5 +817,46 @@ public class Dictionary extends ViewModel {
 				return "";
 			}
 		}
+	}
+	
+	static class Unit {
+		public static final int[][][] toFindFromAndTo = {
+			//1q
+			{{1, 233}, {234, 472}, {473, 700}, {701, 919}, {920, 1177}, {1178, 1400}, {1401, 1619}, {1620, 1861}, {1862, 2100}, {2101, 2400},},
+			//p1q
+			{{1, 92}, {93, 362}, {363, 530}, {531, 682}, {683, 883}, {884, 1050}, {1051, 1262}, {1263, 1411}, {1412, 1550}, {1551, 1850},},
+			//2q
+			{{1, 158}, {159, 316}, {317, 405}, {406, 564}, {565, 719}, {720, 808}, {809, 949}, {950, 1108}, {1109, 1179}, {1180, 1704},},
+			//p2q
+			{{1, 125}, {126, 268}, {269, 373}, {374, 484}, {485, 632}, {633, 735}, {736, 839}, {840, 988}, {989, 1085}, {1086, 1500},},
+			//3q
+			{},
+			//4q
+			{},
+			//5q
+			{},
+			//y00
+			{{1, 100}, {101, 200}, {201, 300}, {301, 400}, {401, 500}, {501, 600}, {601, 700}, {701, 800},},
+			//y08
+			{{1, 100}, {101, 200}, {201, 300}, {301, 400}, {401, 500}, {501, 600}, {601, 700}, {701, 800},},
+			//y1
+			{{1, 100}, {101, 200}, {201, 300}, {301, 400}, {401, 500}, {501, 600}, {601, 700}, {701, 800}, {801, 900}, {901, 1000},},
+			//y2
+			{{1, 100}, {101, 200}, {201, 300}, {301, 400}, {401, 500}, {501, 600}, {601, 700}, {701, 800}, {801, 900}, {901, 1000},},
+			//y3
+			{{1, 100}, {101, 200}, {201, 300}, {301, 400}, {401, 500}, {501, 600}, {601, 700}, {701, 800},},
+			//1qEX
+			{{1, 276}, {277, 588}, {589, 840}, {841, 1080}, {1081, 1320}, {1321, 1560}, {1561, 1800}, {1801, 2040}, {2041, 2208}, {2209, 2364}, {2365, 2811}},
+			//p1qEX
+			{{1, 216}, {217, 432}, {433, 648}, {649, 864}, {865, 1080}, {1081, 1296}, {1297, 1488}, {1489, 1680}, {1681, 1824}, {1825, 1920}, {1920, 2400}},
+			//総合
+			{
+				{1, 100}, {101, 200}, {201, 300}, {301, 400}, {401, 500}, {501, 600}, {601, 700}, {701, 800}, {801, 900}, {901, 1000},
+				{1001, 1100}, {1101, 200}, {1201, 1300}, {1301, 1400}, {1401, 1500}, {1501, 1600}, {1601, 1700}, {1701, 1800}, {1801, 1900}, {1901, 2000},
+				{2001, 2100}, {2101, 2200}, {2201, 2300}, {2301, 2400}, {2401, 2500}, {2501, 2600}, {2601, 2700}, {2701, 2800},
+				{2801, 2892}, {2893, 3162}, {3163, 3330}, {3331, 3482}, {3483, 3683}, {3684, 3850}, {3851, 4062}, {4063, 4211}, {4212, 4350}, {4351, 4650},
+				{4651, 4883}, {4884, 5122}, {5123, 5350}, {5351, 5569}, {5570, 5827}, {5828, 6050}, {6051, 6269}, {6270, 6511}, {6512, 6750}, {6751, 7050},
+			},
+		};
 	}
 }

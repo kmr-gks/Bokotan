@@ -80,7 +80,6 @@ public class TabActivity extends AppCompatActivity {
 			printCurrentState("読み込み開始" + bundle);
 			//単語、文のデータはViewModelから取ってくる。
 			//ViewModelが空のときはファイルから読み込む。
-			var wpd = WordPhraseData.loadAssets(this);
 			Dictionary.initialize(this);
 			//正解数、不正解数のデータもViewModelから取ってくる。
 			//ViewModelが空のときはSharedPreferenceから読み込む。
