@@ -1,5 +1,7 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.Dictionary.HatsuonKigou.SetHatsuonKigou;
+import static com.gukos.bokotan.Dictionary.HatsuonKigou.getHatsuon;
 import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
 import static com.gukos.bokotan.Dictionary.QuizData.monme;
 import static com.gukos.bokotan.Dictionary.QuizData.seikai;
@@ -17,7 +19,6 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putStringData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.stringToIntArray;
 import static com.gukos.bokotan.MyLibrary.strGaibuDataDirectory;
-import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.getHatsuon;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -25,10 +26,14 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -543,64 +548,65 @@ public class Dictionary extends ViewModel {
 		}
 	}
 	
-	public static void initialize(Context context) {
+	public static Dictionary initialize(Context context) {
 		if (isEmpty) {
 			var entries = new ArrayList<Dictionary.Entry>();
 			
 			//Distinction
 			for (var book : new BookName[]{BookName.distinction1, BookName.distinction2, BookName.distinction3}) {
-				entries.addAll(readToList(context, Folder.distinction, book, BookQ.none, Datatype.word, DataLang.other).subList(0, 5));
+				entries.addAll(readToList(context, Folder.distinction, book, BookQ.none, Datatype.word, DataLang.other));
 			}
 			
 			//Eigoduke
 			for (var q : new BookQ[]{BookQ.q1, BookQ.qp1, BookQ.q2, BookQ.qp2, BookQ.q3, BookQ.q4, BookQ.q5}) {
-				entries.addAll(readToList(context, Folder.eigoduke, BookName.WordEigoduke, q, Datatype.word).subList(0, 5));
+				entries.addAll(readToList(context, Folder.eigoduke, BookName.WordEigoduke, q, Datatype.word));
 			}
 			
 			//Eigoduke
 			for (var book : new BookName[]{BookName.WordEigoduke_eiken_jukugo, BookName.WordEigoduke_eikenp1_jukugo, BookName.WordEigoduke_Toefl_Chokuzen, BookName.WordEigoduke_Toeic_500ten, BookName.WordEigoduke_Toeic_700ten, BookName.WordEigoduke_Toeic_900ten, BookName.WordEigoduke_Toeic_Chokuzen, BookName.WordEigoduke_Toeic_jukugo}) {
-				entries.addAll(readToList(context, Folder.eigoduke, book, BookQ.none, Datatype.word).subList(0, 5));
+				entries.addAll(readToList(context, Folder.eigoduke, book, BookQ.none, Datatype.word));
 			}
 			
 			//Passtan
 			for (var q : new BookQ[]{BookQ.q1, BookQ.qp1, BookQ.q2, BookQ.qp2, BookQ.q3, BookQ.q4, BookQ.q5}) {
-				entries.addAll(readToList(context, Folder.passtan, BookName.PasstanWordData, q, Datatype.word).subList(0, 5));
-				entries.addAll(readToList(context, Folder.passtan, BookName.PasstanPhrase, q, Datatype.phrase).subList(0, 5));
+				entries.addAll(readToList(context, Folder.passtan, BookName.PasstanWordData, q, Datatype.word));
+				entries.addAll(readToList(context, Folder.passtan, BookName.PasstanPhrase, q, Datatype.phrase));
 				addList(BookName.PasstanWordData, q, readToList(context, Folder.passtan, BookName.PasstanWordData, q, Datatype.word));
 				addList(BookName.PasstanPhrase, q, readToList(context, Folder.passtan, BookName.PasstanPhrase, q, Datatype.phrase));
 			}
 			
 			//svl
-			entries.addAll(readToList(context, Folder.svl, BookName.SVL12000, BookQ.none, Datatype.mix).subList(0, 5));
+			entries.addAll(readToList(context, Folder.svl, BookName.SVL12000, BookQ.none, Datatype.mix));
+			SetHatsuonKigou(readToList(context, Folder.svl, BookName.SVL12000, BookQ.none, Datatype.mix));
 			
 			//単熟語ex
 			for (var q : new BookQ[]{BookQ.q1, BookQ.qp1}) {
 				for (var book : new BookName[]{BookName.tanjukugoWord, BookName.tanjukugoPhrase, BookName.tanjukugoExWord}) {
-					entries.addAll(readToList(context, Folder.tanjukugo, book, q, (book == BookName.tanjukugoPhrase ? Datatype.phrase : Datatype.word)).subList(0, 5));
+					entries.addAll(readToList(context, Folder.tanjukugo, book, q, (book == BookName.tanjukugoPhrase ? Datatype.phrase : Datatype.word)));
 					addList(book, q, readToList(context, Folder.tanjukugo, book, q, (book == BookName.tanjukugoPhrase ? Datatype.phrase : Datatype.word)));
 				}
 			}
 			
 			//ユメタン単語
 			for (var q : new BookQ[]{BookQ.y00, BookQ.y08, BookQ.y1, BookQ.y2, BookQ.y3}) {
-				entries.addAll(readToList(context, Folder.yumetan, BookName.yumetanWord, q, Datatype.word).subList(0, 5));
+				entries.addAll(readToList(context, Folder.yumetan, BookName.yumetanWord, q, Datatype.word));
 				addList(BookName.yumetanWord, q, readToList(context, Folder.yumetan, BookName.yumetanWord, q, Datatype.word));
 			}
 			
 			//ユメタン文
 			for (var q : new BookQ[]{BookQ.y08, BookQ.y1, BookQ.y2, BookQ.y3}) {
-				entries.addAll(readToList(context, Folder.yumetan, BookName.yumetanPhrase, q, Datatype.phrase).subList(0, 5));
+				entries.addAll(readToList(context, Folder.yumetan, BookName.yumetanPhrase, q, Datatype.phrase));
 				addList(BookName.yumetanPhrase, q, readToList(context, Folder.yumetan, BookName.yumetanPhrase, q, Datatype.phrase));
 			}
 			
 			//英英英単語
 			for (var book : new BookName[]{BookName.ei3_jukugo_shokyu, BookName.ei3_jukugo_chukyu, BookName.ei3_tango_toeic800, BookName.ei3_tango_toeic990, BookName.ei3_tango_shokyu, BookName.ei3_tango_chukyu, BookName.ei3_tango_jokyu, BookName.ei3_tango_chojyokyu}) {
-				entries.addAll(readToList(context, Folder.ei3, book, BookQ.none, Datatype.word, DataLang.other).subList(0, 5));
+				entries.addAll(readToList(context, Folder.ei3, book, BookQ.none, Datatype.word, DataLang.other));
 			}
 			
 			//究極の英単語プレミアム
 			for (var book : new BookName[]{BookName.kyukyoku_premium_vol1, BookName.kyukyoku_premium_vol2}) {
-				entries.addAll(readToList(context, Folder.eitango_joukyuu, book, BookQ.none, Datatype.mix, DataLang.other).subList(0, 5));
+				entries.addAll(readToList(context, Folder.eitango_joukyuu, book, BookQ.none, Datatype.mix, DataLang.other));
 			}
 			
 			final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
@@ -615,8 +621,9 @@ public class Dictionary extends ViewModel {
 				monme.put(fileName, getIntData(context, fileName, N_GENZAI_NAN_MONME, 1));
 			}
 			allData = entries;
+			isEmpty = false;
 		}
-		isEmpty = false;
+		return new ViewModelProvider((ViewModelStoreOwner) context).get(Dictionary.class);
 	}
 	
 	private static void addList(BookName bookName, BookQ bookQ, ArrayList<Entry> list) {
@@ -845,6 +852,48 @@ public class Dictionary extends ViewModel {
 		
 		enum skipjouken {
 			kirokunomi, seikai1, huseikai2, onlyHugoukaku
+		}
+	}
+	
+	public static class HatsuonKigou {
+		
+		public static final HashMap<String, String> hashMapHatsuonKigou = new HashMap<>();
+		
+		//todo 引数の型をArrayListにするとエラーになる原因を調べる
+		public static void SetHatsuonKigou(List<Entry> list) {
+			try {
+				//発音記号のためにSVL読み込み
+				if (hashMapHatsuonKigou.size() == 0)
+					for (int i = 1; i < list.size(); i++)
+						hashMapHatsuonKigou.put(list.get(i).e, list.get(i).j);
+			} catch (Exception e) {
+				showException(e);
+			}
+		}
+		
+		public static String getHatsuon(String strEnglishWord) {
+			try {
+				String strDictionary = hashMapHatsuonKigou.get(strEnglishWord);
+				String ans = "";
+				if (strDictionary != null) {
+					int start;
+					int result = strDictionary.indexOf("【発音】");
+					if (result != -1) {
+						start = result + 4;
+					}
+					else {
+						result = strDictionary.indexOf("【発音！】");
+						start = result + 5;
+					}
+					int end = strDictionary.indexOf("、", start);
+					if (end == -1) end = strDictionary.length() - 1;
+					ans = strDictionary.substring(start, end);
+				}
+				return ans;
+			} catch (Exception e) {
+				showException(e);
+				return "";
+			}
 		}
 	}
 }

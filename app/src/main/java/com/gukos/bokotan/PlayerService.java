@@ -368,7 +368,7 @@ public class PlayerService extends Service {
 				sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
 				
 				if (nowMode == Dictionary.Datatype.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
-					sendBcTextChange(PlayerViewName.hatsuon, WordPhraseData.HatsuonKigou.getHatsuon(list.get(now).e));
+					sendBcTextChange(PlayerViewName.hatsuon, Dictionary.HatsuonKigou.getHatsuon(list.get(now).e));
 				}
 				else {
 					sendBcTextChange(PlayerViewName.hatsuon, null);

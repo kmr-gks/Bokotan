@@ -17,7 +17,6 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getStringData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.stringToIntArray;
 import static com.gukos.bokotan.MyLibrary.tangoNumToString;
-import static com.gukos.bokotan.WordPhraseData.HatsuonKigou.SetHatsuonKigou;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -153,7 +152,7 @@ public class WordPhraseData extends ViewModel {
 			
 			//SVL12000辞書
 			putDataToMap(Dictionary.QuizData.Svl, context, svl, null, "SVL", integer -> Integer.toString((integer - 1) / 1000 + 1), null, true);
-			SetHatsuonKigou(Dictionary.QuizData.map.get(Dictionary.QuizData.Svl));
+			//SetHatsuonKigou(Dictionary.QuizData.map.get(Dictionary.QuizData.Svl));
 			
 			var endTime = System.currentTimeMillis();
 			printCurrentState("経過時間:" + (endTime - startTime) / 1000f);
@@ -179,48 +178,6 @@ public class WordPhraseData extends ViewModel {
 		super.onCleared();
 		printCurrentState("VIewModelが削除されます。");
 		isEmpty = true;
-	}
-	
-	public static class HatsuonKigou {
-		
-		public static final HashMap<String, String> hashMapHatsuonKigou = new HashMap<>();
-		
-		public static void SetHatsuonKigou(ArrayList<WordInfo> list) {
-			try {
-				//発音記号のためにSVL読み込み
-				if (hashMapHatsuonKigou.size() == 0) {
-					for (int i = 1; i < list.size(); i++)
-						hashMapHatsuonKigou.put(list.get(i).e, list.get(i).j);
-				}
-			} catch (Exception e) {
-				showException(e);
-			}
-		}
-		
-		public static String getHatsuon(String strEnglishWord) {
-			try {
-				String strDictionary = hashMapHatsuonKigou.get(strEnglishWord);
-				String ans = "";
-				if (strDictionary != null) {
-					int start;
-					int result = strDictionary.indexOf("【発音】");
-					if (result != -1) {
-						start = result + 4;
-					}
-					else {
-						result = strDictionary.indexOf("【発音！】");
-						start = result + 5;
-					}
-					int end = strDictionary.indexOf("、", start);
-					if (end == -1) end = strDictionary.length() - 1;
-					ans = strDictionary.substring(start, end);
-				}
-				return ans;
-			} catch (Exception e) {
-				showException(e);
-				return "<不明>";
-			}
-		}
 	}
 	
 	static class WordInfo {
