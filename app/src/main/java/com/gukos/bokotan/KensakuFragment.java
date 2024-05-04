@@ -155,7 +155,10 @@ public class KensakuFragment extends Fragment {
 					}
 				}
 				return false;
-			}, data -> setStringColored(data.toString(), key));
+			}, data -> {
+				var dataString = data.toString();
+				return setStringColored(dataString.substring(0, Math.min(dataString.length(), 100)), key);
+			});
 		}
 		else {
 			key = null;
