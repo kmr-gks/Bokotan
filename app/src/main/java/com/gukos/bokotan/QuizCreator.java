@@ -156,6 +156,7 @@ public class QuizCreator {
 				sleep(100);
 			}
 			sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, "読み込み中");
+			sendBroadcastTextChange(TestFragment.ViewName.Idontknow, "わかりません");
 			
 			broadcastReceiver = new DrawReceiver(handler);
 			context.registerReceiver(broadcastReceiver, new IntentFilter(QTHREAD_ACTION_CLICKED));
