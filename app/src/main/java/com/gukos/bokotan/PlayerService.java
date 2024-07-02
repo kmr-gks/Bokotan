@@ -41,9 +41,11 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ServiceInfo;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -132,7 +134,7 @@ public class PlayerService extends Service {
 				break;
 			}
 			case seikairate: {
-				if (skipThreshold == PlayerService.SkipThreshold.eqormore)
+				if (skipThreshold == SkipThreshold.eqormore)
 					skipChecker = (seikai, huseikai) -> (seikai + huseikai == 0 ? -1 : (double) seikai / (seikai + huseikai)) >= thresholdNum;
 				else
 					skipChecker = (seikai, huseikai) -> (seikai + huseikai == 0 ? -1 : (double) seikai / (seikai + huseikai)) < thresholdNum;
@@ -198,7 +200,12 @@ public class PlayerService extends Service {
 				.build();
 			//Notification.FLAG_NO_CLEARだと消える(Android13)
 			notification.flags |= Notification.FLAG_ONGOING_EVENT;
-			startForeground(1, notification);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+			}
+			else {
+				startForeground(1, notification);
+			}
 		}
 		
 		Service thisService = this;
@@ -249,7 +256,7 @@ public class PlayerService extends Service {
 			isPlaying = true;
 			
 			drawReceiver = new DrawReceiver(handler);
-			context.registerReceiver(drawReceiver, new IntentFilter(PLAYERSERVICE_ACTION));
+			context.registerReceiver(drawReceiver, new IntentFilter(PLAYERSERVICE_ACTION), RECEIVER_NOT_EXPORTED);
 			
 			if (now == -1) {
 				now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);
@@ -301,9 +308,9 @@ public class PlayerService extends Service {
 					if (dataBook == all) {
 						sizeForBook = new ArrayList<>(Arrays.asList(1001, 1000, 800, 1850, 2400, 1680, 2364));
 						fileNames = new ArrayList<>();
-						fileNames.add(dnTestActivity + BookQ.y1 + "Test");
-						fileNames.add(dnTestActivity + BookQ.y2 + "Test");
-						fileNames.add(dnTestActivity + BookQ.y3 + "Test");
+						fileNames.add(dnTestActivity + y1 + "Test");
+						fileNames.add(dnTestActivity + y2 + "Test");
+						fileNames.add(dnTestActivity + y3 + "Test");
 						fileNames.add(dnTestActivity + qp1 + "Test");
 						fileNames.add(dnTestActivity + q1 + "Test");
 						fileNames.add(dnTestActivity + "tanjukugo" + qp1 + "Test");

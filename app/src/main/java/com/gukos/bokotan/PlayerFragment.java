@@ -116,7 +116,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			super.onViewCreated(view, savedInstanceState);
 			try {
 				//UI設定
-				context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE));
+				context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE), Context.RECEIVER_NOT_EXPORTED);
 				
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
 				binding.buttonNowChange.setOnClickListener(this::onChangeNumber);

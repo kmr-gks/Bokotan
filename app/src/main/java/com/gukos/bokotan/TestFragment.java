@@ -2,6 +2,7 @@ package com.gukos.bokotan;
 
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -125,7 +126,7 @@ public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI_CHANGE));
+			context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI_CHANGE), Context.RECEIVER_NOT_EXPORTED);
 			binding.buttonSelect1.setOnClickListener(this::onChoice);
 			binding.buttonSelect2.setOnClickListener(this::onChoice);
 			binding.buttonSelect3.setOnClickListener(this::onChoice);

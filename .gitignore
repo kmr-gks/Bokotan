@@ -9,8 +9,9 @@
 /build
 /captures
 .externalNativeBuild
-.cxx
+.idea/other.xml
 .idea/deploymentTargetDropDown.xml
+.idea/deploymentTargetSelector.xml
 .idea/workspace.xml
 /app/src/main/assets
 /assetstest/src/main/assets

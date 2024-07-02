@@ -61,11 +61,8 @@ public final class MyLibrary {
 			if (context != null) DisplayOutput.makeToastForLong(context, strMessage);
 			
 			try {
-				if (Files.notExists(Paths.get(strExceptionFIlePath))) {
-					//ファイルがなければ新規作成
-					new File(strExceptionFIlePath).createNewFile();
-				}
-				FileWriter fileWriter = new FileWriter(strExceptionFIlePath, true);
+				//ファイルがなければ新規作成
+				FileWriter fileWriter = FileDirectoryManager.openWriteFileWithExistCheck(context, strExceptionFIlePath, true);
 				fileWriter.write(getNowTime() + "\n" + strMessage + "\n\n");
 				fileWriter.close();
 			} catch (Exception exception) {
