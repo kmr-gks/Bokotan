@@ -159,7 +159,7 @@ public class QuizCreator {
 			sendBroadcastTextChange(TestFragment.ViewName.Idontknow, "わかりません");
 			
 			broadcastReceiver = new DrawReceiver(handler);
-			context.registerReceiver(broadcastReceiver, new IntentFilter(QTHREAD_ACTION_CLICKED));
+			context.registerReceiver(broadcastReceiver,new IntentFilter(QTHREAD_ACTION_CLICKED));
 			soundPool.setOnLoadCompleteListener((soundPool, id, status) -> soundPool.play(id, 1, 1, 1, 0, 1));
 			
 			//これを定期的に見る必要がある。
@@ -254,7 +254,9 @@ public class QuizCreator {
 	}
 	
 	//クイズスレッド
-	private void setMondai() {
+	private void setMondai(){
+		//TODO エラー処理を追加
+		if (list==null) return;
 		nProblems++;
 		int seikaisu, huseikaisu;
 		int loopCount = 0;
