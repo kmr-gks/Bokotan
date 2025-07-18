@@ -39,7 +39,7 @@
 	<string name="yumetan1">ユメタン1</string>
 	<string name="yumetan2">ユメタン2</string>
 	<string name="version_yy_mm_dd">version:YY.MM.DD</string>
-	<string name="settingshozon">設定保存</string>
+	<string name="settingshozon">設定をセーブ</string>
 	<string name="skipoboe">覚えた単語を飛ばす</string>
 	<string name="yumetan3">ユメタン3</string>
 	<string name="readsettingsfromfile">設定読み込み</string>
