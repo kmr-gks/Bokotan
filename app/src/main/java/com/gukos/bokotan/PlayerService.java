@@ -326,19 +326,25 @@ public class PlayerService extends Service {
 					break;
 				}
 			}
+			if (wordDataList==null){
+				//TODO データの読み込み失敗時の処理(音声ファイルがないときなど)
+			}
+
 			onPlay();
 		});
 		return START_NOT_STICKY;
 	}
 
 	private void onPlay() {
+		//TODO データの読み込み失敗時の処理
+		if (wordDataList==null) return;
 		//リソースの開放
 		releaseMediaPlayer(mediaPlayer);
 		if (isPlaying) {
 			ArrayList<Dictionary.Entry> list;
 			if (nowMode == Dictionary.Datatype.phrase) list = phraseDataList;
 			else list = wordDataList;
-			
+
 			if (wordDataList.size() == 0) {
 				puts("データがありません。");
 				new AlertDialog.Builder(context).setMessage("データがありません。").setPositiveButton("OK", (dialog, which) -> stopSelf()).create().show();
