@@ -59,7 +59,7 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 		return text;
 	}
 	
-	public void filter(Function<T, Boolean> function, Function<T, CharSequence> stringConverter) {
+	public void setFilter(Function<T, Boolean> function, Function<T, CharSequence> stringConverter) {
 		checker = function;
 		this.stringConverter = stringConverter;
 		mFilter.filter("not null or void", listener);
