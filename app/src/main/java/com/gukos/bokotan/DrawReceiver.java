@@ -10,13 +10,13 @@ import android.os.Message;
 
 //このクラスで定義されているメソッドやラムダ式は全てメインスレッドで実行される(多分、コンストラクタがメインスレッドから呼ばれ、handlerのlooperがメインスレッドのものになるため)
 public class DrawReceiver extends BroadcastReceiver {
-	
+
 	private final Handler handler;
-	
+
 	public DrawReceiver(Handler handler) {
 		this.handler = handler;
 	}
-	
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Message message = new Message();

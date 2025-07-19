@@ -32,7 +32,7 @@ public class PipActivity extends Activity {
 	public static int pipYoko = 16;
 	public static int pipTate = 9;
 	private static ActivityPipBinding binding;
-	
+
 	/**
 	 * //最初に渡す値(putExtraやgetStringExtraで使用)
 	 * PIP_TV_FIRST_ENG //pip画面に最初に表示する英語
@@ -44,23 +44,23 @@ public class PipActivity extends Activity {
 	 * PIP_VIEW_NAME
 	 */
 	public static final String
-		PIP_TV_FIRST_ENG = "ptve",
-		PIP_TV_FIRST_JPN = "ptvfj",
-		PIP_ACTION_UI = "pau",
-		PIP_VIEW_TEXT = "pvt",
-		PIP_VIEW_SINGLE_LINE = "pvsl",
-		PIP_VIEW_NAME = "pvn";
-	
+			PIP_TV_FIRST_ENG = "ptve",
+			PIP_TV_FIRST_JPN = "ptvfj",
+			PIP_ACTION_UI = "pau",
+			PIP_VIEW_TEXT = "pvt",
+			PIP_VIEW_SINGLE_LINE = "pvsl",
+			PIP_VIEW_NAME = "pvn";
+
 	public enum PipViewName {
 		num, eng, jpn
 	}
-	
+
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
 			PipViewName pipViewName =
-				(PipViewName) bundle.getSerializable(PIP_VIEW_NAME);
+					(PipViewName) bundle.getSerializable(PIP_VIEW_NAME);
 			final TextView textViewToHandle;
 			switch (pipViewName) {
 				case num: {
@@ -79,7 +79,7 @@ public class PipActivity extends Activity {
 					throw new IllegalStateException("view name is invalid");
 				}
 			}
-			
+
 			if (bundle.containsKey(PIP_VIEW_TEXT)) {
 				textViewToHandle.setText(bundle.getString(PIP_VIEW_TEXT));
 			}
@@ -87,14 +87,13 @@ public class PipActivity extends Activity {
 				//setSingleLineを使用すると後半が表示されない場合があるため使わない
 				if (bundle.getBoolean(PIP_VIEW_SINGLE_LINE)) {
 					textViewToHandle.setLines(1);
-				}
-				else {
+				} else {
 					textViewToHandle.setMaxLines(5);
 				}
 			}
 		}
 	};
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
@@ -105,18 +104,17 @@ public class PipActivity extends Activity {
 			super.onCreate(savedInstanceState);
 			binding = DataBindingUtil.setContentView(this, R.layout.activity_pip);
 			this.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PIP_ACTION_UI));
-			
+
 			//最初に表示する文字列を取得
 			binding.textViewPipEng.setText(getIntent().getStringExtra(PIP_TV_FIRST_ENG));
 			binding.textViewPipJpn.setText(getIntent().getStringExtra(PIP_TV_FIRST_JPN));
-			
+
 			//pip
 			PictureInPictureParams.Builder pictureInPictureParams = new PictureInPictureParams.Builder();
 			//Aspect ratio is too extreme (must be between 0.418410 and 2.390000).
 			if (pipYoko > 0 && pipTate > 0 && 0.418410 < 1.0 * pipYoko / pipTate && 1.0 * pipYoko / pipTate < 2.39) {
 				pictureInPictureParams.setAspectRatio(new Rational(pipYoko, pipTate));
-			}
-			else {
+			} else {
 				pictureInPictureParams.setAspectRatio(new Rational(16, 9));
 			}
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -124,16 +122,16 @@ public class PipActivity extends Activity {
 			}
 			final ArrayList<RemoteAction> actions = new ArrayList<>();
 			actions.add(
-				new RemoteAction(Icon.createWithResource(PipActivity.this, android.R.drawable.ic_media_pause), "ends", "content:", PendingIntent.getBroadcast(this, 0, new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP), PendingIntent.FLAG_IMMUTABLE))
+					new RemoteAction(Icon.createWithResource(PipActivity.this, android.R.drawable.ic_media_pause), "ends", "content:", PendingIntent.getBroadcast(this, 0, new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP), PendingIntent.FLAG_IMMUTABLE))
 			);
 			pictureInPictureParams.setActions(actions);
 			enterPictureInPictureMode(pictureInPictureParams.build());
-			
+
 		} catch (Exception e) {
 			showException(this, e);
 		}
 	}
-	
+
 	public void exitPIP(View v) {
 		try {
 			finish();

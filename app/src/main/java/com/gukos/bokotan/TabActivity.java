@@ -20,18 +20,18 @@ import com.gukos.bokotan.databinding.ActivityTabBinding;
 
 public class TabActivity extends AppCompatActivity {
 	private static ActivityTabBinding binding;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
-		
+
 		new Thread(() -> loadAllData(savedInstanceState)).start();
-		
+
 		setVolumeControlStream(STREAM_MUSIC);
-		
+
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_tab);
-		
+
 		TabPagerAdapter tabPagerAdapter = new TabPagerAdapter(this);
 		ViewPager2 viewPager = binding.viewpagerMain;
 		viewPager.setAdapter(tabPagerAdapter);
@@ -39,9 +39,9 @@ public class TabActivity extends AppCompatActivity {
 		//tabPagerAdapter.createFragment()
 		//初期位置
 		viewPager.setCurrentItem(0);
-		
+
 		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
-		
+
 		var backPressedCallback = new OnBackPressedCallback(true) {
 			@Override
 			public void handleOnBackPressed() {
@@ -73,7 +73,7 @@ public class TabActivity extends AppCompatActivity {
 		};
 		getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 	}
-	
+
 	//bundleからデータ取り出し
 	private void loadAllData(Bundle bundle) {
 		try {
@@ -89,7 +89,7 @@ public class TabActivity extends AppCompatActivity {
 			showException(this, exception);
 		}
 	}
-	
+
 	/**
 	 * UIスレッドから呼ばなければならない
 	 *
@@ -102,7 +102,7 @@ public class TabActivity extends AppCompatActivity {
 			showException(exception);
 		}
 	}
-	
+
 	public static int getTabPageNum() {
 		try {
 			return TabActivity.binding.tabsMain.getSelectedTabPosition();
