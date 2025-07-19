@@ -68,7 +68,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentakuBinding> {
+public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentakuBinding> {
 	private final String keySkipCondition = "skipCondition",
 		keySkipThreshold = "skipThreshold",
 		skipThresholdNum = "skipThresholdNum",

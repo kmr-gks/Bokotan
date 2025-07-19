@@ -18,7 +18,7 @@ import com.gukos.bokotan.databinding.FragmentTestBinding;
 
 
 //このクラスで定義されているメソッドやラムダ式は全てメインスレッドで実行される(UI処理に関わるため)
-public class TestFragment extends UiManager.FragmentBingding<FragmentTestBinding> {
+public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding> {
 	
 	public static Boolean isInitialized = false;
 	

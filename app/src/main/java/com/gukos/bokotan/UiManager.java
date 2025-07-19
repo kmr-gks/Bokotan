@@ -89,7 +89,7 @@ public class UiManager {
 
 	//TODO: クラス名の修正
 	
-	public static abstract class FragmentBingding<TBinding extends ViewDataBinding> extends Fragment {
+	public static abstract class FragmentBinding<TBinding extends ViewDataBinding> extends Fragment {
 		public TBinding binding;
 		public final Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate;
 		
@@ -97,7 +97,7 @@ public class UiManager {
 		Activity activity;
 		View viewFragment;
 		
-		public FragmentBingding(Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate) {
+		public FragmentBinding(Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate) {
 			this.methodInflate = methodInflate;
 		}
 		

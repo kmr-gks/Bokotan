@@ -34,7 +34,7 @@ import com.gukos.bokotan.databinding.FragmentPlayerBinding;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBinding> {
+public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBinding> {
 	public static Boolean isInitialized = false;
 	public static final String
 		PLAYER_ACTION_UI_CHANGE = "player_action_ui_change",
