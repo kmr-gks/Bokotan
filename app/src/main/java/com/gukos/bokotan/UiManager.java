@@ -86,6 +86,8 @@ public class UiManager {
 			}
 		}
 	}
+
+	//TODO: クラス名の修正
 	
 	public static abstract class FragmentBingding<TBinding extends ViewDataBinding> extends Fragment {
 		public TBinding binding;

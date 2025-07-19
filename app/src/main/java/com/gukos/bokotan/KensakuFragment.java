@@ -148,7 +148,7 @@ public class KensakuFragment extends Fragment {
 				}
 			}
 			//setStringColored:検索ワードで色をつける
-			adapter.filter((wordInfo) -> {
+			adapter.setFilter((wordInfo) -> {
 				for (var field : wordInfo.getAllFieldString()) {
 					if (field != null && biFunction.apply(field.toLowerCase(), key)) {
 						return true;
