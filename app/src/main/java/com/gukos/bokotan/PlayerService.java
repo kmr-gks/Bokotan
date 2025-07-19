@@ -288,7 +288,6 @@ public class PlayerService extends Service {
 					for (var q : new BookQ[]{qp1, q1}) {
 						wordDataList.addAll(Dictionary.getList(Dictionary.BookName.PasstanWordData, q));
 					}
-					//todo 単熟語ex準1級のデータはunit8までしかない。
 					for (var q : new BookQ[]{qp1, q1}) {
 						wordDataList.addAll(Dictionary.getList(Dictionary.BookName.tanjukugoWord, q));
 					}
@@ -327,7 +326,7 @@ public class PlayerService extends Service {
 				}
 			}
 			if (wordDataList==null){
-				//TODO データの読み込み失敗時の処理(音声ファイルがないときなど)
+				//issue データの読み込み失敗時の処理(音声ファイルがないときなど)
 			}
 
 			onPlay();
@@ -336,7 +335,7 @@ public class PlayerService extends Service {
 	}
 
 	private void onPlay() {
-		//TODO データの読み込み失敗時の処理
+		//issue
 		if (wordDataList==null) return;
 		//リソースの開放
 		releaseMediaPlayer(mediaPlayer);

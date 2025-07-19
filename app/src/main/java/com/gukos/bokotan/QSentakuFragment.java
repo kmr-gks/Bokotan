@@ -154,8 +154,6 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 			});
 			*/
 			
-			//TODO:タブ表示
-			
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
 			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
 			binding.buttonWriteTest.setOnClickListener(this::onWriteText);

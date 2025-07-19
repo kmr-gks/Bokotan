@@ -255,7 +255,7 @@ public class QuizCreator {
 	
 	//クイズスレッド
 	private void setMondai(){
-		//TODO エラー処理を追加
+		//issue
 		if (list==null) return;
 		nProblems++;
 		int seikaisu, huseikaisu;

@@ -755,7 +755,6 @@ public class Dictionary extends ViewModel {
 		public static final TreeMap<String, int[]> seikai = new TreeMap<>(), huseikai =
 			new TreeMap<>();
 		public static final TreeMap<String, Integer> monme = new TreeMap<>();
-		//TODO:このクラスのメンバはstaticじゃないほうがいい
 		static skipjouken skipjoken = skipjouken.kirokunomi;
 		
 		public static void saveQuizData(Context context) {
@@ -777,8 +776,7 @@ public class Dictionary extends ViewModel {
 	public static class HatsuonKigou {
 		
 		public static final HashMap<String, String> hashMapHatsuonKigou = new HashMap<>();
-		
-		//todo 引数の型をArrayListにするとエラーになる原因を調べる
+
 		public static void SetHatsuonKigou(List<Entry> list) {
 			try {
 				//発音記号のためにSVL読み込み

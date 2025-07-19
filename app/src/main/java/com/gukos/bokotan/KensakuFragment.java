@@ -27,10 +27,6 @@ import androidx.fragment.app.Fragment;
 
 import java.util.function.BiFunction;
 
-//UiManager.FragmentBingdingを継承するとメモリが開放されたときに
-//java.lang.RuntimeException: Unable to start activity ComponentInfo{com.gukos.bokotan/com.gukos.bokotan.TabActivity}: androidx.fragment.app.Fragment$InstantiationException: Unable to instantiate fragment com.gukos.bokotan.KensakuFragment: could not find Fragment constructor
-//が発生するので、継承せず、データバインディングを使用しない
-//TODO: データバインディングを使用し、UiManager.FragmentBingdingを継承しながら、メモリ解放後に落ちないようにする。
 public class KensakuFragment extends Fragment {
 	
 	enumKensakuHouhou kensakuHouhou = starts;
