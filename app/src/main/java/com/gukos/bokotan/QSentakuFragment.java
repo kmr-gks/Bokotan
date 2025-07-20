@@ -67,6 +67,7 @@ import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentakuBinding> {
 	private final String keySkipCondition = "skipCondition",
@@ -238,8 +239,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		try {
 			for (var fileName : getAllFileNames()) {
 				String strFilePath = stringBokotanDirPath + fileName + ".txt";
-				FileWriter fileWriter = openWriteFileWithExistCheck(context, strFilePath, false);
-				assert fileWriter != null;
+				FileWriter fileWriter = Objects.requireNonNull(openWriteFileWithExistCheck(context, strFilePath, false));
 				fileWriter.write(getAllPreferenceData(context, fileName));
 				fileWriter.close();
 			}
@@ -272,8 +272,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 
 	private void onWriteText(View view) {
 		try {
-			FileWriter fileWriter = openWriteFileWithExistCheck(context, strExceptionFIlePath, false);
-			assert fileWriter != null;
+			FileWriter fileWriter = Objects.requireNonNull(openWriteFileWithExistCheck(context, strExceptionFIlePath, false));
 			fileWriter.write("書き込みテスト: " + MyLibrary.packageName + "(" + getNowTime() + ")");
 			fileWriter.close();
 		} catch (Exception exception) {

@@ -464,7 +464,8 @@ public class PlayerService extends Service {
 				mediaPlayer.reset();
 				mediaPlayer.release();
 			}
-		} catch (Exception ignored) {
+		} catch (Exception exception) {
+			showException(exception);
 		}
 	}
 

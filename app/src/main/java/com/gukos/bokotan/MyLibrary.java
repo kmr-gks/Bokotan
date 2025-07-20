@@ -64,8 +64,7 @@ public final class MyLibrary {
 
 			try {
 				//ファイルがなければ新規作成
-				FileWriter fileWriter = FileDirectoryManager.openWriteFileWithExistCheck(context, strExceptionFIlePath, true);
-				assert fileWriter != null;
+				FileWriter fileWriter = Objects.requireNonNull(FileDirectoryManager.openWriteFileWithExistCheck(context, strExceptionFIlePath, true));
 				fileWriter.write(getNowTime() + "\n" + strMessage + "\n\n");
 				fileWriter.close();
 			} catch (Exception exception) {
