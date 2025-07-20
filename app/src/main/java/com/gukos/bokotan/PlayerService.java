@@ -526,7 +526,8 @@ public class PlayerService extends Service {
 		Intent broadcastIntent =
 				new Intent(PLAYER_ACTION_UI_CHANGE)
 						.putExtra(PLAYER_VIEW_NAME, viewName)
-						.putExtra(PLAYER_VIEW_TEXT, text);
+						.putExtra(PLAYER_VIEW_TEXT, text)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
 
@@ -540,7 +541,8 @@ public class PlayerService extends Service {
 		Intent broadcastIntent =
 				new Intent(PIP_ACTION_UI)
 						.putExtra(PIP_VIEW_NAME, viewName)
-						.putExtra(PIP_VIEW_TEXT, text);
+						.putExtra(PIP_VIEW_TEXT, text)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
 
@@ -558,7 +560,8 @@ public class PlayerService extends Service {
 				new Intent(PLAYER_ACTION_UI_CHANGE)
 						.putExtra(PLAYER_VIEW_NAME, viewName)
 						.putExtra(PLAYER_VIEW_TEXT, text)
-						.putExtra(PLAYER_VIEW_SINGLE_LINE, isSingleLine);
+						.putExtra(PLAYER_VIEW_SINGLE_LINE, isSingleLine)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
 
@@ -574,7 +577,8 @@ public class PlayerService extends Service {
 				new Intent(PIP_ACTION_UI)
 						.putExtra(PIP_VIEW_NAME, viewName)
 						.putExtra(PIP_VIEW_TEXT, text)
-						.putExtra(PIP_VIEW_SINGLE_LINE, isSingleLine);
+						.putExtra(PIP_VIEW_SINGLE_LINE, isSingleLine)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
 

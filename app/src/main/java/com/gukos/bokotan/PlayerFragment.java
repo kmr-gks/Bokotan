@@ -160,13 +160,13 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 
 	public void onPlayerServiceStop(View view) {
 		puts(getMethodName());
-		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
+		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP).setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
 
 	public void onResetButtonClick(View view) {
 		try {
-			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, 1));
+			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, 1).setPackage(context.getPackageName()));
 		} catch (Exception e) {
 			showException(context, e);
 		}
@@ -285,7 +285,7 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 								.setTitle("単語を選択してください。")
 								.setSingleChoiceItems(wordAdapter, 0, (dialog, i) -> {
 									dialog.dismiss();
-									context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, fromTo[index][0] + i));
+									context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, fromTo[index][0] + i).setPackage(context.getPackageName()));
 								})
 								.create()
 								.show();

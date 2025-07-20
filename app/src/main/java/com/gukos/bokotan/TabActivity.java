@@ -54,14 +54,14 @@ public class TabActivity extends AppCompatActivity {
 					case 1: {
 						runOnUiThread(() -> setTabPageNum(0));
 						//再生中に戻るボタンを押すと停止
-						getApplicationContext().sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP));
+						getApplicationContext().sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP).setPackage(getApplicationContext().getPackageName()));
 						break;
 					}
 					case 2: {
 						runOnUiThread(() -> setTabPageNum(0));
 						//クイズをしているなら、ViewModelのデータを保存する。
 						new Thread(() -> Dictionary.QuizData.saveQuizData(getApplicationContext())).start();
-						getApplicationContext().sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_STOP, 0));
+						getApplicationContext().sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_STOP, 0).setPackage(getApplicationContext().getPackageName()));
 						break;
 					}
 					case 3: {
