@@ -43,15 +43,14 @@ public class KensakuFragment extends Fragment {
 		@NonNull
 		public String toString() {
 			switch (this) {
-				default:
-				case starts: {
-					return "で始まる";
-				}
 				case contains: {
 					return "を含む";
 				}
 				case ends: {
 					return "で終わる";
+				}
+				default: {// starts
+					return "で始まる";
 				}
 			}
 		}
@@ -124,22 +123,21 @@ public class KensakuFragment extends Fragment {
 		// を呼び出している。また、ポップアップが表示されてしまう。
 
 		var adapter = (WordSearchAdapter<Dictionary.Entry>) listViewKensakuResult.getAdapter();
-		if (newText.length() > 0) {
+		if (!newText.isEmpty()) {
 			key = newText.toLowerCase();
 			//検索方法を指定する
 			BiFunction<String, String, Boolean> biFunction;
 			switch (kensakuHouhou) {
-				default:
-				case starts: {
-					biFunction = String::startsWith;
-					break;
-				}
 				case contains: {
 					biFunction = String::contains;
 					break;
 				}
 				case ends: {
 					biFunction = String::endsWith;
+					break;
+				}
+				default: { // starts
+					biFunction = String::startsWith;
 					break;
 				}
 			}
@@ -160,7 +158,7 @@ public class KensakuFragment extends Fragment {
 			//検索欄が空、条件をクリアして全単語表示
 			adapter.resetFilter();
 		}
-		getActivity().runOnUiThread(adapter::notifyDataSetChanged);
+		requireActivity().runOnUiThread(adapter::notifyDataSetChanged);
 		return false;
 	}
 

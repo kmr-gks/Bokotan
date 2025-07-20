@@ -7,32 +7,9 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 
 import java.util.Objects;
-
-public class EarbudsConnectReceiver {
-
-	//本当はRunnableじゃなくてFunction<void,void>としたい。
-	public EarbudsConnectReceiver(Context context, Runnable funcWiredEarPhoneConnected, Runnable funcWiredEarPhoneDisconnected, Runnable funcBluetoothEarPhoneConnected, Runnable funcBluetoothEarPhoneDisconnected) {
-		try {
-			BluetoothEarPhoneReceiver bluetoothEarPhoneReceiver = new BluetoothEarPhoneReceiver(funcBluetoothEarPhoneConnected, funcBluetoothEarPhoneDisconnected);
-			WiredEarPhoneReceiver wiredEarPhoneReceiver = new WiredEarPhoneReceiver(funcWiredEarPhoneConnected, funcWiredEarPhoneDisconnected);
-
-			IntentFilter intentFilterBluetooth = new IntentFilter();
-			intentFilterBluetooth.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-			intentFilterBluetooth.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-			intentFilterBluetooth.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
-
-			IntentFilter intentFilterWired = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
-			context.registerReceiver(bluetoothEarPhoneReceiver, intentFilterBluetooth);
-			context.registerReceiver(wiredEarPhoneReceiver, intentFilterWired);
-		} catch (Exception e) {
-			showException(e);
-		}
-	}
-}
 
 class BluetoothEarPhoneReceiver extends BroadcastReceiver {
 	private Runnable funcBluetoothEarPhoneConnected, funcBluetoothEarPhoneDisconnected;
@@ -50,7 +27,7 @@ class BluetoothEarPhoneReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
-			switch (intent.getAction()) {
+			switch (Objects.requireNonNull(intent.getAction())) {
 				case BluetoothDevice.ACTION_ACL_CONNECTED: {
 					isConnected = true;
 					break;

@@ -24,7 +24,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -35,6 +34,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -46,17 +47,7 @@ public class Dictionary extends ViewModel {
 	private static boolean isEmpty = true;
 	public static TreeMap<String, ArrayList<Entry>> listsPerBook = new TreeMap<>();
 
-	/**
-	 * 言語を指定してファイルからデータを読み込む
-	 *
-	 * @param context
-	 * @param folder
-	 * @param bookName
-	 * @param bookQ
-	 * @param datatype
-	 * @param dataLang 英語または日本語を指定する
-	 * @return
-	 */
+	//言語を指定してファイルからデータを読み込む
 	public static ArrayList<Entry> readToList(Context context, Folder folder, BookName bookName, BookQ bookQ, Datatype datatype, DataLang dataLang) {
 		final var dictionaryPath = "dictionaries/";
 		var fileName = dictionaryPath + folder.toDirName() + "/" + bookName.toFileName() + bookQ.toFileName();
@@ -89,16 +80,7 @@ public class Dictionary extends ViewModel {
 		return list;
 	}
 
-	/**
-	 * 日本語、英語のデータを同時に読み込む。
-	 *
-	 * @param context
-	 * @param folder
-	 * @param bookName
-	 * @param bookQ
-	 * @param datatype
-	 * @return
-	 */
+	//日本語、英語のデータを同時に読み込む。
 	public static ArrayList<Entry> readToList(Context context, Folder folder, BookName bookName, BookQ bookQ, Datatype datatype) {
 		final var dictionaryPath = "dictionaries/";
 		var fileNameE = dictionaryPath + folder.toDirName() + "/" + bookName.toFileName() + bookQ.toFileName() + ".e.txt";
@@ -336,51 +318,6 @@ public class Dictionary extends ViewModel {
 			}
 		}
 
-		public static BookQ parse(@Nullable String value) {
-			if (value == null) return null;
-			switch (value) {
-				case "1q": {
-					return q1;
-				}
-				case "p1q": {
-					return qp1;
-				}
-				case "2q": {
-					return q2;
-				}
-				case "p2q": {
-					return qp2;
-				}
-				case "3q": {
-					return q3;
-				}
-				case "4q": {
-					return q4;
-				}
-				case "5q": {
-					return q5;
-				}
-				case "00": {
-					return y00;
-				}
-				case "08": {
-					return y08;
-				}
-				case "1": {
-					return y1;
-				}
-				case "2": {
-					return y2;
-				}
-				case "3": {
-					return y3;
-				}
-				default: {
-					return null;
-				}
-			}
-		}
-
 		@NonNull
 		public String toJapanString() {
 			switch (this) {
@@ -446,17 +383,6 @@ public class Dictionary extends ViewModel {
 		phrase,
 		mix;
 
-		public String toFileName() {
-			switch (this) {
-				case word:
-					return "Word";
-				case phrase:
-					return "Phrase";
-				default:
-					return "";
-			}
-		}
-
 		@NonNull
 		@Override
 		public String toString() {
@@ -474,7 +400,7 @@ public class Dictionary extends ViewModel {
 	}
 
 	//assetsフォルダーからデータを読み込む。ViewModelによりデータが保持されている場合は何もしない。
-	public static Dictionary initialize(Context context) {
+	public static void initialize(Context context) {
 		if (isEmpty) {
 			var entries = new ArrayList<Dictionary.Entry>();
 
@@ -549,7 +475,7 @@ public class Dictionary extends ViewModel {
 			allData = entries;
 			isEmpty = false;
 		}
-		return new ViewModelProvider((ViewModelStoreOwner) context).get(Dictionary.class);
+		new ViewModelProvider((ViewModelStoreOwner) context).get(Dictionary.class);
 	}
 
 	private static void addList(BookName bookName, BookQ bookQ, ArrayList<Entry> list) {
@@ -653,8 +579,9 @@ public class Dictionary extends ViewModel {
 				final String rate;
 				String fileName = dnTestActivity + bookQ.toFileName() + "Test";
 				if (QuizData.seikai.get(fileName) != null) {
-					int correct = QuizData.seikai.get(fileName)[numberInBook];
-					int incorrect = QuizData.huseikai.get(fileName)[numberInBook];
+
+					int correct = Objects.requireNonNull(QuizData.seikai.get(fileName))[numberInBook];
+					int incorrect = Objects.requireNonNull(QuizData.huseikai.get(fileName))[numberInBook];
 					rate = "\n正解率 " + correct + "/" + (correct + incorrect);
 				} else rate = "";
 				var text = (dataLang == DataLang.both ? "英語:" + this.e
@@ -699,7 +626,7 @@ public class Dictionary extends ViewModel {
 								type = "日";
 						}
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
-						path += strDataQ + String.format("/%04d", numberInBook) + type + fileExtension;
+						path += strDataQ + String.format(Locale.JAPAN, "/%04d", numberInBook) + type + fileExtension;
 						break;
 					}
 					case yumetan: {
@@ -715,7 +642,7 @@ public class Dictionary extends ViewModel {
 								type = "P日";
 						}
 						strDataQ = strDirectoryNameForKuuhaku + "y" + strDataQ;
-						path += strDataQ + "/" + type + String.format("%04d", numberInBook) + fileExtension;
+						path += strDataQ + "/" + type + String.format(Locale.JAPAN, "%04d", numberInBook) + fileExtension;
 						break;
 					}
 					case tanjukugo: {
@@ -758,7 +685,7 @@ public class Dictionary extends ViewModel {
 				var fileName = dnTestActivity + q + "Test";
 				putStringData(context, fileName, keySeikai, intArrayToString(seikai.get(fileName)));
 				putStringData(context, fileName, keyHuseikai, intArrayToString(huseikai.get(fileName)));
-				putIntData(context, fileName, N_GENZAI_NAN_MONME, monme.get(fileName));
+				putIntData(context, fileName, N_GENZAI_NAN_MONME, Objects.requireNonNull(monme.get(fileName)));
 			}
 		}
 
@@ -774,7 +701,7 @@ public class Dictionary extends ViewModel {
 		public static void SetHatsuonKigou(List<Entry> list) {
 			try {
 				//発音記号のためにSVL読み込み
-				if (hashMapHatsuonKigou.size() == 0)
+				if (hashMapHatsuonKigou.isEmpty())
 					for (int i = 1; i < list.size(); i++)
 						hashMapHatsuonKigou.put(list.get(i).e, list.get(i).j);
 			} catch (Exception e) {
@@ -910,9 +837,9 @@ public class Dictionary extends ViewModel {
 			try {
 				String ans = "語源:" + this.gogen1;
 				ans = "分類:" + this.bunrui + "\n" + ans;
-				if (this.gogen2.length() > 0) ans += "+" + this.gogen2;
-				if (this.gogen3.length() > 0) ans += "+" + this.gogen3;
-				if (this.sankou.length() > 0) ans += "\n参考:" + this.sankou;
+				if (!this.gogen2.isEmpty()) ans += "+" + this.gogen2;
+				if (!this.gogen3.isEmpty()) ans += "+" + this.gogen3;
+				if (!this.sankou.isEmpty()) ans += "\n参考:" + this.sankou;
 				return ans;
 			} catch (Exception e) {
 				showException(e);
