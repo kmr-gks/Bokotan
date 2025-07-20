@@ -129,7 +129,7 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			ContextCompat.registerReceiver(context, new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
+			ContextCompat.registerReceiver(requireContext().getApplicationContext(), new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
 			binding.buttonSelect1.setOnClickListener(this::onChoice);
 			binding.buttonSelect2.setOnClickListener(this::onChoice);
 			binding.buttonSelect3.setOnClickListener(this::onChoice);

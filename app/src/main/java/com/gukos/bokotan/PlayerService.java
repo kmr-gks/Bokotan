@@ -465,7 +465,7 @@ public class PlayerService extends Service {
 				mediaPlayer.release();
 			}
 		} catch (Exception exception) {
-			showException(exception);
+			showException(context, exception);
 		}
 	}
 
