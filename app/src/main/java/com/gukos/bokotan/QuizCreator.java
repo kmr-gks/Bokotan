@@ -32,6 +32,8 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.text.Html;
 
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -156,7 +158,7 @@ public class QuizCreator {
 			sendBroadcastTextChange(TestFragment.ViewName.Idontknow, "わかりません");
 
 			broadcastReceiver = new DrawReceiver(handler);
-			context.registerReceiver(broadcastReceiver, new IntentFilter(QTHREAD_ACTION_CLICKED));
+			ContextCompat.registerReceiver(context, broadcastReceiver, new IntentFilter(QTHREAD_ACTION_CLICKED), ContextCompat.RECEIVER_NOT_EXPORTED);
 			soundPool.setOnLoadCompleteListener((soundPool, id, status) -> soundPool.play(id, 1, 1, 1, 0, 1));
 
 			//これを定期的に見る必要がある。
@@ -308,7 +310,6 @@ public class QuizCreator {
 				}
 			}
 		} while (Arrays.stream(choiceList).distinct().count() != 4);
-
 		sendBroadcastTextChange(TestFragment.ViewName.Mondaibun, list.get(problemNum).e);
 		sendBroadcastTextChange(TestFragment.ViewName.Select1, list.get(choiceList[0]).j);
 		sendBroadcastTextChange(TestFragment.ViewName.Select2, list.get(choiceList[1]).j);
@@ -326,7 +327,8 @@ public class QuizCreator {
 				new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
 						.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES, TestFragment.ViewProperties.Text)
 						.putExtra(TestFragment.QUIZ_VIEW_TEXT_STRING, text)
-						.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
+						.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
 
