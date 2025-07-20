@@ -15,6 +15,7 @@ import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
 import static com.gukos.bokotan.Dictionary.QuizData.monme;
 import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
+import static com.gukos.bokotan.MyLibrary.DebugManager.putsE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.sleep;
@@ -337,7 +338,8 @@ public class QuizCreator {
 				new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
 						.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES, TestFragment.ViewProperties.Text)
 						.putExtra(TestFragment.QUIZ_VIEW_TEXT_CHARSEQ, text)
-						.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
+						.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
 
@@ -346,7 +348,8 @@ public class QuizCreator {
 				new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE)
 						.putExtra(TestFragment.QUIZ_VIEW_PROPERTIES, TestFragment.ViewProperties.TextColor)
 						.putExtra(TestFragment.QUIZ_VIEW_COLOR, color)
-						.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName);
+						.putExtra(TestFragment.QUIZ_VIEW_NAME, viewName)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
 }

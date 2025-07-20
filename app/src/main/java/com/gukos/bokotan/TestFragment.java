@@ -1,10 +1,12 @@
 package com.gukos.bokotan;
 
+import static com.gukos.bokotan.MyLibrary.DebugManager.putsE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.gukos.bokotan.databinding.FragmentTestBinding;
 
@@ -46,6 +49,7 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 			Bundle bundle = msg.getData();
 			ViewName viewName = (ViewName) bundle.getSerializable(QUIZ_VIEW_NAME);
 			ViewProperties viewProperties = (ViewProperties) bundle.getSerializable(QUIZ_VIEW_PROPERTIES);
+
 			final TextView textViewToHandle;
 			switch (viewName) {
 				case monme: {
@@ -121,11 +125,12 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 		super(FragmentTestBinding::inflate);
 	}
 
+
 	@Override
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI_CHANGE), Context.RECEIVER_NOT_EXPORTED);
+			ContextCompat.registerReceiver(context, new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
 			binding.buttonSelect1.setOnClickListener(this::onChoice);
 			binding.buttonSelect2.setOnClickListener(this::onChoice);
 			binding.buttonSelect3.setOnClickListener(this::onChoice);
@@ -152,6 +157,6 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 			choice = 4;
 		}
 
-		context.sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_CHOICE, choice));
+		context.sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_CHOICE, choice).setPackage(context.getPackageName()));
 	}
 }
