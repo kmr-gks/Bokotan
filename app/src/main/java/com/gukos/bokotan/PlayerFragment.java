@@ -1,7 +1,6 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.Dictionary.Unit.toFindFromAndTo;
-import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -15,7 +14,6 @@ import static com.gukos.bokotan.QSentakuFragment.dataBook;
 import static com.gukos.bokotan.QSentakuFragment.dataQ;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -28,20 +26,21 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.gukos.bokotan.databinding.FragmentPlayerBinding;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBinding> {
 	public static Boolean isInitialized = false;
 	public static final String
-			PLAYER_ACTION_UI_CHANGE = "player_action_ui_change",
-			PLAYER_VIEW_NAME = "player_view_name",
-			PLAYER_VIEW_TEXT = "player_view_text",
-			PLAYER_VIEW_COLOR = "player_view_color",
-			PLAYER_VIEW_SINGLE_LINE = "pvsl";
+			PLAYER_ACTION_UI_CHANGE = "player_action_ui_change";
+	public static final String PLAYER_VIEW_NAME = "player_view_name";
+	public static final String PLAYER_VIEW_TEXT = "player_view_text";
+	public static final String PLAYER_VIEW_SINGLE_LINE = "pvsl";
 
 	public enum PlayerViewName {
 		genzai, tvcount, hatsuon, subJ, subE, eng, jpn, path
@@ -53,7 +52,7 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 			Bundle bundle = msg.getData();
 			PlayerViewName viewName = (PlayerViewName) bundle.getSerializable(PLAYER_VIEW_NAME);
 			final TextView textViewToHandle;
-			switch (viewName) {
+			switch (Objects.requireNonNull(viewName)) {
 				case genzai: {
 					textViewToHandle = binding.textViewGenzai;
 					break;
@@ -115,7 +114,7 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 			super.onViewCreated(view, savedInstanceState);
 			try {
 				//UI設定
-				context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE), Context.RECEIVER_NOT_EXPORTED);
+				ContextCompat.registerReceiver(context, new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
 
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
 				binding.buttonNowChange.setOnClickListener(this::onChangeNumber);
@@ -138,23 +137,6 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 			puts(getMethodName() + " ended");
 		} catch (Exception e) {
 			showException(getContext(), e);
-		}
-	}
-
-	public static void initialize(Context context) {
-		try {
-			//再生開始
-			puts(getClassName() + getMethodName() + " start");
-
-			//バグ対策は不要になった
-			/*
-			put("smooth out 〜", "pass" + "p1q");//1799
-			put("grow into 〜", "p1q");          //1675
-			put("accrue", "pass" + "1q");        //1568
-			*/
-
-		} catch (Exception e) {
-			showException(context, e);
 		}
 	}
 

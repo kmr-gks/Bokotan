@@ -15,7 +15,6 @@ import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
 import static com.gukos.bokotan.Dictionary.QuizData.monme;
 import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
-import static com.gukos.bokotan.MyLibrary.DebugManager.putsE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.sleep;
@@ -33,10 +32,12 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.text.Html;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiFunction;
 
@@ -106,7 +107,7 @@ public class QuizCreator {
 			//looperを指定しているので、クイズスレッドで実行される
 			//選択肢のボタンをクリックしたときの処理
 			@Override
-			public void handleMessage(Message message) {
+			public void handleMessage(@NonNull Message message) {
 				var bundle = message.getData();
 				if (bundle.containsKey(QTHREAD_EXTRA_CHOICE)) {
 					//選択肢を押した時
@@ -117,14 +118,14 @@ public class QuizCreator {
 						}
 						sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "○");
 						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.RED);
-						seikai.get(fileName)[problemNum]++;
+						Objects.requireNonNull(seikai.get(fileName))[problemNum]++;
 					} else {
 						if (QSentakuFragment.switchQuizOX.isChecked()) {
 							soundPool.load(context, R.raw.huseikai, 1);
 						}
 						sendBroadcastTextChange(TestFragment.ViewName.Marubatsu, "×");
 						sendBroadcastColorChange(TestFragment.ViewName.Marubatsu, Color.BLUE);
-						huseikai.get(fileName)[problemNum]++;
+						Objects.requireNonNull(huseikai.get(fileName))[problemNum]++;
 					}
 					var editorial = new StringBuilder();
 					for (var i = 0; i < 4; i++) {
@@ -178,11 +179,6 @@ public class QuizCreator {
 				}
 				case tanjukugo: {
 					list = Dictionary.getList(tanjukugoWord, dataQ);
-					/*
-					if (dataQ == qp1) {
-						list = new ArrayList<>(list.subList(0, 1680 + 1));
-					}
-					*/
 					break;
 				}
 				case yumetan: {
@@ -212,11 +208,6 @@ public class QuizCreator {
 					sizeForBook = new ArrayList<>();
 					for (var key : keyForBook) {
 						var addList = Dictionary.getList(key);
-						/*
-						if (key.equals(TanjukugoWord + Dictionary.BookQ.qp1)) {
-							addList = new ArrayList<>(list.subList(0, 1680 + 1));
-						}
-						 */
 						sizeForBook.add(addList.size());
 					}
 					list.addAll(Dictionary.getList(PasstanWordData, q1));
@@ -279,8 +270,8 @@ public class QuizCreator {
 					}
 				}
 			}
-			seikaisu = seikai.get(fileName)[problemNum];
-			huseikaisu = huseikai.get(fileName)[problemNum];
+			seikaisu = Objects.requireNonNull(seikai.get(fileName))[problemNum];
+			huseikaisu = Objects.requireNonNull(huseikai.get(fileName))[problemNum];
 		} while (!skipChecker.apply(seikaisu, huseikaisu) && loopCount < 1000);
 		if (loopCount >= 1000) {
 			new AlertDialog.Builder(context).setMessage("出題できる問題がありません。条件を変えてやり直してください。").setPositiveButton("OK", null).create().show();
@@ -290,7 +281,7 @@ public class QuizCreator {
 		sendBroadcastTextChange(TestFragment.ViewName.No, nProblems + "問目 No." + problemNum);
 		sendBroadcastTextChange(TestFragment.ViewName.monme, monme.get(fileName) + "問目" + " 正解率" + seikaisu + "/" + (seikaisu + huseikaisu));
 		//問目++
-		monme.put(fileName, monme.get(fileName) + 1);
+		monme.put(fileName, Objects.requireNonNull(monme.get(fileName)) + 1);
 
 		if (QSentakuFragment.switchQuizHatsuon.isChecked()) {
 			//単語を再生

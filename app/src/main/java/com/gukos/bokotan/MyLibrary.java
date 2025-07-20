@@ -7,6 +7,7 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuA
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static java.lang.Math.min;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -33,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Objects;
 
 public final class MyLibrary {
@@ -42,7 +44,7 @@ public final class MyLibrary {
 			stringBokotanDirPath = stringDownloadPath + "bokotan/",
 			strGaibuDataDirectory = stringDownloadPath + "data/",
 			strExceptionFIlePath = stringBokotanDirPath + "exceptions.txt",
-			packageName = MyLibrary.class.getPackage().getName();
+			packageName = Objects.requireNonNull(MyLibrary.class.getPackage()).getName();
 
 	public static final class ExceptionManager {
 
@@ -63,6 +65,7 @@ public final class MyLibrary {
 			try {
 				//ファイルがなければ新規作成
 				FileWriter fileWriter = FileDirectoryManager.openWriteFileWithExistCheck(context, strExceptionFIlePath, true);
+				assert fileWriter != null;
 				fileWriter.write(getNowTime() + "\n" + strMessage + "\n\n");
 				fileWriter.close();
 			} catch (Exception exception) {
@@ -91,17 +94,17 @@ public final class MyLibrary {
 		public static final String fnAppSettings = "appsettings", delimiter = ",";
 
 		public static String intArrayToString(int[] array) {
-			String data = "";
+			StringBuilder data = new StringBuilder();
 			if (array == null || array.length == 0) return null;
 			for (int i = 0; i < array.length - 1; i++) {
-				data += array[i] + delimiter;
+				data.append(array[i]).append(delimiter);
 			}
-			data += array[array.length - 1];
-			return data;
+			data.append(array[array.length - 1]);
+			return data.toString();
 		}
 
 		public static int[] stringToIntArray(String string) {
-			if (string == null || string.length() == 0) return null;
+			if (string == null || string.isEmpty()) return null;
 			ArrayList<Integer> arrayList = new ArrayList<>();
 			for (String value : string.split(delimiter)) {
 				arrayList.add(Integer.parseInt(value));
@@ -141,7 +144,7 @@ public final class MyLibrary {
 
 		public static String getAllPreferenceData(Context context, String strFileName) {
 			try {
-				return MyLibrary.PreferenceManager.getAllPreferenceJson(context, strFileName).toString(4);
+				return Objects.requireNonNull(PreferenceManager.getAllPreferenceJson(context, strFileName)).toString(4);
 			} catch (Exception e) {
 				ExceptionManager.showException(e);
 				return "共有プリファレンスのデータの取得に失敗";
@@ -167,15 +170,6 @@ public final class MyLibrary {
 				}
 			} catch (Exception exception) {
 				ExceptionManager.showException(context, exception);
-			}
-		}
-
-		public static String getAllSetting(Context context) {
-			try {
-				return getAllPreferenceData(context, fnAppSettings);
-			} catch (Exception exception) {
-				ExceptionManager.showException(context, exception);
-				return null;
 			}
 		}
 
@@ -215,6 +209,7 @@ public final class MyLibrary {
 			return context.getSharedPreferences(strFileName, MODE_PRIVATE).getString(strKey, defaultvalue);
 		}
 
+		@SuppressLint("CommitPrefEdits")
 		public static void putAllData(Context context, String strFileName, String stringJson) {
 			try {
 				//リセット
@@ -241,15 +236,6 @@ public final class MyLibrary {
 				}
 			} catch (Exception exception) {
 				ExceptionManager.showException(context, exception);
-			}
-		}
-
-		public static String getAllData(Context context, String strFileName) {
-			try {
-				return getAllPreferenceData(context, strFileName);
-			} catch (Exception exception) {
-				ExceptionManager.showException(context, exception);
-				return null;
 			}
 		}
 
@@ -305,17 +291,17 @@ public final class MyLibrary {
 		}
 
 		public static String readFromFile(Context context, String strFileName) {
-			String content = "";
+			StringBuilder content = new StringBuilder();
 			try {
 				BufferedReader bufferedReader = new BufferedReader(new FileReader(strFileName));
 				String line;
 				while ((line = bufferedReader.readLine()) != null) {
-					content += line + '\n';
+					content.append(line).append('\n');
 				}
 			} catch (Exception exception) {
 				ExceptionManager.showException(context, exception);
 			}
-			return content;
+			return content.toString();
 		}
 
 		public static String getPathPs(Dictionary.Folder dataBook, BookQ dataQ, Datatype mode, Dictionary.DataLang dataLang, int tangoNum) {
@@ -340,7 +326,7 @@ public final class MyLibrary {
 							type = "日";
 						else return null;
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
-						path += strDataQ + String.format("/%04d", tangoNum) + type + fileExtension;
+						path += strDataQ + String.format(Locale.JAPAN, "/%04d", tangoNum) + type + fileExtension;
 						break;
 					}
 					case yumetan: {
@@ -354,7 +340,7 @@ public final class MyLibrary {
 							type = "P日";
 						else return null;
 						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
-						path += strDataQ + "/" + type + String.format("%04d", tangoNum) + fileExtension;
+						path += strDataQ + "/" + type + String.format(Locale.JAPAN, "%04d", tangoNum) + fileExtension;
 						break;
 					}
 					case tanjukugo: {
@@ -420,7 +406,7 @@ public final class MyLibrary {
 				switch (strQTanjukugo) {
 					case "tanjukugo" + "1q": {
 						if (num <= 2364) {
-							ans = strType + String.format("%04d", num);
+							ans = strType + String.format(Locale.JAPAN, "%04d", num);
 							break;
 						}
 						if (Objects.equals(strType, "日本語")) {
@@ -431,7 +417,7 @@ public final class MyLibrary {
 						num -= 2364;
 						for (int i = 0; i < dfNum[0].length; i++) {
 							if (num <= dfNum[0][i]) {
-								ans = strType + String.format("%02d_%02d", i + 1, num);
+								ans = strType + String.format(Locale.JAPAN, "%02d_%02d", i + 1, num);
 								break;
 							} else num -= dfNum[0][i];
 						}
@@ -439,7 +425,7 @@ public final class MyLibrary {
 					}
 					case "tanjukugo" + "p1q": {
 						if (num <= 1920) {
-							ans = strType + String.format("%04d", num);
+							ans = strType + String.format(Locale.JAPAN, "%04d", num);
 							break;
 						}
 						if (Objects.equals(strType, "日本語")) {
@@ -450,7 +436,7 @@ public final class MyLibrary {
 						num -= 1920;
 						for (int i = 0; i < dfNum[1].length; i++) {
 							if (num <= dfNum[1][i]) {
-								ans = strType + String.format("%02d_%02d", i + 1, num);
+								ans = strType + String.format(Locale.JAPAN, "%02d_%02d", i + 1, num);
 								break;
 							} else num -= dfNum[1][i];
 						}
@@ -486,8 +472,8 @@ public final class MyLibrary {
 
 		public static CharSequence setStringColored(String source, String key) {
 			try {
-				if (key == null || key.equals("") || !source.contains(key)) return source;
-				source = source.replaceAll(System.getProperty("line.separator"), "<br>");
+				if (key == null || key.isEmpty() || !source.contains(key)) return source;
+				source = source.replaceAll(System.lineSeparator(), "<br>");
 				int index = source.indexOf(key);
 				source = source.substring(0, index) + "<font color=\"Red\">" + key + "</font>" + source.substring(index + key.length());
 				return HtmlCompat.fromHtml(source, HtmlCompat.FROM_HTML_MODE_COMPACT);
@@ -527,8 +513,6 @@ public final class MyLibrary {
 		}
 
 		public static String getMethodName(int hierarchyOfStack) {
-			//return new Object(){}.getClass().getEnclosingMethod().getName();
-			//return Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
 			String name = Thread.currentThread().getStackTrace()[hierarchyOfStack].getMethodName();
 			if (name.startsWith("lambda$")) {
 				name = "lambda";
@@ -542,10 +526,6 @@ public final class MyLibrary {
 
 		public static int getNowLine(int hierarchyOfStack) {
 			return Thread.currentThread().getStackTrace()[hierarchyOfStack].getLineNumber();
-		}
-
-		public static int getNowLine() {
-			return getNowLine(defaultHierarchy);
 		}
 
 		public static String getNowThreadName() {
@@ -598,10 +578,6 @@ public final class MyLibrary {
 			ExceptionManager.showException(context, e);
 			return " Build:不明";
 		}
-	}
-
-	private static boolean isIn(int num, int from, int to) {
-		return from <= num && num <= to;
 	}
 
 	public static void sleep() {

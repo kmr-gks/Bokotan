@@ -18,6 +18,8 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.gukos.bokotan.databinding.ActivityTabBinding;
 
+import java.util.Objects;
+
 public class TabActivity extends AppCompatActivity {
 	private static ActivityTabBinding binding;
 
@@ -97,7 +99,7 @@ public class TabActivity extends AppCompatActivity {
 	 */
 	public static void setTabPageNum(int n) {
 		try {
-			TabActivity.binding.tabsMain.getTabAt(n).select();
+			Objects.requireNonNull(TabActivity.binding.tabsMain.getTabAt(n)).select();
 		} catch (Exception exception) {
 			showException(exception);
 		}
@@ -111,13 +113,4 @@ public class TabActivity extends AppCompatActivity {
 			return 0;
 		}
 	}
-	
-	/*
-	//ボタン操作を検出したい。
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		puts("keyCode="+keyCode+"event="+event.toString());
-		return super.onKeyDown(keyCode,event);
-	}
-	*/
 }

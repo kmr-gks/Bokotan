@@ -16,6 +16,8 @@ import androidx.core.content.ContextCompat;
 
 import com.gukos.bokotan.databinding.FragmentTestBinding;
 
+import java.util.Objects;
+
 
 //このクラスで定義されているメソッドやラムダ式は全てメインスレッドで実行される(UI処理に関わるため)
 public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding> {
@@ -44,8 +46,8 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 		@Override
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
-			ViewName viewName = (ViewName) bundle.getSerializable(QUIZ_VIEW_NAME);
-			ViewProperties viewProperties = (ViewProperties) bundle.getSerializable(QUIZ_VIEW_PROPERTIES);
+			ViewName viewName = (ViewName) Objects.requireNonNull(bundle.getSerializable(QUIZ_VIEW_NAME));
+			ViewProperties viewProperties = (ViewProperties) Objects.requireNonNull(bundle.getSerializable(QUIZ_VIEW_PROPERTIES));
 
 			final TextView textViewToHandle;
 			switch (viewName) {

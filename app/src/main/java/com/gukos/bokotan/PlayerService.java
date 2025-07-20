@@ -54,6 +54,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.gukos.bokotan.PlayerFragment.PlayerViewName;
 
@@ -61,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 public class PlayerService extends Service {
@@ -216,7 +218,7 @@ public class PlayerService extends Service {
 				try {
 					Bundle bundle = msg.getData();
 					String messageType = bundle.getString(PLAYERSERVICE_MESSAGE_TYPE);
-					switch (messageType) {
+					switch (Objects.requireNonNull(messageType)) {
 						case PLAYERSERVICE_MESSAGE_STOP: {
 							//サービス停止
 							puts("サービス停止");
@@ -255,7 +257,7 @@ public class PlayerService extends Service {
 			isPlaying = true;
 
 			drawReceiver = new DrawReceiver(handler);
-			context.registerReceiver(drawReceiver, new IntentFilter(PLAYERSERVICE_ACTION), RECEIVER_NOT_EXPORTED);
+			ContextCompat.registerReceiver(context, drawReceiver, new IntentFilter(PLAYERSERVICE_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED);
 
 			if (now == -1) {
 				now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);
@@ -343,7 +345,7 @@ public class PlayerService extends Service {
 			if (nowMode == Dictionary.Datatype.phrase) list = phraseDataList;
 			else list = wordDataList;
 
-			if (wordDataList.size() == 0) {
+			if (wordDataList.isEmpty()) {
 				puts("データがありません。");
 				new AlertDialog.Builder(context).setMessage("データがありません。").setPositiveButton("OK", (dialog, which) -> stopSelf()).create().show();
 			}
@@ -406,8 +408,6 @@ public class PlayerService extends Service {
 				mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
 				if (mediaPlayer == null) {
 					//ファイルが存在しない
-					//new AlertDialog.Builder(getApplicationContext()).setMessage
-					// ("ファイルが存在しません。\n" + path).setPositiveButton("OK", null).show();
 					sendBcTextChange(PlayerViewName.eng, "ファイルが存在しません。" + path);
 					sendBcTextChange(PlayerViewName.jpn, "ファイルが存在しません。" + path);
 					return;
@@ -488,23 +488,21 @@ public class PlayerService extends Service {
 					}
 				}
 				try {
-					seikaisu = (seikai.get(fileNames.get(i)))[index];
-					huseikaisu = huseikai.get(fileNames.get(i))[index];
+					seikaisu = (Objects.requireNonNull(seikai.get(fileNames.get(i))))[index];
+					huseikaisu = Objects.requireNonNull(huseikai.get(fileNames.get(i)))[index];
 				} catch (NullPointerException exception) {
 					showException(context, exception);
 					seikaisu = 0;
 					huseikaisu = 0;
 				}
-			} while ((now != knownWordMap.get(wordDataList.get(now).e) || !skipChecker.apply(seikaisu, huseikaisu)) && now < wordDataList.size() - 1 && loopCount < 1000);
-			//printCurrentState("index="+index+"e"+wordDataList.get(now)+"正解"+"不正解"+"filename="+fileNames.get(i));
-			//printCurrentState("正解"+seikaisu+"不正解"+huseikaisu);
+			} while ((now != Objects.requireNonNull(knownWordMap.get(wordDataList.get(now).e)) || !skipChecker.apply(seikaisu, huseikaisu)) && now < wordDataList.size() - 1 && loopCount < 1000);
 		} else {
 			do {
 				loopCount++;
 				now++;
 				printCurrentState("fileName=" + fileName);
-				seikaisu = seikai.get(fileName)[now];
-				huseikaisu = huseikai.get(fileName)[now];
+				seikaisu = Objects.requireNonNull(seikai.get(fileName))[now];
+				huseikaisu = Objects.requireNonNull(huseikai.get(fileName))[now];
 			} while ((appearedWords.contains(wordDataList.get(now).e) || !skipChecker.apply(seikaisu, huseikaisu)) && now < wordDataList.size() - 1 && loopCount < 1000);
 			//printCurrentState("e"+wordDataList.get(now).e+"seikaisu="+seikaisu+"huseikaisu="+huseikaisu);
 		}
@@ -516,12 +514,7 @@ public class PlayerService extends Service {
 		}
 	}
 
-	/**
-	 * fragment_playerのビューの文字を変更
-	 *
-	 * @param viewName
-	 * @param text
-	 */
+	//fragment_playerのビューの文字を変更
 	private void sendBcTextChange(PlayerViewName viewName, String text) {
 		Intent broadcastIntent =
 				new Intent(PLAYER_ACTION_UI_CHANGE)
@@ -531,12 +524,7 @@ public class PlayerService extends Service {
 		context.sendBroadcast(broadcastIntent);
 	}
 
-	/**
-	 * activity_pipのビューの文字を変更
-	 *
-	 * @param viewName
-	 * @param text
-	 */
+	//activity_pipのビューの文字を変更
 	private void sendBcTextChange(PipActivity.PipViewName viewName, String text) {
 		Intent broadcastIntent =
 				new Intent(PIP_ACTION_UI)
@@ -550,10 +538,6 @@ public class PlayerService extends Service {
 	 * fragment_playerのビューに表示する文字列と行数を指定する
 	 * 以前は文字列の変更時に呼び出し、その後行数を指定する関数を呼び出していたが、そうするとテキストが変更されてから行数が変更されるまでに少しのラグがあり、長い文が一瞬一行で小さく表示されてしまう問題があった。
 	 * <br> ※単語を表示するときは(どれだけ長くても)一行で表示し、英文を表示するときは複数行で表示するため、行数の指定が必要。
-	 *
-	 * @param viewName
-	 * @param text
-	 * @param isSingleLine
 	 */
 	private void sendBcTextLinesChange(PlayerViewName viewName, String text, boolean isSingleLine) {
 		Intent broadcastIntent =
@@ -565,13 +549,7 @@ public class PlayerService extends Service {
 		context.sendBroadcast(broadcastIntent);
 	}
 
-	/**
-	 * activity_pipのビューに表示する文字列と行数を指定する
-	 *
-	 * @param viewName
-	 * @param text
-	 * @param isSingleLine
-	 */
+	//activity_pipのビューに表示する文字列と行数を指定する
 	private void sendBcTextLinesChange(PipActivity.PipViewName viewName, String text, boolean isSingleLine) {
 		Intent broadcastIntent =
 				new Intent(PIP_ACTION_UI)

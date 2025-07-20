@@ -18,14 +18,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Rational;
-import android.view.View;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.gukos.bokotan.databinding.ActivityPipBinding;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PipActivity extends Activity {
 	static boolean startPIP = false;
@@ -62,7 +63,7 @@ public class PipActivity extends Activity {
 			PipViewName pipViewName =
 					(PipViewName) bundle.getSerializable(PIP_VIEW_NAME);
 			final TextView textViewToHandle;
-			switch (pipViewName) {
+			switch (Objects.requireNonNull(pipViewName)) {
 				case num: {
 					textViewToHandle = binding.textViewNo;
 					break;
@@ -103,7 +104,7 @@ public class PipActivity extends Activity {
 			}
 			super.onCreate(savedInstanceState);
 			binding = DataBindingUtil.setContentView(this, R.layout.activity_pip);
-			this.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PIP_ACTION_UI));
+			ContextCompat.registerReceiver(this, new DrawReceiver(drawHandler), new IntentFilter(PIP_ACTION_UI), ContextCompat.RECEIVER_NOT_EXPORTED);
 
 			//最初に表示する文字列を取得
 			binding.textViewPipEng.setText(getIntent().getStringExtra(PIP_TV_FIRST_ENG));
@@ -132,12 +133,4 @@ public class PipActivity extends Activity {
 		}
 	}
 
-	public void exitPIP(View v) {
-		try {
-			finish();
-			startPIP = false;
-		} catch (Exception e) {
-			showException(this, e);
-		}
-	}
 }

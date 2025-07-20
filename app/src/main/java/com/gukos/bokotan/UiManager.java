@@ -100,7 +100,7 @@ public class UiManager {
 		}
 
 		@Override
-		public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		public final View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			//こう書きたいが、javaではできない？
 			//binding= Binding.inflate(inflater, container, false);
 			binding = methodInflate.invoke(inflater, container, false);

@@ -89,9 +89,6 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		try {
 			super.onViewCreated(view, savedInstanceState);
 
-			//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
-			// .penaltyLog().build());
-
 			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 		} catch (Exception e) {
 			showException(getContext(), e);
@@ -132,27 +129,6 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 					startActivity(new Intent(ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
 				}
 			}
-			/*
-			EarbudsConnectReceiver ecr = new EarbudsConnectReceiver(context, () -> {
-				if (cbAutoStop.isChecked())
-					MyLibrary.DisplayOutput.makeToastForLong(context, "有線イヤホン接続");
-			}, () -> {
-				if (cbAutoStop.isChecked()) {
-					MyLibrary.DisplayOutput.makeToastForLong(context, "有線イヤホン切断");
-					Intent intent1 = new Intent(context, PlaySound.class);
-					context.stopService(intent1);
-				}
-			}, () -> {
-				if (cbAutoStop.isChecked())
-					MyLibrary.DisplayOutput.makeToastForLong(context, "bluetothイヤホン接続");
-			}, () -> {
-				if (cbAutoStop.isChecked()) {
-					MyLibrary.DisplayOutput.makeToastForLong(context, "bluetoothイヤホン切断");
-					Intent intent1 = new Intent(context, PlaySound.class);
-					context.stopService(intent1);
-				}
-			});
-			*/
 
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
 			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
@@ -263,6 +239,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 			for (var fileName : getAllFileNames()) {
 				String strFilePath = stringBokotanDirPath + fileName + ".txt";
 				FileWriter fileWriter = openWriteFileWithExistCheck(context, strFilePath, false);
+				assert fileWriter != null;
 				fileWriter.write(getAllPreferenceData(context, fileName));
 				fileWriter.close();
 			}
@@ -296,6 +273,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 	private void onWriteText(View view) {
 		try {
 			FileWriter fileWriter = openWriteFileWithExistCheck(context, strExceptionFIlePath, false);
+			assert fileWriter != null;
 			fileWriter.write("書き込みテスト: " + MyLibrary.packageName + "(" + getNowTime() + ")");
 			fileWriter.close();
 		} catch (Exception exception) {
@@ -424,14 +402,14 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 	}
 
 	private void initializeRadioButtonCondition(FragmentQSentakuBinding binding) {
-		int id = getIntData(getContext(), settingFileName, keySkipCondition, 0);
+		int id = getIntData(requireContext(), settingFileName, keySkipCondition, 0);
 		for (var radioButton : new RadioButton[]{binding.radioButtonPlayAll, binding.radioButtonSeikai, binding.radioButtonHuseikai, binding.radioButtonSeikaiRate}) {
 			if (radioButton.getId() == id) radioButton.setChecked(true);
 		}
 	}
 
 	private void initializeRadioButtonThreshold(FragmentQSentakuBinding binding) {
-		int id = getIntData(getContext(), settingFileName, keySkipThreshold, 0);
+		int id = getIntData(requireContext(), settingFileName, keySkipThreshold, 0);
 		for (var radioButton : new RadioButton[]{binding.radioButtonEqOrMore, binding.radioButtonEqOrLess}) {
 			if (radioButton.getId() == id) radioButton.setChecked(true);
 		}
