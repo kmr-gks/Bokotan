@@ -41,28 +41,28 @@
 			android:foregroundServiceType="mediaPlayback" />
 		<receiver
 			android:name=".StartPipBroadcastReceiver"
-			android:exported="true">
+			android:exported="false">
 			<intent-filter>
 				<action android:name="com.gukos.bokotan" />
 
 				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 		</receiver>
+
 		<activity
 			android:name=".PipActivity"
 			android:launchMode="singleTask"
-			android:screenOrientation="portrait"
 			android:supportsPictureInPicture="true" />
 		<activity
 			android:name=".TabActivity"
-			android:exported="true"
-			android:screenOrientation="portrait">
+			android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+
 
 	</application>
 
