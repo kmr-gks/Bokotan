@@ -67,42 +67,40 @@ import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentakuBinding> {
+public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentakuBinding> {
 	private final String keySkipCondition = "skipCondition",
-		keySkipThreshold = "skipThreshold",
-		skipThresholdNum = "skipThresholdNum",
-		settingFileName = "uisetting";
-	
+			keySkipThreshold = "skipThreshold",
+			skipThresholdNum = "skipThresholdNum",
+			settingFileName = "uisetting";
+
 	//他のクラスからアクセス
 	public static SwitchMaterial switchQuizHatsuon, switchQuizOX, switchShouHatsuon;
-	
+
 	public static Folder dataBook;
 	public static BookQ dataQ;
-	
+
 	public QSentakuFragment() {
 		super(FragmentQSentakuBinding::inflate);
 	}
-	
+
 	@Override
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			
-			//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
-			// .penaltyLog().build());
-			
+
 			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
 	}
-	
+
 	public void initialize() {
 		try {
 			//バージョン表記
 			binding.textViewVersion.setText(getBuildDate(context));
-			
+
 			//権限リクエスト
 			//最前面に表示
 			// https://maku77.github.io/android/ui/always-top.html
@@ -132,39 +130,16 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					startActivity(new Intent(ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
 				}
 			}
-			/*
-			EarbudsConnectReceiver ecr = new EarbudsConnectReceiver(context, () -> {
-				if (cbAutoStop.isChecked())
-					MyLibrary.DisplayOutput.makeToastForLong(context, "有線イヤホン接続");
-			}, () -> {
-				if (cbAutoStop.isChecked()) {
-					MyLibrary.DisplayOutput.makeToastForLong(context, "有線イヤホン切断");
-					Intent intent1 = new Intent(context, PlaySound.class);
-					context.stopService(intent1);
-				}
-			}, () -> {
-				if (cbAutoStop.isChecked())
-					MyLibrary.DisplayOutput.makeToastForLong(context, "bluetothイヤホン接続");
-			}, () -> {
-				if (cbAutoStop.isChecked()) {
-					MyLibrary.DisplayOutput.makeToastForLong(context, "bluetoothイヤホン切断");
-					Intent intent1 = new Intent(context, PlaySound.class);
-					context.stopService(intent1);
-				}
-			});
-			*/
-			
-			//TODO:タブ表示
-			
+
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
 			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
 			binding.buttonWriteTest.setOnClickListener(this::onWriteText);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
-			
+
 			switchShouHatsuon = binding.checkBoxHatsuonkigou;
 			QSentakuFragment.switchQuizHatsuon = binding.switchQuizHatsuon;
 			QSentakuFragment.switchQuizOX = binding.switchQuizOxKoukaon;
-			
+
 			binding.editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
 			pipYoko = Integer.parseInt(binding.editTextPipYoko.getText().toString());
 			binding.editTextPipYoko.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
@@ -177,7 +152,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					showException(context, e);
 				}
 			});
-			
+
 			binding.editTextPipTate.setText(String.valueOf(getIntData(context, "editText", "editTextPipTate", 9)));
 			pipTate = Integer.parseInt(binding.editTextPipTate.getText().toString());
 			binding.editTextPipTate.addTextChangedListener((UiManager.UiInterface.TextWatcherAfterOnly) editable -> {
@@ -192,7 +167,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 					}
 				}
 			});
-			
+
 			initializeSettingItem(binding.switchOnlyFirst, true);
 			initializeSettingItem(binding.switchHyojiYakuBeforeRead, true);
 			initializeSettingItem(binding.switchSkipOboe, true);
@@ -201,36 +176,36 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			initializeSettingItem(binding.checkBoxHatsuonkigou, false);
 			initializeSettingItem(binding.switchQuizHatsuon, true);
 			initializeSettingItem(binding.switchQuizOxKoukaon, true);
-			
+
 			for (var v : new SwitchMaterial[]{binding.switchOnlyFirst, binding.switchHyojiYakuBeforeRead, binding.switchSkipOboe, binding.switchSortHanten, binding.checkBoxAutoStop, binding.checkBoxHatsuonkigou, binding.switchQuizHatsuon, binding.switchQuizOxKoukaon}) {
 				v.setOnCheckedChangeListener(UiManager.Listener::onClickSettingItem);
 			}
-			
+
 			initializeRadioButtonCondition(binding);
 			initializeRadioButtonThreshold(binding);
-			
+
 			binding.radioButtonPlayAll.setOnClickListener(this::onSkipConditionChanged);
 			binding.radioButtonSeikai.setOnClickListener(this::onSkipConditionChanged);
 			binding.radioButtonHuseikai.setOnClickListener(this::onSkipConditionChanged);
 			binding.radioButtonSeikaiRate.setOnClickListener(this::onSkipConditionChanged);
 			double thresholdNum = Double.parseDouble(getStringData(context, settingFileName, skipThresholdNum, "1"));
 			binding.editNumberThreshold.setText(String.valueOf(thresholdNum));
-			
+
 			binding.radioButtonEqOrMore.setOnClickListener(this::onSkipThresholdChanged);
 			binding.radioButtonEqOrLess.setOnClickListener(this::onSkipThresholdChanged);
-			
+
 			binding.spinnerSpace.setAdapter(getAdapterForSpinner(context, R.array.spinner_kuuhaku));
 			binding.spinnerSpace.setSelection(getIntData(context, "spinnerKuuhaku", "selected", 0));
 			binding.spinnerSpace.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerKuuhakuOnItemSelectedListener);
-			
+
 			binding.spinnerHyojijun.setAdapter(getAdapterForSpinner(context, R.array.spinner_hyojijun));
 			binding.spinnerHyojijun.setSelection(getIntData(context, "spinnerHyojijun", "selected", 0));
 			binding.spinnerHyojijun.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerHyojijunOnItemSelectedListener);
-			
+
 			binding.spinnerBookQ.setAdapter(getAdapterForSpinner(context, R.array.spinner_book_q));
 			binding.spinnerBookQ.setSelection(getIntData(context, "spinnerBookQ", "selected", 4));
 			binding.spinnerBookQ.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerBookQOnItemSelectedListener);
-			
+
 			binding.buttonWord.setOnClickListener(this::onPlayQuizStart);
 			binding.buttonPhrase.setOnClickListener(this::onPlayQuizStart);
 			binding.buttonWP.setOnClickListener(this::onPlayQuizStart);
@@ -239,7 +214,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			showException(context, e);
 		}
 	}
-	
+
 	private void onShowSettingNew(View view) {
 		try {
 			var content = new StringBuilder();
@@ -251,20 +226,20 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 				}
 			}
 			new AlertDialog.Builder(context)
-				.setTitle(((Button) view).getText())
-				.setMessage(content.toString())
-				.create()
-				.show();
+					.setTitle(((Button) view).getText())
+					.setMessage(content.toString())
+					.create()
+					.show();
 		} catch (Exception exception) {
 			showException(context, exception);
 		}
 	}
-	
+
 	private void onExportPrefsButton(View view) {
 		try {
 			for (var fileName : getAllFileNames()) {
 				String strFilePath = stringBokotanDirPath + fileName + ".txt";
-				FileWriter fileWriter = openWriteFileWithExistCheck(context, strFilePath, false);
+				FileWriter fileWriter = Objects.requireNonNull(openWriteFileWithExistCheck(context, strFilePath, false));
 				fileWriter.write(getAllPreferenceData(context, fileName));
 				fileWriter.close();
 			}
@@ -274,14 +249,14 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			MyLibrary.DisplayOutput.makeToastForLong(context, "設定の書き込みに失敗しました。");
 		}
 	}
-	
+
 	private void onImportPrefsButton(View view) {
 		try {
 			putAllSetting(context, readFromFile(context, stringBokotanDirPath + fnAppSettings + ".txt"));
-			
+
 			for (var sw : new SwitchMaterial[]{binding.switchOnlyFirst,
-				binding.switchHyojiYakuBeforeRead, binding.switchSkipOboe, binding.switchSortHanten
-				, binding.checkBoxAutoStop, binding.checkBoxHatsuonkigou}) {
+					binding.switchHyojiYakuBeforeRead, binding.switchSkipOboe, binding.switchSortHanten
+					, binding.checkBoxAutoStop, binding.checkBoxHatsuonkigou}) {
 				sw.setChecked(getSetting(context, "id" + sw.getId(), true));
 			}
 			for (var fileName : getAllFileNames()) {
@@ -294,10 +269,10 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			MyLibrary.DisplayOutput.makeToastForLong(context, "設定の読み込みに失敗しました。");
 		}
 	}
-	
+
 	private void onWriteText(View view) {
 		try {
-			FileWriter fileWriter = openWriteFileWithExistCheck(context, strExceptionFIlePath, false);
+			FileWriter fileWriter = Objects.requireNonNull(openWriteFileWithExistCheck(context, strExceptionFIlePath, false));
 			fileWriter.write("書き込みテスト: " + MyLibrary.packageName + "(" + getNowTime() + ")");
 			fileWriter.close();
 		} catch (Exception exception) {
@@ -308,7 +283,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 		}
 		MyLibrary.DisplayOutput.makeToastForLong(context, "ファイル書き込みに成功しました。");
 	}
-	
+
 	private void onPlayQuizStart(View view) {
 		PlayerService.SkipContidion skipContidion;
 		PlayerService.SkipThreshold skipThreshold;
@@ -394,21 +369,20 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			//問題出題を開始
 			TabActivity.setTabPageNum(2);
 			QuizCreator.build(context, dataBook, dataQ, skipContidion, Double.parseDouble(binding.editNumberThreshold.getText().toString()), skipThreshold);
-		}
-		else {
+		} else {
 			//再生開始
 			TabActivity.setTabPageNum(1);
 			Datatype mode = Datatype.word;
 			if (view == binding.buttonPhrase) mode = Datatype.phrase;
 			else if (view == binding.buttonWP) mode = Datatype.mix;
 			Intent intent = new Intent(context, PlayerService.class)
-				.putExtra(PLAYERSERVICE_EXTRA_MODE, mode)
-				.putExtra(PLAYERSERVICE_EXTRA_BOOK, dataBook)
-				.putExtra(PLAYERSERVICE_EXTRA_DATA_Q, dataQ)
-				.putExtra(PLAYERSERVICE_EXTRA_SKIP_COND, skipContidion)
-				.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, Double.parseDouble(binding.editNumberThreshold.getText().toString()))
-				.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_COMP, skipThreshold)
-				.putExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, binding.switchOnlyFirst.isChecked());
+					.putExtra(PLAYERSERVICE_EXTRA_MODE, mode)
+					.putExtra(PLAYERSERVICE_EXTRA_BOOK, dataBook)
+					.putExtra(PLAYERSERVICE_EXTRA_DATA_Q, dataQ)
+					.putExtra(PLAYERSERVICE_EXTRA_SKIP_COND, skipContidion)
+					.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, Double.parseDouble(binding.editNumberThreshold.getText().toString()))
+					.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_COMP, skipThreshold)
+					.putExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, binding.switchOnlyFirst.isChecked());
 			//開始位置が設定されている場合
 			if (binding.editTextNumber.length() > 0) {
 				intent.putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, Integer.parseInt(binding.editTextNumber.getText().toString()));
@@ -417,29 +391,29 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			context.startForegroundService(intent);
 		}
 	}
-	
+
 	private void onSkipConditionChanged(View view) {
 		putIntData(getContext(), settingFileName, keySkipCondition, view.getId());
 	}
-	
+
 	private void onSkipThresholdChanged(View view) {
 		putIntData(getContext(), settingFileName, keySkipThreshold, view.getId());
 	}
-	
+
 	private void initializeRadioButtonCondition(FragmentQSentakuBinding binding) {
-		int id = getIntData(getContext(), settingFileName, keySkipCondition, 0);
+		int id = getIntData(requireContext(), settingFileName, keySkipCondition, 0);
 		for (var radioButton : new RadioButton[]{binding.radioButtonPlayAll, binding.radioButtonSeikai, binding.radioButtonHuseikai, binding.radioButtonSeikaiRate}) {
 			if (radioButton.getId() == id) radioButton.setChecked(true);
 		}
 	}
-	
+
 	private void initializeRadioButtonThreshold(FragmentQSentakuBinding binding) {
-		int id = getIntData(getContext(), settingFileName, keySkipThreshold, 0);
+		int id = getIntData(requireContext(), settingFileName, keySkipThreshold, 0);
 		for (var radioButton : new RadioButton[]{binding.radioButtonEqOrMore, binding.radioButtonEqOrLess}) {
 			if (radioButton.getId() == id) radioButton.setChecked(true);
 		}
 	}
-	
+
 	private void spinnerKuuhakuOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
 		try {
 			putIntData(context, "spinnerKuuhaku", "selected", i);
@@ -462,7 +436,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			showException(context, e);
 		}
 	}
-	
+
 	private void spinnerHyojijunOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
 		try {
 			putIntData(context, "spinnerHyojijun", "selected", i);
@@ -489,7 +463,7 @@ public class QSentakuFragment extends UiManager.FragmentBingding<FragmentQSentak
 			showException(context, e);
 		}
 	}
-	
+
 	private void spinnerBookQOnItemSelectedListener(AdapterView<?> adapterView, View view1, int i, long l) {
 		try {
 			putIntData(context, "spinnerBookQ", "selected", i);

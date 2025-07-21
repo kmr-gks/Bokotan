@@ -54,6 +54,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.gukos.bokotan.PlayerFragment.PlayerViewName;
 
@@ -61,27 +62,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 public class PlayerService extends Service {
 	public static final String
-		className = getClassName(),//場所によってこの関数の返す文字列が変わる
-		PLAYERSERVICE_EXTRA_MODE = "ps_em",
-		PLAYERSERVICE_EXTRA_BOOK = "ps_eb",
-		PLAYERSERVICE_EXTRA_DATA_Q = "ps_edq",
-		PLAYERSERVICE_EXTRA_SKIP_COND = "psesc",
-		PLAYERSERVICE_EXTRA_SKIP_THRES_NUM = "psestn",
-		PLAYERSERVICE_EXTRA_SKIP_THRES_COMP = "psestc",
-		PLAYERSERVICE_EXTRA_NOW = "ps_en",
-		PLAYERSERVICE_EXTRA_SHOW_APPEARED = "ps_esa",
-		PLAYERSERVICE_ACTION = "playerservice_action",
-		PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
-		PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
-		PLAYERSERVICE_MESSAGE_NOW = "ps_mn";
-	
+			className = getClassName(),//場所によってこの関数の返す文字列が変わる
+			PLAYERSERVICE_EXTRA_MODE = "ps_em",
+			PLAYERSERVICE_EXTRA_BOOK = "ps_eb",
+			PLAYERSERVICE_EXTRA_DATA_Q = "ps_edq",
+			PLAYERSERVICE_EXTRA_SKIP_COND = "psesc",
+			PLAYERSERVICE_EXTRA_SKIP_THRES_NUM = "psestn",
+			PLAYERSERVICE_EXTRA_SKIP_THRES_COMP = "psestc",
+			PLAYERSERVICE_EXTRA_NOW = "ps_en",
+			PLAYERSERVICE_EXTRA_SHOW_APPEARED = "ps_esa",
+			PLAYERSERVICE_ACTION = "playerservice_action",
+			PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
+			PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop",
+			PLAYERSERVICE_MESSAGE_NOW = "ps_mn";
+
 	public static float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 2f;
 	static ArrayList<Dictionary.Entry> wordDataList = new ArrayList<>(), phraseDataList = new ArrayList<>();
-	
+
 	Context context;
 	Handler handler;
 	private DrawReceiver drawReceiver;
@@ -103,7 +105,7 @@ public class PlayerService extends Service {
 	ArrayList<Integer> sizeForBook = null;
 	private int now = 1, count = 1;
 	private double thresholdNum;
-	
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		selectMode = (Dictionary.Datatype) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
@@ -161,13 +163,13 @@ public class PlayerService extends Service {
 				}
 			}
 		}
-		
-		if (dataBook==tanjukugo){
+
+		if (dataBook == tanjukugo) {
 			fileName = dnTestActivity + "tanjukugo" + dataQ.toString() + "Test";
-		}else{
+		} else {
 			fileName = dnTestActivity + dataQ.toString() + "Test";
 		}
-		
+
 		context = getApplicationContext();
 		String channelId = "default";
 		String title = context.getString(R.string.app_name);
@@ -175,39 +177,38 @@ public class PlayerService extends Service {
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		// Notification Channel 設定
 		NotificationChannel channel = new NotificationChannel(channelId, title, NotificationManager.IMPORTANCE_DEFAULT);
-		
+
 		if (notificationManager != null) {
 			notificationManager.createNotificationChannel(channel);
 			Intent sendStopIntent =
-				new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
+					new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
 			/*
 			Intent sendStopIntent =new Intent(this, StopPlayBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			*/
 			Intent sendPipIntent = new Intent(this, StartPipBroadcastReceiver.class).setAction(Intent.ACTION_SEND);
 			PendingIntent sendStopPendingIntent = PendingIntent.getBroadcast(this, 0, sendStopIntent, PendingIntent.FLAG_IMMUTABLE);
 			PendingIntent sendPipPendingIntent = PendingIntent.getBroadcast(this, 10, sendPipIntent, PendingIntent.FLAG_IMMUTABLE);
-			
+
 			Notification notification = new Notification.Builder(context, channelId)
-				.setContentTitle(title)
-				// android標準アイコンから
-				.setSmallIcon(android.R.drawable.ic_media_play)
-				.setContentText("MyApplication")
-				.setAutoCancel(true)
-				.addAction(R.drawable.ic_launcher_foreground, "停止", sendStopPendingIntent)
-				.addAction(R.mipmap.launcher_new_icon, "小窓で表示", sendPipPendingIntent)
-				.setContentIntent(pendingIntent)
-				.setWhen(System.currentTimeMillis())
-				.build();
+					.setContentTitle(title)
+					// android標準アイコンから
+					.setSmallIcon(android.R.drawable.ic_media_play)
+					.setContentText("MyApplication")
+					.setAutoCancel(true)
+					.addAction(R.drawable.ic_launcher_foreground, "停止", sendStopPendingIntent)
+					.addAction(R.mipmap.launcher_new_icon, "小窓で表示", sendPipPendingIntent)
+					.setContentIntent(pendingIntent)
+					.setWhen(System.currentTimeMillis())
+					.build();
 			//Notification.FLAG_NO_CLEARだと消える(Android13)
 			notification.flags |= Notification.FLAG_ONGOING_EVENT;
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 				startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-			}
-			else {
+			} else {
 				startForeground(1, notification);
 			}
 		}
-		
+
 		Service thisService = this;
 		HandlerThread handlerThread = new HandlerThread(getClassName());
 		handlerThread.start();
@@ -217,7 +218,7 @@ public class PlayerService extends Service {
 				try {
 					Bundle bundle = msg.getData();
 					String messageType = bundle.getString(PLAYERSERVICE_MESSAGE_TYPE);
-					switch (messageType) {
+					switch (Objects.requireNonNull(messageType)) {
 						case PLAYERSERVICE_MESSAGE_STOP: {
 							//サービス停止
 							puts("サービス停止");
@@ -254,14 +255,14 @@ public class PlayerService extends Service {
 			sendBcTextChange(PlayerViewName.eng, "読み込み中");
 			sendBcTextChange(PlayerViewName.jpn, "読み込み中");
 			isPlaying = true;
-			
+
 			drawReceiver = new DrawReceiver(handler);
-			context.registerReceiver(drawReceiver, new IntentFilter(PLAYERSERVICE_ACTION), RECEIVER_NOT_EXPORTED);
-			
+			ContextCompat.registerReceiver(context, drawReceiver, new IntentFilter(PLAYERSERVICE_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED);
+
 			if (now == -1) {
 				now = MyLibrary.PreferenceManager.getIntData(context, fnAppSettings, className + dataBook + dataQ + selectMode, 1);
 			}
-			
+
 			wordDataList = new ArrayList<>();
 			phraseDataList = new ArrayList<>();
 			switch (dataBook) {
@@ -288,11 +289,10 @@ public class PlayerService extends Service {
 					for (var q : new BookQ[]{qp1, q1}) {
 						wordDataList.addAll(Dictionary.getList(Dictionary.BookName.PasstanWordData, q));
 					}
-					//todo 単熟語ex準1級のデータはunit8までしかない。
 					for (var q : new BookQ[]{qp1, q1}) {
 						wordDataList.addAll(Dictionary.getList(Dictionary.BookName.tanjukugoWord, q));
 					}
-					
+
 					if (selectMode == Dictionary.Datatype.phrase || selectMode == Dictionary.Datatype.mix) {
 						for (var q : new BookQ[]{y1, y2, y3}) {
 							phraseDataList.addAll(Dictionary.getList(Dictionary.BookName.yumetanPhrase, q));
@@ -304,7 +304,7 @@ public class PlayerService extends Service {
 							phraseDataList.addAll(Dictionary.getList(Dictionary.BookName.tanjukugoPhrase, q));
 						}
 					}
-					
+
 					if (dataBook == all) {
 						sizeForBook = new ArrayList<>(Arrays.asList(1001, 1000, 800, 1850, 2400, 1680, 2364));
 						fileNames = new ArrayList<>();
@@ -316,7 +316,7 @@ public class PlayerService extends Service {
 						fileNames.add(dnTestActivity + "tanjukugo" + qp1 + "Test");
 						fileNames.add(dnTestActivity + "tanjukugo" + q1 + "Test");
 					}
-					
+
 					//単語データをmapに格納
 					for (int i = 0; i < wordDataList.size(); i++) {
 						if (!knownWordMap.containsKey(wordDataList.get(i).e)) {
@@ -326,8 +326,8 @@ public class PlayerService extends Service {
 					break;
 				}
 			}
-			if (wordDataList==null){
-				//TODO データの読み込み失敗時の処理(音声ファイルがないときなど)
+			if (wordDataList == null) {
+				//issue データの読み込み失敗時の処理(音声ファイルがないときなど)
 			}
 
 			onPlay();
@@ -336,8 +336,8 @@ public class PlayerService extends Service {
 	}
 
 	private void onPlay() {
-		//TODO データの読み込み失敗時の処理
-		if (wordDataList==null) return;
+		//issue
+		if (wordDataList == null) return;
 		//リソースの開放
 		releaseMediaPlayer(mediaPlayer);
 		if (isPlaying) {
@@ -345,11 +345,11 @@ public class PlayerService extends Service {
 			if (nowMode == Dictionary.Datatype.phrase) list = phraseDataList;
 			else list = wordDataList;
 
-			if (wordDataList.size() == 0) {
+			if (wordDataList.isEmpty()) {
 				puts("データがありません。");
 				new AlertDialog.Builder(context).setMessage("データがありません。").setPositiveButton("OK", (dialog, which) -> stopSelf()).create().show();
 			}
-			
+
 			//助詞の確認
 			if (dataBook == passtan && nowMode == Dictionary.Datatype.word && nowLang == japanese && !isJoshiChecked) {
 				isJoshiChecked = true;
@@ -368,31 +368,28 @@ public class PlayerService extends Service {
 					mediaPlayer.setOnCompletionListener((mp) -> handler.post(this::onPlay));
 					return;
 				}
-			}
-			else {
+			} else {
 				isJoshiChecked = false;
 			}
-			
+
 			if (nowLang == english) {
-				sendBcTextChange(PlayerViewName.tvcount, seikaisu+"/"+(seikaisu+huseikaisu)+" 再生回数:" + count + "回");
+				sendBcTextChange(PlayerViewName.tvcount, seikaisu + "/" + (seikaisu + huseikaisu) + " 再生回数:" + count + "回");
 				sendBcTextChange(PlayerViewName.genzai, "No." + now);
 				sendBcTextChange(PlayerViewName.jpn, list.get(now).j);
-				
+
 				if (nowMode == Dictionary.Datatype.word && QSentakuFragment.switchShouHatsuon.isChecked()) {
 					sendBcTextChange(PlayerViewName.hatsuon, Dictionary.HatsuonKigou.getHatsuon(list.get(now).e));
-				}
-				else {
+				} else {
 					sendBcTextChange(PlayerViewName.hatsuon, null);
 				}
-				
+
 				sendBcTextChange(PipActivity.PipViewName.num, "No." + now);
 				sendBcTextChange(PipActivity.PipViewName.jpn, list.get(now).j);
 				//文を再生しているときは、単語も表示しておく。
 				if (selectMode == Dictionary.Datatype.mix && nowMode == Dictionary.Datatype.phrase) {
 					sendBcTextChange(PlayerViewName.subE, wordDataList.get(now).e);
 					sendBcTextChange(PlayerViewName.subJ, wordDataList.get(now).j);
-				}
-				else {
+				} else {
 					sendBcTextChange(PlayerViewName.subE, "");
 					sendBcTextChange(PlayerViewName.subJ, "");
 				}
@@ -400,20 +397,17 @@ public class PlayerService extends Service {
 				if (nowMode == Dictionary.Datatype.word) {
 					sendBcTextLinesChange(PlayerViewName.eng, list.get(now).e, true);
 					sendBcTextLinesChange(PipActivity.PipViewName.eng, list.get(now).e, true);
-				}
-				else {
+				} else {
 					sendBcTextLinesChange(PlayerViewName.eng, list.get(now).e, false);
 					sendBcTextLinesChange(PipActivity.PipViewName.eng, list.get(now).e, false);
 				}
 			}
-			
+
 			path = getPathPs(wordDataList.get(now).folder, wordDataList.get(now).bookQ, nowMode, nowLang, wordDataList.get(now).numberInBook);
 			try {
 				mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
-				if (mediaPlayer==null){
+				if (mediaPlayer == null) {
 					//ファイルが存在しない
-					//new AlertDialog.Builder(getApplicationContext()).setMessage
-					// ("ファイルが存在しません。\n" + path).setPositiveButton("OK", null).show();
 					sendBcTextChange(PlayerViewName.eng, "ファイルが存在しません。" + path);
 					sendBcTextChange(PlayerViewName.jpn, "ファイルが存在しません。" + path);
 					return;
@@ -423,8 +417,7 @@ public class PlayerService extends Service {
 					//現在英語:日本語にする
 					nowLang = japanese;
 					mediaPlayer.setPlaybackParams(new PlaybackParams().setSpeed(dPlaySpeedEng));
-				}
-				else {
+				} else {
 					//現在日本語:英語にする
 					nowLang = english;
 					if (selectMode == Dictionary.Datatype.mix) {
@@ -432,14 +425,12 @@ public class PlayerService extends Service {
 						if (nowMode == Dictionary.Datatype.word) {
 							//現在単語だった
 							nowMode = Dictionary.Datatype.phrase;
-						}
-						else {
+						} else {
 							//文だった
 							nowMode = Dictionary.Datatype.word;
 							goNext();
 						}
-					}
-					else {
+					} else {
 						//ずっと単語またはずっと文
 						nowMode = selectMode;
 						goNext();
@@ -452,20 +443,20 @@ public class PlayerService extends Service {
 			}
 		}
 	}
-	
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
-	
+
 	public enum SkipContidion {
 		all, seikaisu, huseikai, seikairate
 	}
-	
+
 	public enum SkipThreshold {
 		eqormore, eqorless
 	}
-	
+
 	private void releaseMediaPlayer(MediaPlayer mediaPlayer) {
 		try {
 			if (mediaPlayer != null) {
@@ -473,12 +464,14 @@ public class PlayerService extends Service {
 				mediaPlayer.reset();
 				mediaPlayer.release();
 			}
-		} catch (Exception ignored) {}
+		} catch (Exception exception) {
+			showException(context, exception);
+		}
 	}
-	
+
 	private void goNext() {
 		count++;
-		int loopCount=0;
+		int loopCount = 0;
 		int i;
 		if (now >= wordDataList.size() - 1) now = 0;
 		//既出の単語を飛ばす
@@ -496,97 +489,78 @@ public class PlayerService extends Service {
 					}
 				}
 				try {
-					seikaisu = (seikai.get(fileNames.get(i)))[index];
-					huseikaisu = huseikai.get(fileNames.get(i))[index];
+					seikaisu = (Objects.requireNonNull(seikai.get(fileNames.get(i))))[index];
+					huseikaisu = Objects.requireNonNull(huseikai.get(fileNames.get(i)))[index];
 				} catch (NullPointerException exception) {
 					showException(context, exception);
 					seikaisu = 0;
 					huseikaisu = 0;
 				}
-			} while ((now != knownWordMap.get(wordDataList.get(now).e) || !skipChecker.apply(seikaisu, huseikaisu)) && now < wordDataList.size() - 1 && loopCount < 1000);
-			//printCurrentState("index="+index+"e"+wordDataList.get(now)+"正解"+"不正解"+"filename="+fileNames.get(i));
-			//printCurrentState("正解"+seikaisu+"不正解"+huseikaisu);
-		}
-		else {
+			} while ((now != Objects.requireNonNull(knownWordMap.get(wordDataList.get(now).e)) || !skipChecker.apply(seikaisu, huseikaisu)) && now < wordDataList.size() - 1 && loopCount < 1000);
+		} else {
 			do {
 				loopCount++;
 				now++;
 				printCurrentState("fileName=" + fileName);
-				seikaisu = seikai.get(fileName)[now];
-				huseikaisu = huseikai.get(fileName)[now];
+				seikaisu = Objects.requireNonNull(seikai.get(fileName))[now];
+				huseikaisu = Objects.requireNonNull(huseikai.get(fileName))[now];
 			} while ((appearedWords.contains(wordDataList.get(now).e) || !skipChecker.apply(seikaisu, huseikaisu)) && now < wordDataList.size() - 1 && loopCount < 1000);
 			//printCurrentState("e"+wordDataList.get(now).e+"seikaisu="+seikaisu+"huseikaisu="+huseikaisu);
 		}
-		if (loopCount>=1000){
+		if (loopCount >= 1000) {
 			//アクティビティのコンテキストが必要
 			//new AlertDialog.Builder(context).setMessage("出題できる問題がありません。条件を変えてやり直してください。")
 			// .setPositiveButton("OK",null).create().show();
 			sleep(1000);
 		}
 	}
-	
-	/**
-	 * fragment_playerのビューの文字を変更
-	 *
-	 * @param viewName
-	 * @param text
-	 */
+
+	//fragment_playerのビューの文字を変更
 	private void sendBcTextChange(PlayerViewName viewName, String text) {
 		Intent broadcastIntent =
-			new Intent(PLAYER_ACTION_UI_CHANGE)
-				.putExtra(PLAYER_VIEW_NAME, viewName)
-				.putExtra(PLAYER_VIEW_TEXT, text);
+				new Intent(PLAYER_ACTION_UI_CHANGE)
+						.putExtra(PLAYER_VIEW_NAME, viewName)
+						.putExtra(PLAYER_VIEW_TEXT, text)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
-	
-	/**
-	 * activity_pipのビューの文字を変更
-	 *
-	 * @param viewName
-	 * @param text
-	 */
+
+	//activity_pipのビューの文字を変更
 	private void sendBcTextChange(PipActivity.PipViewName viewName, String text) {
 		Intent broadcastIntent =
-			new Intent(PIP_ACTION_UI)
-				.putExtra(PIP_VIEW_NAME, viewName)
-				.putExtra(PIP_VIEW_TEXT, text);
+				new Intent(PIP_ACTION_UI)
+						.putExtra(PIP_VIEW_NAME, viewName)
+						.putExtra(PIP_VIEW_TEXT, text)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
-	
+
 	/**
 	 * fragment_playerのビューに表示する文字列と行数を指定する
-	 *  以前は文字列の変更時に呼び出し、その後行数を指定する関数を呼び出していたが、そうするとテキストが変更されてから行数が変更されるまでに少しのラグがあり、長い文が一瞬一行で小さく表示されてしまう問題があった。
+	 * 以前は文字列の変更時に呼び出し、その後行数を指定する関数を呼び出していたが、そうするとテキストが変更されてから行数が変更されるまでに少しのラグがあり、長い文が一瞬一行で小さく表示されてしまう問題があった。
 	 * <br> ※単語を表示するときは(どれだけ長くても)一行で表示し、英文を表示するときは複数行で表示するため、行数の指定が必要。
-	 *
-	 * @param viewName
-	 * @param text
-	 * @param isSingleLine
 	 */
-	private void sendBcTextLinesChange(PlayerViewName viewName,String text, boolean isSingleLine) {
+	private void sendBcTextLinesChange(PlayerViewName viewName, String text, boolean isSingleLine) {
 		Intent broadcastIntent =
-			new Intent(PLAYER_ACTION_UI_CHANGE)
-				.putExtra(PLAYER_VIEW_NAME, viewName)
-				.putExtra(PLAYER_VIEW_TEXT, text)
-				.putExtra(PLAYER_VIEW_SINGLE_LINE, isSingleLine);
+				new Intent(PLAYER_ACTION_UI_CHANGE)
+						.putExtra(PLAYER_VIEW_NAME, viewName)
+						.putExtra(PLAYER_VIEW_TEXT, text)
+						.putExtra(PLAYER_VIEW_SINGLE_LINE, isSingleLine)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
-	
-	/**
-	 * activity_pipのビューに表示する文字列と行数を指定する
-	 *
-	 * @param viewName
-	 * @param text
-	 * @param isSingleLine
-	 */
-	private void sendBcTextLinesChange(PipActivity.PipViewName viewName,String text, boolean isSingleLine) {
+
+	//activity_pipのビューに表示する文字列と行数を指定する
+	private void sendBcTextLinesChange(PipActivity.PipViewName viewName, String text, boolean isSingleLine) {
 		Intent broadcastIntent =
-			new Intent(PIP_ACTION_UI)
-				.putExtra(PIP_VIEW_NAME, viewName)
-				.putExtra(PIP_VIEW_TEXT, text)
-				.putExtra(PIP_VIEW_SINGLE_LINE, isSingleLine);
+				new Intent(PIP_ACTION_UI)
+						.putExtra(PIP_VIEW_NAME, viewName)
+						.putExtra(PIP_VIEW_TEXT, text)
+						.putExtra(PIP_VIEW_SINGLE_LINE, isSingleLine)
+						.setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
-	
+
 	private void runOnUiThread(Runnable runnable) {
 		new Handler(Looper.getMainLooper()).post(runnable);
 	}

@@ -1,7 +1,6 @@
 package com.gukos.bokotan;
 
 import static com.gukos.bokotan.Dictionary.Unit.toFindFromAndTo;
-import static com.gukos.bokotan.MyLibrary.DebugManager.getClassName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -15,7 +14,6 @@ import static com.gukos.bokotan.QSentakuFragment.dataBook;
 import static com.gukos.bokotan.QSentakuFragment.dataQ;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -28,32 +26,33 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.gukos.bokotan.databinding.FragmentPlayerBinding;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
-public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBinding> {
+public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBinding> {
 	public static Boolean isInitialized = false;
 	public static final String
-		PLAYER_ACTION_UI_CHANGE = "player_action_ui_change",
-		PLAYER_VIEW_NAME = "player_view_name",
-		PLAYER_VIEW_TEXT = "player_view_text",
-		PLAYER_VIEW_COLOR = "player_view_color",
-		PLAYER_VIEW_SINGLE_LINE = "pvsl";
-	
+			PLAYER_ACTION_UI_CHANGE = "player_action_ui_change";
+	public static final String PLAYER_VIEW_NAME = "player_view_name";
+	public static final String PLAYER_VIEW_TEXT = "player_view_text";
+	public static final String PLAYER_VIEW_SINGLE_LINE = "pvsl";
+
 	public enum PlayerViewName {
 		genzai, tvcount, hatsuon, subJ, subE, eng, jpn, path
 	}
-	
+
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
 			PlayerViewName viewName = (PlayerViewName) bundle.getSerializable(PLAYER_VIEW_NAME);
 			final TextView textViewToHandle;
-			switch (viewName) {
+			switch (Objects.requireNonNull(viewName)) {
 				case genzai: {
 					textViewToHandle = binding.textViewGenzai;
 					break;
@@ -97,18 +96,17 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				//setSingleLineを使用すると後半が表示されない場合があるため使わない
 				if (bundle.getBoolean(PLAYER_VIEW_SINGLE_LINE)) {
 					textViewToHandle.setLines(1);
-				}
-				else {
+				} else {
 					textViewToHandle.setMaxLines(5);
 				}
 			}
 		}
 	};
-	
+
 	public PlayerFragment() {
 		super(FragmentPlayerBinding::inflate);
 	}
-	
+
 	//ActivityのonCreateに相当
 	@Override
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -116,8 +114,8 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			super.onViewCreated(view, savedInstanceState);
 			try {
 				//UI設定
-				context.registerReceiver(new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE), Context.RECEIVER_NOT_EXPORTED);
-				
+				ContextCompat.registerReceiver(context, new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
+
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
 				binding.buttonNowChange.setOnClickListener(this::onChangeNumber);
 				binding.buttonPip.setOnClickListener(this::onPIPButtonClicked);
@@ -128,51 +126,34 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				binding.seekBarJpn.setProgress(getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(binding.seekBarJpn, binding.seekBarJpn.getProgress(), true);
 				binding.buttonStopService.setOnClickListener(this::onPlayerServiceStop);
-				
+
 				synchronized (isInitialized) {
 					isInitialized = true;
 				}
 			} catch (Exception e) {
 				showException(context, e);
 			}
-			
+
 			puts(getMethodName() + " ended");
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
 	}
-	
-	public static void initialize(Context context) {
-		try {
-			//再生開始
-			puts(getClassName() + getMethodName() + " start");
-			
-			//バグ対策は不要になった
-			/*
-			put("smooth out 〜", "pass" + "p1q");//1799
-			put("grow into 〜", "p1q");          //1675
-			put("accrue", "pass" + "1q");        //1568
-			*/
-			
-		} catch (Exception e) {
-			showException(context, e);
-		}
-	}
-	
+
 	public void onPlayerServiceStop(View view) {
 		puts(getMethodName());
-		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP);
+		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP).setPackage(context.getPackageName());
 		context.sendBroadcast(broadcastIntent);
 	}
-	
+
 	public void onResetButtonClick(View view) {
 		try {
-			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, 1));
+			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, 1).setPackage(context.getPackageName()));
 		} catch (Exception e) {
 			showException(context, e);
 		}
 	}
-	
+
 	public void onChangeNumber(View view) {
 		try {
 			final int[][] fromTo;
@@ -190,8 +171,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					unit[i] = "熟語";
 					if (dataQ == Dictionary.BookQ.q1) {
 						fromTo = toFindFromAndTo[0];
-					}
-					else {
+					} else {
 						fromTo = toFindFromAndTo[1];
 					}
 					break;
@@ -232,8 +212,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 					unit[10] = "Unit Ex";
 					if (dataQ == Dictionary.BookQ.q1) {
 						fromTo = toFindFromAndTo[12];
-					}
-					else {
+					} else {
 						fromTo = toFindFromAndTo[13];
 					}
 					break;
@@ -261,7 +240,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 						}
 					}
 					listUnit.add("パス単1級" + "熟語");
-					
+
 					for (int i = 0; i < listUnit.size(); i++) {
 						unit[i] = listUnit.get(i);
 					}
@@ -275,37 +254,36 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				unitAdapter.add(unit[i] + " (" + pair[0] + "～" + pair[1] + ")");
 			}
 			new AlertDialog.Builder(context)
-				.setTitle("unit:")
-				.setSingleChoiceItems(unitAdapter, 0, (dialogInterface, index) -> {
-					puts("i=" + index);
-					dialogInterface.dismiss();
-					var wordAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
-					for (int i = fromTo[index][0]; i <= fromTo[index][1]; i++) {
-						var data = PlayerService.wordDataList.get(i);
-						wordAdapter.add(i + "," + data.numberInBook + ", " + data.e + " " + data.j);
-					}
-					new AlertDialog.Builder(context)
-						.setTitle("単語を選択してください。")
-						.setSingleChoiceItems(wordAdapter, 0, (dialog, i) -> {
-							dialog.dismiss();
-							context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, fromTo[index][0] + i));
-						})
-						.create()
-						.show();
-				})
-				.create()
-				.show();
+					.setTitle("unit:")
+					.setSingleChoiceItems(unitAdapter, 0, (dialogInterface, index) -> {
+						puts("i=" + index);
+						dialogInterface.dismiss();
+						var wordAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
+						for (int i = fromTo[index][0]; i <= fromTo[index][1]; i++) {
+							var data = PlayerService.wordDataList.get(i);
+							wordAdapter.add(i + "," + data.numberInBook + ", " + data.e + " " + data.j);
+						}
+						new AlertDialog.Builder(context)
+								.setTitle("単語を選択してください。")
+								.setSingleChoiceItems(wordAdapter, 0, (dialog, i) -> {
+									dialog.dismiss();
+									context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, fromTo[index][0] + i).setPackage(context.getPackageName()));
+								})
+								.create()
+								.show();
+					})
+					.create()
+					.show();
 		} catch (Exception exception) {
 			showException(context, exception);
 		}
 	}
-	
+
 	public void onPIPButtonClicked(View view) {
 		try {
 			if (PipActivity.startPIP) {
 				//PIPを終了したい
-			}
-			else {
+			} else {
 				startActivity(new Intent(context, PipActivity.class).putExtra(PipActivity.PIP_TV_FIRST_ENG, binding.textViewEng.getText()).putExtra(PipActivity.PIP_TV_FIRST_JPN, binding.textViewJpn.getText()));
 			}
 			PipActivity.startPIP = !PipActivity.startPIP;
@@ -313,7 +291,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 			showException(context, e);
 		}
 	}
-	
+
 	private void onSpeedSeekBar(SeekBar seekBar, int i, boolean b) {
 		try {
 			final float speed = 1 + i * 0.1f;
@@ -322,8 +300,7 @@ public class PlayerFragment extends UiManager.FragmentBingding<FragmentPlayerBin
 				binding.textViewSeekBarEng.setText(String.format(Locale.getDefault(), "英語 x%.1f", speed));
 				putIntData(context, "SeekBar", "english", i);
 				PlayerService.dPlaySpeedEng = speed;
-			}
-			else if (seekBar.getId() == R.id.seekBarJpn) {
+			} else if (seekBar.getId() == R.id.seekBarJpn) {
 				//日本語
 				binding.textViewSeekBarJpn.setText(String.format(Locale.getDefault(), "日本語 x%.1f", speed));
 				putIntData(context, "SeekBar", "japanese", i);

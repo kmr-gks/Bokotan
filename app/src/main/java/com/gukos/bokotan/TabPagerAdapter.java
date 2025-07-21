@@ -7,11 +7,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class TabPagerAdapter extends FragmentStateAdapter {
 	public static final String[] TAB_NAMES = new String[]{"級選択", "再生画面", "テスト", "全文検索"};
-	
+
 	public TabPagerAdapter(FragmentActivity fragmentActivity) {
 		super(fragmentActivity);
 	}
-	
+
 	@NonNull
 	@Override
 	public Fragment createFragment(int position) {
@@ -37,7 +37,7 @@ public class TabPagerAdapter extends FragmentStateAdapter {
 		}
 		return fragment;
 	}
-	
+
 	@Override
 	public int getItemCount() {
 		return TAB_NAMES.length;

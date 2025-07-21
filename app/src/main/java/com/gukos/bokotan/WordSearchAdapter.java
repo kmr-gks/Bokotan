@@ -22,11 +22,11 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 	private List<T> mObjects;
 	private ArrayList<T> mOriginalValues;
 	private final ArrayFilter mFilter;
-	
+
 	public Function<T, CharSequence> stringConverter = T::toString;
 	private Function<T, Boolean> checker = t -> true;
 	private final Filter.FilterListener listener;
-	
+
 	public WordSearchAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<T> objects, Filter.FilterListener listener) {
 		super(context, resource, 0, objects);
 		mInflater = LayoutInflater.from(context);
@@ -35,41 +35,40 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 		mFilter = new ArrayFilter();
 		this.listener = listener;
 	}
-	
+
 	@Override
 	public int getCount() {
 		return mObjects.size();
 	}
-	
+
 	@Override
 	public T getItem(int position) {
 		return mObjects.get(position);
 	}
-	
+
 	@Override
 	public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
 		final TextView text;
 		if (convertView == null) {
 			text = (TextView) mInflater.inflate(mResource, parent, false);
-		}
-		else {
+		} else {
 			text = (TextView) convertView;
 		}
 		text.setText(stringConverter.apply(getItem(position)));
 		return text;
 	}
-	
+
 	public void setFilter(Function<T, Boolean> function, Function<T, CharSequence> stringConverter) {
 		checker = function;
 		this.stringConverter = stringConverter;
 		mFilter.filter("not null or void", listener);
 	}
-	
+
 	public void resetFilter() {
 		this.stringConverter = T::toString;
 		mFilter.filter(null, listener);
 	}
-	
+
 	private class ArrayFilter extends Filter {
 		@Override
 		protected FilterResults performFiltering(CharSequence prefix) {
@@ -86,8 +85,7 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 			if (prefix == null || prefix.length() == 0) {
 				results.values = list;
 				results.count = list.size();
-			}
-			else {
+			} else {
 				final ArrayList<T> newValues = new ArrayList<>();
 				list.stream().filter(t -> checker.apply(t)).forEach(newValues::add);
 				results.values = newValues;
@@ -95,7 +93,7 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 			}
 			return results;
 		}
-		
+
 		@Override
 		protected void publishResults(CharSequence constraint, FilterResults results) {
 			if (results.values == null) mObjects = new ArrayList<>();
@@ -105,8 +103,7 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 			}
 			if (results.count > 0) {
 				notifyDataSetChanged();
-			}
-			else {
+			} else {
 				notifyDataSetInvalidated();
 			}
 		}

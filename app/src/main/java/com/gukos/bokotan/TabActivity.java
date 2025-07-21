@@ -18,20 +18,22 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.gukos.bokotan.databinding.ActivityTabBinding;
 
+import java.util.Objects;
+
 public class TabActivity extends AppCompatActivity {
 	private static ActivityTabBinding binding;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
-		
+
 		new Thread(() -> loadAllData(savedInstanceState)).start();
-		
+
 		setVolumeControlStream(STREAM_MUSIC);
-		
+
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_tab);
-		
+
 		TabPagerAdapter tabPagerAdapter = new TabPagerAdapter(this);
 		ViewPager2 viewPager = binding.viewpagerMain;
 		viewPager.setAdapter(tabPagerAdapter);
@@ -39,9 +41,9 @@ public class TabActivity extends AppCompatActivity {
 		//tabPagerAdapter.createFragment()
 		//初期位置
 		viewPager.setCurrentItem(0);
-		
+
 		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
-		
+
 		var backPressedCallback = new OnBackPressedCallback(true) {
 			@Override
 			public void handleOnBackPressed() {
@@ -54,14 +56,14 @@ public class TabActivity extends AppCompatActivity {
 					case 1: {
 						runOnUiThread(() -> setTabPageNum(0));
 						//再生中に戻るボタンを押すと停止
-						getApplicationContext().sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP));
+						getApplicationContext().sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP).setPackage(getApplicationContext().getPackageName()));
 						break;
 					}
 					case 2: {
 						runOnUiThread(() -> setTabPageNum(0));
 						//クイズをしているなら、ViewModelのデータを保存する。
 						new Thread(() -> Dictionary.QuizData.saveQuizData(getApplicationContext())).start();
-						getApplicationContext().sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_STOP, 0));
+						getApplicationContext().sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_STOP, 0).setPackage(getApplicationContext().getPackageName()));
 						break;
 					}
 					case 3: {
@@ -73,7 +75,7 @@ public class TabActivity extends AppCompatActivity {
 		};
 		getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 	}
-	
+
 	//bundleからデータ取り出し
 	private void loadAllData(Bundle bundle) {
 		try {
@@ -89,7 +91,7 @@ public class TabActivity extends AppCompatActivity {
 			showException(this, exception);
 		}
 	}
-	
+
 	/**
 	 * UIスレッドから呼ばなければならない
 	 *
@@ -97,12 +99,12 @@ public class TabActivity extends AppCompatActivity {
 	 */
 	public static void setTabPageNum(int n) {
 		try {
-			TabActivity.binding.tabsMain.getTabAt(n).select();
+			Objects.requireNonNull(TabActivity.binding.tabsMain.getTabAt(n)).select();
 		} catch (Exception exception) {
 			showException(exception);
 		}
 	}
-	
+
 	public static int getTabPageNum() {
 		try {
 			return TabActivity.binding.tabsMain.getSelectedTabPosition();
@@ -111,13 +113,4 @@ public class TabActivity extends AppCompatActivity {
 			return 0;
 		}
 	}
-	
-	/*
-	//ボタン操作を検出したい。
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		puts("keyCode="+keyCode+"event="+event.toString());
-		return super.onKeyDown(keyCode,event);
-	}
-	*/
 }
