@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -517,7 +516,7 @@ public class Dictionary extends ViewModel {
 
 	public static class Entry {
 		static int size = 0;
-		public String content, e, j;
+		public final String content, e, j;
 		public Folder folder;
 		public BookName bookName;
 		public BookQ bookQ;
@@ -535,12 +534,22 @@ public class Dictionary extends ViewModel {
 			this.toushiNumber = size;
 			this.datatype = datatype;
 			this.dataLang = dataLang;
+			if (dataLang==DataLang.japanese){
+				this.e = "null string";
+				this.j = content;
+			} else if (dataLang==DataLang.english){
+				this.e = content;
+				this.j = "null string";
+			} else {
+				e=j="empty";
+			}
 		}
 
 		public Entry(String e, String j, Folder folder, BookName bookName, BookQ bookQ, int numberInBook, Datatype datatype) {
 			size++;
 			this.e = e;
 			this.j = j;
+			this.content = e;
 			this.folder = folder;
 			this.bookName = bookName;
 			this.bookQ = bookQ;
@@ -698,7 +707,7 @@ public class Dictionary extends ViewModel {
 
 		public static final HashMap<String, String> hashMapHatsuonKigou = new HashMap<>();
 
-		public static void SetHatsuonKigou(List<Entry> list) {
+		public static void SetHatsuonKigou(ArrayList<Entry> list) {
 			try {
 				//発音記号のためにSVL読み込み
 				if (hashMapHatsuonKigou.isEmpty())
