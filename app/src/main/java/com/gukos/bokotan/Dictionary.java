@@ -258,9 +258,9 @@ public class Dictionary extends ViewModel {
 				case ei3_tango_chojyokyu:
 					return "英英英単語超上級編.txt";
 				case kyukyoku_premium_vol1:
-					return "究極の英単語プレミアムVol1.txt";
+					return "究極の英単語"+"premium"+"Vol1.txt";
 				case kyukyoku_premium_vol2:
-					return "究極の英単語プレミアムVol.2_EJ（英日）.txt";
+					return "究極の英単語"+"premium"+"Vol.2_EJ（英日）.txt";
 				default:
 					return "";
 			}
