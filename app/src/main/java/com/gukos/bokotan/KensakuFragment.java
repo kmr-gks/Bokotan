@@ -12,22 +12,20 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.Fragment;
+
+import com.gukos.bokotan.databinding.FragmentKensakuBinding;
 
 import java.util.function.BiFunction;
 
-public class KensakuFragment extends Fragment {
+public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBinding> {
 
 	enumKensakuHouhou kensakuHouhou = starts;
 	private String key;
@@ -36,6 +34,10 @@ public class KensakuFragment extends Fragment {
 	private ListView listViewKensakuResult;
 	private TextView textViewKensakuResultCount;
 	private Context context;
+
+	public KensakuFragment() {
+		super(FragmentKensakuBinding::inflate);
+	}
 
 	enum enumKensakuHouhou {
 		starts, contains, ends;
@@ -54,12 +56,6 @@ public class KensakuFragment extends Fragment {
 				}
 			}
 		}
-	}
-
-	@Nullable
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_kensaku, container, false);
 	}
 
 	@Override
@@ -191,11 +187,11 @@ public class KensakuFragment extends Fragment {
 				try {
 					MediaPlayer.create(context, Uri.parse(wordInfo.toPath(Dictionary.DataLang.japanese))).start();
 				} catch (Exception e) {
-					//showException(context, e);
+					showException(context, e);
 				}
 			});
 		} catch (Exception e) {
-			//showException(context, e);
+			showException(context, e);
 		}
 	}
 
@@ -203,7 +199,7 @@ public class KensakuFragment extends Fragment {
 		try {
 			MediaPlayer.create(context, Uri.parse(wordInfo.toPath(Dictionary.DataLang.english))).start();
 		} catch (Exception e) {
-			//showException(context, e);
+			showException(context, e);
 		}
 	}
 }
