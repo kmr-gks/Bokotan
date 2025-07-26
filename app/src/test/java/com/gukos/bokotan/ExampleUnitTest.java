@@ -20,10 +20,7 @@ public class ExampleUnitTest {
 	
 	@Test
 	public void aaa(){
-		ArrayList<Integer> list1=new ArrayList<>(4);
 		ArrayList<Integer> list2 = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
-		assertEquals(4,list1.size());
 		assertEquals(4,list2.size());
-		assertEquals(null,new String());
 	}
 }
