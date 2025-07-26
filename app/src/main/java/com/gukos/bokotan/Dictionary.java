@@ -6,6 +6,7 @@ import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
 import static com.gukos.bokotan.Dictionary.QuizData.monme;
 import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
+import static com.gukos.bokotan.MyLibrary.DebugManager.putsE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.fileExtension;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getFileNameForTanjukugoEX;
@@ -541,8 +542,9 @@ public class Dictionary extends ViewModel {
 				this.e = content;
 				this.j = "null string";
 			} else {
-				e=j="empty";
+				e=j="null string";
 			}
+			putsE("e=" + e + ",j=" + j+",content="+content);
 		}
 
 		public Entry(String e, String j, Folder folder, BookName bookName, BookQ bookQ, int numberInBook, Datatype datatype) {
