@@ -6,6 +6,7 @@ import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
 import static com.gukos.bokotan.Dictionary.QuizData.monme;
 import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
+import static com.gukos.bokotan.MyLibrary.DebugManager.putsE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.fileExtension;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getFileNameForTanjukugoEX;
@@ -33,7 +34,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -258,9 +258,9 @@ public class Dictionary extends ViewModel {
 				case ei3_tango_chojyokyu:
 					return "英英英単語超上級編.txt";
 				case kyukyoku_premium_vol1:
-					return "究極の英単語プレミアムVol1.txt";
+					return "究極の英単語"+"premium"+"Vol1.txt";
 				case kyukyoku_premium_vol2:
-					return "究極の英単語プレミアムVol.2_EJ（英日）.txt";
+					return "究極の英単語"+"premium"+"Vol.2_EJ（英日）.txt";
 				default:
 					return "";
 			}
@@ -517,7 +517,7 @@ public class Dictionary extends ViewModel {
 
 	public static class Entry {
 		static int size = 0;
-		public String content, e, j;
+		public final String content, e, j;
 		public Folder folder;
 		public BookName bookName;
 		public BookQ bookQ;
@@ -535,12 +535,23 @@ public class Dictionary extends ViewModel {
 			this.toushiNumber = size;
 			this.datatype = datatype;
 			this.dataLang = dataLang;
+			if (dataLang==DataLang.japanese){
+				this.e = "null string";
+				this.j = content;
+			} else if (dataLang==DataLang.english){
+				this.e = content;
+				this.j = "null string";
+			} else {
+				e=j="null string";
+			}
+			putsE("e=" + e + ",j=" + j+",content="+content);
 		}
 
 		public Entry(String e, String j, Folder folder, BookName bookName, BookQ bookQ, int numberInBook, Datatype datatype) {
 			size++;
 			this.e = e;
 			this.j = j;
+			this.content = e;
 			this.folder = folder;
 			this.bookName = bookName;
 			this.bookQ = bookQ;
@@ -698,7 +709,7 @@ public class Dictionary extends ViewModel {
 
 		public static final HashMap<String, String> hashMapHatsuonKigou = new HashMap<>();
 
-		public static void SetHatsuonKigou(List<Entry> list) {
+		public static void SetHatsuonKigou(ArrayList<Entry> list) {
 			try {
 				//発音記号のためにSVL読み込み
 				if (hashMapHatsuonKigou.isEmpty())
