@@ -158,6 +158,32 @@ public class Dictionary extends ViewModel {
 					return "";
 			}
 		}
+
+
+		@NonNull
+		@Override
+		public String toString() {
+			switch (this) {
+				case distinction:
+					return "Distinction";
+				case eigoduke:
+					return "英語漬け";
+				case ei3:
+					return "英英英単語";
+				case eitango_joukyuu:
+					return "英単語上級";
+				case passtan:
+					return "パス単";
+				case svl:
+					return "辞書";
+				case tanjukugo:
+					return "単熟語";
+				case yumetan:
+					return "ユメタン";
+				default:
+					return "";
+			}
+		}
 	}
 
 	/**
@@ -565,9 +591,9 @@ public class Dictionary extends ViewModel {
 		@Override
 		public String toString() {
 			if (dataLang == DataLang.both) {
-				return folder + "/" + bookName + " " + bookQ + " " + numberInBook + " " + datatype + " " + e + " " + j;
+				return folder + " " + (bookQ==BookQ.none?"":bookQ) + " " + numberInBook + " " + datatype + " " + e + " " + j;
 			} else {
-				return folder + "/" + bookName + " " + bookQ + " " + numberInBook + " " + datatype + " " + dataLang + " " + content;
+				return folder + " " + (bookQ==BookQ.none?"":bookQ) + " " + numberInBook + " " + datatype + " " + dataLang + " " + content;
 			}
 		}
 
