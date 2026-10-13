@@ -111,3 +111,10 @@ bash gradlew -PsampleData=true testDebugUnitTest lintDebug assembleDebug bundleD
 
 バージョンは[version.properties](version.properties)で管理します。
 まとまった更新時に`VERSION_CODE`を増やし、`VERSION_NAME`を更新します。
+
+
+## 署名付きGitHub Release
+
+[署名設定と公開手順](docs/signed-release.txt)に記載した4つのRepository Secretsを登録します。
+バージョンに一致する`v1.02`などのタグをpushすると、`Signed Release`が署名を検証し、
+GitHub ReleasesにAPK・AAB・チェックサムを公開します。

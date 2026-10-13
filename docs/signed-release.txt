@@ -1,0 +1,33 @@
+署名付きGitHub Release
+
+Repository Secrets（Settings > Secrets and variables > Actions > New repository secret）:
+ANDROID_KEYSTORE_BASE64: 署名用.jks/.keystoreファイルをBase64化した全文
+ANDROID_KEYSTORE_PASSWORD: キーストアのパスワード
+ANDROID_KEY_ALIAS: キーストア内の署名鍵のAlias
+ANDROID_KEY_PASSWORD: その鍵のパスワード（ストアのパスワードと同じ場合もある）
+
+macOSでBase64値をクリップボードへコピーする場合:
+  base64 -i /path/to/bokotan-release.jks | tr -d '\n' | pbcopy
+鍵がまだない場合はAndroid StudioのBuild > Generate Signed Bundle/APK > Create newから作成する。
+以前に正式配布したAPKを更新する場合は、同じ署名鍵を使う。
+GITHUB_TOKENはActionsが自動で提供するため、追加のPAT Secretは不要。
+鍵ファイルやパスワードをリポジトリへコミットしない。
+
+公開:
+1. version.propertiesのVERSION_NAMEとVERSION_CODEを更新し、修正をコミット・pushする。
+2. そのコミットにv<VERSION_NAME>のタグを付けてpushする。例:
+     git tag v1.02
+     git push origin v1.02
+3. Signed ReleaseワークフローがSecretsで署名し、APK/AABを検証してGitHub Releaseを作成する。
+4. ReleasesのAssetsからBokotan-1.02.apk / Bokotan-1.02.aab / SHA256SUMS.txtをダウンロードする。
+既存のタグやReleaseは上書きしない。同じ名前で再公開する場合はバージョンを上げる。
+
+release.ymlがデフォルトブランチに反映された後は、Actions > Signed Release > Run workflow
+からも公開できる。手動実行では選択したブランチのコミットにバージョンタグを作成する。
+署名用Secretsはpull_requestや通常CIには渡さず、Signed Releaseだけで利用する。
+通常CIのrelease成果物は引き続き未署名。正式な署名付き公開はSigned Releaseで実施する。
+releaseには辞書・音声のサンプルを追加しない。
+
+ローカルでの署名は次の環境変数をすべて設定してからassembleRelease / bundleReleaseを実行:
+ANDROID_KEYSTORE_PATH、ANDROID_KEYSTORE_PASSWORD、ANDROID_KEY_ALIAS、ANDROID_KEY_PASSWORD。
+一部だけ設定した場合は、未署名にフォールバックせずビルドを停止する。

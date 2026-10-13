@@ -17,3 +17,5 @@ captures/
 app/src/main/assets
 assetstest/src/main/assets
 local.properties
+*.jks
+*.keystore
