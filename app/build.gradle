@@ -3,6 +3,16 @@ plugins {
 	id 'com.android.application'
 }
 
+def appVersion = new Properties()
+rootProject.file('version.properties').withInputStream { appVersion.load(it) }
+
+def signingValues = ['ANDROID_KEYSTORE_PATH', 'ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_ALIAS', 'ANDROID_KEY_PASSWORD']
+        .collectEntries { name -> [(name): System.getenv(name)] }
+def hasReleaseSigning = signingValues.values().every { it != null && !it.isEmpty() }
+if (signingValues.values().any { it != null && !it.isEmpty() } && !hasReleaseSigning) {
+    throw new GradleException('Release signing requires all four ANDROID_* signing environment variables.')
+}
+
 android {
 	namespace 'com.gukos.bokotan'
 	compileSdk 36
@@ -11,8 +21,8 @@ android {
 		applicationId "com.gukos.bokotan"
 		minSdk 26
 		targetSdk 36
-		versionCode 1
-		versionName "1.01"
+		versionCode appVersion.getProperty('VERSION_CODE').toInteger()
+		versionName appVersion.getProperty('VERSION_NAME')
 
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -21,8 +31,20 @@ android {
 		resValue("string", "buildDate", new SimpleDateFormat("yyMMdd.Hmm").format(Calendar.getInstance(Locale.JAPAN).getTime()))
 	}
 
+	signingConfigs {
+		if (hasReleaseSigning) {
+			release {
+				storeFile file(signingValues.ANDROID_KEYSTORE_PATH)
+				storePassword signingValues.ANDROID_KEYSTORE_PASSWORD
+				keyAlias signingValues.ANDROID_KEY_ALIAS
+				keyPassword signingValues.ANDROID_KEY_PASSWORD
+			}
+		}
+	}
+
 	buildTypes {
 		release {
+			if (hasReleaseSigning) signingConfig signingConfigs.release
 			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 		}
@@ -40,6 +62,7 @@ android {
 	//bindingを使うため
 	buildFeatures {
 		dataBinding true
+		buildConfig true
 	}
 
 	//レイアウトフォルダーを分ける
@@ -49,6 +72,10 @@ android {
 					'src/main/res',
 					'src/main/res/uiobject',
 			]
+		}
+		// Opt-in fixtures only for debug APKs; publisher data is never copied.
+		if (providers.gradleProperty('sampleData').orNull == 'true') {
+			debug.assets.srcDir rootProject.file('samples/free-vocabulary/assets')
 		}
 	}
 }

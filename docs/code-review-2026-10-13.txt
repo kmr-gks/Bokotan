@@ -1,0 +1,127 @@
+Bokotan ソースコード点検（2026-10-13）
+
+対象: app/src/main のJava、Manifest、レイアウト、Gradle、既存テスト。
+今回アプリのJavaコードは変更していない。以下は静的点検で確認した問題。
+接続済みAndroid端末がなく、実機・エミュレーターの再現検証は未実施。
+P1: クラッシュ・停止不能・主要機能の誤動作。P2: 条件次第の誤動作や保守上の問題。
+
+1. [P1] 辞書がない状態の起動でワーカースレッドからダイアログを作る
+   TabActivity.java:31、Dictionary.java:76-78 / 109-111。
+   assets自体がない現状で初期化が失敗し、バックグラウンドからAlertDialog.show()
+   を実行する。UIスレッドでないため例外になる。初期化全体も途中で終了し得る。
+   対策: 読み込みは結果・エラー情報を返し、画面側でメインスレッドに通知する。
+   全プリセットの存在を強制せず、存在する辞書だけを登録する。
+
+2. [P1] 空の辞書でクイズが落ち、1～3件では選択肢生成が無限ループ
+   QuizCreator.java:249 / 258 / 296-304。
+   nullだけ確認し、0件ではrandom.nextInt(0)。4件未満では異なる4番号を
+   選べず、終了しない。空白行も有効な問題として選ばれる。
+   対策: 有効な語・訳を検証し、4択を作れる件数未満なら開始を拒否する。
+   選択肢は候補をシャッフルして有限回で選ぶ。
+
+3. [P1] 全範囲クイズが1問目以降に別の範囲へ偏る
+   QuizCreator.java:258-268。
+   最初のlistは全書籍を連結したものだが、問題を決める途中でlistを一冊の
+   リストに上書きする。次回はその冊数だけの乱数を、全書籍の累積件数で
+   解釈する。後半の書籍を正しく選べず、件数によっては範囲外参照にもなる。
+   対策: 全体の候補と、今回の問題の所属リスト・ローカル番号を分離する。
+
+4. [P1] 再生対象や開始位置の検証がない
+   PlayerService.java:339-363 / 387-414。
+   空リストでもダイアログ表示後にreturnせず、get(now)を実行する。
+   文モードでも検証するのはwordDataListだけ。存在する単語数より文が少ない
+   場合、入力開始位置が負数・件数以上の場合、短いサンプルに古い再生位置が
+   残っている場合に落ちる。空の日本語訳にはcharAt(0)も失敗する。
+   ダイアログはServiceのApplicationContextかつワーカースレッドから表示。
+   対策: 対象リスト・位置・訳を開始前に検証し、画面へエラーを通知して停止する。
+
+5. [P1] クイズとサービスの終了処理が不完全
+   QuizCreator.java:142-146 / 238-244 / 312-314。
+   PlayerService.java:210-235、onDestroy未実装。
+   クイズの停止メッセージは表示を消すだけ。stop()はReceiver解除だけで、
+   HandlerThread.quitSafely()やSoundPool.release()を呼ばない。
+   cancel()も一度だけ読むフラグを変えるだけで、稼働中の処理を止めない。
+   サービスは開始ごとにスレッドを作り、終了時にスレッドを解放しない。
+   再開を繰り返すとスレッド・音声資源・Contextが残り、二重処理の原因になる。
+   対策: cancel/stop/onDestroyに共通の終了処理を設け、待機・メッセージ・
+   Receiver・MediaPlayer/SoundPool・HandlerThreadを一度だけ解放する。
+
+6. [P2] Fragment/ActivityのReceiverとビュー参照が破棄時に残る
+   TestFragment.java:132、PlayerFragment.java:117、PipActivity.java:117。
+   UiManager.java:105-134、TabActivity.java:24、QSentakuFragment.java:79。
+   Receiverを保存せず登録し、onDestroyView/onDestroyで解除していない。
+   binding、Activity、viewFragmentも破棄時にクリアしない。staticなBindingや
+   SwitchMaterialが古い画面を保持する。画面再生成で受信が重複し得る。
+   対策: 登録と解除のライフサイクルを対にし、画面参照はインスタンスに置く。
+   サービス・クイズにはSwitchそのものではなく設定値を渡す。
+
+7. [P2] 初期化待ちに変更可能なBooleanオブジェクトをロックしている
+   QuizCreator.java:153-157、PlayerService.java:249-253、TestFragment.java:140。
+   synchronized(isInitialized)の後にfalseからtrueへ代入するためロック対象が
+   Boolean.FALSEからBoolean.TRUEに変わる。volatileでもなく、正しい同期ではない。
+   同じ待機は停止を受け付けず、画面が初期化されなければ無期限に継続する。
+   対策: 固定ロック・AtomicBoolean等よりも、初期化完了をコールバックで通知する。
+
+8. [P2] 辞書読み込みと検索画面の初期化が競合する
+   TabActivity.java:31、Dictionary.java:475、KensakuFragment.java:128-130。
+   非同期でallDataを新しいArrayListに差し替えるが、検索アダプターはその時点の
+   古いリストを保持する。読み込みより先に検索画面を開くと空のままになる。
+   対策: 読み込み状態を公開し、完了時にアダプターへリストを渡す。
+   DictionaryはViewModelなのにデータがstaticで、onCleared時にフラグだけ戻す
+   構造も整理が必要。各書籍を複数回読み込む重複もなくす。
+
+9. [P2] ユメタンの音声パスが機能間で一致しない
+   Dictionary.java:655-656、MyLibrary.java:341-342。
+   同じy1の語でも、検索・クイズはdata/y1/W英0001.btv、連続再生は
+   data/1/W英0001.btvを参照する。片方に配置するともう片方が再生できない。
+   対策: 音声パスをEntryの一つの関数に統一し、各機能から同じ関数を呼ぶ。
+
+10. [P2] 全範囲再生の件数とUnitの範囲が固定値
+    PlayerService.java:309 / 478-497、PlayerFragment.java:262-264。
+    実際のリストの長さでなく1001、1000等を使って成績配列を対応づける。
+    データの欠損・変更・短いサンプルで別の本の成績を読み書きする。
+    Unit選択も実際の件数を超えてget(i)し、短いサンプルで範囲外参照になる。
+    対策: Entryから書籍IDと書籍内番号を取得し、Unitは辞書のメタデータにする。
+
+11. [P2] 成績のキーが級だけなので別の辞書へ成績が混ざる
+    Dictionary.java:589-596。
+    toDetailedString()のキーはbookQ.toFileName()だけ。単熟語の1級もパス単の
+    1級の成績を表示する。ユメタンはy1の保存キーと1の表示キーが一致しない。
+    成績配列も3000固定で、長いデータや復元した短い配列に対する境界検証がない。
+    対策: 書籍ID・級・語IDによるキーを一箇所で定義し、保存と表示で共用する。
+
+12. [P2] 「以下」の比較が「未満」になっている
+    QuizCreator.java:83-108、PlayerService.java:128-153。
+    eqorless分岐はすべて< thresholdNum。閾値ちょうどの語が除外される。
+    未回答の正解率を-1扱いする点も条件次第で意図しない出題になる。
+    対策: <=へ修正し、未回答の扱いを独立した設定として定義する。
+
+13. [P2] 検索画面の再生でMediaPlayerを解放しない
+    KensakuFragment.java:209-234。
+    英語・日本語を再生するたびにMediaPlayerを作り、完了してもreleaseしない。
+    MediaPlayer.create()がnullを返す場合の検証もない。
+    対策: 再生プレイヤーを管理し、完了・失敗・画面終了で確実に解放する。
+
+検証結果
+・JDK 17で testDebugUnitTest / lintDebug / assembleDebug が成功。
+・Lint警告115件。static参照によるリーク、旧baseline、ハードコード表示など。
+  警告数は不具合の件数ではない。上記の多くはLintでは検出されない。
+・既存ユニットテスト2件は足し算とListの件数のみ。主要機能は未検証。
+・端末未接続のため、音声再生、回転、バックグラウンド復帰、終了処理は未検証。
+・gradlewに実行権限がないため、bash gradlewで実行した。
+・5語・英日10音声のサンプルを追加。WordNetの英日語をsynsetで照合し、
+  音声はCommonsの原ファイルのSHA-1と照合した。全10件をffmpegで復号確認。
+・-PsampleData=trueでdebug APKを生成。releaseのmergeReleaseAssetsにも
+  同オプションを渡し、release側にサンプル辞書が追加されないことを確認。
+・変更は点検記録、サンプル、取得スクリプト、debug用assetsの任意設定のみ。
+
+データの現状
+・app/src/main/assetsは存在せず、出版社由来の辞書・単語音声はソース内で未発見。
+・app/src/main/res/rawに正解/不正解のMP3が2件残る。由来・利用条件は未確認。
+・imgs/search.pngには書籍名・単語番号・英語・日本語訳を含む画面写真が残る。
+  「フォルダに単語内容が一切ない」とはいえない。元データや画像は変更していない。
+
+修正の進め方
+まず1、2、4の欠損・範囲検証と3の出題範囲を直す。
+次に5～8のライフサイクルと初期化を整理し、9～11のデータ対応を統一する。
+それぞれに空/1～3/5件の辞書、複数書籍、停止・再開、回転の回帰テストを加える。

@@ -22,7 +22,8 @@ import java.util.Objects;
 //このクラスで定義されているメソッドやラムダ式は全てメインスレッドで実行される(UI処理に関わるため)
 public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding> {
 
-	public static Boolean isInitialized = false;
+	public static boolean isInitialized = false;
+	private DrawReceiver receiver;
 
 	public static final String
 			QUIZ_ACTION_UI_CHANGE = "quiz_action_ui_change",
@@ -45,6 +46,7 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
+			if (binding == null) return;
 			Bundle bundle = msg.getData();
 			ViewName viewName = (ViewName) Objects.requireNonNull(bundle.getSerializable(QUIZ_VIEW_NAME));
 			ViewProperties viewProperties = (ViewProperties) Objects.requireNonNull(bundle.getSerializable(QUIZ_VIEW_PROPERTIES));
@@ -129,19 +131,27 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		try {
 			super.onViewCreated(view, savedInstanceState);
-			ContextCompat.registerReceiver(requireContext().getApplicationContext(), new DrawReceiver(drawHandler), new IntentFilter(QUIZ_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
+			receiver = new DrawReceiver(drawHandler);
+			ContextCompat.registerReceiver(context, receiver, new IntentFilter(QUIZ_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
 			binding.buttonSelect1.setOnClickListener(this::onChoice);
 			binding.buttonSelect2.setOnClickListener(this::onChoice);
 			binding.buttonSelect3.setOnClickListener(this::onChoice);
 			binding.buttonSelect4.setOnClickListener(this::onChoice);
 			binding.buttonIdontKnow.setOnClickListener(this::onChoice);
 
-			synchronized (isInitialized) {
-				isInitialized = true;
-			}
+			isInitialized = true;
+			QuizCreator.refreshCurrent();
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
+	}
+
+	@Override
+	public void onDestroyView() {
+		isInitialized = false;
+		if (receiver != null) { context.unregisterReceiver(receiver); receiver = null; }
+		drawHandler.removeCallbacksAndMessages(null);
+		super.onDestroyView();
 	}
 
 	public void onChoice(View view) {

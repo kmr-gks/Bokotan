@@ -76,7 +76,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 			settingFileName = "uisetting";
 
 	//他のクラスからアクセス
-	public static SwitchMaterial switchQuizHatsuon, switchQuizOX, switchShouHatsuon;
+
 
 	public static Folder dataBook;
 	public static BookQ dataQ;
@@ -90,7 +90,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		try {
 			super.onViewCreated(view, savedInstanceState);
 
-			new Thread(() -> activity.runOnUiThread(this::initialize)).start();
+			initialize();
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
@@ -136,9 +136,6 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 			binding.buttonWriteTest.setOnClickListener(this::onWriteText);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
 
-			switchShouHatsuon = binding.checkBoxHatsuonkigou;
-			QSentakuFragment.switchQuizHatsuon = binding.switchQuizHatsuon;
-			QSentakuFragment.switchQuizOX = binding.switchQuizOxKoukaon;
 
 			binding.editTextPipYoko.setText(String.valueOf(getIntData(context, "editText", "editTextPipYoko", 16)));
 			pipYoko = Integer.parseInt(binding.editTextPipYoko.getText().toString());
@@ -285,6 +282,17 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 	}
 
 	private void onPlayQuizStart(View view) {
+		if (!Dictionary.isReady()) { makeToastForShort(context, "辞書を読み込み中です。少し待ってから開始してください。"); return; }
+		double enteredThreshold;
+		Integer enteredPosition = null;
+		try {
+			enteredThreshold = Double.parseDouble(binding.editNumberThreshold.getText().toString());
+			if (!Double.isFinite(enteredThreshold) || enteredThreshold < 0) throw new NumberFormatException();
+			if (binding.editTextNumber.length() > 0) {
+				enteredPosition = Integer.parseInt(binding.editTextNumber.getText().toString());
+				if (enteredPosition < 0) throw new NumberFormatException();
+			}
+		} catch (NumberFormatException error) { makeToastForShort(context, "開始位置と条件には0以上の数値を入力してください。"); return; }
 		PlayerService.SkipContidion skipContidion;
 		PlayerService.SkipThreshold skipThreshold;
 		//スピナーから本と級を取得
@@ -368,7 +376,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		if (view == binding.buttonQuiz) {
 			//問題出題を開始
 			TabActivity.setTabPageNum(2);
-			QuizCreator.build(context, dataBook, dataQ, skipContidion, Double.parseDouble(binding.editNumberThreshold.getText().toString()), skipThreshold);
+			QuizCreator.build(context, dataBook, dataQ, skipContidion, enteredThreshold, skipThreshold);
 		} else {
 			//再生開始
 			TabActivity.setTabPageNum(1);
@@ -380,12 +388,12 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 					.putExtra(PLAYERSERVICE_EXTRA_BOOK, dataBook)
 					.putExtra(PLAYERSERVICE_EXTRA_DATA_Q, dataQ)
 					.putExtra(PLAYERSERVICE_EXTRA_SKIP_COND, skipContidion)
-					.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, Double.parseDouble(binding.editNumberThreshold.getText().toString()))
+					.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, enteredThreshold)
 					.putExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_COMP, skipThreshold)
 					.putExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, binding.switchOnlyFirst.isChecked());
 			//開始位置が設定されている場合
 			if (binding.editTextNumber.length() > 0) {
-				intent.putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, Integer.parseInt(binding.editTextNumber.getText().toString()));
+				intent.putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, enteredPosition);
 			}
 			binding.editTextNumber.setText("");
 			context.startForegroundService(intent);

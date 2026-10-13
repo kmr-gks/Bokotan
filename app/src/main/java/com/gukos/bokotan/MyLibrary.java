@@ -572,7 +572,7 @@ public final class MyLibrary {
 		//https://ingaouhou.com/archives/3786
 		//https://takusan.negitoro.dev/posts/android_build_date_resource/
 		try {
-			return " Build:" + context.getString(R.string.buildDate);
+			return "v" + BuildConfig.VERSION_NAME + " Build:" + context.getString(R.string.buildDate);
 		} catch (Exception e) {
 			ExceptionManager.showException(context, e);
 			return " Build:不明";

@@ -1,0 +1,193 @@
+{
+  "vocabulary": [
+    {
+      "english": "dog",
+      "japanese": "犬",
+      "synset": "02084071-n",
+      "japanese_audio_title": "File:Ja-inu.ogg",
+      "english_audio_title": "File:En-us-dog.ogg"
+    },
+    {
+      "english": "cat",
+      "japanese": "猫",
+      "synset": "02121620-n",
+      "japanese_audio_title": "File:Ja-neko.ogg",
+      "english_audio_title": "File:En-us-cat.ogg"
+    },
+    {
+      "english": "milk",
+      "japanese": "牛乳",
+      "synset": "07844042-n",
+      "japanese_audio_title": "File:Ja-gyuunyuu-milk.ogg",
+      "english_audio_title": "File:En-us-milk.ogg"
+    },
+    {
+      "english": "fly",
+      "japanese": "蝿",
+      "synset": "02190166-n",
+      "japanese_audio_title": "File:Ja-hae-fly(insect).ogg",
+      "english_audio_title": "File:En-us-fly.ogg"
+    },
+    {
+      "english": "flower",
+      "japanese": "花",
+      "synset": "11669335-n",
+      "japanese_audio_title": "File:Ja-hana-flower or nose etc.ogg",
+      "english_audio_title": "File:En-us-flower.ogg"
+    }
+  ],
+  "datasets": [
+    {
+      "language": "eng",
+      "source_url": "https://raw.githubusercontent.com/omwn/omw-data/main/wns/eng/wn-data-eng.tab",
+      "sha256": "d1409d88addcdb890b1606dd280b558cca4258b1f33bd580d54ed949daad1ede"
+    },
+    {
+      "language": "jpn",
+      "source_url": "https://raw.githubusercontent.com/omwn/omw-data/main/wns/jpn/wn-data-jpn.tab",
+      "sha256": "f47fefb11824b86d8556c632f5b71438397abac79677b607070cd0bdcb9ac212"
+    }
+  ],
+  "audio": [
+    {
+      "file": "data/1q/0000英.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:En-us-dog.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/0/06/En-us-dog.ogg",
+      "author": "Dvortygirl",
+      "title": "En-us-dog",
+      "description": "Pronunciation of the term in US English",
+      "credit": "Own work",
+      "license": "CC BY-SA 3.0",
+      "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "ad93d2d7d3233abe4749dc196f10bb4a1d128927",
+      "sha256": "7e11e95b4f3d51a99d3875b5fb4964e230fe0b852f0f629571153e1b181da469"
+    },
+    {
+      "file": "data/1q/0000訳.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ja-inu-anglonative.oga",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/0/08/Ja-inu-anglonative.oga",
+      "author": "FreeMediaKid!",
+      "title": "Ja-inu-anglonative",
+      "description": "Standard Japanese pronunciation of 犬 (hiragana いぬ, rōmaji inu), from a non-native speaker.",
+      "credit": "Own work",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "64acda5528fb3b82b6cbc5f663a23872050dfe74",
+      "sha256": "dcb6bf35767504c647bac88f609a3d954ed8eb6af40ce1805cf937f5ad59d862"
+    },
+    {
+      "file": "data/1q/0001英.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:En-us-cat.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/4/46/En-us-cat.ogg",
+      "author": "Dvortygirl",
+      "title": "En-us-cat",
+      "description": "Pronunciation of the word 'cat' in US English",
+      "credit": "Own work",
+      "license": "CC BY-SA 3.0",
+      "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "dd8366cc15e33dbf376db99ded74ec45bfd75bae",
+      "sha256": "62502d6aa7d876f597101567f13a4f573a8bd32b0b57f393eb46756455a550e8"
+    },
+    {
+      "file": "data/1q/0001訳.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ja-neko-anglonative.oga",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Ja-neko-anglonative.oga",
+      "author": "FreeMediaKid!",
+      "title": "Ja-neko-anglonative",
+      "description": "Standard Japanese pronunciation of 猫 (hiragana ねこ, rōmaji neko), from a non-native speaker.",
+      "credit": "Own work",
+      "license": "CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "4e081f4eb1aacddc2795f7afbf29961e7ecab418",
+      "sha256": "c603691c6f87cba73240392d290dcd9ad4b75d28214a897d93c91a12535a0163"
+    },
+    {
+      "file": "data/1q/0002英.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:En-us-milk.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/6/64/En-us-milk.ogg",
+      "author": "Dvortygirl",
+      "title": "En-us-milk",
+      "description": "Pronunciation of the term in US English",
+      "credit": "Own work",
+      "license": "CC BY-SA 3.0",
+      "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "80c1bc68e0f7d3471f0445c977e2f6fdc74051fc",
+      "sha256": "44a8a26a26f0dbc278512cfa7268a2dd8699429dcd1426864961c6f6b5971855"
+    },
+    {
+      "file": "data/1q/0002訳.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ja-gyuunyuu-milk.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/0/05/Ja-gyuunyuu-milk.ogg",
+      "author": "marsian",
+      "title": "Ja-gyuunyuu-milk",
+      "description": "A Japanese soundbite:\n\nwhat?: gyūnyū \"milk\" in Japanese\nfor what: pronunciation for wikimedia projects\nrecorded by: a native speaker of Japanese\nmono/stereo: mono\nformat: OggVorbis, VBR, -q 1.00 (nominal bitrate: 60 or 80 or so kbps)\nrecorded and edited with: Audacity 1.3.2-beta; noise removed, normalized; voice starts at around 0.25 sec, ends at around 1.00+ sec.\nencoded with: oggdropXPd V.1.8.9 with libvorbis 1.1.2",
+      "credit": "I, marsian recorded my own voice by myself.",
+      "license": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/File:Ja-gyuunyuu-milk.ogg#Licensing",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "ee685badd375dc41af526fe37c8c63ee2db257a8",
+      "sha256": "f986cbe516dae90d81961869667f41f0206a1214495022c2ee184878b68a02f2"
+    },
+    {
+      "file": "data/1q/0003英.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:En-us-fly.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/En-us-fly.ogg",
+      "author": "Dvortygirl",
+      "title": "En-us-fly",
+      "description": "Pronunciation of the term in US English",
+      "credit": "Own work",
+      "license": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/File:En-us-fly.ogg#Licensing",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "3cba08b73e56515a4fd771ce7d845dcfca3c36cf",
+      "sha256": "2468c417c10376833c16ddc5ac114e36635ec8af7d67039e9327de4d4d2f36ac"
+    },
+    {
+      "file": "data/1q/0003訳.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ja-hae-fly(insect).ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Ja-hae-fly%28insect%29.ogg",
+      "author": "marsian",
+      "title": "Ja-hae-fly(insect)",
+      "description": "A Japanese soundbite:\n\nwhat?: \"fly (insect)\" in Japanese\nfor what: pronunciation for wikimedia projects\nrecorded by: a native speaker of Japanese\nmono/stereo: mono\nformat: OggVorbis, VBR, -q 1.00 (nominal bitrate: 60 or 80 or so kbps)\nrecorded and edited with: Audacity 1.3.2-beta; noise removed, normalized; voice starts at around 0.25 sec, ends at around 1.00+ sec.\nencoded with: oggdropXPd V.1.8.9 with libvorbis 1.1.2",
+      "credit": "I, marsian recorded my own voice by myself.",
+      "license": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/File:Ja-hae-fly(insect).ogg#Licensing",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "2a9900ef5e4ee52fa6aeb6acbbb753ba27937fe5",
+      "sha256": "3921fda62ac7908a6bf42bab695173a54c1cf1370998ce7bd81c8e5829669e1a"
+    },
+    {
+      "file": "data/1q/0004英.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:En-us-flower.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/En-us-flower.ogg",
+      "author": "Dvortygirl",
+      "title": "En-us-flower",
+      "description": "Pronunciation of the term in US English",
+      "credit": "Own work",
+      "license": "CC BY-SA 3.0",
+      "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "f68e601677e96c38611b19e514c24e3453649b7a",
+      "sha256": "c7ba61b2a34ceaaa8942d6c32b65698d6646ffdaa6ccae8f6b4dea1219e15b57"
+    },
+    {
+      "file": "data/1q/0004訳.btv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Ja-hana-flower_or_nose_etc.ogg",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Ja-hana-flower_or_nose_etc.ogg",
+      "author": "marsian",
+      "title": "Ja-hana-flower or nose etc",
+      "description": "A Japanese soundbite:\n\nwhat?: \"flower 花; nose 鼻; etc.\" in Japanese\nfor what: pronunciation for wikimedia projects\nrecorded by: a native speaker of Japanese\nmono/stereo: mono\nformat: OggVorbis, VBR, -q 1.00 (nominal bitrate: 60 or 80 or so kbps)\nrecorded and edited with: Audacity 1.3.2-beta; noise removed, normalized; voice starts at around 0.25 sec, ends at around 1.00+ sec.\nencoded with: oggdropXPd V.1.8.9 with libvorbis 1.1.2",
+      "credit": "I, marsian recorded my own voice by myself.",
+      "license": "Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/File:Ja-hana-flower_or_nose_etc.ogg#Licensing",
+      "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
+      "source_sha1": "b26bfdecf02116bcd2f851d46ce0f1e946f80a08",
+      "sha256": "7515b906380234689c65fcadced87464f69728c84024ac457828d3b111ea76e7"
+    }
+  ]
+}

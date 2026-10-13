@@ -8,9 +8,6 @@ import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.DebugManager.putsE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.fileExtension;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.getFileNameForTanjukugoEX;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.strDirectoryNameForKuuhaku;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.N_GENZAI_NAN_MONME;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
@@ -19,19 +16,19 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.intArrayToString;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putStringData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.stringToIntArray;
-import static com.gukos.bokotan.MyLibrary.strGaibuDataDirectory;
 
-import android.app.AlertDialog;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -42,83 +39,81 @@ import java.util.TreeMap;
  * Dictionaryクラス
  * すべての単語、文のデータと音声ファイルのパスを提供する
  */
-public class Dictionary extends ViewModel {
+public final class Dictionary {
 	public static ArrayList<Entry> allData = new ArrayList<>();
-	private static boolean isEmpty = true;
+	private static volatile boolean isEmpty = true;
+	private static boolean loading;
+	private static final Object readyLock = new Object();
+	private static final ArrayList<Runnable> readyCallbacks = new ArrayList<>();
+	public static final ArrayList<String> loadErrors = new ArrayList<>();
+
+	public static boolean isReady() { return !isEmpty; }
+
+	public static void whenReady(Context context, Runnable callback) {
+		boolean start;
+		synchronized (readyLock) {
+			if (isReady()) { new Handler(Looper.getMainLooper()).post(callback); return; }
+			readyCallbacks.add(callback);
+			start = !loading;
+			loading = true;
+		}
+		if (start) {
+			Context application = context.getApplicationContext();
+			new Thread(() -> {
+				try { initialize(application); }
+				catch (Exception error) { Log.e("Dictionary", "辞書を初期化できません。", error); }
+				finally {
+					ArrayList<Runnable> callbacks;
+					synchronized (readyLock) {
+						isEmpty = false; loading = false;
+						callbacks = new ArrayList<>(readyCallbacks); readyCallbacks.clear();
+					}
+					var main = new Handler(Looper.getMainLooper());
+					for (var action : callbacks) main.post(action);
+				}
+			}, "DictionaryLoader").start();
+		}
+	}
+
 	public static TreeMap<String, ArrayList<Entry>> listsPerBook = new TreeMap<>();
 
-	//言語を指定してファイルからデータを読み込む
-	public static ArrayList<Entry> readToList(Context context, Folder folder, BookName bookName, BookQ bookQ, Datatype datatype, DataLang dataLang) {
-		final var dictionaryPath = "dictionaries/";
-		var fileName = dictionaryPath + folder.toDirName() + "/" + bookName.toFileName() + bookQ.toFileName();
+	// 欠損した辞書は空のプリセットとして扱う。UIは読み込み結果を見て開始を拒否する。
+	public static ArrayList<Entry> readToList(Context context, Folder folder, BookName book,
+			BookQ q, Datatype type, DataLang lang) {
+		String filename = "dictionaries/" + folder.toDirName() + "/" + book.toFileName() + q.toFileName()
+				+ (lang == DataLang.japanese ? ".j.txt" : lang == DataLang.english ? ".e.txt" : "");
 		var list = new ArrayList<Entry>();
-		if (dataLang == DataLang.japanese) {
-			fileName += ".j.txt";
-		} else if (dataLang == DataLang.english) {
-			fileName += ".e.txt";
-		}
-		try {
-			var is = context.getAssets().open(fileName);
-			var br = new BufferedReader(new InputStreamReader(is));
-			String content;
-			var i = 0;
-			//ユメタンフレーズのときは最初の空白行が含まれていないため手動で追加する
-			if (bookName == BookName.yumetanPhrase) {
-				list.add(new Entry("null string", folder, bookName, bookQ, i, datatype, dataLang));
-				i++;
-			}
-			while ((content = br.readLine()) != null) {
-				list.add(new Entry(content, folder, bookName, bookQ, i, datatype, dataLang));
-				i++;
-			}
-			is.close();
-			br.close();
-		} catch (Exception e) {
-			showException(context, e);
-			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileName + "が見つかりません。").setPositiveButton("ok", null).create().show();
+		try (var reader = new BufferedReader(new InputStreamReader(context.getAssets().open(filename), StandardCharsets.UTF_8))) {
+			String line;
+			int number = 0;
+			while ((line = reader.readLine()) != null) list.add(new Entry(line, folder, book, q, number++, type, lang));
+		} catch (java.io.IOException error) {
+			Log.w("Dictionary", filename + ": " + error.getMessage());
+			loadErrors.add(filename + ": " + error.getMessage());
+			list.clear();
 		}
 		return list;
 	}
 
-	//日本語、英語のデータを同時に読み込む。
-	public static ArrayList<Entry> readToList(Context context, Folder folder, BookName bookName, BookQ bookQ, Datatype datatype) {
-		final var dictionaryPath = "dictionaries/";
-		var fileNameE = dictionaryPath + folder.toDirName() + "/" + bookName.toFileName() + bookQ.toFileName() + ".e.txt";
-		var fileNameJ = dictionaryPath + folder.toDirName() + "/" + bookName.toFileName() + bookQ.toFileName() + ".j.txt";
+	public static ArrayList<Entry> readToList(Context context, Folder folder, BookName book, BookQ q, Datatype type) {
+		String prefix = "dictionaries/" + folder.toDirName() + "/" + book.toFileName() + q.toFileName();
+		String key = book.toString() + q.toString();
+		if (listsPerBook.containsKey(key)) return listsPerBook.get(key);
 		var list = new ArrayList<Entry>();
-		try {
-			var isE = context.getAssets().open(fileNameE);
-			var isJ = context.getAssets().open(fileNameJ);
-			var brE = new BufferedReader(new InputStreamReader(isE));
-			var brJ = new BufferedReader(new InputStreamReader(isJ));
-			String contentE, contentJ;
-			var i = 0;
-			//ユメタンフレーズのときは最初の空白行が含まれていないため手動で追加する
-			if (bookName == BookName.yumetanPhrase) {
-				list.add(new Entry("null string", "null string", folder, bookName, bookQ, i, datatype));
-				i++;
+		try (var english = new InputStreamReader(context.getAssets().open(prefix + ".e.txt"), StandardCharsets.UTF_8);
+			 var japanese = new InputStreamReader(context.getAssets().open(prefix + ".j.txt"), StandardCharsets.UTF_8)) {
+			var pairs = DictionaryText.readPairs(english, japanese);
+			int number = 0;
+			if (book == BookName.yumetanPhrase && !pairs.isEmpty()) {
+				list.add(new Entry("", "", folder, book, q, number++, type));
 			}
-			while ((contentE = brE.readLine()) != null && (contentJ = brJ.readLine()) != null) {
-				list.add(new Entry(contentE, contentJ, folder, bookName, bookQ, i, datatype));
-				i++;
-			}
-			isE.close();
-			isJ.close();
-			brE.close();
-			brJ.close();
-		} catch (Exception e) {
-			showException(context, e);
-			new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル" + fileNameE + "または" + fileNameJ + "が見つかりません。").setPositiveButton("ok", null).create().show();
+			for (var pair : pairs) list.add(new Entry(pair[0], pair[1], folder, book, q, number++, type));
+		} catch (java.io.IOException error) {
+			Log.w("Dictionary", prefix + ": " + error.getMessage());
+			loadErrors.add(prefix + ": " + error.getMessage());
 		}
+		listsPerBook.put(key, list);
 		return list;
-	}
-
-	//削除時
-	@Override
-	protected void onCleared() {
-		super.onCleared();
-		printCurrentState("VIewModelが削除されます。");
-		isEmpty = true;
 	}
 
 	/**
@@ -399,8 +394,8 @@ public class Dictionary extends ViewModel {
 		}
 	}
 
-	//assetsフォルダーからデータを読み込む。ViewModelによりデータが保持されている場合は何もしない。
-	public static void initialize(Context context) {
+	// assetsをプロセス内で一度だけ読み込む。画面はwhenReadyで完了通知を受け取る。
+	public static synchronized void initialize(Context context) {
 		if (isEmpty) {
 			var entries = new ArrayList<Dictionary.Entry>();
 
@@ -464,18 +459,25 @@ public class Dictionary extends ViewModel {
 			final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
 			for (var q : new String[]{"1q", "p1q", "y1", "y2", "y3", "tanjukugo1q", "tanjukugop1q"}) {
 				var fileName = dnTestActivity + q + "Test";
-				var array = stringToIntArray(getStringData(context, fileName, keySeikai, ""));
+				var array = restoreCounters(context, fileName, keySeikai);
 				if (array == null) array = new int[3000];
 				seikai.put(fileName, array);
-				array = stringToIntArray(getStringData(context, fileName, keyHuseikai, ""));
+				array = restoreCounters(context, fileName, keyHuseikai);
 				if (array == null) array = new int[3000];
 				huseikai.put(fileName, array);
 				monme.put(fileName, getIntData(context, fileName, N_GENZAI_NAN_MONME, 1));
 			}
+			entries.removeIf(entry -> entry.dataLang == DataLang.both
+					? !entry.isUsable() : !StudyRules.hasText(entry.content));
 			allData = entries;
 			isEmpty = false;
 		}
-		new ViewModelProvider((ViewModelStoreOwner) context).get(Dictionary.class);
+
+	}
+
+	private static int[] restoreCounters(Context context, String file, String key) {
+		try { return stringToIntArray(getStringData(context, file, key, "")); }
+		catch (NumberFormatException error) { Log.w("Dictionary", "不正な成績データ: " + file, error); return null; }
 	}
 
 	private static void addList(BookName bookName, BookQ bookQ, ArrayList<Entry> list) {
@@ -483,11 +485,11 @@ public class Dictionary extends ViewModel {
 	}
 
 	public static ArrayList<Entry> getList(BookName bookName, BookQ bookQ) {
-		return listsPerBook.get(bookName.toString() + bookQ.toString());
+		return listsPerBook.getOrDefault(bookName.toString() + bookQ.toString(), new ArrayList<>());
 	}
 
 	public static ArrayList<Entry> getList(String key) {
-		return listsPerBook.get(key);
+		return listsPerBook.getOrDefault(key, new ArrayList<>());
 	}
 
 	/**
@@ -588,12 +590,10 @@ public class Dictionary extends ViewModel {
 		public String toDetailedString() {
 			try {
 				final String rate;
-				String fileName = dnTestActivity + bookQ.toFileName() + "Test";
-				if (QuizData.seikai.get(fileName) != null) {
-
-					int correct = Objects.requireNonNull(QuizData.seikai.get(fileName))[numberInBook];
-					int incorrect = Objects.requireNonNull(QuizData.huseikai.get(fileName))[numberInBook];
-					rate = "\n正解率 " + correct + "/" + (correct + incorrect);
+				if (isUsable() && datatype == Datatype.word &&
+						(bookName == BookName.PasstanWordData || bookName == BookName.yumetanWord || bookName == BookName.tanjukugoWord)) {
+					int[] scores = QuizData.scores(this);
+					rate = "\n正解率 " + scores[0] + "/" + (scores[0] + scores[1]);
 				} else rate = "";
 				var text = (dataLang == DataLang.both ? "英語:" + this.e
 						+ "\n日本語:" + this.j : this.content);
@@ -615,70 +615,12 @@ public class Dictionary extends ViewModel {
 			return "<不明>";
 		}
 
-		public String toPath(DataLang dataLang) {
-			try {
-				String str = bookQ.toFileName();
-				if (folder == Folder.tanjukugo)
-					str = "tanjukugo" + str;
-				String strDataQ = str;
-				String path = strGaibuDataDirectory;
-				String type;
-				switch (folder) {
-					case passtan: {
-						if (datatype == Datatype.word) {
-							if (dataLang == DataLang.english)
-								type = "英";
-							else
-								type = "訳";
-						} else {
-							if (dataLang == DataLang.english)
-								type = "例";
-							else
-								type = "日";
-						}
-						strDataQ = strDirectoryNameForKuuhaku + strDataQ;
-						path += strDataQ + String.format(Locale.JAPAN, "/%04d", numberInBook) + type + fileExtension;
-						break;
-					}
-					case yumetan: {
-						if (datatype == Datatype.word) {
-							if (dataLang == DataLang.english)
-								type = "W英";
-							else
-								type = "W日";
-						} else {
-							if (dataLang == DataLang.english)
-								type = "P英";
-							else
-								type = "P日";
-						}
-						strDataQ = strDirectoryNameForKuuhaku + "y" + strDataQ;
-						path += strDataQ + "/" + type + String.format(Locale.JAPAN, "%04d", numberInBook) + fileExtension;
-						break;
-					}
-					case tanjukugo: {
-						if (datatype == Datatype.word) {
-							if (dataLang == DataLang.english)
-								type = "英語";
-							else
-								type = "日本語";
-						} else {
-							if (dataLang == DataLang.english)
-								type = "例文";
-							else
-								type = "例文日本語";
-						}
-						path += strDataQ + "/" + getFileNameForTanjukugoEX(type, strDataQ, numberInBook) + fileExtension;
-						break;
-					}
-					default:
-						return null;
-				}
-				return path;
-			} catch (Exception e) {
-				MyLibrary.ExceptionManager.showException(e);
-				return "<不明>";
-			}
+		public boolean isUsable() {
+			return StudyRules.hasText(e) && StudyRules.hasText(j);
+		}
+
+		public String toPath(DataLang lang) {
+			return MyLibrary.FileDirectoryManager.getPathPs(folder, bookQ, datatype, lang, numberInBook);
 		}
 	}
 
@@ -689,11 +631,43 @@ public class Dictionary extends ViewModel {
 		public static final TreeMap<String, Integer> monme = new TreeMap<>();
 		static skipjouken skipjoken = skipjouken.kirokunomi;
 
-		public static void saveQuizData(Context context) {
+		public static String keyFor(Entry entry) {
+			return dnTestActivity + (entry.folder == Folder.tanjukugo ? "tanjukugo" : "") + entry.bookQ + "Test";
+		}
+
+		private static void ensure(Entry entry) {
+			String key = keyFor(entry);
+			int size = Math.max(1, entry.numberInBook + 1);
+			for (var map : Arrays.asList(seikai, huseikai)) {
+				int[] counts = map.get(key);
+				if (counts == null || counts.length < size) map.put(key, Arrays.copyOf(counts == null ? new int[0] : counts, size));
+			}
+			monme.putIfAbsent(key, 1);
+		}
+
+		public static synchronized int[] scores(Entry entry) {
+			ensure(entry);
+			String key = keyFor(entry);
+			return new int[]{seikai.get(key)[entry.numberInBook], huseikai.get(key)[entry.numberInBook]};
+		}
+
+		public static synchronized void record(Entry entry, boolean correct) {
+			ensure(entry);
+			(correct ? seikai : huseikai).get(keyFor(entry))[entry.numberInBook]++;
+		}
+
+		public static synchronized int questionNumber(Entry entry) {
+			ensure(entry);
+			String key = keyFor(entry);
+			int number = monme.get(key);
+			monme.put(key, number + 1);
+			return number;
+		}
+
+		public static synchronized void saveQuizData(Context context) {
 			printCurrentState("quizの情報を保存しています。");
 			final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
-			for (var q : new String[]{"1q", "p1q", "y1", "y2", "y3", "tanjukugo1q", "tanjukugop1q"}) {
-				var fileName = dnTestActivity + q + "Test";
+			for (String fileName : new ArrayList<>(seikai.keySet())) {
 				putStringData(context, fileName, keySeikai, intArrayToString(seikai.get(fileName)));
 				putStringData(context, fileName, keyHuseikai, intArrayToString(huseikai.get(fileName)));
 				putIntData(context, fileName, N_GENZAI_NAN_MONME, Objects.requireNonNull(monme.get(fileName)));

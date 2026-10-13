@@ -15,7 +15,6 @@ public class StartPipBroadcastReceiver extends BroadcastReceiver {
 			if (!PipActivity.startPIP) {
 				context.startActivity(new Intent(context, PipActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 			}
-			PipActivity.startPIP = !PipActivity.startPIP;
 		} catch (Exception e) {
 			showException(context, e);
 		}
