@@ -220,4 +220,92 @@ public class StudyFlowInstrumentedTest {
         }
     }
 
+    @Test public void playbackRespectsReverseOrderAndDelayedTranslation() throws Exception {
+        try (var scenario = ActivityScenario.launch(TabActivity.class)) {
+            await(Dictionary::isReady);
+            var events = java.util.Collections.synchronizedList(new ArrayList<String>());
+            var receiver = new android.content.BroadcastReceiver() {
+                @Override public void onReceive(Context ignored, Intent intent) {
+                    var name = intent.getSerializableExtra(PlayerFragment.PLAYER_VIEW_NAME);
+                    if (name == PlayerFragment.PlayerViewName.eng || name == PlayerFragment.PlayerViewName.jpn)
+                        events.add(name + ":" + intent.getStringExtra(PlayerFragment.PLAYER_VIEW_TEXT));
+                }
+            };
+            main(() -> {
+                MyLibrary.PreferenceManager.putSetting(context, "id" + R.id.switchSortHanten, true);
+                MyLibrary.PreferenceManager.putSetting(context, "id" + R.id.switchHyojiYakuBeforeRead, false);
+                androidx.core.content.ContextCompat.registerReceiver(context, receiver,
+                        new android.content.IntentFilter(PlayerFragment.PLAYER_ACTION_UI_CHANGE),
+                        androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED);
+                TabActivity.setTabPageNum(1);
+                context.startForegroundService(samplePlaybackIntent().putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, 4));
+            });
+            try {
+                await(() -> events.contains("eng:fly"));
+                var snapshot = new ArrayList<>(events);
+                assertTrue(snapshot.indexOf("eng:flower") < snapshot.indexOf("eng:fly"));
+                assertTrue(snapshot.indexOf("jpn:") < snapshot.indexOf("jpn:花"));
+                assertTrue(snapshot.indexOf("jpn:花") < snapshot.indexOf("eng:fly"));
+                main(() -> {
+                    assertEquals(4, PlayerService.wordDataList.get(0).numberInBook);
+                    assertEquals(0, PlayerService.wordDataList.get(4).numberInBook);
+                });
+            } finally {
+                main(() -> {
+                    context.stopService(new Intent(context, PlayerService.class));
+                    context.unregisterReceiver(receiver);
+                    MyLibrary.PreferenceManager.putSetting(context, "id" + R.id.switchSortHanten, false);
+                    MyLibrary.PreferenceManager.putSetting(context, "id" + R.id.switchHyojiYakuBeforeRead, true);
+                });
+            }
+        }
+    }
+
+    @Test public void simulatedHeadphoneDisconnectStopsOnlyWhenEnabled() throws Exception {
+        try (var scenario = ActivityScenario.launch(TabActivity.class)) {
+            await(Dictionary::isReady);
+            main(() -> {
+                MyLibrary.PreferenceManager.putSetting(context, "id" + R.id.checkBoxAutoStop, false);
+                TabActivity.setTabPageNum(1);
+                context.startForegroundService(samplePlaybackIntent());
+            });
+            var manager = (android.app.ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            java.util.function.BooleanSupplier running = () -> manager.getRunningServices(Integer.MAX_VALUE).stream()
+                    .anyMatch(service -> service.service.getClassName().equals(PlayerService.class.getName()));
+            // Android protects this system broadcast: invoke the same receiver with a simulated event.
+            var disconnect = new AudioDisconnectReceiver(
+                    () -> MyLibrary.PreferenceManager.getSetting(context, "id" + R.id.checkBoxAutoStop, false),
+                    () -> context.sendBroadcast(new Intent(PlayerService.PLAYERSERVICE_ACTION).setPackage(context.getPackageName())
+                            .putExtra(PlayerService.PLAYERSERVICE_MESSAGE_TYPE, PlayerService.PLAYERSERVICE_MESSAGE_STOP)));
+            try {
+                await(() -> !text(scenario, R.id.textViewEng).isEmpty());
+                main(() -> disconnect.onReceive(context, new Intent(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)));
+                Thread.sleep(250);
+                assertTrue(running.getAsBoolean());
+                main(() -> {
+                    MyLibrary.PreferenceManager.putSetting(context, "id" + R.id.checkBoxAutoStop, true);
+                    disconnect.onReceive(context, new Intent("unrelated"));
+                    assertTrue(running.getAsBoolean());
+                    disconnect.onReceive(context, new Intent(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+                });
+                await(() -> !running.getAsBoolean());
+            } finally {
+                main(() -> {
+                    context.stopService(new Intent(context, PlayerService.class));
+                    MyLibrary.PreferenceManager.putSetting(context, "id" + R.id.checkBoxAutoStop, false);
+                });
+            }
+        }
+    }
+
+    private Intent samplePlaybackIntent() {
+        return new Intent(context, PlayerService.class)
+                .putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, Dictionary.Datatype.word)
+                .putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, Dictionary.Folder.sample)
+                .putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, Dictionary.BookQ.none)
+                .putExtra(PlayerService.PLAYERSERVICE_EXTRA_SKIP_COND, PlayerService.SkipContidion.all)
+                .putExtra(PlayerService.PLAYERSERVICE_EXTRA_SKIP_THRES_COMP, PlayerService.SkipThreshold.eqormore)
+                .putExtra(PlayerService.PLAYERSERVICE_EXTRA_NOW, 0);
+    }
+
 }
