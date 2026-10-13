@@ -1,7 +1,6 @@
 package com.gukos.bokotan;
 
 import static android.media.AudioManager.STREAM_MUSIC;
-import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
@@ -18,17 +17,19 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.gukos.bokotan.databinding.ActivityTabBinding;
 
-import java.util.Objects;
 
 public class TabActivity extends AppCompatActivity {
-	private static ActivityTabBinding binding;
+	private ActivityTabBinding binding;
+	private static final java.lang.ref.WeakReference<TabActivity> EMPTY = new java.lang.ref.WeakReference<>(null);
+	private static java.lang.ref.WeakReference<TabActivity> current = EMPTY;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
 
-		new Thread(() -> loadAllData(savedInstanceState)).start();
+		current = new java.lang.ref.WeakReference<>(this);
+		Dictionary.whenReady(getApplicationContext(), () -> {});
 
 		setVolumeControlStream(STREAM_MUSIC);
 
@@ -40,7 +41,7 @@ public class TabActivity extends AppCompatActivity {
 		//フラグメント作成できる？
 		//tabPagerAdapter.createFragment()
 		//初期位置
-		viewPager.setCurrentItem(0);
+		viewPager.setCurrentItem(savedInstanceState == null ? 0 : savedInstanceState.getInt("selectedTab", 0));
 
 		new TabLayoutMediator(binding.tabsMain, binding.viewpagerMain, (tab, position) -> tab.setText(TabPagerAdapter.TAB_NAMES[position])).attach();
 
@@ -62,7 +63,7 @@ public class TabActivity extends AppCompatActivity {
 					case 2: {
 						runOnUiThread(() -> setTabPageNum(0));
 						//クイズをしているなら、ViewModelのデータを保存する。
-						new Thread(() -> Dictionary.QuizData.saveQuizData(getApplicationContext())).start();
+						QuizCreator.stopCurrent();
 						getApplicationContext().sendBroadcast(new Intent(QuizCreator.QTHREAD_ACTION_CLICKED).putExtra(QuizCreator.QTHREAD_EXTRA_STOP, 0).setPackage(getApplicationContext().getPackageName()));
 						break;
 					}
@@ -76,20 +77,18 @@ public class TabActivity extends AppCompatActivity {
 		getOnBackPressedDispatcher().addCallback(this, backPressedCallback);
 	}
 
-	//bundleからデータ取り出し
-	private void loadAllData(Bundle bundle) {
-		try {
-			printCurrentState("読み込み開始" + bundle);
-			//単語、文のデータはViewModelから取ってくる。
-			//ViewModelが空のときはファイルから読み込む。
-			Dictionary.initialize(this);
-			//正解数、不正解数のデータもViewModelから取ってくる。
-			//ViewModelが空のときはSharedPreferenceから読み込む。
-			//クイズを終了(戻るボタン)したときにViewModelのデータをSharedPreferenceに書き込む。
-			printCurrentState("読み込み完了");
-		} catch (Exception exception) {
-			showException(this, exception);
-		}
+	@Override
+	protected void onSaveInstanceState(Bundle state) {
+		state.putInt("selectedTab", getTabPageNum());
+		super.onSaveInstanceState(state);
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (isFinishing()) QuizCreator.stopCurrent();
+		if (current.get() == this) current = EMPTY;
+		binding = null;
+		super.onDestroy();
 	}
 
 	/**
@@ -99,7 +98,8 @@ public class TabActivity extends AppCompatActivity {
 	 */
 	public static void setTabPageNum(int n) {
 		try {
-			Objects.requireNonNull(TabActivity.binding.tabsMain.getTabAt(n)).select();
+			TabActivity activity = current.get();
+			if (activity != null && activity.binding != null) activity.binding.viewpagerMain.setCurrentItem(n);
 		} catch (Exception exception) {
 			showException(exception);
 		}
@@ -107,7 +107,8 @@ public class TabActivity extends AppCompatActivity {
 
 	public static int getTabPageNum() {
 		try {
-			return TabActivity.binding.tabsMain.getSelectedTabPosition();
+			TabActivity activity = current.get();
+			return activity == null || activity.binding == null ? 0 : activity.binding.tabsMain.getSelectedTabPosition();
 		} catch (Exception exception) {
 			showException(exception);
 			return 0;

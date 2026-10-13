@@ -109,40 +109,11 @@ def main():
         page, info = commons_info(titles=row['japanese_audio_title'])
         audio.append(recording(info, f'data/1q/{index:04d}訳.btv'))
         print(f"{index}: {row['english']} / {row['japanese']}", flush=True)
-    # Legacy initializer opens every preset. Empty files satisfy those reads;
-    # only PasstanWordData/q1 has real sample entries.
     assets = DEST / 'assets'
-    def write(name, lines=()):
+    def write(name, lines):
         path = assets / 'dictionaries' / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(''.join(line + '\n' for line in lines), encoding='utf-8')
-    def pair(folder, stem):
-        for lang in ('e', 'j'):
-            write(f'{folder}/{stem}.{lang}.txt')
-    for i in range(1, 4):
-        write(f'Distinction/distinction{i}.txt')
-    for q in ('1q', 'p1q', '2q', 'p2q', '3q', '4q', '5q'):
-        pair('Eigoduke.com', 'WordEigoduke' + q)
-        pair('Passtan', 'WordData' + q)
-        pair('Passtan', 'Phrase' + q)
-    for stem in ('eiken-jukugo', 'eikenp1-jukugo', 'Toefl-Chokuzen',
-                 'Toeic-500ten', 'Toeic-700ten', 'Toeic-900ten',
-                 'Toeic-Chokuzen', 'Toeic-jukugo'):
-        pair('Eigoduke.com', 'WordEigoduke-' + stem)
-    pair('SVL', 'SVL12000')
-    for q in ('1q', 'p1q'):
-        for stem in ('Word', 'Phrase', 'EXWord'):
-            pair('Tanjukugo', stem + q)
-    for q in ('00', '08', '1', '2', '3'):
-        pair('Yumetan', 'WordDataYume' + q)
-        if q != '00':
-            pair('Yumetan', 'PhraseDataYume' + q)
-    for stem in ('英英英熟語初級編', '英英英熟語中級編', '英英英単語TOEICスコア800',
-                 '英英英単語TOEICスコア990', '英英英単語初級編', '英英英単語中級編',
-                 '英英英単語上級編', '英英英単語超上級編'):
-        write('英英英単語/' + stem + '.txt')
-    for stem in ('究極の英単語premiumVol1.txt', '究極の英単語premiumVol.2_EJ（英日）.txt'):
-        write('英単語上級/' + stem)
     for lang, field in [('e', 'english'), ('j', 'japanese')]:
         write(f'Passtan/WordData1q.{lang}.txt', [row[field] for row in rows])
     manifest = dict(vocabulary=rows, datasets=datasets, audio=audio)

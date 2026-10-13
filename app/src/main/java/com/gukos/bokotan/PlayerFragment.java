@@ -1,6 +1,5 @@
 package com.gukos.bokotan;
 
-import static com.gukos.bokotan.Dictionary.Unit.toFindFromAndTo;
 import static com.gukos.bokotan.MyLibrary.DebugManager.getMethodName;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
@@ -10,8 +9,6 @@ import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_ACTION;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_NOW;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_STOP;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_MESSAGE_TYPE;
-import static com.gukos.bokotan.QSentakuFragment.dataBook;
-import static com.gukos.bokotan.QSentakuFragment.dataQ;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -21,7 +18,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -35,7 +31,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBinding> {
-	public static Boolean isInitialized = false;
+	public static boolean isInitialized = false;
+	private DrawReceiver receiver;
 	public static final String
 			PLAYER_ACTION_UI_CHANGE = "player_action_ui_change";
 	public static final String PLAYER_VIEW_NAME = "player_view_name";
@@ -49,6 +46,7 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
+			if (binding == null) return;
 			Bundle bundle = msg.getData();
 			PlayerViewName viewName = (PlayerViewName) bundle.getSerializable(PLAYER_VIEW_NAME);
 			final TextView textViewToHandle;
@@ -114,7 +112,8 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 			super.onViewCreated(view, savedInstanceState);
 			try {
 				//UI設定
-				ContextCompat.registerReceiver(context, new DrawReceiver(drawHandler), new IntentFilter(PLAYER_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
+				receiver = new DrawReceiver(drawHandler);
+				ContextCompat.registerReceiver(context, receiver, new IntentFilter(PLAYER_ACTION_UI_CHANGE), ContextCompat.RECEIVER_NOT_EXPORTED);
 
 				binding.buttonToBegin.setOnClickListener(this::onResetButtonClick);
 				binding.buttonNowChange.setOnClickListener(this::onChangeNumber);
@@ -127,9 +126,9 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 				onSpeedSeekBar(binding.seekBarJpn, binding.seekBarJpn.getProgress(), true);
 				binding.buttonStopService.setOnClickListener(this::onPlayerServiceStop);
 
-				synchronized (isInitialized) {
-					isInitialized = true;
-				}
+				isInitialized = true;
+				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).setPackage(context.getPackageName())
+						.putExtra(PLAYERSERVICE_MESSAGE_TYPE, PlayerService.PLAYERSERVICE_MESSAGE_REFRESH));
 			} catch (Exception e) {
 				showException(context, e);
 			}
@@ -140,6 +139,14 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 		}
 	}
 
+	@Override
+	public void onDestroyView() {
+		isInitialized = false;
+		if (receiver != null) { context.unregisterReceiver(receiver); receiver = null; }
+		drawHandler.removeCallbacksAndMessages(null);
+		super.onDestroyView();
+	}
+
 	public void onPlayerServiceStop(View view) {
 		puts(getMethodName());
 		Intent broadcastIntent = new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP).setPackage(context.getPackageName());
@@ -148,145 +155,29 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 
 	public void onResetButtonClick(View view) {
 		try {
-			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, 1).setPackage(context.getPackageName()));
+			context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, 0).setPackage(context.getPackageName()));
 		} catch (Exception e) {
 			showException(context, e);
 		}
 	}
 
 	public void onChangeNumber(View view) {
-		try {
-			final int[][] fromTo;
-			final String[] unit = new String[100];
-			switch (dataBook) {
-				default:
-				case passtan: {
-					int i = 0;
-					for (var derudo : new String[]{"出る度A", "出る度B", "出る度C"}) {
-						for (var hinshi : new String[]{"動詞", "名詞", "形容詞"}) {
-							unit[i] = derudo + hinshi;
-							i++;
-						}
-					}
-					unit[i] = "熟語";
-					if (dataQ == Dictionary.BookQ.q1) {
-						fromTo = toFindFromAndTo[0];
-					} else {
-						fromTo = toFindFromAndTo[1];
-					}
-					break;
-				}
-				case yumetan: {
-					for (int i = 0; i < 10; i++) {
-						unit[i] = "Unit" + (i + 1);
-					}
-					switch (dataQ) {
-						case y00: {
-							fromTo = toFindFromAndTo[7];
-							break;
-						}
-						case y08: {
-							fromTo = toFindFromAndTo[8];
-							break;
-						}
-						default:
-						case y1: {
-							fromTo = toFindFromAndTo[9];
-							break;
-						}
-						case y2: {
-							fromTo = toFindFromAndTo[10];
-							break;
-						}
-						case y3: {
-							fromTo = toFindFromAndTo[11];
-							break;
-						}
-					}
-					break;
-				}
-				case tanjukugo: {
-					for (int i = 0; i < 10; i++) {
-						unit[i] = "Unit" + (i + 1);
-					}
-					unit[10] = "Unit Ex";
-					if (dataQ == Dictionary.BookQ.q1) {
-						fromTo = toFindFromAndTo[12];
-					} else {
-						fromTo = toFindFromAndTo[13];
-					}
-					break;
-				}
-				case all: {
-					ArrayList<String> listUnit = new ArrayList<>();
-					for (int i = 1; i < 10 + 1; i++) {
-						listUnit.add("ユメタン1:Unit" + i);
-					}
-					for (int i = 1; i < 10 + 1; i++) {
-						listUnit.add("ユメタン2:Unit" + i);
-					}
-					for (int i = 1; i < 8 + 1; i++) {
-						listUnit.add("ユメタン3:Unit" + i);
-					}
-					for (var derudo : new String[]{"出る度A", "出る度B", "出る度C"}) {
-						for (var hinshi : new String[]{"動詞", "名詞", "形容詞"}) {
-							listUnit.add("パス単準1級" + derudo + hinshi);
-						}
-					}
-					listUnit.add("パス単準1級" + "熟語");
-					for (var derudo : new String[]{"出る度A", "出る度B", "出る度C"}) {
-						for (var hinshi : new String[]{"動詞", "名詞", "形容詞"}) {
-							listUnit.add("パス単1級" + derudo + hinshi);
-						}
-					}
-					listUnit.add("パス単1級" + "熟語");
-
-					for (int i = 0; i < listUnit.size(); i++) {
-						unit[i] = listUnit.get(i);
-					}
-					fromTo = toFindFromAndTo[14];
-					break;
-				}
-			}
-			var unitAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
-			for (int i = 0; i < fromTo.length; i++) {
-				var pair = fromTo[i];
-				unitAdapter.add(unit[i] + " (" + pair[0] + "～" + pair[1] + ")");
-			}
-			new AlertDialog.Builder(context)
-					.setTitle("unit:")
-					.setSingleChoiceItems(unitAdapter, 0, (dialogInterface, index) -> {
-						puts("i=" + index);
-						dialogInterface.dismiss();
-						var wordAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_single_choice);
-						for (int i = fromTo[index][0]; i <= fromTo[index][1]; i++) {
-							var data = PlayerService.wordDataList.get(i);
-							wordAdapter.add(i + "," + data.numberInBook + ", " + data.e + " " + data.j);
-						}
-						new AlertDialog.Builder(context)
-								.setTitle("単語を選択してください。")
-								.setSingleChoiceItems(wordAdapter, 0, (dialog, i) -> {
-									dialog.dismiss();
-									context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW).putExtra(PLAYERSERVICE_MESSAGE_NOW, fromTo[index][0] + i).setPackage(context.getPackageName()));
-								})
-								.create()
-								.show();
-					})
-					.create()
-					.show();
-		} catch (Exception exception) {
-			showException(context, exception);
-		}
+		var entries = new ArrayList<>(PlayerService.wordDataList);
+		if (entries.isEmpty()) { MyLibrary.DisplayOutput.makeToastForShort(context, "再生中のデータがありません。"); return; }
+		var labels = new ArrayList<String>();
+		for (var entry : entries) labels.add(entry.numberInBook + ": " + entry.e + " " + entry.j);
+		new AlertDialog.Builder(context).setTitle("単語を選択してください。")
+				.setItems(labels.toArray(new String[0]), (dialog, index) -> context.sendBroadcast(
+						new Intent(PLAYERSERVICE_ACTION).setPackage(context.getPackageName())
+								.putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_NOW)
+								.putExtra(PLAYERSERVICE_MESSAGE_NOW, index))).show();
 	}
 
 	public void onPIPButtonClicked(View view) {
 		try {
-			if (PipActivity.startPIP) {
-				//PIPを終了したい
-			} else {
-				startActivity(new Intent(context, PipActivity.class).putExtra(PipActivity.PIP_TV_FIRST_ENG, binding.textViewEng.getText()).putExtra(PipActivity.PIP_TV_FIRST_JPN, binding.textViewJpn.getText()));
-			}
-			PipActivity.startPIP = !PipActivity.startPIP;
+			startActivity(new Intent(context, PipActivity.class)
+					.putExtra(PipActivity.PIP_TV_FIRST_ENG, binding.textViewEng.getText().toString())
+					.putExtra(PipActivity.PIP_TV_FIRST_JPN, binding.textViewJpn.getText().toString()));
 		} catch (Exception e) {
 			showException(context, e);
 		}

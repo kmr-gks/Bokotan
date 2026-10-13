@@ -104,8 +104,16 @@ public class UiManager {
 			//こう書きたいが、javaではできない？
 			//binding= Binding.inflate(inflater, container, false);
 			binding = methodInflate.invoke(inflater, container, false);
-			binding.setLifecycleOwner(this);
 			return binding.getRoot();
+		}
+
+		@Override
+		public void onDestroyView() {
+			binding = null;
+			context = null;
+			activity = null;
+			viewFragment = null;
+			super.onDestroyView();
 		}
 
 		//ActivityのonCreateに相当
@@ -113,6 +121,7 @@ public class UiManager {
 		public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 			try {
 				super.onViewCreated(view, savedInstanceState);
+				binding.setLifecycleOwner(getViewLifecycleOwner());
 				context = getContext();
 				activity = getActivity();
 				viewFragment = view;

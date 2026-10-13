@@ -32,7 +32,8 @@ public class PipActivity extends Activity {
 	static boolean startPIP = false;
 	public static int pipYoko = 16;
 	public static int pipTate = 9;
-	private static ActivityPipBinding binding;
+	private ActivityPipBinding binding;
+	private DrawReceiver receiver;
 
 	/**
 	 * //最初に渡す値(putExtraやgetStringExtraで使用)
@@ -59,6 +60,7 @@ public class PipActivity extends Activity {
 	private final Handler drawHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
+			if (binding == null) return;
 			Bundle bundle = msg.getData();
 			PipViewName pipViewName =
 					(PipViewName) bundle.getSerializable(PIP_VIEW_NAME);
@@ -98,13 +100,14 @@ public class PipActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
-			if (!startPIP) {
-				finish();
-				return;
-			}
 			super.onCreate(savedInstanceState);
+			startPIP = true;
 			binding = DataBindingUtil.setContentView(this, R.layout.activity_pip);
-			ContextCompat.registerReceiver(this, new DrawReceiver(drawHandler), new IntentFilter(PIP_ACTION_UI), ContextCompat.RECEIVER_NOT_EXPORTED);
+			receiver = new DrawReceiver(drawHandler);
+			ContextCompat.registerReceiver(this, receiver, new IntentFilter(PIP_ACTION_UI), ContextCompat.RECEIVER_NOT_EXPORTED);
+
+			sendBroadcast(new Intent(PLAYERSERVICE_ACTION).setPackage(getPackageName())
+					.putExtra(PLAYERSERVICE_MESSAGE_TYPE, PlayerService.PLAYERSERVICE_MESSAGE_REFRESH));
 
 			//最初に表示する文字列を取得
 			binding.textViewPipEng.setText(getIntent().getStringExtra(PIP_TV_FIRST_ENG));
@@ -123,7 +126,7 @@ public class PipActivity extends Activity {
 			}
 			final ArrayList<RemoteAction> actions = new ArrayList<>();
 			actions.add(
-					new RemoteAction(Icon.createWithResource(PipActivity.this, android.R.drawable.ic_media_pause), "ends", "content:", PendingIntent.getBroadcast(this, 0, new Intent(PLAYERSERVICE_ACTION).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP), PendingIntent.FLAG_IMMUTABLE))
+					new RemoteAction(Icon.createWithResource(PipActivity.this, android.R.drawable.ic_media_pause), "ends", "content:", PendingIntent.getBroadcast(this, 0, new Intent(PLAYERSERVICE_ACTION).setPackage(getPackageName()).putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP), PendingIntent.FLAG_IMMUTABLE))
 			);
 			pictureInPictureParams.setActions(actions);
 			enterPictureInPictureMode(pictureInPictureParams.build());
@@ -131,6 +134,13 @@ public class PipActivity extends Activity {
 		} catch (Exception e) {
 			showException(this, e);
 		}
+	}
+
+	@Override protected void onDestroy() {
+		if (receiver != null) { unregisterReceiver(receiver); receiver = null; }
+		drawHandler.removeCallbacksAndMessages(null);
+		binding = null; startPIP = false;
+		super.onDestroy();
 	}
 
 }
