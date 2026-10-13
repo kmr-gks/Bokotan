@@ -49,6 +49,10 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 		}
 	}
+	androidResources {
+		noCompress += ["btv"]
+	}
+
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_11
 		targetCompatibility JavaVersion.VERSION_11
@@ -73,10 +77,8 @@ android {
 					'src/main/res/uiobject',
 			]
 		}
-		// Opt-in fixtures only for debug APKs; publisher data is never copied.
-		if (providers.gradleProperty('sampleData').orNull == 'true') {
-			debug.assets.srcDir rootProject.file('samples/free-vocabulary/assets')
-		}
+		// Licensed sample vocabulary and recordings are available in every APK/AAB.
+		main.assets.srcDir rootProject.file('samples/free-vocabulary/assets')
 	}
 }
 

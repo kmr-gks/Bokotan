@@ -101,35 +101,6 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 			//バージョン表記
 			binding.textViewVersion.setText(getBuildDate(context));
 
-			//権限リクエスト
-			//最前面に表示
-			// https://maku77.github.io/android/ui/always-top.html
-			ArrayList<String> needPermissions = new ArrayList<>();
-			ArrayList<String> allPermissions = new ArrayList<>(List.of(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, BLUETOOTH, BLUETOOTH_ADMIN));
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-				allPermissions.add(BLUETOOTH_CONNECT);
-				allPermissions.add(BLUETOOTH_SCAN);
-			}
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-				allPermissions.add(READ_MEDIA_AUDIO);
-				allPermissions.add(POST_NOTIFICATIONS);
-			}
-			for (var permission : allPermissions) {
-				if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-					needPermissions.add(permission);
-				}
-			}
-			if (!needPermissions.isEmpty()) {
-				activity.requestPermissions(needPermissions.toArray(new String[0]), 101);
-			}
-			//ファイル読み書きの確認
-			//https://developer.android.com/training/data-storage/manage-all-files?hl=ja
-			//https://takusan23.github.io/Bibouroku/2020/05/04/Android11%E3%81%AEMANAGE-EXTERNAL-STORAGE%E3%82%92%E8%A9%A6%E3%81%99/
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-				if (!Environment.isExternalStorageManager()) {
-					startActivity(new Intent(ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
-				}
-			}
 
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
 			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
@@ -200,7 +171,10 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 			binding.spinnerHyojijun.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerHyojijunOnItemSelectedListener);
 
 			binding.spinnerBookQ.setAdapter(getAdapterForSpinner(context, R.array.spinner_book_q));
-			binding.spinnerBookQ.setSelection(getIntData(context, "spinnerBookQ", "selected", 4));
+			binding.spinnerBookQ.setSelection(getIntData(context, "spinnerBookQ", "selected", 8));
+			Dictionary.whenReady(context, () -> {
+				if (binding != null && Dictionary.allData.stream().allMatch(entry -> entry.folder == Folder.sample)) binding.spinnerBookQ.setSelection(8);
+			});
 			binding.spinnerBookQ.setOnItemSelectedListener((UiManager.UiInterface.AdapterViewItemSelected) this::spinnerBookQOnItemSelectedListener);
 
 			binding.buttonWord.setOnClickListener(this::onPlayQuizStart);
@@ -210,6 +184,20 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		} catch (Exception e) {
 			showException(context, e);
 		}
+	}
+
+	private boolean requestExternalAccess() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			if (!Environment.isExternalStorageManager()) {
+				startActivity(new Intent(android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+						android.net.Uri.parse("package:" + context.getPackageName())));
+				return false;
+			}
+		} else if (ContextCompat.checkSelfPermission(context, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, 101);
+			return false;
+		}
+		return true;
 	}
 
 	private void onShowSettingNew(View view) {
@@ -233,6 +221,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 	}
 
 	private void onExportPrefsButton(View view) {
+		if (!requestExternalAccess()) return;
 		try {
 			for (var fileName : getAllFileNames()) {
 				String strFilePath = stringBokotanDirPath + fileName + ".txt";
@@ -248,6 +237,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 	}
 
 	private void onImportPrefsButton(View view) {
+		if (!requestExternalAccess()) return;
 		try {
 			putAllSetting(context, readFromFile(context, stringBokotanDirPath + fnAppSettings + ".txt"));
 
@@ -268,6 +258,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 	}
 
 	private void onWriteText(View view) {
+		if (!requestExternalAccess()) return;
 		try {
 			FileWriter fileWriter = Objects.requireNonNull(openWriteFileWithExistCheck(context, strExceptionFIlePath, false));
 			fileWriter.write("書き込みテスト: " + MyLibrary.packageName + "(" + getNowTime() + ")");
@@ -333,12 +324,22 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 				dataQ = BookQ.qp1;
 				break;
 			}
+			case 8: {
+				dataBook = Folder.sample;
+				dataQ = BookQ.none;
+				break;
+			}
 			case 7: {
 				dataBook = Folder.all;
 				dataQ = BookQ.all;
 				break;
 			}
 		}
+		if (dataBook != Folder.sample && dataBook != Folder.all && !requestExternalAccess()) return;
+		if (dataBook == Folder.sample && (view == binding.buttonPhrase || view == binding.buttonWP)) {
+			makeToastForShort(context, "サンプルには単語のみ収録しています。"); return;
+		}
+
 		switch (binding.radioGroupSkipCondition.getCheckedRadioButtonId()) {
 			default:
 			case R.id.radioButtonPlayAll: {

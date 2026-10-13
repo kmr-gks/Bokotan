@@ -34,7 +34,7 @@ jobs:
         run: cat version.properties >> "$GITHUB_ENV"
       - name: Test and build APKs and AABs
         run: >-
-          bash gradlew --no-daemon -PsampleData=true
+          bash gradlew --no-daemon
           testDebugUnitTest lintDebug assembleDebug bundleDebug assembleRelease bundleRelease
       - name: Upload installable sample APK and debug AAB
         uses: actions/upload-artifact@v4

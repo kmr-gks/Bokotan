@@ -61,7 +61,8 @@
       "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "ad93d2d7d3233abe4749dc196f10bb4a1d128927",
-      "sha256": "7e11e95b4f3d51a99d3875b5fb4964e230fe0b852f0f629571153e1b181da469"
+      "sha256": "7e11e95b4f3d51a99d3875b5fb4964e230fe0b852f0f629571153e1b181da469",
+      "packaged_file": "assets/sample-audio/0000-en.btv"
     },
     {
       "file": "data/1q/0000訳.btv",
@@ -75,7 +76,8 @@
       "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "64acda5528fb3b82b6cbc5f663a23872050dfe74",
-      "sha256": "dcb6bf35767504c647bac88f609a3d954ed8eb6af40ce1805cf937f5ad59d862"
+      "sha256": "dcb6bf35767504c647bac88f609a3d954ed8eb6af40ce1805cf937f5ad59d862",
+      "packaged_file": "assets/sample-audio/0000-ja.btv"
     },
     {
       "file": "data/1q/0001英.btv",
@@ -89,7 +91,8 @@
       "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "dd8366cc15e33dbf376db99ded74ec45bfd75bae",
-      "sha256": "62502d6aa7d876f597101567f13a4f573a8bd32b0b57f393eb46756455a550e8"
+      "sha256": "62502d6aa7d876f597101567f13a4f573a8bd32b0b57f393eb46756455a550e8",
+      "packaged_file": "assets/sample-audio/0001-en.btv"
     },
     {
       "file": "data/1q/0001訳.btv",
@@ -103,7 +106,8 @@
       "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "4e081f4eb1aacddc2795f7afbf29961e7ecab418",
-      "sha256": "c603691c6f87cba73240392d290dcd9ad4b75d28214a897d93c91a12535a0163"
+      "sha256": "c603691c6f87cba73240392d290dcd9ad4b75d28214a897d93c91a12535a0163",
+      "packaged_file": "assets/sample-audio/0001-ja.btv"
     },
     {
       "file": "data/1q/0002英.btv",
@@ -117,7 +121,8 @@
       "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "80c1bc68e0f7d3471f0445c977e2f6fdc74051fc",
-      "sha256": "44a8a26a26f0dbc278512cfa7268a2dd8699429dcd1426864961c6f6b5971855"
+      "sha256": "44a8a26a26f0dbc278512cfa7268a2dd8699429dcd1426864961c6f6b5971855",
+      "packaged_file": "assets/sample-audio/0002-en.btv"
     },
     {
       "file": "data/1q/0002訳.btv",
@@ -131,7 +136,8 @@
       "license_url": "https://commons.wikimedia.org/wiki/File:Ja-gyuunyuu-milk.ogg#Licensing",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "ee685badd375dc41af526fe37c8c63ee2db257a8",
-      "sha256": "f986cbe516dae90d81961869667f41f0206a1214495022c2ee184878b68a02f2"
+      "sha256": "f986cbe516dae90d81961869667f41f0206a1214495022c2ee184878b68a02f2",
+      "packaged_file": "assets/sample-audio/0002-ja.btv"
     },
     {
       "file": "data/1q/0003英.btv",
@@ -145,7 +151,8 @@
       "license_url": "https://commons.wikimedia.org/wiki/File:En-us-fly.ogg#Licensing",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "3cba08b73e56515a4fd771ce7d845dcfca3c36cf",
-      "sha256": "2468c417c10376833c16ddc5ac114e36635ec8af7d67039e9327de4d4d2f36ac"
+      "sha256": "2468c417c10376833c16ddc5ac114e36635ec8af7d67039e9327de4d4d2f36ac",
+      "packaged_file": "assets/sample-audio/0003-en.btv"
     },
     {
       "file": "data/1q/0003訳.btv",
@@ -159,7 +166,8 @@
       "license_url": "https://commons.wikimedia.org/wiki/File:Ja-hae-fly(insect).ogg#Licensing",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "2a9900ef5e4ee52fa6aeb6acbbb753ba27937fe5",
-      "sha256": "3921fda62ac7908a6bf42bab695173a54c1cf1370998ce7bd81c8e5829669e1a"
+      "sha256": "3921fda62ac7908a6bf42bab695173a54c1cf1370998ce7bd81c8e5829669e1a",
+      "packaged_file": "assets/sample-audio/0003-ja.btv"
     },
     {
       "file": "data/1q/0004英.btv",
@@ -173,7 +181,8 @@
       "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "f68e601677e96c38611b19e514c24e3453649b7a",
-      "sha256": "c7ba61b2a34ceaaa8942d6c32b65698d6646ffdaa6ccae8f6b4dea1219e15b57"
+      "sha256": "c7ba61b2a34ceaaa8942d6c32b65698d6646ffdaa6ccae8f6b4dea1219e15b57",
+      "packaged_file": "assets/sample-audio/0004-en.btv"
     },
     {
       "file": "data/1q/0004訳.btv",
@@ -187,7 +196,8 @@
       "license_url": "https://commons.wikimedia.org/wiki/File:Ja-hana-flower_or_nose_etc.ogg#Licensing",
       "modifications": "Unmodified recording; renamed to .btv for Bokotan.",
       "source_sha1": "b26bfdecf02116bcd2f851d46ce0f1e946f80a08",
-      "sha256": "7515b906380234689c65fcadced87464f69728c84024ac457828d3b111ea76e7"
+      "sha256": "7515b906380234689c65fcadced87464f69728c84024ac457828d3b111ea76e7",
+      "packaged_file": "assets/sample-audio/0004-ja.btv"
     }
   ]
 }

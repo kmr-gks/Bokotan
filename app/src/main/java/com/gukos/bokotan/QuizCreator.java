@@ -64,13 +64,15 @@ public final class QuizCreator {
                             ? new Dictionary.BookQ[]{Dictionary.BookQ.y1, Dictionary.BookQ.y2, Dictionary.BookQ.y3}
                             : new Dictionary.BookQ[]{Dictionary.BookQ.q1, Dictionary.BookQ.qp1}) addBook(folder, grade);
                 }
+                addBook(Dictionary.Folder.sample, Dictionary.BookQ.none);
             } else addBook(book, q);
             awaitView(0);
         });
     }
 
     private void addBook(Dictionary.Folder folder, Dictionary.BookQ q) {
-        var name = folder == Dictionary.Folder.yumetan ? Dictionary.BookName.yumetanWord
+        var name = folder == Dictionary.Folder.sample ? Dictionary.BookName.sampleWord
+                : folder == Dictionary.Folder.yumetan ? Dictionary.BookName.yumetanWord
                 : folder == Dictionary.Folder.tanjukugo ? Dictionary.BookName.tanjukugoWord : Dictionary.BookName.PasstanWordData;
         for (var entry : Dictionary.getList(name, q)) if (entry.isUsable()) candidates.add(entry);
     }
@@ -120,7 +122,7 @@ public final class QuizCreator {
                 TestFragment.ViewName.Select3, TestFragment.ViewName.Select4};
         for (int i = 0; i < names.length; i++) sendText(names[i], candidates.get(choices.get(i)).j);
         waitingForAnswer = true;
-        if (pronunciation) sounds.load(entry.toPath(Dictionary.DataLang.english), 1);
+        if (pronunciation) AudioSource.load(sounds, context, entry.toPath(Dictionary.DataLang.english));
     }
 
     private void answer(int choice) {
