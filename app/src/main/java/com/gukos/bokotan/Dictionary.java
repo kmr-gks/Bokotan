@@ -129,10 +129,15 @@ public final class Dictionary {
 		svl,
 		tanjukugo,
 		tanjukugoEx,
+		sample,
 		all;
+
+		@Override public String toString() { return this == sample ? "サンプル" : name(); }
 
 		public String toDirName() {
 			switch (this) {
+				case sample:
+					return "Sample";
 				case distinction:
 					return "Distinction";
 				case eigoduke:
@@ -159,6 +164,7 @@ public final class Dictionary {
 	 * BookName:本の名前
 	 */
 	public enum BookName {
+		sampleWord,
 		distinction1,
 		distinction2,
 		distinction3,
@@ -194,6 +200,8 @@ public final class Dictionary {
 
 		public String toFileName() {
 			switch (this) {
+				case sampleWord:
+					return "Words";
 				case distinction1:
 					return "distinction1.txt";
 				case distinction2:
@@ -398,6 +406,7 @@ public final class Dictionary {
 	public static synchronized void initialize(Context context) {
 		if (isEmpty) {
 			var entries = new ArrayList<Dictionary.Entry>();
+			entries.addAll(readToList(context, Folder.sample, BookName.sampleWord, BookQ.none, Datatype.word));
 
 			//Distinction
 			for (var book : new BookName[]{BookName.distinction1, BookName.distinction2, BookName.distinction3}) {
@@ -457,7 +466,7 @@ public final class Dictionary {
 			}
 
 			final String keySeikai = "keySeikai", keyHuseikai = "keyHuseikai";
-			for (var q : new String[]{"1q", "p1q", "y1", "y2", "y3", "tanjukugo1q", "tanjukugop1q"}) {
+			for (var q : new String[]{"1q", "p1q", "y1", "y2", "y3", "tanjukugo1q", "tanjukugop1q", "sample"}) {
 				var fileName = dnTestActivity + q + "Test";
 				var array = restoreCounters(context, fileName, keySeikai);
 				if (array == null) array = new int[3000];
@@ -591,7 +600,7 @@ public final class Dictionary {
 			try {
 				final String rate;
 				if (isUsable() && datatype == Datatype.word &&
-						(bookName == BookName.PasstanWordData || bookName == BookName.yumetanWord || bookName == BookName.tanjukugoWord)) {
+						(bookName == BookName.sampleWord || bookName == BookName.PasstanWordData || bookName == BookName.yumetanWord || bookName == BookName.tanjukugoWord)) {
 					int[] scores = QuizData.scores(this);
 					rate = "\n正解率 " + scores[0] + "/" + (scores[0] + scores[1]);
 				} else rate = "";
@@ -620,6 +629,11 @@ public final class Dictionary {
 		}
 
 		public String toPath(DataLang lang) {
+			if (folder == Folder.sample) {
+				if (datatype != Datatype.word || (lang != DataLang.english && lang != DataLang.japanese)) return null;
+				return AudioSource.ASSET_PREFIX + "sample-audio/" + String.format(Locale.ROOT, "%04d", numberInBook)
+						+ (lang == DataLang.english ? "-en" : "-ja") + ".btv";
+			}
 			return MyLibrary.FileDirectoryManager.getPathPs(folder, bookQ, datatype, lang, numberInBook);
 		}
 	}
@@ -632,6 +646,7 @@ public final class Dictionary {
 		static skipjouken skipjoken = skipjouken.kirokunomi;
 
 		public static String keyFor(Entry entry) {
+			if (entry.folder == Folder.sample) return dnTestActivity + "sampleTest";
 			return dnTestActivity + (entry.folder == Folder.tanjukugo ? "tanjukugo" : "") + entry.bookQ + "Test";
 		}
 

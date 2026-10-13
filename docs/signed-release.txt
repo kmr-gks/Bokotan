@@ -26,7 +26,7 @@ release.ymlがデフォルトブランチに反映された後は、Actions > Si
 からも公開できる。手動実行では選択したブランチのコミットにバージョンタグを作成する。
 署名用Secretsはpull_requestや通常CIには渡さず、Signed Releaseだけで利用する。
 通常CIのrelease成果物は引き続き未署名。正式な署名付き公開はSigned Releaseで実施する。
-releaseには辞書・音声のサンプルを追加しない。
+1.03以降、releaseにも5語の辞書と英日音声・ライセンスを同梱する。
 
 ローカルでの署名は次の環境変数をすべて設定してからassembleRelease / bundleReleaseを実行:
 ANDROID_KEYSTORE_PATH、ANDROID_KEYSTORE_PASSWORD、ANDROID_KEY_ALIAS、ANDROID_KEY_PASSWORD。

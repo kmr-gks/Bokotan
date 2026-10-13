@@ -115,7 +115,13 @@ def main():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(''.join(line + '\n' for line in lines), encoding='utf-8')
     for lang, field in [('e', 'english'), ('j', 'japanese')]:
-        write(f'Passtan/WordData1q.{lang}.txt', [row[field] for row in rows])
+        write(f'Sample/Words.{lang}.txt', [row[field] for row in rows])
+    audio_dir = assets / 'sample-audio'
+    audio_dir.mkdir(exist_ok=True)
+    for item in audio:
+        target = audio_dir / Path(item['file']).name.replace('英', '-en').replace('訳', '-ja')
+        target.write_bytes((DEST / item['file']).read_bytes())
+        item['packaged_file'] = 'assets/sample-audio/' + target.name
     manifest = dict(vocabulary=rows, datasets=datasets, audio=audio)
     (DEST / 'sources.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
     # Ship credits together with the sample APK and the external recordings.

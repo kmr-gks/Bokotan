@@ -196,7 +196,7 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 		String path = entry.toPath(lang);
 		try {
 			if (path == null) { MyLibrary.DisplayOutput.makeToastForShort(context, "このデータには音声がありません。"); return; }
-			player = MediaPlayer.create(context, Uri.parse(path));
+			player = AudioSource.create(context, path);
 			if (player == null) { MyLibrary.DisplayOutput.makeToastForShort(context, "音声が見つかりません。"); return; }
 			player.setOnCompletionListener(mp -> { releasePlayer(); if (binding != null && next != null) next.run(); });
 			player.setOnErrorListener((mp, what, extra) -> { releasePlayer(); return true; });
