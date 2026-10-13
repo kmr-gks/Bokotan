@@ -1,0 +1,37 @@
+[
+  {
+    "english": "dog",
+    "japanese": "犬",
+    "synset": "02084071-n",
+    "japanese_audio_title": "File:Ja-inu.ogg",
+    "english_audio_title": "File:En-us-dog.ogg"
+  },
+  {
+    "english": "cat",
+    "japanese": "猫",
+    "synset": "02121620-n",
+    "japanese_audio_title": "File:Ja-neko.ogg",
+    "english_audio_title": "File:En-us-cat.ogg"
+  },
+  {
+    "english": "milk",
+    "japanese": "牛乳",
+    "synset": "07844042-n",
+    "japanese_audio_title": "File:Ja-gyuunyuu-milk.ogg",
+    "english_audio_title": "File:En-us-milk.ogg"
+  },
+  {
+    "english": "fly",
+    "japanese": "蝿",
+    "synset": "02190166-n",
+    "japanese_audio_title": "File:Ja-hae-fly(insect).ogg",
+    "english_audio_title": "File:En-us-fly.ogg"
+  },
+  {
+    "english": "flower",
+    "japanese": "花",
+    "synset": "11669335-n",
+    "japanese_audio_title": "File:Ja-hana-flower or nose etc.ogg",
+    "english_audio_title": "File:En-us-flower.ogg"
+  }
+]

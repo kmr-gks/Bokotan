@@ -50,6 +50,10 @@ android {
 					'src/main/res/uiobject',
 			]
 		}
+		// Opt-in fixtures only for debug APKs; publisher data is never copied.
+		if (providers.gradleProperty('sampleData').orNull == 'true') {
+			debug.assets.srcDir rootProject.file('samples/free-vocabulary/assets')
+		}
 	}
 }
 
