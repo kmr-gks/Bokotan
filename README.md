@@ -80,3 +80,34 @@ C:\Program Files\Android\Android Studio\jbr
 メニュー＞Help＞Edit Custom VM Options...を選ぶ
 -Dfile.encoding=UTF-8
 を追加する
+
+
+## バージョン1.02とデバッグ用サンプル
+
+欠損データ・クイズ・再生・画面再生成の不具合を修正しました。
+更新内容と検証範囲は[更新記録](docs/release-1.02.txt)を参照してください。
+
+5語と英日10音声を使って試す場合は、[サンプルの使用手順](samples/free-vocabulary/README.txt)に従い、
+JDK 17で次を実行します。出版社のデータは不要です。
+
+```sh
+bash gradlew -PsampleData=true assembleDebug
+```
+
+## GitHub ActionsのAPK・AAB
+
+push、pull request、手動実行でテスト・Lint・ビルドを行います。
+GitHubのActionsから実行結果を開くと、Artifactsから次をダウンロードできます。
+
+- `bokotan-バージョン-debug-sample`：インストール可能なdebug APK、debug AAB、サンプル音声とライセンス。
+- `bokotan-バージョン-release-unsigned`：サンプルなしの未署名release APKとAAB。正式な配布には署名が必要です。
+- `reports-実行ID-試行番号`：テスト・Lintのレポート。
+
+debug/releaseをローカルで生成する場合:
+
+```sh
+bash gradlew -PsampleData=true testDebugUnitTest lintDebug assembleDebug bundleDebug assembleRelease bundleRelease
+```
+
+バージョンは[version.properties](version.properties)で管理します。
+まとまった更新時に`VERSION_CODE`を増やし、`VERSION_NAME`を更新します。

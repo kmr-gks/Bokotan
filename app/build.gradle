@@ -3,6 +3,9 @@ plugins {
 	id 'com.android.application'
 }
 
+def appVersion = new Properties()
+rootProject.file('version.properties').withInputStream { appVersion.load(it) }
+
 android {
 	namespace 'com.gukos.bokotan'
 	compileSdk 36
@@ -11,8 +14,8 @@ android {
 		applicationId "com.gukos.bokotan"
 		minSdk 26
 		targetSdk 36
-		versionCode 1
-		versionName "1.01"
+		versionCode appVersion.getProperty('VERSION_CODE').toInteger()
+		versionName appVersion.getProperty('VERSION_NAME')
 
 		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -40,6 +43,7 @@ android {
 	//bindingを使うため
 	buildFeatures {
 		dataBinding true
+		buildConfig true
 	}
 
 	//レイアウトフォルダーを分ける
