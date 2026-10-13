@@ -11,8 +11,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
 import android.media.MediaPlayer;
+import android.media.AudioManager;
 import android.media.PlaybackParams;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -55,7 +55,10 @@ public class PlayerService extends Service {
     private SkipThreshold comparison;
     private double threshold;
     private int now, count, generation;
-    private boolean active, receiverRegistered, particlePlayed;
+    private boolean active, receiverRegistered, particlePlayed, showBeforeReading;
+    private final BroadcastReceiver noisyReceiver = new AudioDisconnectReceiver(
+            () -> active && MyLibrary.PreferenceManager.getSetting(this, "id" + R.id.checkBoxAutoStop, false),
+            this::stopPlayback);
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
             String type = intent.getStringExtra(PLAYERSERVICE_MESSAGE_TYPE);
@@ -79,6 +82,8 @@ public class PlayerService extends Service {
     @Override public void onCreate() {
         super.onCreate();
         ContextCompat.registerReceiver(this, receiver, new IntentFilter(PLAYERSERVICE_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED);
+        ContextCompat.registerReceiver(this, noisyReceiver,
+                new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY), ContextCompat.RECEIVER_EXPORTED);
         receiverRegistered = true;
     }
 
@@ -93,6 +98,7 @@ public class PlayerService extends Service {
         grade = (Dictionary.BookQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
         condition = (SkipContidion) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_COND);
         comparison = (SkipThreshold) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_COMP);
+        showBeforeReading = MyLibrary.PreferenceManager.getSetting(this, "id" + R.id.switchHyojiYakuBeforeRead, true);
         threshold = intent.getDoubleExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, 0);
         if (mode == null || book == null || grade == null || condition == null || comparison == null
                 || !Double.isFinite(threshold) || threshold < 0) {
@@ -119,6 +125,10 @@ public class PlayerService extends Service {
                 if (book == Dictionary.Folder.tanjukugo) addAppeared(Dictionary.BookName.PasstanWordData, Dictionary.BookQ.q1);
                 if (book == Dictionary.Folder.tanjukugo && grade == Dictionary.BookQ.q1)
                     addAppeared(Dictionary.BookName.tanjukugoWord, Dictionary.BookQ.qp1);
+            }
+            if (MyLibrary.PreferenceManager.getSetting(this, "id" + R.id.switchSortHanten, false)) {
+                java.util.Collections.reverse(words);
+                java.util.Collections.reverse(phrases);
             }
             for (int i = 0; i < words.size(); i++) if (!firstOccurrences.add(words.get(i).e)) duplicateIndices.add(i);
             wordDataList = new ArrayList<>(words);
@@ -191,7 +201,7 @@ public class PlayerService extends Service {
             int[] scores = Dictionary.QuizData.scores(words.get(now));
             sendText(PlayerFragment.PlayerViewName.tvcount, scores[0] + "/" + (scores[0] + scores[1]) + " 再生回数:" + count + "回");
             sendText(PlayerFragment.PlayerViewName.genzai, "No." + entry.numberInBook);
-            sendText(PlayerFragment.PlayerViewName.jpn, entry.j);
+            sendText(PlayerFragment.PlayerViewName.jpn, showBeforeReading ? entry.j : "");
             sendText(PlayerFragment.PlayerViewName.eng, entry.e);
             sendText(PlayerFragment.PlayerViewName.hatsuon, currentMode == Dictionary.Datatype.word
                     && MyLibrary.PreferenceManager.getSetting(this, "id" + R.id.checkBoxHatsuonkigou, false)
@@ -200,6 +210,10 @@ public class PlayerService extends Service {
             sendText(PlayerFragment.PlayerViewName.subJ, mode == Dictionary.Datatype.mix && currentMode == Dictionary.Datatype.phrase ? words.get(now).j : "");
             sendPip(PipActivity.PipViewName.num, "No." + entry.numberInBook);
             sendPip(PipActivity.PipViewName.eng, entry.e);
+            sendPip(PipActivity.PipViewName.jpn, showBeforeReading ? entry.j : "");
+        }
+        if (language == Dictionary.DataLang.japanese) {
+            sendText(PlayerFragment.PlayerViewName.jpn, entry.j);
             sendPip(PipActivity.PipViewName.jpn, entry.j);
         }
         String path = entry.toPath(language);
@@ -288,7 +302,7 @@ public class PlayerService extends Service {
         generation++;
         handler.removeCallbacksAndMessages(null);
         releasePlayer();
-        if (receiverRegistered) { unregisterReceiver(receiver); receiverRegistered = false; }
+        if (receiverRegistered) { unregisterReceiver(receiver); unregisterReceiver(noisyReceiver); receiverRegistered = false; }
         super.onDestroy();
     }
 
