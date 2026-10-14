@@ -1,0 +1,105 @@
+Bokotan Google Play提出資料
+確認日: 2026-10-14 / 基準コード: mainの1.05
+
+最初に
+これは提出準備パッケージです。1.05をそのまま審査合格と判断したものではありません。
+アプリ内プライバシーポリシーが未実装、問い合わせ先が未定、既存効果音の利用条件が
+未確認なので、一般公開の提出を完了する前に下記の対応が必要です。
+Play Consoleへのアップロード・申告・公開操作は行っていません。
+
+準備したもの
+・store-listing-ja.txt: アプリ名、短文、説明文、カテゴリ候補。
+・release-notes-ja.txt: リリースノート。
+・console-answers-ja.txt: データセーフティ、対象年齢、アクセス、FGS等の回答案。
+・privacy-policy-ja.txt / privacy-policy-ja.html: ポリシー草案。連絡先は未定。
+・review-video-script-ja.txt: FGS申告動画の台本。ローカル動画を用意した場合も公開URLは未作成。
+・graphics/: 掲載用画像案と、サンプルだけの実画面スクリーンショット。
+・artifact-info.txt: 署名付きAABの取得元、SHA-256、署名の注意点。
+
+アップロードするビルド
+Play ConsoleにはAPKでなく、署名付きAndroid App Bundle（.aab）を提出。
+https://github.com/kmr-gks/Bokotan/releases/download/v1.05/Bokotan-1.05.aab
+パッケージ: com.gukos.bokotan / versionName: 1.05 / versionCode: 5
+minSdk: 26（Android 8.0）/ targetSdk: 36
+Play用に追加修正した場合はversionCodeを増やして新しいAABを作成し、
+そのビルドに合わせて資料とスクリーンショットを更新する。
+現targetSdk 36は、2026-10-14時点の通常アプリの新規・更新要件API 36以上に一致。
+
+提出前に対応する項目
+[ ] 公開する開発者名・連絡用メールを決定。Play Consoleで本人確認等を完了。
+[ ] ポリシー草案へ連絡先を記入し、公開HTMLのURLを用意。
+    アクセス制限なし、地域制限なし、PDFでない、利用者が編集できないページ。
+[ ] アプリ内にプライバシーポリシー本文またはリンクを追加。
+    現1.05には導線がないため、このままではこの要件を満たさない。
+[ ] res/raw/seikai.mp3、huseikai.mp3の由来・利用条件を確認、または権利の明確な音へ交換。
+    既存imgs/の出版社内容を含む画像はストア素材に使用しない。
+[ ] 全年齢という希望に対し、各対象年齢グループの設計・Families適合性を確認。
+    IARCレーティングとは別。非読字の幼児向け適合性は未確認。
+[ ] 未使用のSCHEDULE_EXACT_ALARM／Bluetooth権限を公開用ビルドから削除することを推奨。
+[ ] FGSのmediaPlaybackとdataSyncを申告し、操作が分かる動画URLを登録。
+[ ] icon-512.pngとfeature-graphic-1024x500.pngの案を確認。
+    512px版は既存アイコンの配色・構図をベクターで描き直した掲載用案。
+[ ] 画面の上端とステータスバーの重なりを確認し、必要なInsets対応を行う。
+    撮影した検索画面では上端の表示に重なりが見られる。
+    エミュレーターでは検索欄のタップによるフォーカス取得も確認できず、
+    実機を含めた入力操作・WindowInsetsの確認を公開前に行う。
+[ ] 実機で音声・PiP・イヤホン切断・ZIP取り込みを確認。
+[ ] 実機のDrive/OneDrive連携を確認。独自HTTP取得ではなく選択元アプリに依存する。
+[ ] 実ファイル選択のデモで、取り込み完了後も範囲がサンプルのままになる挙動を確認。
+    個人データの自動選択／画面再生成時の状態復元を修正・検証する。
+[ ] 1.05の残る設定反映漏れ（覚えた単語のスキップ等）を修正するかUIから外す。
+    掲載文には未動作の設定を宣伝していないが、実画面には残っている。
+[ ] 公開国・地域を決定。料金は無料の指定。
+
+Play App Signingの設定
+・現AABはGitHub Secretsに登録した既存の鍵で署名されている。
+・初回はPlay App Signingの登録とアップロード証明書の設定が必要。
+・GitHub配布APKからPlay版へアンインストールせず更新させたい場合は、
+  Playのアプリ署名鍵をGitHub APKと同じ既存鍵として登録する方式を検討。
+  Googleに新しいアプリ署名鍵を生成させると、通常はGitHub APKと署名が異なり、
+  そのまま相互に上書き更新できない。アンインストールすると個人データは消える。
+・既存署名鍵をPlayへ登録する場合は、Play Consoleが案内するPEPK手順で行う。
+  秘密鍵・パスワードを資料、GitHubリポジトリ、チャットへ貼らない。
+・既にPlayへ登録済みのアプリなら、その登録済みアップロード証明書との一致を確認。
+
+推奨する提出順序
+1. 上記のコード・権利・ポリシーの未完了項目を解消し、新しい署名付きAABを作る。
+2. Play Consoleでアプリを作成し、無料、日本語、アプリの区分を設定。
+3. ストア説明、サポートメール、ポリシーURL、画像を登録。
+4. App contentの各申告とIARC質問票を入力。アプリへのアクセスはサンプルで説明。
+5. 内部テストへAABをアップロード。警告・事前テストレポートを確認。
+6. 必要ならクローズドテストを実施。
+   2023-11-13より後に作成した個人アカウントでは、12人以上が14日間連続参加する
+   テストを行い、本番アクセスを申請する要件がある。アカウントの適用状況を確認。
+7. 本番公開を申請。審査結果・追加依頼に対応。
+
+公開サンプルでの審査
+サンプル5語・英日10音声は常に同梱。ログイン不要。
+個人データ取り込みの検証にも公開のimport-example.zipを利用する。
+出版社データ、秘密の共有URL、個人のクラウド資格情報は提出しない。
+
+公式資料（2026-10-14に確認）
+ストア掲載文:
+https://support.google.com/googleplay/android-developer/answer/9859152
+画像仕様:
+https://support.google.com/googleplay/android-developer/answer/9866151
+プライバシーポリシー:
+https://support.google.com/googleplay/android-developer/answer/10144311
+データセーフティ:
+https://support.google.com/googleplay/android-developer/answer/10787469
+Foreground Service:
+https://support.google.com/googleplay/android-developer/answer/13392821
+対象年齢・Families:
+https://support.google.com/googleplay/android-developer/answer/9867159
+https://support.google.com/googleplay/android-developer/answer/9893335
+テスト要件:
+https://support.google.com/googleplay/android-developer/answer/14151465
+Play App Signing:
+https://support.google.com/googleplay/android-developer/answer/9842756
+
+ローカルの提出準備ZIP
+build/google-play/Bokotan-1.05-play-submission-draft.zip
+署名付きAAB、資料、掲載画像案、公開取り込み例ZIP、ローカル審査デモ動画を含む。
+このZIP自体をPlayへアップロードしない。展開してAAB・画像・テキストを各欄に使用。
+再生成: python3 scripts/package_google_play_submission.py
+動画・ポリシーの公開URLは未作成。草案の未定欄を埋め、公開前修正後に素材を更新する。

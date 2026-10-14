@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#fff3da"/><stop offset="1" stop-color="#ffe2bc"/></linearGradient></defs>
+<rect width="1024" height="500" fill="url(#bg)"/>
+<circle cx="1003" cy="55" r="160" fill="#ff9e40" opacity=".24"/><circle cx="33" cy="490" r="144" fill="#2dd27b" opacity=".16"/>
+<g font-family="Hiragino Sans, Noto Sans CJK JP, sans-serif" fill="#243b30">
+<text x="90" y="182" font-size="67" font-weight="700">Bokotan</text>
+<text x="94" y="239" font-size="30">音声とクイズで、英単語を復習</text>
+<text x="94" y="296" font-size="23" fill="#49614d">英日音声 · 4択クイズ · 単語検索</text>
+<text x="94" y="338" font-size="23" fill="#49614d">自分の単語データをZIPから取り込み</text>
+</g>
+<g transform="translate(693 125)">
+<rect x="15" y="16" width="205" height="233" rx="17" fill="#ffac62" transform="rotate(7 118 130)"/>
+<rect width="205" height="233" rx="17" fill="#fffdf7" stroke="#62ae7d" stroke-width="3"/>
+<g font-family="Hiragino Sans, Noto Sans CJK JP, sans-serif" text-anchor="middle" fill="#28553c">
+<text x="103" y="94" font-size="43" font-weight="700">dog</text><text x="103" y="140" font-size="34">犬</text>
+</g><path d="M51 187h12l16-13v37l-16-13H51zM90 181q14 14 0 25M101 171q25 24 0 45" fill="none" stroke="#ff9a3f" stroke-width="5" stroke-linecap="round"/>
+<path d="M144 186l12 13 25-28" fill="none" stroke="#42a96a" stroke-width="6" stroke-linecap="round"/>
+</g></svg>
