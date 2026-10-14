@@ -1,0 +1,35 @@
+Bokotanのプライバシーポリシー公開
+
+Google Play Consoleに登録するURL:
+https://kmr-gks.github.io/Bokotan/privacy-policy.html
+
+GitHub Pages設定:
+リポジトリ: kmr-gks/Bokotan
+公開元: codex/privacy-policy-pages ブランチの /（ルート）
+HTTPS: 有効
+このブランチはサイトの公開元なので、不要ブランチとして削除しないでください。
+公開用ブランチにはindex.html、privacy-policy.html、.nojekyllの3ファイルだけを置きます。
+アプリのソース・単語・音声・ZIPは公開用ブランチに配置しません。
+
+問い合わせ先:
+Google PlayのBokotan掲載ページの「アプリのサポート」に登録済みのメールアドレスを
+参照する表記です。掲載ページは今後公開する予定のため、メールアドレスを
+別途このリポジトリへ記載しません。
+
+更新手順:
+1. site/privacy-policy/privacy-policy.txtの本文と最終更新日を変更します。
+2. python3 scripts/render_privacy_policy.py を実行してHTMLを生成します。
+3. HTMLの内容を確認し、通常の作業ブランチにソースと生成結果をコミットします。
+4. python3 scripts/publish_privacy_policy.py を実行します。
+   originの公開用ブランチに、上記3ファイルだけの更新コミットをpushします。
+   作業中のブランチ・ステージング領域は切り替えません。
+   Python 3、Git、originへのpush権限が必要です。
+   未記入の仮文言がある場合は生成を中止し、同じ内容ならpushしません。
+5. GitHub Actionsのpages build and deploymentの成功と、公開URLの表示を確認します。
+
+ポリシーのみの更新ではAndroidのバージョン番号・リリースタグは変更しません。
+アプリのデータ取扱いが変わる場合は、実装とポリシーを合わせて更新してください。
+Google Playへの提出時には、ConsoleのURL登録に加えてアプリ内にも
+プライバシーポリシー本文またはリンクへの導線を用意してください。
+公式要件:
+https://support.google.com/googleplay/android-developer/answer/10144311?hl=ja
