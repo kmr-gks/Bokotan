@@ -5,11 +5,12 @@ https://kmr-gks.github.io/Bokotan/privacy-policy.html
 
 GitHub Pages設定:
 リポジトリ: kmr-gks/Bokotan
-公開元: codex/privacy-policy-pages ブランチの /（ルート）
+公開元: GitHub Actions（.github/workflows/pages.yml）
+参照ブランチ: main
 HTTPS: 有効
-このブランチはサイトの公開元なので、不要ブランチとして削除しないでください。
-公開用ブランチにはindex.html、privacy-policy.html、.nojekyllの3ファイルだけを置きます。
-アプリのソース・単語・音声・ZIPは公開用ブランチに配置しません。
+公開専用ブランチは不要です。
+Actionsはmainの原稿からHTMLを生成し、index.html、privacy-policy.html、.nojekyllの
+3ファイルだけを公開します。アプリのソース・単語・音声・ZIPは公開しません。
 
 問い合わせ先:
 Google PlayのBokotan掲載ページの「アプリのサポート」に登録済みのメールアドレスを
@@ -20,12 +21,17 @@ Google PlayのBokotan掲載ページの「アプリのサポート」に登録�
 1. site/privacy-policy/privacy-policy.txtの本文と最終更新日を変更します。
 2. python3 scripts/render_privacy_policy.py を実行してHTMLを生成します。
 3. HTMLの内容を確認し、通常の作業ブランチにソースと生成結果をコミットします。
-4. python3 scripts/publish_privacy_policy.py を実行します。
-   originの公開用ブランチに、上記3ファイルだけの更新コミットをpushします。
-   作業中のブランチ・ステージング領域は切り替えません。
-   Python 3、Git、originへのpush権限が必要です。
-   未記入の仮文言がある場合は生成を中止し、同じ内容ならpushしません。
-5. GitHub Actionsのpages build and deploymentの成功と、公開URLの表示を確認します。
+4. PRをmainへマージすると、Publish Privacy Policyが自動で公開します。
+   ポリシーのファイル、生成スクリプト、公開ワークフローの変更が対象です。
+   PRでは生成のみ確認し、公開はしません。
+   未記入の仮文言がある場合は生成を中止します。
+5. GitHub ActionsのPublish Privacy Policyの成功と、公開URLの表示を確認します。
+   再公開はActionsの同ワークフローでRun workflowを開き、mainを選んで実行できます。
+
+初期設定・移行時:
+Settings > Pages > Build and deployment > SourceをGitHub Actionsに設定します。
+mainでの初回公開が成功した後、旧公開元のcodex/privacy-policy-pagesは削除できます。
+公開URLは変わりません。
 
 ポリシーのみの更新ではAndroidのバージョン番号・リリースタグは変更しません。
 アプリのデータ取扱いが変わる場合は、実装とポリシーを合わせて更新してください。
