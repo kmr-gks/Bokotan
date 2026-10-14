@@ -86,6 +86,10 @@
 						android:textColor="@color/buttontext" />
 				</LinearLayout>
 
+                <Button android:id="@+id/buttonImportZip" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/import_private_zip" />
+                <TextView android:id="@+id/textImportStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:accessibilityLiveRegion="polite" />
+                <Button android:id="@+id/buttonCancelImport" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/cancel_private_import" android:visibility="gone" />
+
 				<Spinner
 					android:id="@+id/spinnerBookQ"
 					android:layout_width="match_parent"

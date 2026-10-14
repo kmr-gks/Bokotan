@@ -1,39 +1,19 @@
 package com.gukos.bokotan;
 
-import static android.Manifest.permission.BLUETOOTH;
-import static android.Manifest.permission.BLUETOOTH_ADMIN;
-import static android.Manifest.permission.BLUETOOTH_CONNECT;
-import static android.Manifest.permission.BLUETOOTH_SCAN;
-import static android.Manifest.permission.POST_NOTIFICATIONS;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_MEDIA_AUDIO;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION;
 import static com.gukos.bokotan.Dictionary.BookQ;
 import static com.gukos.bokotan.Dictionary.Datatype;
 import static com.gukos.bokotan.Dictionary.Folder;
 import static com.gukos.bokotan.MyLibrary.DebugManager.puts;
 import static com.gukos.bokotan.MyLibrary.DisplayOutput.makeToastForShort;
-import static com.gukos.bokotan.MyLibrary.ExceptionManager.debug_tag;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.openWriteFileWithExistCheck;
-import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.readFromFile;
 import static com.gukos.bokotan.MyLibrary.FileDirectoryManager.strDirectoryNameForKuuhaku;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.fnAppSettings;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllFileNames;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.getAllPreferenceData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getIntData;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.getSetting;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.getStringData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.initializeSettingItem;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.putAllData;
-import static com.gukos.bokotan.MyLibrary.PreferenceManager.putAllSetting;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putIntData;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.putStringData;
 import static com.gukos.bokotan.MyLibrary.getBuildDate;
-import static com.gukos.bokotan.MyLibrary.getNowTime;
-import static com.gukos.bokotan.MyLibrary.strExceptionFIlePath;
-import static com.gukos.bokotan.MyLibrary.stringBokotanDirPath;
 import static com.gukos.bokotan.PipActivity.pipTate;
 import static com.gukos.bokotan.PipActivity.pipYoko;
 import static com.gukos.bokotan.PlayerService.PLAYERSERVICE_EXTRA_BOOK;
@@ -48,28 +28,63 @@ import static com.gukos.bokotan.UiManager.getAdapterForSpinner;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.gukos.bokotan.databinding.FragmentQSentakuBinding;
 
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentakuBinding> {
+    private final android.os.Handler importHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final androidx.activity.result.ActivityResultLauncher<String[]> zipPicker = registerForActivityResult(
+            new androidx.activity.result.contract.ActivityResultContracts.OpenDocument(), uri -> {
+                if (uri == null || ImportService.busy) return;
+                Context app = requireContext().getApplicationContext();
+                try { app.getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION); }
+                catch (SecurityException ignored) { }
+                app.startForegroundService(new Intent(app, ImportService.class).setData(uri)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+            });
+    private final androidx.activity.result.ActivityResultLauncher<String> exportPicker = registerForActivityResult(
+            new androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json"), uri -> {
+                if (uri == null) return;
+                try { PreferenceBackup.exportTo(requireContext(), uri); makeToastForShort(requireContext(), "設定を保存しました。"); }
+                catch (Exception error) { makeToastForShort(requireContext(), "設定の保存に失敗しました。"); }
+            });
+    private final androidx.activity.result.ActivityResultLauncher<String[]> settingsPicker = registerForActivityResult(
+            new androidx.activity.result.contract.ActivityResultContracts.OpenDocument(), uri -> {
+                if (uri == null || ImportService.busy) return;
+                try {
+                    QuizCreator.stopCurrent(); requireContext().stopService(new Intent(requireContext(), PlayerService.class));
+                    PreferenceBackup.importFrom(requireContext(), uri);
+                    Dictionary.reload(requireContext(), () -> { if (isAdded()) requireActivity().recreate(); });
+                } catch (Exception error) { makeToastForShort(requireContext(), "設定の形式または読み込みに問題があります。"); }
+            });
+    private final Runnable showImportStatus = new Runnable() {
+        @Override public void run() {
+            if (binding == null) return;
+            binding.textImportStatus.setText(ImportService.status);
+            binding.buttonImportZip.setEnabled(!ImportService.busy && Dictionary.isReady());
+            binding.buttonCancelImport.setVisibility(ImportService.busy ? View.VISIBLE : View.GONE);
+            if (ImportService.completed) {
+                ImportService.completed = false;
+                putIntData(context, "spinnerBookQ", "selected", 9);
+                requireActivity().recreate(); return;
+            }
+            importHandler.postDelayed(this, 500);
+        }
+    };
+    @Override public void onDestroyView() {
+        importHandler.removeCallbacksAndMessages(null);
+        super.onDestroyView();
+    }
+
 	private final String keySkipCondition = "skipCondition",
 			keySkipThreshold = "skipThreshold",
 			skipThresholdNum = "skipThresholdNum",
@@ -104,7 +119,14 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
 			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
-			binding.buttonWriteTest.setOnClickListener(this::onWriteText);
+			binding.buttonWriteTest.setVisibility(View.GONE);
+            binding.buttonImportZip.setOnClickListener(v -> new AlertDialog.Builder(context)
+                    .setTitle("個人データを取り込む")
+                    .setMessage("端末またはクラウドからZIPを選択します。取得には通信が発生する場合があります。取り込み成功後は既存の個人データを置き換えます。")
+                    .setPositiveButton("ZIPを選択", (dialog, which) -> zipPicker.launch(new String[]{"*/*"}))
+                    .setNegativeButton("キャンセル", null).show());
+            binding.buttonCancelImport.setOnClickListener(v -> context.startService(new Intent(context, ImportService.class).setAction("cancel")));
+            importHandler.post(showImportStatus);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
 
 
@@ -186,20 +208,6 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		}
 	}
 
-	private boolean requestExternalAccess() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			if (!Environment.isExternalStorageManager()) {
-				startActivity(new Intent(android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-						android.net.Uri.parse("package:" + context.getPackageName())));
-				return false;
-			}
-		} else if (ContextCompat.checkSelfPermission(context, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-			requestPermissions(new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, 101);
-			return false;
-		}
-		return true;
-	}
-
 	private void onShowSettingNew(View view) {
 		try {
 			var content = new StringBuilder();
@@ -220,59 +228,17 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		}
 	}
 
-	private void onExportPrefsButton(View view) {
-		if (!requestExternalAccess()) return;
-		try {
-			for (var fileName : getAllFileNames()) {
-				String strFilePath = stringBokotanDirPath + fileName + ".txt";
-				FileWriter fileWriter = Objects.requireNonNull(openWriteFileWithExistCheck(context, strFilePath, false));
-				fileWriter.write(getAllPreferenceData(context, fileName));
-				fileWriter.close();
-			}
-			makeToastForShort(context, "設定の書き込みに成功しました。");
-		} catch (Exception exception) {
-			Log.d(debug_tag + "filewriting", exception.getMessage() + exception.getClass().getTypeName());
-			MyLibrary.DisplayOutput.makeToastForLong(context, "設定の書き込みに失敗しました。");
-		}
-	}
-
-	private void onImportPrefsButton(View view) {
-		if (!requestExternalAccess()) return;
-		try {
-			putAllSetting(context, readFromFile(context, stringBokotanDirPath + fnAppSettings + ".txt"));
-
-			for (var sw : new SwitchMaterial[]{binding.switchOnlyFirst,
-					binding.switchHyojiYakuBeforeRead, binding.switchSkipOboe, binding.switchSortHanten
-					, binding.checkBoxAutoStop, binding.checkBoxHatsuonkigou}) {
-				sw.setChecked(getSetting(context, "id" + sw.getId(), true));
-			}
-			for (var fileName : getAllFileNames()) {
-				final String strFilePath = stringBokotanDirPath + fileName + ".txt";
-				putAllData(context, fileName, readFromFile(context, strFilePath));
-			}
-			makeToastForShort(context, "設定の読み込みに成功しました。");
-		} catch (Exception exception) {
-			Log.d(debug_tag + "filewriting", exception.getMessage() + exception.getClass().getTypeName());
-			MyLibrary.DisplayOutput.makeToastForLong(context, "設定の読み込みに失敗しました。");
-		}
-	}
-
-	private void onWriteText(View view) {
-		if (!requestExternalAccess()) return;
-		try {
-			FileWriter fileWriter = Objects.requireNonNull(openWriteFileWithExistCheck(context, strExceptionFIlePath, false));
-			fileWriter.write("書き込みテスト: " + MyLibrary.packageName + "(" + getNowTime() + ")");
-			fileWriter.close();
-		} catch (Exception exception) {
-			Log.d(debug_tag + "filewriting", exception.getMessage() + exception.getClass().getTypeName());
-			String message = "ファイル書き込みに失敗" + exception.getMessage();
-			MyLibrary.DisplayOutput.makeToastForLong(context, message);
-			return;
-		}
-		MyLibrary.DisplayOutput.makeToastForLong(context, "ファイル書き込みに成功しました。");
-	}
+    private void onExportPrefsButton(View view) {
+        if (ImportService.busy) return;
+        Dictionary.QuizData.saveQuizData(context);
+        exportPicker.launch("bokotan-settings.json");
+    }
+    private void onImportPrefsButton(View view) {
+        if (!ImportService.busy) settingsPicker.launch(new String[]{"application/json", "text/plain"});
+    }
 
 	private void onPlayQuizStart(View view) {
+		if (ImportService.busy) { makeToastForShort(context, "個人データを取り込み中です。"); return; }
 		if (!Dictionary.isReady()) { makeToastForShort(context, "辞書を読み込み中です。少し待ってから開始してください。"); return; }
 		double enteredThreshold;
 		Integer enteredPosition = null;
@@ -324,6 +290,7 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 				dataQ = BookQ.qp1;
 				break;
 			}
+			case 9: { dataBook = Folder.personal; dataQ = BookQ.none; break; }
 			case 8: {
 				dataBook = Folder.sample;
 				dataQ = BookQ.none;
@@ -335,9 +302,8 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 				break;
 			}
 		}
-		if (dataBook != Folder.sample && dataBook != Folder.all && !requestExternalAccess()) return;
-		if (dataBook == Folder.sample && (view == binding.buttonPhrase || view == binding.buttonWP)) {
-			makeToastForShort(context, "サンプルには単語のみ収録しています。"); return;
+		if ((dataBook == Folder.sample || dataBook == Folder.personal) && (view == binding.buttonPhrase || view == binding.buttonWP)) {
+			makeToastForShort(context, "このデータには単語のみ収録しています。"); return;
 		}
 
 		switch (binding.radioGroupSkipCondition.getCheckedRadioButtonId()) {

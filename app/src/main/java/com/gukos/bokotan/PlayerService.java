@@ -114,6 +114,7 @@ public class PlayerService extends Service {
                             : new Dictionary.BookQ[]{Dictionary.BookQ.qp1, Dictionary.BookQ.q1}) addBook(folder, q);
                 }
                 addBook(Dictionary.Folder.sample, Dictionary.BookQ.none);
+                addBook(Dictionary.Folder.personal, Dictionary.BookQ.none);
             } else addBook(book, grade);
             if (intent.getBooleanExtra(PLAYERSERVICE_EXTRA_SHOW_APPEARED, false) && book != Dictionary.Folder.all) {
                 if (book == Dictionary.Folder.passtan || book == Dictionary.Folder.tanjukugo) {
@@ -156,15 +157,16 @@ public class PlayerService extends Service {
     }
 
     private void addBook(Dictionary.Folder folder, Dictionary.BookQ q) {
-        var wordBook = folder == Dictionary.Folder.sample ? Dictionary.BookName.sampleWord
+        var wordBook = folder == Dictionary.Folder.personal ? Dictionary.BookName.personalWord
+                : folder == Dictionary.Folder.sample ? Dictionary.BookName.sampleWord
                 : folder == Dictionary.Folder.yumetan ? Dictionary.BookName.yumetanWord
                 : folder == Dictionary.Folder.tanjukugo ? Dictionary.BookName.tanjukugoWord : Dictionary.BookName.PasstanWordData;
         var phraseBook = folder == Dictionary.Folder.yumetan ? Dictionary.BookName.yumetanPhrase
                 : folder == Dictionary.Folder.tanjukugo ? Dictionary.BookName.tanjukugoPhrase : Dictionary.BookName.PasstanPhrase;
         var phraseMap = new HashMap<Integer, Dictionary.Entry>();
-        for (var entry : folder == Dictionary.Folder.sample ? new ArrayList<Dictionary.Entry>() : Dictionary.getList(phraseBook, q)) if (entry.isUsable()) phraseMap.put(entry.numberInBook, entry);
+        for (var entry : (folder == Dictionary.Folder.sample || folder == Dictionary.Folder.personal) ? new ArrayList<Dictionary.Entry>() : Dictionary.getList(phraseBook, q)) if (entry.isUsable()) phraseMap.put(entry.numberInBook, entry);
         if (mode == Dictionary.Datatype.phrase) {
-            for (var entry : folder == Dictionary.Folder.sample ? new ArrayList<Dictionary.Entry>() : Dictionary.getList(phraseBook, q)) if (entry.isUsable()) { words.add(entry); phrases.add(entry); }
+            for (var entry : (folder == Dictionary.Folder.sample || folder == Dictionary.Folder.personal) ? new ArrayList<Dictionary.Entry>() : Dictionary.getList(phraseBook, q)) if (entry.isUsable()) { words.add(entry); phrases.add(entry); }
         } else {
             for (var entry : Dictionary.getList(wordBook, q)) if (entry.isUsable()) {
                 var phrase = phraseMap.get(entry.numberInBook);
@@ -273,7 +275,7 @@ public class PlayerService extends Service {
         }
     }
 
-    private String positionKey() { return className + book + grade + mode; }
+    private String positionKey() { return className + book + grade + mode + (book == Dictionary.Folder.personal ? PrivateData.id : ""); }
 
     private void report(String message) { Toast.makeText(this, message, Toast.LENGTH_LONG).show(); }
     private void fail(String message) {
