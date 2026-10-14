@@ -212,3 +212,9 @@ zip -r ../my-data.zip package.properties words.tsv audio
 全ファイルアクセス権限を削除したため、設定の保存先・復元元も標準のファイル選択で
 指定する一つのJSONファイル（format=1）に変更しました。単語本文・音声・ZIPの参照元は
 含みません。以前のDownload/bokotan内の分割txtバックアップとは形式が異なります。
+
+## Google Play提出準備
+
+[提出資料と公開前の確認事項](docs/google-play/SUBMISSION.txt)をまとめています。
+掲載文、プライバシーポリシー草案、申告メモ、サンプルだけの画像を含みます。
+開発者名・問い合わせ先・ポリシーURLは未確定で、1.05には公開前の修正項目が残っています。

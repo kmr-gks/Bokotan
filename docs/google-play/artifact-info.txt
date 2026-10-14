@@ -1,0 +1,24 @@
+署名付き配布ファイル
+Bokotan-1.05.aab
+https://github.com/kmr-gks/Bokotan/releases/download/v1.05/Bokotan-1.05.aab
+SHA-256: 55de187feb120eabfe08d9c92c960f28937e1bf2683cd4d101f4b18f1c77f914
+サイズ: 4,894,270 bytes
+Release: https://github.com/kmr-gks/Bokotan/releases/tag/v1.05
+コード: 140b62235a6c482b8d5434b1ed951856f299f634（v1.05）
+パッケージ: com.gukos.bokotan
+VERSION_NAME=1.05 / VERSION_CODE=5 / minSdk=26 / targetSdk=36
+
+1.05のCIでAPK/AABの署名を検証して公開済み。
+ローカル取得先: build/google-play/Bokotan-1.05.aab（Gitには含めない）
+提出前修正でビルドを更新したら、このファイルの情報も更新する。
+
+v1.05 AABの署名証明書フィンガープリント（公開情報）
+SHA-1: A3:D7:BB:06:10:CC:34:4E:1C:DF:63:AE:89:C8:24:E7:7F:0D:EE:F6
+SHA-256: EE:C5:66:81:0E:9E:93:D4:3B:7B:96:27:CF:7D:84:1C:1F:85:9E:73:A3:E9:E2:44:D7:D4:37:41:EF:6C:9A:FB
+Playが別のアプリ署名鍵を使用する場合、配信APKの証明書はこれとは異なる。
+
+API要件
+2026-10-14に公式要件を確認。通常の新規アプリ／更新はAPI 36以上が必要。
+現ビルドはtargetSdk 36でこの条件に一致。
+https://support.google.com/googleplay/android-developer/answer/11926878
+署名付きAAB内のネイティブ.soライブラリ: 0件。
