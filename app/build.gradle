@@ -78,7 +78,7 @@ android {
 			]
 		}
 		// Licensed sample vocabulary and recordings are available in every APK/AAB.
-		main.assets.srcDir rootProject.file('samples/free-vocabulary/assets')
+		main.assets.srcDirs = [rootProject.file('samples/free-vocabulary/assets')]
 	}
 }
 

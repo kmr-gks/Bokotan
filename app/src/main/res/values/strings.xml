@@ -88,6 +88,9 @@
 		<item>単熟語準1級</item>
 		<item>総合</item>
 		<item>サンプル</item>
+		<item>個人データ</item>
 	</string-array>
 
+	<string name="import_private_zip">個人データをZIPから取り込む</string>
+	<string name="cancel_private_import">取り込みを中止</string>
 </resources>

@@ -1,0 +1,30 @@
+Bokotan 1.05（versionCode 5）
+
+・Android標準のOpenDocumentから個人データZIPを取り込み。
+・UTF-8のpackage.properties、5列のwords.tsv、audio/で形式を固定。
+  詳細とZIP作成例はREADME、公開サンプルのimport-example.zipを参照。
+・バックグラウンドのForeground Serviceでストリーミング展開。
+  MB進捗表示・中止・画面再生成に対応。ZIP全体をメモリへ読み込まない。
+・不正パス、番号重複、参照音声欠損、サイズ・件数上限を検証。
+・展開・検証が成功してから参照先を切り替え。失敗時は既存データを維持。
+・ビルド対象assetsを公開サンプルのみに限定し、ローカルassetsの混入を防ぐ。
+・個人データはnoBackupFilesDirに保存。バックアップを無効化。
+  通信権限・共有URL・クラウドの鍵は不要。クラウド取得は選択元アプリが担当。
+・個人データの検索・単語再生・クイズ・全範囲に対応。
+  package idと単語idで成績を分離。単語セットは一つ、再取り込みは全置換。
+・MANAGE_EXTERNAL_STORAGE、READ/WRITE_EXTERNAL_STORAGE、READ_MEDIA_AUDIOを削除。
+・設定の入出力をSAFの単一JSONへ変更。従来の分割txtとは非互換。
+  JSONには単語本文・音声・取り込み元URIを含めない。
+
+制約
+・例文・混合モードの個人データは今回対象外。
+・OSによるプロセス終了やクラウド切断後の自動再開は未対応。再選択が必要。
+・実機のDrive/OneDriveプロバイダーと物理イヤホン・PiPの実画面は未検証。
+・音声の存在と拡張子は検証するが、全音声のデコードは取り込み時に行わない。
+
+検証
+・ユニットテスト17件が成功（1GiBの模擬音声を使った展開テストを含む）。
+・Android 36の一時エミュレーターで回帰テスト9件が成功。
+  ファイル選択結果からの取り込み、失敗時の既存データ維持、個人データの
+  検索・音声・クイズ、設定JSONの混合型復元、既存7件を確認。
+・Lint、debug/release APK、release AABビルドが成功。

@@ -65,13 +65,15 @@ public final class QuizCreator {
                             : new Dictionary.BookQ[]{Dictionary.BookQ.q1, Dictionary.BookQ.qp1}) addBook(folder, grade);
                 }
                 addBook(Dictionary.Folder.sample, Dictionary.BookQ.none);
+                addBook(Dictionary.Folder.personal, Dictionary.BookQ.none);
             } else addBook(book, q);
             awaitView(0);
         });
     }
 
     private void addBook(Dictionary.Folder folder, Dictionary.BookQ q) {
-        var name = folder == Dictionary.Folder.sample ? Dictionary.BookName.sampleWord
+        var name = folder == Dictionary.Folder.personal ? Dictionary.BookName.personalWord
+                : folder == Dictionary.Folder.sample ? Dictionary.BookName.sampleWord
                 : folder == Dictionary.Folder.yumetan ? Dictionary.BookName.yumetanWord
                 : folder == Dictionary.Folder.tanjukugo ? Dictionary.BookName.tanjukugoWord : Dictionary.BookName.PasstanWordData;
         for (var entry : Dictionary.getList(name, q)) if (entry.isUsable()) candidates.add(entry);
