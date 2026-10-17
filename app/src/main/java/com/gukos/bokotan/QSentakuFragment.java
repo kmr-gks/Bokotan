@@ -115,6 +115,18 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		try {
 			//バージョン表記
 			binding.textViewVersion.setText(getBuildDate(context));
+            binding.buttonPrivacyPolicy.setOnClickListener(v -> {
+                String url = getString(R.string.privacy_policy_url);
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                            .addCategory(Intent.CATEGORY_BROWSABLE));
+                } catch (android.content.ActivityNotFoundException error) {
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle(R.string.privacy_policy)
+                            .setMessage(getString(R.string.privacy_browser_unavailable, url))
+                            .setPositiveButton(android.R.string.ok, null).show();
+                }
+            });
 
 
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);

@@ -93,6 +93,9 @@
 
 	<string name="import_private_zip">個人データをZIPから取り込む</string>
 	<string name="cancel_private_import">取り込みを中止</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="privacy_policy_url" translatable="false">https://kmr-gks.github.io/Bokotan/privacy-policy.html</string>
+    <string name="privacy_browser_unavailable">ページを開くブラウザーが見つかりません。ブラウザーを利用できる端末で、次のURLを開いてください。\n\n%1$s</string>
     <string name="quiz_title">4択テスト</string>
     <string name="quiz_not_started">テストはまだ開始していません。サンプルの5語で、英単語に合う日本語訳を選ぶテストを始められます。自分のデータを使う場合は「級選択」で範囲を選び、「テスト」を押してください。</string>
     <string name="quiz_loading">問題を準備しています。しばらくお待ちください。</string>

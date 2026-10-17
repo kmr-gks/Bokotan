@@ -35,7 +35,8 @@ mainでの初回公開が成功した後、旧公開元のcodex/privacy-policy-p
 
 ポリシーのみの更新ではAndroidのバージョン番号・リリースタグは変更しません。
 アプリのデータ取扱いが変わる場合は、実装とポリシーを合わせて更新してください。
-Google Playへの提出時には、ConsoleのURL登録に加えてアプリ内にも
-プライバシーポリシー本文またはリンクへの導線を用意してください。
+アプリ内リンクは1.07で追加済みです。級選択画面の下部にある
+「プライバシーポリシー」から、上記URLを端末のブラウザーで開きます。
+Google Playへの提出時には、Consoleにも同じURLを登録してください。
 公式要件:
 https://support.google.com/googleplay/android-developer/answer/10144311?hl=ja
