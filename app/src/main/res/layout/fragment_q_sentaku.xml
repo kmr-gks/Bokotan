@@ -30,7 +30,7 @@
 			android:layout_width="0dp"
 			android:layout_height="0dp"
 			android:isScrollContainer="false"
-			app:layout_constraintBottom_toTopOf="@+id/buttonPrivacyPolicy"
+			app:layout_constraintBottom_toTopOf="@+id/linearLayoutBottom"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toBottomOf="@+id/textViewWelcome">
@@ -379,25 +379,31 @@
 			</LinearLayout>
 		</ScrollView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonPrivacyPolicy"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:text="@string/privacy_policy"
-            app:layout_constraintBottom_toTopOf="@id/textViewVersion"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-		<TextView
-			android:id="@+id/textViewVersion"
-			android:layout_width="wrap_content"
+		<LinearLayout
+			android:id="@+id/linearLayoutBottom"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="@string/version_yy_mm_dd"
-			android:textColor="@color/textcolor"
+			android:orientation="horizontal"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintStart_toStartOf="parent" />
+			app:layout_constraintStart_toStartOf="parent">
+
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/buttonPrivacyPolicy"
+				style="@style/Widget.MaterialComponents.Button.TextButton"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@string/privacy_policy" />
+
+			<TextView
+				android:id="@+id/textViewVersion"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@string/version_yy_mm_dd"
+				android:textColor="@color/textcolor" />
+		</LinearLayout>
 
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
