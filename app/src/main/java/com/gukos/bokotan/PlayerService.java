@@ -27,6 +27,17 @@ import java.util.HashSet;
 
 /** MediaPlayerと再生状態をメインスレッドで管理し、終了時に必ず解放する。 */
 public class PlayerService extends Service {
+    private static boolean running;
+    private static String lastError;
+    public static final String PLAYER_STATE_CHANGED = "player_state_changed";
+    public static boolean isRunning() { return running; }
+    public static String statusMessage(android.content.Context context) {
+        return lastError != null ? lastError : context.getString(R.string.player_not_started);
+    }
+    private void notifyState() {
+        sendBroadcast(new Intent(PlayerFragment.PLAYER_ACTION_UI_CHANGE).setPackage(getPackageName())
+                .putExtra(PLAYER_STATE_CHANGED, true));
+    }
     public static final String className = "PlayerService",
             PLAYERSERVICE_EXTRA_MODE = "ps_em", PLAYERSERVICE_EXTRA_BOOK = "ps_eb",
             PLAYERSERVICE_EXTRA_DATA_Q = "ps_edq", PLAYERSERVICE_EXTRA_SKIP_COND = "psesc",
@@ -90,6 +101,9 @@ public class PlayerService extends Service {
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
         releasePlayer();
         active = true;
+        running = true;
+        lastError = null;
+        notifyState();
         int token = ++generation;
         startNotification();
         if (intent == null) { stopPlayback(); return START_NOT_STICKY; }
@@ -280,6 +294,8 @@ public class PlayerService extends Service {
     private void report(String message) { Toast.makeText(this, message, Toast.LENGTH_LONG).show(); }
     private void fail(String message) {
         stopPlayback();
+        lastError = message;
+        notifyState();
         sendText(PlayerFragment.PlayerViewName.eng, message);
         report(message);
     }
@@ -289,6 +305,9 @@ public class PlayerService extends Service {
                 MyLibrary.PreferenceManager.fnAppSettings, positionKey(),
                 book == Dictionary.Folder.all ? now : words.get(now).numberInBook);
         active = false;
+        running = false;
+        lastError = null;
+        notifyState();
         generation++;
         handler.removeCallbacksAndMessages(null);
         releasePlayer();
@@ -301,6 +320,8 @@ public class PlayerService extends Service {
 
     @Override public void onDestroy() {
         active = false;
+        running = false;
+        notifyState();
         generation++;
         handler.removeCallbacksAndMessages(null);
         releasePlayer();

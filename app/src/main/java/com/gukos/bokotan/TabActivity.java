@@ -34,6 +34,14 @@ public class TabActivity extends AppCompatActivity {
 		setVolumeControlStream(STREAM_MUSIC);
 
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_tab);
+		androidx.core.view.WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+		androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (view, insets) -> {
+			var bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars()
+					| androidx.core.view.WindowInsetsCompat.Type.displayCutout());
+			view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+			return insets;
+		});
+		androidx.core.view.ViewCompat.requestApplyInsets(binding.getRoot());
 
 		TabPagerAdapter tabPagerAdapter = new TabPagerAdapter(this);
 		ViewPager2 viewPager = binding.viewpagerMain;

@@ -1,0 +1,5 @@
+<resources>
+    <style name="WordTranslation">
+        <item name="android:lineBreakWordStyle">phrase</item>
+    </style>
+</resources>

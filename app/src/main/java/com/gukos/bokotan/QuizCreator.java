@@ -21,6 +21,8 @@ import java.util.Random;
 /** 出題状態・受信・終了処理をメインスレッドで直列化する。 */
 public final class QuizCreator {
     private static QuizCreator instance;
+    private static String lastError;
+    public static final String QUIZ_STATE_CHANGED = "quiz_state_changed";
     public static final String QTHREAD_ACTION_CLICKED = "qthread_action_clicked",
             QTHREAD_EXTRA_CHOICE = "qthread_extra_choice", QTHREAD_EXTRA_STOP = "qes";
     private final Context context;
@@ -44,8 +46,7 @@ public final class QuizCreator {
         }
     };
 
-    private QuizCreator(Context context, Dictionary.Folder book, Dictionary.BookQ q,
-                        PlayerService.SkipContidion condition, double threshold, PlayerService.SkipThreshold comparison) {
+    private QuizCreator(Context context, PlayerService.SkipContidion condition, double threshold, PlayerService.SkipThreshold comparison) {
         this.context = context.getApplicationContext();
         this.condition = condition;
         this.comparison = comparison;
@@ -56,6 +57,9 @@ public final class QuizCreator {
         sounds.setOnLoadCompleteListener((pool, id, status) -> {
             if (active && status == 0) pool.play(id, 1, 1, 1, 0, 1);
         });
+    }
+
+    private void start(Dictionary.Folder book, Dictionary.BookQ q) {
         Dictionary.whenReady(context, () -> {
             if (!active) return;
             if (book == Dictionary.Folder.all) {
@@ -91,8 +95,12 @@ public final class QuizCreator {
     public static QuizCreator build(Context context, Dictionary.Folder book, Dictionary.BookQ q,
                                     PlayerService.SkipContidion condition, double threshold, PlayerService.SkipThreshold comparison) {
         stopCurrent();
-        instance = new QuizCreator(context, book, q, condition, threshold, comparison);
-        return instance;
+        var quiz = new QuizCreator(context, condition, threshold, comparison);
+        instance = quiz;
+        lastError = null;
+        quiz.notifyState();
+        quiz.start(book, q);
+        return quiz;
     }
 
     public static void stopCurrent() {
@@ -124,6 +132,7 @@ public final class QuizCreator {
                 TestFragment.ViewName.Select3, TestFragment.ViewName.Select4};
         for (int i = 0; i < names.length; i++) sendText(names[i], candidates.get(choices.get(i)).j);
         waitingForAnswer = true;
+        notifyState();
         if (pronunciation) AudioSource.load(sounds, context, entry.toPath(Dictionary.DataLang.english));
     }
 
@@ -155,7 +164,9 @@ public final class QuizCreator {
 
     private void fail(String message) {
         stop();
+        lastError = message;
         sendText(TestFragment.ViewName.Mondaibun, message);
+        notifyState();
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
@@ -169,6 +180,8 @@ public final class QuizCreator {
         for (var name : TestFragment.ViewName.values()) sendText(name, "");
         Dictionary.QuizData.saveQuizData(context);
         if (instance == this) instance = null;
+        lastError = null;
+        notifyState();
     }
 
     public void cancel() { stop(); }
@@ -177,6 +190,20 @@ public final class QuizCreator {
         if (instance != null && instance.active) {
             for (var item : new java.util.ArrayList<>(instance.displayed.entrySet())) instance.sendText(item.getKey(), item.getValue());
         }
+    }
+
+    public static boolean isRunning() { return instance != null && instance.active; }
+
+    public static boolean hasQuestion() { return isRunning() && instance.questionCount > 0; }
+
+    public static String statusMessage(Context context) {
+        if (isRunning()) return context.getString(R.string.quiz_loading);
+        return lastError != null ? lastError : context.getString(R.string.quiz_not_started);
+    }
+
+    private void notifyState() {
+        context.sendBroadcast(new Intent(TestFragment.QUIZ_ACTION_UI_CHANGE).setPackage(context.getPackageName())
+                .putExtra(QUIZ_STATE_CHANGED, true));
     }
 
     private void sendText(TestFragment.ViewName name, CharSequence text) {

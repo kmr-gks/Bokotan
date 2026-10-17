@@ -93,4 +93,13 @@
 
 	<string name="import_private_zip">個人データをZIPから取り込む</string>
 	<string name="cancel_private_import">取り込みを中止</string>
+    <string name="quiz_title">4択テスト</string>
+    <string name="quiz_not_started">テストはまだ開始していません。サンプルの5語で、英単語に合う日本語訳を選ぶテストを始められます。自分のデータを使う場合は「級選択」で範囲を選び、「テスト」を押してください。</string>
+    <string name="quiz_loading">問題を準備しています。しばらくお待ちください。</string>
+    <string name="start_sample_quiz">サンプルでテストを始める</string>
+    <string name="choose_study_range">級選択で範囲を選ぶ</string>
+    <string name="end_quiz">テストを終了</string>
+    <string name="player_title">単語の音声再生</string>
+    <string name="player_not_started">音声は再生していません。サンプルの5語を英語・日本語の順に再生できます。自分のデータを使う場合は「級選択」で範囲を選び、「単語」を押してください。</string>
+    <string name="start_sample_playback">サンプルの音声を再生する</string>
 </resources>

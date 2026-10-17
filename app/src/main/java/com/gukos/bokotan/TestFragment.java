@@ -48,6 +48,10 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 		public void handleMessage(Message msg) {
 			if (binding == null) return;
 			Bundle bundle = msg.getData();
+			if (bundle.containsKey(QuizCreator.QUIZ_STATE_CHANGED)) {
+				renderState();
+				return;
+			}
 			ViewName viewName = (ViewName) Objects.requireNonNull(bundle.getSerializable(QUIZ_VIEW_NAME));
 			ViewProperties viewProperties = (ViewProperties) Objects.requireNonNull(bundle.getSerializable(QUIZ_VIEW_PROPERTIES));
 
@@ -138,12 +142,33 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 			binding.buttonSelect3.setOnClickListener(this::onChoice);
 			binding.buttonSelect4.setOnClickListener(this::onChoice);
 			binding.buttonIdontKnow.setOnClickListener(this::onChoice);
+			binding.buttonStartSampleQuiz.setOnClickListener(v -> QuizCreator.build(context,
+					Dictionary.Folder.sample, Dictionary.BookQ.none, PlayerService.SkipContidion.all,
+					0, PlayerService.SkipThreshold.eqormore));
+			binding.buttonChooseQuizRange.setOnClickListener(v -> TabActivity.setTabPageNum(0));
+			binding.buttonEndQuiz.setOnClickListener(v -> QuizCreator.stopCurrent());
 
 			isInitialized = true;
 			QuizCreator.refreshCurrent();
+			renderState();
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
+	}
+
+	@Override public void onResume() {
+		super.onResume();
+		QuizCreator.refreshCurrent();
+		renderState();
+	}
+
+	private void renderState() {
+		if (binding == null) return;
+		boolean hasQuestion = QuizCreator.hasQuestion();
+		binding.quizContent.setVisibility(hasQuestion ? View.VISIBLE : View.GONE);
+		binding.quizStartPanel.setVisibility(hasQuestion ? View.GONE : View.VISIBLE);
+		binding.quizStatus.setText(QuizCreator.statusMessage(requireContext()));
+		binding.buttonStartSampleQuiz.setEnabled(!QuizCreator.isRunning());
 	}
 
 	@Override

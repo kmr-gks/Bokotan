@@ -48,6 +48,10 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 		public void handleMessage(Message msg) {
 			if (binding == null) return;
 			Bundle bundle = msg.getData();
+			if (bundle.containsKey(PlayerService.PLAYER_STATE_CHANGED)) {
+				renderState();
+				return;
+			}
 			PlayerViewName viewName = (PlayerViewName) bundle.getSerializable(PLAYER_VIEW_NAME);
 			final TextView textViewToHandle;
 			switch (Objects.requireNonNull(viewName)) {
@@ -125,8 +129,18 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 				binding.seekBarJpn.setProgress(getIntData(context, "SeekBar", "japanese", 10));
 				onSpeedSeekBar(binding.seekBarJpn, binding.seekBarJpn.getProgress(), true);
 				binding.buttonStopService.setOnClickListener(this::onPlayerServiceStop);
+				binding.buttonStartSamplePlayback.setOnClickListener(v -> context.startForegroundService(
+						new Intent(context, PlayerService.class)
+								.putExtra(PlayerService.PLAYERSERVICE_EXTRA_MODE, Dictionary.Datatype.word)
+								.putExtra(PlayerService.PLAYERSERVICE_EXTRA_BOOK, Dictionary.Folder.sample)
+								.putExtra(PlayerService.PLAYERSERVICE_EXTRA_DATA_Q, Dictionary.BookQ.none)
+								.putExtra(PlayerService.PLAYERSERVICE_EXTRA_SKIP_COND, PlayerService.SkipContidion.all)
+								.putExtra(PlayerService.PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, 0.0)
+								.putExtra(PlayerService.PLAYERSERVICE_EXTRA_SKIP_THRES_COMP, PlayerService.SkipThreshold.eqormore)));
+				binding.buttonChoosePlaybackRange.setOnClickListener(v -> TabActivity.setTabPageNum(0));
 
 				isInitialized = true;
+				renderState();
 				context.sendBroadcast(new Intent(PLAYERSERVICE_ACTION).setPackage(context.getPackageName())
 						.putExtra(PLAYERSERVICE_MESSAGE_TYPE, PlayerService.PLAYERSERVICE_MESSAGE_REFRESH));
 			} catch (Exception e) {
@@ -137,6 +151,19 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 		} catch (Exception e) {
 			showException(getContext(), e);
 		}
+	}
+
+	@Override public void onResume() {
+		super.onResume();
+		renderState();
+	}
+
+	private void renderState() {
+		if (binding == null) return;
+		boolean running = PlayerService.isRunning();
+		binding.playerContent.setVisibility(running ? View.VISIBLE : View.GONE);
+		binding.playerStartPanel.setVisibility(running ? View.GONE : View.VISIBLE);
+		binding.playerStatus.setText(PlayerService.statusMessage(requireContext()));
 	}
 
 	@Override
