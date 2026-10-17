@@ -230,6 +230,7 @@
 
 			<TextView
 				android:id="@+id/textViewJpn"
+                style="@style/WordTranslation"
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:layout_weight="1"
@@ -251,6 +252,59 @@
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/playerContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="textViewGenzai,textViewCount,textViewGogen,textViewSubtitleJpn,textViewSubtitleEng,linearLayoutPlayerButtons,textViewNumSeikairitu,textViewSeikaisuu,linearLayoutSeekBars,linearLayoutSeekBarTexts,linearLayoutWords,textViewPath" />
+        <ScrollView
+            android:id="@+id/playerStartPanel"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:background="@color/background"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="24dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/player_title"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/textcolor"
+                    android:gravity="center" />
+                <TextView
+                    android:id="@+id/playerStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/player_not_started"
+                    android:textSize="18sp"
+                    android:textColor="@color/textcolor"
+                    android:accessibilityLiveRegion="polite" />
+                <Button
+                    android:id="@+id/buttonStartSamplePlayback"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/start_sample_playback" />
+                <Button
+                    android:id="@+id/buttonChoosePlaybackRange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/choose_study_range" />
+            </LinearLayout>
+        </ScrollView>
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

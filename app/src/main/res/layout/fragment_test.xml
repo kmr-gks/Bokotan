@@ -33,7 +33,7 @@
 			android:layout_height="wrap_content"
 			android:textSize="96sp"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toTopOf="parent" />
+			app:layout_constraintTop_toBottomOf="@+id/buttonEndQuiz" />
 
 		<TextView
 			android:id="@+id/textViewEditorial"
@@ -63,6 +63,7 @@
 
 		<Button
 			android:id="@+id/buttonHint"
+			android:visibility="gone"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="ヒント"
@@ -131,6 +132,68 @@
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/buttonEndQuiz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/end_quiz"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/quizContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="textViewMonme,textViewDebug,textViewMaruBatsu,textViewEditorial,textViewNo,textViewMondai,buttonSelect1,buttonSelect2,buttonSelect3,buttonSelect4,buttonIdontKnow,buttonEndQuiz" />
+
+        <ScrollView
+            android:id="@+id/quizStartPanel"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:background="@color/background"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="24dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/quiz_title"
+                    android:textColor="@color/textcolor"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:gravity="center" />
+                <TextView
+                    android:id="@+id/quizStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/quiz_not_started"
+                    android:textColor="@color/textcolor"
+                    android:textSize="18sp"
+                    android:accessibilityLiveRegion="polite" />
+                <Button
+                    android:id="@+id/buttonStartSampleQuiz"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/start_sample_quiz" />
+                <Button
+                    android:id="@+id/buttonChooseQuizRange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/choose_study_range" />
+            </LinearLayout>
+        </ScrollView>
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

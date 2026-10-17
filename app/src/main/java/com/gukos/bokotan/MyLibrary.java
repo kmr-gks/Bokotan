@@ -24,8 +24,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -50,30 +48,12 @@ public final class MyLibrary {
 
 		public static final String debug_tag = "tagexception";
 
-		public static void showException(Context context, Exception e, String stringAdditional) {
-			//スタックトレースを文字列に変換
-			//https://arsinput.hatenablog.jp/entry/2020/11/21/120000
-
-			StringWriter stringWriter = new StringWriter();
-			e.printStackTrace(new PrintWriter(stringWriter));
-
-			String strMessage =
-					"例外 " + stringAdditional + "\nメッセージ:" + e.getMessage() + "\n型名 " + e.getClass().getTypeName() + "\nクラス " + DebugManager.getClassName(5) + "\nメソッド " + DebugManager.getMethodName(5) + "\n発生箇所\n" + stringWriter;
-			Log.e(debug_tag, strMessage);
-			if (context != null) DisplayOutput.makeToastForLong(context, strMessage);
-
-			try {
-				//ファイルがなければ新規作成
-				FileWriter fileWriter = Objects.requireNonNull(FileDirectoryManager.openWriteFileWithExistCheck(context, strExceptionFIlePath, true));
-				fileWriter.write(getNowTime() + "\n" + strMessage + "\n\n");
-				fileWriter.close();
-			} catch (Exception exception) {
-				if (context != null) {
-					Log.d(debug_tag + "filewriting", exception.getMessage() + exception.getClass().getTypeName());
-					DisplayOutput.makeToastForLong(context, exception.getMessage() + "\n" + exception.getClass().getTypeName());
-				}
-			}
-		}
+        public static void showException(Context context, Exception e, String stringAdditional) {
+            // Error reporting must never re-enter a failed external-storage writer.
+            Log.e(debug_tag, "処理を完了できませんでした。 " + stringAdditional, e);
+            if (context != null) DisplayOutput.makeToastForLong(context,
+                    "処理を完了できませんでした。もう一度お試しください。");
+        }
 
 		public static void showException(Context context, Exception e) {
 			showException(context, e, "");
