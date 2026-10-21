@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- The same browser frame and code symbol as the color launcher icon. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M19.5,25.25H88.5V81.5H19.5Z M24.5,40.25V75.5H84.75V40.25Z M68.25,31.25a1.5,1.5 0,1 0,0 3a1.5,1.5 0,1 0,0 -3 M74.5,31.25a1.5,1.5 0,1 0,0 3a1.5,1.5 0,1 0,0 -3 M80.75,31.25a1.5,1.5 0,1 0,0 3a1.5,1.5 0,1 0,0 -3" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M42.5,49.5L24.5,57.25V60.75L42.5,67.5V63.75L30.5,59L42.5,53.25Z M65.5,49.5V53.25L77.5,59L65.5,63.75V67.5L84.75,60.75V57.25Z M57.25,46.5H61.75L51,71.5H46.5Z" />
+</vector>
