@@ -62,7 +62,7 @@ bash gradlew --no-daemon --console=plain --warning-mode all --rerun-tasks \
 adb -s emulator-5560 shell am instrument -w \
   com.gukos.bokotan.test/androidx.test.runner.AndroidJUnitRunner
 
-残る警告1件（外部ツール由来）
+ローカルビルドに残る警告1件（外部ツール由来）
 Gradle 9.8.2では、AGP 9.4.1内部のConfiguration.setVisible(boolean)の呼び出しに
 非推奨警告が1回出ます。--stacktraceで次の発生元を確認しました:
 com.android.build.gradle.internal.plugins.BasePlugin$Companion
@@ -75,6 +75,19 @@ AGPの修正版が公開されたら更新し、再確認します。
 修正前の手元設定での17回のビルド警告、Javaの注意8行、Lintの101件は解消しています。
 ただし、現在のビルドログ全体を「警告0」とは扱わず、上記の新しい外部警告1件を記録します。
 通常のタスク進行、成功、レポート出力などのメッセージは引き続き表示されます。
+
+GitHub Actionsの実行環境
+成功したCIのログに、旧ActionsのNode.js 20・punycode・setup-java v4の非推奨診断が
+見つかったため、Node.js 24対応の安定版majorへ更新しました。
+checkout v7、setup-java v6、upload-artifact v7、setup-gradle v6を使用。
+Pagesもsetup-python v7、upload-pages-artifact v5、configure-pages v6、deploy-pages v5へ更新。
+従来のキャッシュ方式と.nojekyllを維持する入力を明示しています。
+これは「Actions実行環境の非推奨」という1種類の警告として、独立コミットで対応。
+
+CIのSDK初期化では、SDK Manager CLI (sdkmanager)の非推奨警告が別途3回出ます。
+確認時点のsetup-android安定版v4.0.4も内部でsdkmanagerを使用しており、Actionの
+参照更新だけで解消できません。SDK導入方法は変更せず、外部ツールの残件として記録。
+この3回は、Gradle実行中のAGP由来の1回とは別のステップ・別の警告です。
 
 検証範囲の制限
 ・端末実行はAPI 36。minSdk 26はコンパイルとAPIガードの確認で、API 26実機は未試験。
