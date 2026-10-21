@@ -20,7 +20,7 @@ public class PrivatePackageTest {
     private File extract(String table) throws Exception {
         File root = new File(temp.getRoot(), "stage");
         PrivatePackage.extract(new ByteArrayInputStream(zip(new String[]{"package.properties", "words.tsv", "audio/0001英.btv", "audio/0001訳.btv"},
-                new String[]{"format=1\nid=my-book\n", table, "audio-en", "audio-ja"})), root, bytes -> {});
+                new String[]{"format=1\nid=my-book\n", table, "audio-en", "audio-ja"})), root, bytes -> {}, bytes -> {});
         return root;
     }
     @Test public void preservesOriginalNumbersJapanesePathsAndUnicode() throws Exception {
@@ -39,7 +39,7 @@ public class PrivatePackageTest {
     }
     @Test public void rejectsZipSlipWithoutWritingOutsideStage() throws Exception {
         File root = new File(temp.getRoot(), "stage");
-        try { PrivatePackage.extract(new ByteArrayInputStream(zip(new String[]{"../outside"}, new String[]{"secret"})), root, bytes -> {}); fail(); }
+        try { PrivatePackage.extract(new ByteArrayInputStream(zip(new String[]{"../outside"}, new String[]{"secret"})), root, bytes -> {}, bytes -> {}); fail(); }
         catch (IOException expected) { assertFalse(new File(temp.getRoot(), "outside").exists()); }
     }
     @Test(expected = IOException.class) public void rejectsAudioTraversal() throws Exception {
@@ -47,7 +47,7 @@ public class PrivatePackageTest {
     }
     @Test(expected = IOException.class) public void cancellationStopsExtraction() throws Exception {
         PrivatePackage.extract(new ByteArrayInputStream(zip(new String[]{"package.properties"}, new String[]{"format=1\nid=test"})),
-                new File(temp.getRoot(), "stage"), bytes -> { throw new IOException("cancel"); });
+                new File(temp.getRoot(), "stage"), bytes -> { throw new IOException("cancel"); }, bytes -> {});
     }
     @Test(expected = IOException.class) public void rejectsWrongHeader() throws Exception { extract("id,english,japanese"); }
     @Test public void streamsOneGiBWithoutAllocatingTheWholeAudio() throws Exception {
@@ -63,10 +63,25 @@ public class PrivatePackageTest {
             zip.closeEntry();
         }
         File root = new File(temp.getRoot(), "large"); long[] progress = {0};
-        PrivatePackage.extract(new ByteArrayInputStream(out.toByteArray()), root, bytes -> progress[0] = bytes);
+        PrivatePackage.extract(new ByteArrayInputStream(out.toByteArray()), root, bytes -> progress[0] = bytes, bytes -> {});
         assertEquals(size, new File(root, "audio/large.btv").length());
         assertTrue(progress[0] >= size);
         // This synthetic payload tests size/streaming, not audio decoding.
+    }
+
+    @Test public void storageFailureStopsBeforeWritingAChunk() throws Exception {
+        File root = new File(temp.getRoot(), "no-space");
+        byte[] archive = zip(new String[]{"package.properties"}, new String[]{"format=1\nid=test"});
+        try {
+            PrivatePackage.extract(new ByteArrayInputStream(archive), root, bytes -> {}, bytes -> {
+                assertTrue(bytes > 0);
+                throw new IOException("no space");
+            });
+            fail("Expected the storage failure to abort extraction");
+        } catch (IOException expected) {
+            assertEquals("no space", expected.getMessage());
+            assertEquals(0, new File(root, "package.properties").length());
+        }
     }
 
 }

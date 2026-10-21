@@ -10,6 +10,8 @@ final class PrivatePackage {
     static final long MAX_BYTES = 8L * 1024 * 1024 * 1024;
     static final int MAX_FILES = 100000;
     interface Progress { void update(long bytes) throws IOException; }
+    /** Called before each write; the platform decides how to make storage available. */
+    interface SpaceCheck { void require(int bytes) throws IOException; }
     static final class Word {
         final int id; final String english, japanese, enAudio, jaAudio;
         Word(int id, String english, String japanese, String enAudio, String jaAudio) {
@@ -24,7 +26,7 @@ final class PrivatePackage {
         if (!result.getCanonicalPath().startsWith(root.getCanonicalPath() + File.separator)) throw new IOException("ZIP内のパスが不正です。");
         return result;
     }
-    static void extract(InputStream source, File root, Progress progress) throws IOException {
+    static void extract(InputStream source, File root, Progress progress, SpaceCheck space) throws IOException {
         if (!root.mkdirs()) throw new IOException("取り込み用領域を作成できません。");
         long total = 0; int files = 0;
         Set<String> names = new HashSet<>(); byte[] buffer = new byte[128 * 1024];
@@ -52,7 +54,7 @@ final class PrivatePackage {
                     while ((count = zip.read(buffer)) != -1) {
                         total += count; fileBytes += count;
                         if (total > MAX_BYTES || (!name.startsWith("audio/") && fileBytes > 16 * 1024 * 1024)) throw new IOException("ZIPの展開サイズが上限を超えました。");
-                        if (root.getUsableSpace() < count + 16L * 1024 * 1024) throw new IOException("端末の空き容量が不足しています。");
+                        space.require(count);
                         progress.update(total); output.write(buffer, 0, count);
                     }
                 }

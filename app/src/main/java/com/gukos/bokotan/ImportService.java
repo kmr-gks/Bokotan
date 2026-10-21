@@ -5,6 +5,7 @@ import android.content.*;
 import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.os.*;
+import android.os.storage.StorageManager;
 import android.graphics.drawable.Icon;
 import java.io.*;
 import java.util.UUID;
@@ -45,7 +46,7 @@ public final class ImportService extends Service {
                             status = "展開済み: " + bytes / (1024 * 1024) + " MB";
                             last[0] = time;
                         }
-                    });
+                    }, storageCheck());
                 }
                 if (cancelled) throw new IOException();
                 PrivateData.activate(this, stage);
@@ -68,6 +69,28 @@ public final class ImportService extends Service {
     private void finish(boolean success, String message) {
         status = message; completed = success; busy = false;
         stopForeground(STOP_FOREGROUND_REMOVE); stopSelf();
+    }
+    private PrivatePackage.SpaceCheck storageCheck() throws IOException {
+        File directory = getNoBackupFilesDir();
+        StorageManager storage = getSystemService(StorageManager.class);
+        if (storage == null) throw new IOException("端末の空き容量を確認できません。");
+        UUID volume = storage.getUuidForPath(directory);
+        StatFs stats = new StatFs(directory.getPath());
+        return new PrivatePackage.SpaceCheck() {
+            private static final long RESERVE = 16L * 1024 * 1024;
+            private static final long RECLAIM_BATCH = 256L * 1024 * 1024;
+            @Override public void require(int bytes) throws IOException {
+                stats.restat(directory.getPath());
+                long required = bytes + RESERVE;
+                if (stats.getAvailableBytes() >= required) return;
+                // Reclaim a batch only when usable space runs low; normal ZIP buffers need no Binder call.
+                long allocatable = storage.getAllocatableBytes(volume);
+                if (allocatable < required) throw new IOException("端末の空き容量が不足しています。");
+                storage.allocateBytes(volume, Math.min(allocatable, Math.max(required, RECLAIM_BATCH)));
+                stats.restat(directory.getPath());
+                if (stats.getAvailableBytes() < required) throw new IOException("端末の空き容量が不足しています。");
+            }
+        };
     }
     private void startNotification() {
         var manager = getSystemService(NotificationManager.class);
