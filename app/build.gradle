@@ -72,14 +72,7 @@ android {
 		resValues = true
 	}
 
-	//レイアウトフォルダーを分ける
 	sourceSets {
-		main {
-			res.srcDirs = [
-					'src/main/res',
-					'src/main/res/uiobject',
-			]
-		}
 		// Licensed sample vocabulary and recordings are available in every APK/AAB.
 		main.assets.srcDirs = [rootProject.file('samples/free-vocabulary/assets')]
 	}
