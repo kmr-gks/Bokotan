@@ -19,3 +19,4 @@ assetstest/src/main/assets
 local.properties
 *.jks
 *.keystore
+.idea/deviceManager.xml
