@@ -88,6 +88,11 @@ C:\Program Files\Android\Android Studio\jbr
 を追加する
 
 
+## バージョン1.08の警告・Lint対策
+
+ビルド設定、型付きAPI、画面リソース、PiP、個人ZIPの空き容量確認を整理しました。
+[1.08の更新記録](docs/release-1.08.txt)に警告の内訳と検証範囲をまとめています。
+
 ## バージョン1.07のプライバシーポリシーリンク
 
 級選択画面の下部から、公開済みのプライバシーポリシーをブラウザーで開けます。
@@ -106,7 +111,7 @@ C:\Program Files\Android\Android Studio\jbr
 
 5語と英日10音声はアプリに同梱しています。起動画面で「サンプル」を選ぶと、
 追加のファイル配置やストレージ権限なしで再生・検索・クイズができます。
-[サンプルの説明](samples/free-vocabulary/README.txt)も参照してください。ビルドはJDK 17で実行します。
+[サンプルの説明](samples/free-vocabulary/README.txt)も参照してください。ビルドはJDK 21で実行します（Gradle 9.8.2 / AGP 9.4.1）。
 
 ```sh
 bash gradlew assembleDebug

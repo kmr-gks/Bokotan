@@ -1,0 +1,90 @@
+Bokotan 1.08 / versionCode 8
+更新日: 2026-10-22
+
+目的
+ビルド警告、Javaの非推奨・未チェック診断、Lintの指摘を種類ごとに修正しました。
+変更は警告/Lintの種類ごとに1コミットへ分割しています。
+ビルド環境の準備、端末試験の準備待ち、バージョンと検証記録は別コミットです。
+
+ビルド環境
+・利用者が作業していたAGP 9.4.1への更新を取り込み、Gradleは9.8.2へ更新。
+・Gradle配布ZIPのSHA-256を公式配布の値で固定。
+・ローカルとAndroid CI/Signed ReleaseをJDK 21に統一。JDKベンダーの固定は不要。
+・Javaソースとバイトコードの互換レベル11、minSdk 26、target/compileSdk 36は維持。
+・JavaのみのモジュールとしてenableKotlin=falseを指定。Kotlinソースへの移行ではない。
+・非推奨の互換オプション、Groovyの暗黙のプロパティ代入、不要な依存除外を整理。
+・resValuesをモジュールで明示し、入れ子になっていたres/uiobject/layoutをres/layoutへ統合。
+・古いLint baselineを削除。Javaのdeprecation/unchecked診断を明示し、CIでも警告を表示。
+
+LintとJavaの修正
+・SuspiciousIndentation: 設定イベント処理のインデントを統一。
+・NonConstantResourceId: R.idのswitchをif/elseへ置換。
+・SetTextI18n: 検索件数をプレースホルダー付き文字列へ変更。
+・Unchecked: 検索AdapterとFilterの型を保持し、未チェックキャストを除去。
+・Deprecation: Intent/BundleのSerializable取得を型付きAndroidX APIへ変更し、
+  通知アクションもIcon付きNotification.Action.Builderへ置換。
+・LintBaselineFixed: 現在のコードに存在しない古い抑制登録を削除。
+・ObsoleteSdkInt: minSdkより古いリソースのバージョン別フォルダーを統合。
+・UnusedResources: 未使用の文字列・色・旧描画を削除し、使える文字列は再利用。
+・HardcodedText: 画面XMLの文字列をリソース化。
+・ButtonStyle: ボタンバーとボタンのスタイルを整理し、昼夜で読める文字色を指定。
+・Autofill: 学習用の数値設定を自動入力の対象外へ明示。
+・Overdraw: Spinnerの行で重複していた背景描画を除去。
+・MonochromeLauncherIcon: 既存図案の単色アイコンを追加。
+・PictureInPictureIssue: 実際の表示領域を取得後にPiPへ入り、領域変更時もhintを更新。
+  API 31以降の自動入場と、テキストに適したリサイズを設定。
+・DataExtractionRules: バックアップ無効を維持し、Android 12以降のクラウド・端末移行を
+  全対象ドメインで明示的に除外。
+・UsableSpace: ZIP展開の容量確認を注入可能にし、通常はStatFsで確認。
+  空き容量が少ない場合だけStorageManagerで回収可能量を確認し、最大256MiBずつ確保。
+  展開コードのAndroid非依存、サイズ上限、失敗時の既存データの維持は継続。
+・AndroidGradlePluginVersion: 新たに通知されたGradleの更新を適用。
+
+検証結果
+実行日: 2026-10-22、JDK 21 / Gradle 9.8.2 / AGP 9.4.1。
+・Debug/ReleaseのLint: それぞれ0 errors / 0 warnings（SARIFのresultsは0）。
+・Javaコンパイラ: deprecation/uncheckedを有効にして警告・注意メッセージ0。
+  アプリ本体に抑制は追加していません。端末テストのサービス実体確認に使う旧APIだけは、
+  代替のない検証を維持するため専用ヘルパー1メソッドで非推奨診断を局所抑制しています。
+・ビルド: Debug/ReleaseのAPK・AABを生成成功。署名用Secretsを使う公開処理は未実行。
+・単体テスト18件成功。1GiBの合成ZIPと、容量不足を注入した書き込み前中断を含む。
+・Android API 36の端末テスト15件成功。公開サンプルの再生・検索・クイズ・画面再生成、
+  ZIP取り込み・不正な置換時の保全・設定バックアップ、PiP入場・単語更新・復帰を確認。
+・取り込みの端末試験は、非同期で有効になるボタンとダイアログの準備待ちを修正。
+・出版社の非公開データは読み込まず、公開サンプルと合成データだけを使用。
+
+実行コマンド:
+bash gradlew --no-daemon --console=plain --warning-mode all --rerun-tasks \
+  testDebugUnitTest lintDebug lintRelease assembleDebug bundleDebug \
+  assembleRelease bundleRelease assembleDebugAndroidTest
+adb -s emulator-5560 shell am instrument -w \
+  com.gukos.bokotan.test/androidx.test.runner.AndroidJUnitRunner
+
+残る警告1件（外部ツール由来）
+Gradle 9.8.2では、AGP 9.4.1内部のConfiguration.setVisible(boolean)の呼び出しに
+非推奨警告が1回出ます。--stacktraceで次の発生元を確認しました:
+com.android.build.gradle.internal.plugins.BasePlugin$Companion
+  .createAndroidJdkImageConfiguration（BasePlugin.kt:362）
+アプリ側の呼び出しではなく、Gradle 11での削除予定に関するAGP内部の診断です。
+公式Mavenの安定版一覧は確認時点で9.4.1まででした。
+この1件を隠すための警告抑制や外部プラグインの改変は行っていません。
+AGPの修正版が公開されたら更新し、再確認します。
+
+修正前の手元設定での17回のビルド警告、Javaの注意8行、Lintの101件は解消しています。
+ただし、現在のビルドログ全体を「警告0」とは扱わず、上記の新しい外部警告1件を記録します。
+通常のタスク進行、成功、レポート出力などのメッセージは引き続き表示されます。
+
+検証範囲の制限
+・端末実行はAPI 36。minSdk 26はコンパイルとAPIガードの確認で、API 26実機は未試験。
+・実際に端末容量を枯渇させる試験や、他アプリのキャッシュ回収を発生させる試験は未実施。
+・IDE固有の検査項目すべてを測定したものではありません。
+・PiPボタン再押下で終了する機能や、停止後の空の小窓など、作業計画の別項目は未対応。
+・過去のIssue監査記録は当日の状態を記した履歴のため変更していません。
+
+参照した公式資料
+https://developer.android.com/build/migrate-to-built-in-kotlin
+https://docs.gradle.org/current/userguide/gradle_daemon.html
+https://docs.gradle.org/9.8.2/release-notes.html
+https://developer.android.com/develop/ui/views/picture-in-picture
+https://developer.android.com/identity/data/autobackup
+https://developer.android.com/reference/android/os/storage/StorageManager
