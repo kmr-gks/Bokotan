@@ -69,6 +69,14 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 		mFilter.filter(null, listener);
 	}
 
+	private static final class FilterPublication {
+		final Runnable publish;
+
+		FilterPublication(Runnable publish) {
+			this.publish = publish;
+		}
+	}
+
 	private class ArrayFilter extends Filter {
 		@Override
 		protected FilterResults performFiltering(CharSequence prefix) {
@@ -82,24 +90,26 @@ public class WordSearchAdapter<T> extends ArrayAdapter<T> {
 			synchronized (mLock) {
 				list = new ArrayList<>(mOriginalValues);
 			}
+			final ArrayList<T> matches;
 			if (prefix == null || prefix.length() == 0) {
-				results.values = list;
-				results.count = list.size();
+				matches = list;
 			} else {
-				final ArrayList<T> newValues = new ArrayList<>();
-				list.stream().filter(t -> checker.apply(t)).forEach(newValues::add);
-				results.values = newValues;
-				results.count = newValues.size();
+				matches = new ArrayList<>();
+				list.stream().filter(t -> checker.apply(t)).forEach(matches::add);
 			}
+			// FilterResults erases values to Object. Capture the typed list in a publication
+			// callback instead of casting Object back to List<T> on the UI thread.
+			results.values = new FilterPublication(() -> mObjects = matches);
+			results.count = matches.size();
 			return results;
 		}
 
 		@Override
 		protected void publishResults(CharSequence constraint, FilterResults results) {
-			if (results.values == null) mObjects = new ArrayList<>();
-			else {
-				// noinspection unchecked
-				mObjects = (List<T>) results.values;
+			if (results.values instanceof FilterPublication) {
+				((FilterPublication) results.values).publish.run();
+			} else {
+				mObjects = new ArrayList<>();
 			}
 			if (results.count > 0) {
 				notifyDataSetChanged();

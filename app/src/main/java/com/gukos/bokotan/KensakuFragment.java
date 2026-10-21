@@ -35,6 +35,7 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 	private TextView textViewKensakuResultCount;
 	private Context context;
 	private MediaPlayer player;
+	private WordSearchAdapter<Dictionary.Entry> searchAdapter;
 
 	public KensakuFragment() {
 		super(FragmentKensakuBinding::inflate);
@@ -108,8 +109,9 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 			Dictionary.whenReady(requireContext(), () -> {
 				if (binding == null) return;
 				onKensakuEnd(Dictionary.allData.size());
-				listViewKensakuResult.setAdapter(new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1,
-						new java.util.ArrayList<>(Dictionary.allData), this::onKensakuEnd));
+				searchAdapter = new WordSearchAdapter<>(context, R.layout.my_simple_list_item_1,
+						new java.util.ArrayList<>(Dictionary.allData), this::onKensakuEnd);
+				listViewKensakuResult.setAdapter(searchAdapter);
 				onSearchViewTextChange(searchView.getQuery().toString());
 			});
 			listViewKensakuResult.setOnItemClickListener(this::onItemClick);
@@ -123,7 +125,7 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 		//ListView#setFilterTextは内部的にListView#getAdapter#getFilter
 		// を呼び出している。また、ポップアップが表示されてしまう。
 
-		var adapter = (WordSearchAdapter<Dictionary.Entry>) listViewKensakuResult.getAdapter();
+		var adapter = searchAdapter;
 		if (adapter == null || binding == null) return false;
 		if (!newText.isEmpty()) {
 			key = newText.toLowerCase(java.util.Locale.ROOT);
@@ -213,7 +215,7 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 		if (listViewKensakuResult != null) listViewKensakuResult.setAdapter(null);
 		if (searchView != null) searchView.setOnQueryTextListener(null);
 		buttonKensakuHouhou = null; searchView = null; listViewKensakuResult = null;
-		textViewKensakuResultCount = null; context = null;
+		textViewKensakuResultCount = null; searchAdapter = null; context = null;
 		super.onDestroyView();
 	}
 }
