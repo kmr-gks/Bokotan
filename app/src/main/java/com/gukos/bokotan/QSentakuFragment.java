@@ -318,35 +318,20 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 			makeToastForShort(context, "このデータには単語のみ収録しています。"); return;
 		}
 
-		switch (binding.radioGroupSkipCondition.getCheckedRadioButtonId()) {
-			default:
-			case R.id.radioButtonPlayAll: {
-				skipContidion = PlayerService.SkipContidion.all;
-				break;
-			}
-			case R.id.radioButtonSeikai: {
-				skipContidion = PlayerService.SkipContidion.seikaisu;
-				break;
-			}
-			case R.id.radioButtonHuseikai: {
-				skipContidion = PlayerService.SkipContidion.huseikai;
-				break;
-			}
-			case R.id.radioButtonSeikaiRate: {
-				skipContidion = PlayerService.SkipContidion.seikairate;
-				break;
-			}
+		int conditionId = binding.radioGroupSkipCondition.getCheckedRadioButtonId();
+		if (conditionId == R.id.radioButtonSeikai) {
+			skipContidion = PlayerService.SkipContidion.seikaisu;
+		} else if (conditionId == R.id.radioButtonHuseikai) {
+			skipContidion = PlayerService.SkipContidion.huseikai;
+		} else if (conditionId == R.id.radioButtonSeikaiRate) {
+			skipContidion = PlayerService.SkipContidion.seikairate;
+		} else {
+			skipContidion = PlayerService.SkipContidion.all;
 		}
-		switch (binding.radioGroupSkipCompare.getCheckedRadioButtonId()) {
-			default:
-			case R.id.radioButtonEqOrMore: {
-				skipThreshold = PlayerService.SkipThreshold.eqormore;
-				break;
-			}
-			case R.id.radioButtonEqOrLess: {
-				skipThreshold = PlayerService.SkipThreshold.eqorless;
-				break;
-			}
+		if (binding.radioGroupSkipCompare.getCheckedRadioButtonId() == R.id.radioButtonEqOrLess) {
+			skipThreshold = PlayerService.SkipThreshold.eqorless;
+		} else {
+			skipThreshold = PlayerService.SkipThreshold.eqormore;
 		}
 		//しきい値が設定されている場合
 		if (binding.editNumberThreshold.length() > 0) {
