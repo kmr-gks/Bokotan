@@ -28,6 +28,30 @@
 	<string name="quiz_word_hatsuon">クイズで出題される単語を発音</string>
 	<string name="quiz_ox_hatsuon">クイズでマルバツの効果音を再生</string>
 
+	<string name="player_number_placeholder">No.0000</string>
+	<string name="play_count">再生回数</string>
+	<string name="stop_playback">stop</string>
+	<string name="english_speed_initial">英語 x1.5</string>
+	<string name="japanese_speed_initial">日本語 x1.5</string>
+	<string name="playback_stopped">再生停止</string>
+	<string name="manage_settings">設定を管理</string>
+	<string name="show_settings">設定を表示(新)</string>
+	<string name="choose_mode">モードを選択(開始)</string>
+	<string name="word_mode">単語</string>
+	<string name="phrase_mode">文</string>
+	<string name="word_phrase_mode">単語+文</string>
+	<string name="quiz_mode">テスト</string>
+	<string name="skip_playback_condition">再生を飛ばす条件</string>
+	<string name="play_all">全再生</string>
+	<string name="correct_count">正解数</string>
+	<string name="incorrect_count">不正解数</string>
+	<string name="correct_rate">正解率</string>
+	<string name="skip_threshold">しきい値</string>
+	<string name="at_least">以上</string>
+	<string name="less_than">未満</string>
+	<string name="audio_gap">空白</string>
+	<string name="display_order">表示順</string>
+	<string name="pip_aspect_ratio">PIP縦横比</string>
 	<string name="search_result_count">%1$d件</string>
 
 	<string-array name="spinner_kuuhaku">
