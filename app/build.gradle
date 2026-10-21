@@ -60,10 +60,6 @@ android {
 		targetCompatibility JavaVersion.VERSION_11
 	}
 
-	//これがないとapkが生成できない
-	lint {
-		baseline = file("lint-baseline.xml")
-	}
 
 	//bindingを使うため
 	buildFeatures {
