@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.BundleCompat;
 
 import com.gukos.bokotan.databinding.FragmentTestBinding;
 
@@ -52,8 +53,8 @@ public class TestFragment extends UiManager.FragmentBinding<FragmentTestBinding>
 				renderState();
 				return;
 			}
-			ViewName viewName = (ViewName) Objects.requireNonNull(bundle.getSerializable(QUIZ_VIEW_NAME));
-			ViewProperties viewProperties = (ViewProperties) Objects.requireNonNull(bundle.getSerializable(QUIZ_VIEW_PROPERTIES));
+			ViewName viewName = Objects.requireNonNull(BundleCompat.getSerializable(bundle, QUIZ_VIEW_NAME, ViewName.class));
+			ViewProperties viewProperties = Objects.requireNonNull(BundleCompat.getSerializable(bundle, QUIZ_VIEW_PROPERTIES, ViewProperties.class));
 
 			final TextView textViewToHandle;
 			switch (viewName) {

@@ -5,6 +5,7 @@ import android.content.*;
 import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.os.*;
+import android.graphics.drawable.Icon;
 import java.io.*;
 import java.util.UUID;
 
@@ -75,7 +76,8 @@ public final class ImportService extends Service {
         var open = PendingIntent.getActivity(this, 202, new Intent(this, TabActivity.class), PendingIntent.FLAG_IMMUTABLE);
         var notification = new Notification.Builder(this, "import").setSmallIcon(android.R.drawable.stat_sys_download)
                 .setContentTitle("個人データを取り込み中").setContentText("アプリ内で進捗を確認できます")
-                .setContentIntent(open).setOngoing(true).addAction(android.R.drawable.ic_menu_close_clear_cancel, "中止", cancel).build();
+                .setContentIntent(open).setOngoing(true).addAction(new Notification.Action.Builder(
+                        Icon.createWithResource(this, android.R.drawable.ic_menu_close_clear_cancel), "中止", cancel).build()).build();
         if (Build.VERSION.SDK_INT >= 29) startForeground(2, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
         else startForeground(2, notification);
     }

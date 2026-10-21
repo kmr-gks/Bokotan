@@ -21,6 +21,7 @@ import android.util.Rational;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.os.BundleCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.gukos.bokotan.databinding.ActivityPipBinding;
@@ -62,8 +63,7 @@ public class PipActivity extends Activity {
 		public void handleMessage(Message msg) {
 			if (binding == null) return;
 			Bundle bundle = msg.getData();
-			PipViewName pipViewName =
-					(PipViewName) bundle.getSerializable(PIP_VIEW_NAME);
+			PipViewName pipViewName = BundleCompat.getSerializable(bundle, PIP_VIEW_NAME, PipViewName.class);
 			final TextView textViewToHandle;
 			switch (Objects.requireNonNull(pipViewName)) {
 				case num: {
