@@ -166,7 +166,7 @@
 						android:id="@+id/editTextNumber"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:autofillHints="no"
+						android:importantForAutofill="no"
 						android:ems="10"
 						android:hint="@string/editNumberText"
 						android:inputType="number"
@@ -227,6 +227,7 @@
 
 					<EditText
 						android:id="@+id/editNumberThreshold"
+						android:importantForAutofill="no"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
@@ -367,6 +368,7 @@
 
 					<EditText
 						android:id="@+id/editTextPipYoko"
+						android:importantForAutofill="no"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
@@ -377,6 +379,7 @@
 
 					<EditText
 						android:id="@+id/editTextPipTate"
+						android:importantForAutofill="no"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
