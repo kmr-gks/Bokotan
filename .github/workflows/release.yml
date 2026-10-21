@@ -42,10 +42,10 @@ jobs:
             fi
           fi
           printf 'VERSION_NAME=%s\nRELEASE_TAG=%s\n' "$VERSION_NAME" "$RELEASE_TAG" >> "$GITHUB_ENV"
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: temurin
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -78,7 +78,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: >-
-          bash gradlew --no-daemon --no-configuration-cache
+          bash gradlew --no-daemon --warning-mode all --no-configuration-cache
           testDebugUnitTest lintDebug assembleRelease bundleRelease
       - name: Verify signatures and prepare downloads
         shell: bash

@@ -15,6 +15,8 @@ if (signingValues.values().any { it != null && !it.isEmpty() } && !hasReleaseSig
 
 android {
 	namespace 'com.gukos.bokotan'
+	// This module contains Java sources only.
+	enableKotlin = false
 	compileSdk 36
 
 	defaultConfig {
@@ -67,6 +69,7 @@ android {
 	buildFeatures {
 		dataBinding true
 		buildConfig true
+		resValues = true
 	}
 
 	//レイアウトフォルダーを分ける
