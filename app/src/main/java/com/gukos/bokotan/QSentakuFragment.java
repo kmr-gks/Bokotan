@@ -115,30 +115,30 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		try {
 			//バージョン表記
 			binding.textViewVersion.setText(getBuildDate(context));
-            binding.buttonPrivacyPolicy.setOnClickListener(v -> {
-                String url = getString(R.string.privacy_policy_url);
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
-                            .addCategory(Intent.CATEGORY_BROWSABLE));
-                } catch (android.content.ActivityNotFoundException error) {
-                    new AlertDialog.Builder(requireContext())
-                            .setTitle(R.string.privacy_policy)
-                            .setMessage(getString(R.string.privacy_browser_unavailable, url))
-                            .setPositiveButton(android.R.string.ok, null).show();
-                }
-            });
+			binding.buttonPrivacyPolicy.setOnClickListener(v -> {
+				String url = getString(R.string.privacy_policy_url);
+				try {
+					startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
+							.addCategory(Intent.CATEGORY_BROWSABLE));
+				} catch (android.content.ActivityNotFoundException error) {
+					new AlertDialog.Builder(requireContext())
+							.setTitle(R.string.privacy_policy)
+							.setMessage(getString(R.string.privacy_browser_unavailable, url))
+							.setPositiveButton(android.R.string.ok, null).show();
+				}
+			});
 
 
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
 			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
 			binding.buttonWriteTest.setVisibility(View.GONE);
-            binding.buttonImportZip.setOnClickListener(v -> new AlertDialog.Builder(context)
-                    .setTitle("個人データを取り込む")
-                    .setMessage("端末またはクラウドからZIPを選択します。取得には通信が発生する場合があります。取り込み成功後は既存の個人データを置き換えます。")
-                    .setPositiveButton("ZIPを選択", (dialog, which) -> zipPicker.launch(new String[]{"*/*"}))
-                    .setNegativeButton("キャンセル", null).show());
-            binding.buttonCancelImport.setOnClickListener(v -> context.startService(new Intent(context, ImportService.class).setAction("cancel")));
-            importHandler.post(showImportStatus);
+			binding.buttonImportZip.setOnClickListener(v -> new AlertDialog.Builder(context)
+					.setTitle("個人データを取り込む")
+					.setMessage("端末またはクラウドからZIPを選択します。取得には通信が発生する場合があります。取り込み成功後は既存の個人データを置き換えます。")
+					.setPositiveButton("ZIPを選択", (dialog, which) -> zipPicker.launch(new String[]{"*/*"}))
+					.setNegativeButton("キャンセル", null).show());
+			binding.buttonCancelImport.setOnClickListener(v -> context.startService(new Intent(context, ImportService.class).setAction("cancel")));
+			importHandler.post(showImportStatus);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
 
 
