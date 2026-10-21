@@ -165,7 +165,7 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 	}
 
 	private void onKensakuEnd(int count) {
-		if (binding != null) textViewKensakuResultCount.setText(count + "件");
+		if (binding != null) textViewKensakuResultCount.setText(getString(R.string.search_result_count, count));
 	}
 
 	private void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

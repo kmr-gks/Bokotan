@@ -65,6 +65,8 @@
 	<string name="quiz_word_hatsuon">クイズで出題される単語を発音</string>
 	<string name="quiz_ox_hatsuon">クイズでマルバツの効果音を再生</string>
 
+	<string name="search_result_count">%1$d件</string>
+
 	<string-array name="spinner_kuuhaku">
 		<item>オリジナル</item>
 		<item>自動空白検出</item>
