@@ -2,6 +2,8 @@
 
 Androidで動く英単語学習アプリです。
 
+残っている不具合、今後の機能追加、公開前の確認事項は[今後の作業計画](docs/development-plan.txt)にまとめています。
+
 [プライバシーポリシー](https://kmr-gks.github.io/Bokotan/privacy-policy.html)はGitHub Pagesで公開しています。
 公開元と更新方法は[プライバシーポリシーの公開手順](docs/privacy-policy-pages.txt)を参照してください。
 
