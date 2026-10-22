@@ -2,7 +2,10 @@ package com.gukos.bokotan;
 
 import android.content.Context;
 import android.net.Uri;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -33,23 +36,48 @@ final class PreferenceBackup {
         }
         var root = new JSONObject(out.toString(StandardCharsets.UTF_8.name()));
         if (root.getInt("format") != 1) throw new IOException();
-        var files = root.getJSONObject("preferences"); var allowed = names();
+        // SharedPreferencesに触れる前に全体を検証し、一つでも不正なら何も書き換えない。
+        var files = PreferenceBackupValidator.validate(plain(root.getJSONObject("preferences")), names(), limits(context));
         var editors = new ArrayList<android.content.SharedPreferences.Editor>();
-        for (var iterator = files.keys(); iterator.hasNext();) {
-            String name = iterator.next(); if (!allowed.contains(name)) throw new IOException();
-            var values = files.getJSONObject(name);
-            var editor = context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear();
-            for (var keys = values.keys(); keys.hasNext();) {
-                String key = keys.next(); Object value = values.get(key);
+        for (var file : files.entrySet()) {
+            var editor = context.getSharedPreferences(file.getKey(), Context.MODE_PRIVATE).edit().clear();
+            for (var entry : file.getValue().entrySet()) {
+                String key = entry.getKey(); Object value = entry.getValue();
                 if (value instanceof Boolean) editor.putBoolean(key, (Boolean) value);
                 else if (value instanceof Integer) editor.putInt(key, (Integer) value);
-                else if (value instanceof Long) editor.putLong(key, (Long) value);
-                else if (value instanceof Double) editor.putFloat(key, ((Double) value).floatValue());
-                else if (value instanceof String) editor.putString(key, (String) value);
-                else throw new IOException();
+                else editor.putString(key, (String) value);
             }
             editors.add(editor);
         }
         for (var editor : editors) editor.apply();
+    }
+    private static PreferenceBackupValidator.Limits limits(Context context) throws Exception {
+        var resources = context.getResources();
+        return new PreferenceBackupValidator.Limits(resources.getStringArray(R.array.spinner_book_q).length,
+                resources.getStringArray(R.array.spinner_kuuhaku).length, resources.getStringArray(R.array.spinner_hyojijun).length,
+                seekBarMax(context, R.id.seekBarEng), seekBarMax(context, R.id.seekBarJpn));
+    }
+    /** 再生画面のレイアウトで宣言したandroid:max。省略時はProgressBarの既定値100。 */
+    private static int seekBarMax(Context context, int id) throws Exception {
+        String namespace = "http://schemas.android.com/apk/res/android";
+        try (var parser = context.getResources().getLayout(R.layout.fragment_player)) {
+            for (int event = parser.getEventType(); event != XmlPullParser.END_DOCUMENT; event = parser.next())
+                if (event == XmlPullParser.START_TAG && parser.getAttributeResourceValue(namespace, "id", 0) == id)
+                    return parser.getAttributeIntValue(namespace, "max", 100);
+        }
+        throw new IOException();
+    }
+    /** org.jsonの値をMap・List・nullとJDKの値に置き換える。 */
+    private static Map<String, Object> plain(JSONObject object) throws JSONException {
+        var map = new LinkedHashMap<String, Object>();
+        for (var keys = object.keys(); keys.hasNext();) { String key = keys.next(); map.put(key, plain(object.get(key))); }
+        return map;
+    }
+    private static Object plain(Object value) throws JSONException {
+        if (value instanceof JSONObject) return plain((JSONObject) value);
+        if (!(value instanceof JSONArray)) return value == JSONObject.NULL ? null : value;
+        var array = (JSONArray) value; var list = new ArrayList<Object>();
+        for (int i = 0; i < array.length(); i++) list.add(plain(array.get(i)));
+        return list;
     }
 }
