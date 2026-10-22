@@ -6,7 +6,6 @@ import static com.gukos.bokotan.Dictionary.QuizData.huseikai;
 import static com.gukos.bokotan.Dictionary.QuizData.monme;
 import static com.gukos.bokotan.Dictionary.QuizData.seikai;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
-import static com.gukos.bokotan.MyLibrary.DebugManager.putsE;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.N_GENZAI_NAN_MONME;
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
@@ -25,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -567,7 +565,6 @@ public final class Dictionary {
 			} else {
 				e=j="null string";
 			}
-			putsE("e=" + e + ",j=" + j+",content="+content);
 		}
 
 		public Entry(String e, String j, Folder folder, BookName bookName, BookQ bookQ, int numberInBook, Datatype datatype) {
@@ -627,9 +624,7 @@ public final class Dictionary {
 						+ "\n発音:" + getHatsuon(this.content)
 						+ "\nDataBook:" + this.bookName
 						+ "\nDataQ:" + this.bookQ
-						+ "\nMode:" + this.dataLang
-						+ GogenLoader.getGogenString(this.content)
-						+ GogenLoader.getGogenString(this.e);
+						+ "\nMode:" + this.dataLang;
 			} catch (Exception e) {
 				showException(e);
 			}
@@ -789,88 +784,5 @@ public final class Dictionary {
 						{4651, 4883}, {4884, 5122}, {5123, 5350}, {5351, 5569}, {5570, 5827}, {5828, 6050}, {6051, 6269}, {6270, 6511}, {6512, 6750}, {6751, 7050},
 				},
 		};
-	}
-
-	public static class GogenLoader {
-		private static final TreeMap<String, Gogen> trGogenYomu = new TreeMap<>();
-		final String strFileNameYomuGogenGaku = "読む語源学全内容2.csv";
-
-		public GogenLoader(Context context) {
-			try {
-				InputStream is = context.getAssets().open(strFileNameYomuGogenGaku);
-				BufferedReader br = new BufferedReader(new InputStreamReader(is, "SJIS"));
-				String str;
-				while ((str = br.readLine()) != null) {
-					String[] data = str.split(",");
-					trGogenYomu.put(data[2], new Gogen(data[2], data[3], data[4], data[5], data[7], data[9], data[11]));
-				}
-				is.close();
-				br.close();
-			} catch (Exception e) {
-				showException(context, e);
-				//new AlertDialog.Builder(context).setTitle("エラー").setMessage("ファイル"+ strFileNameYomuGogenGaku +"が見つかりません。").setPositiveButton("ok",null).create().show();
-			}
-		}
-
-		static String getGogenString(String word) {
-			try {
-				Gogen gy = trGogenYomu.get(word);
-				return gy == null ? "" : gy.getGogenString();
-			} catch (Exception e) {
-				return "(null string)";
-			}
-		}
-	}
-
-	static class Gogen {
-		public final String wordEng, wordJpn, bunrui, gogen1, gogen2, gogen3, sankou;
-
-		public Gogen(String wordEng, String wordJpn, String bunrui, String gogen1, String gogen2, String gogen3, String sankou) {
-			this.wordEng = wordEng;
-			this.wordJpn = wordJpn;
-			this.bunrui = tikan(bunrui);
-			this.gogen1 = gogen1;
-			this.gogen2 = gogen2;
-			this.gogen3 = gogen3;
-			this.sankou = sankou;
-		}
-
-		private static String tikan(String stringWith_) {
-			try {
-				StringBuilder ans = new StringBuilder();
-				for (char ch : stringWith_.toCharArray()) {
-					if (ch == '_') ans.append(',');
-					else ans.append(ch);
-				}
-				return ans.toString();
-			} catch (Exception e) {
-				showException(e);
-			}
-			return "<不明>";
-		}
-
-		public String getGogenString() {
-			try {
-				String ans = "語源:" + this.gogen1;
-				ans = "分類:" + this.bunrui + "\n" + ans;
-				if (!this.gogen2.isEmpty()) ans += "+" + this.gogen2;
-				if (!this.gogen3.isEmpty()) ans += "+" + this.gogen3;
-				if (!this.sankou.isEmpty()) ans += "\n参考:" + this.sankou;
-				return ans;
-			} catch (Exception e) {
-				showException(e);
-			}
-			return "<不明>";
-		}
-
-		@NonNull
-		public String toString() {
-			try {
-				return "英" + this.wordEng + "\t日" + this.wordJpn + "\t分類" + this.bunrui + "\t語源1" + this.gogen1 + "\t語源2" + this.gogen2 + "\t語源3" + this.gogen3 + "\t参考" + this.sankou;
-			} catch (Exception e) {
-				showException(e);
-			}
-			return "<不明>";
-		}
 	}
 }
