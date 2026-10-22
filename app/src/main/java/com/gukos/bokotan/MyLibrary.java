@@ -14,8 +14,6 @@ import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
-import androidx.core.text.HtmlCompat;
-
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.json.JSONObject;
@@ -446,19 +444,6 @@ public final class MyLibrary {
 				Toast.makeText(context, strMessage.substring(0, min(strMessage.length(), nMaxLengthOfToastString)), Toast.LENGTH_LONG).show();
 			} catch (Exception e) {
 				DebugManager.printCurrentState(e.getMessage());
-			}
-		}
-
-		public static CharSequence setStringColored(String source, String key) {
-			try {
-				if (key == null || key.isEmpty() || !source.contains(key)) return source;
-				source = source.replaceAll(System.lineSeparator(), "<br>");
-				int index = source.indexOf(key);
-				source = source.substring(0, index) + "<font color=\"Red\">" + key + "</font>" + source.substring(index + key.length());
-				return HtmlCompat.fromHtml(source, HtmlCompat.FROM_HTML_MODE_COMPACT);
-			} catch (Exception e) {
-				ExceptionManager.showException(e);
-				return source;
 			}
 		}
 	}

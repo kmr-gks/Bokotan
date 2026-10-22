@@ -4,7 +4,6 @@ import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.contains;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.ends;
 import static com.gukos.bokotan.KensakuFragment.enumKensakuHouhou.starts;
 import static com.gukos.bokotan.MyLibrary.DebugManager.printCurrentState;
-import static com.gukos.bokotan.MyLibrary.DisplayOutput.setStringColored;
 import static com.gukos.bokotan.MyLibrary.ExceptionManager.showException;
 
 import android.app.AlertDialog;
@@ -145,7 +144,7 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 					break;
 				}
 			}
-			//setStringColored:検索ワードで色をつける
+			//SearchHighlight:検索ワードで色をつける
 			adapter.setFilter((wordInfo) -> {
 				for (var field : wordInfo.getAllFieldString()) {
 					if (field != null && biFunction.apply(field.toLowerCase(java.util.Locale.ROOT), key)) {
@@ -155,7 +154,7 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 				return false;
 			}, data -> {
 				var dataString = data.toString();
-				return setStringColored(dataString.substring(0, Math.min(dataString.length(), 100)), key);
+				return SearchHighlight.highlight(dataString.substring(0, Math.min(dataString.length(), 100)), key);
 			});
 		} else {
 			key = null;
@@ -175,8 +174,8 @@ public class KensakuFragment extends UiManager.FragmentBinding<FragmentKensakuBi
 			var item = adapterView.getItemAtPosition(i);
 			Dictionary.Entry wordInfo = (Dictionary.Entry) item;
 			new AlertDialog.Builder(context)
-					.setTitle(setStringColored(wordInfo.numberInBook + " : " + wordInfo.content, key))
-					.setMessage(setStringColored(wordInfo.toDetailedString(), key))
+					.setTitle(SearchHighlight.highlight(wordInfo.numberInBook + " : " + wordInfo.content, key))
+					.setMessage(SearchHighlight.highlight(wordInfo.toDetailedString(), key))
 					.setPositiveButton("閉じる", null)
 					.setNeutralButton("英→日発音", (dialogInterface, i1) -> playEnglishAndJapanese(wordInfo))
 					.setNegativeButton("英語発音", (dialogInterface, i1) -> playEnglish(wordInfo))
