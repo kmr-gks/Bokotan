@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
+import android.graphics.drawable.Icon;
 import android.media.MediaPlayer;
 import android.media.AudioManager;
 import android.media.PlaybackParams;
@@ -20,6 +21,7 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.content.IntentCompat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,11 +109,11 @@ public class PlayerService extends Service {
         int token = ++generation;
         startNotification();
         if (intent == null) { stopPlayback(); return START_NOT_STICKY; }
-        mode = (Dictionary.Datatype) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_MODE);
-        book = (Dictionary.Folder) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_BOOK);
-        grade = (Dictionary.BookQ) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_DATA_Q);
-        condition = (SkipContidion) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_COND);
-        comparison = (SkipThreshold) intent.getSerializableExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_COMP);
+        mode = IntentCompat.getSerializableExtra(intent, PLAYERSERVICE_EXTRA_MODE, Dictionary.Datatype.class);
+        book = IntentCompat.getSerializableExtra(intent, PLAYERSERVICE_EXTRA_BOOK, Dictionary.Folder.class);
+        grade = IntentCompat.getSerializableExtra(intent, PLAYERSERVICE_EXTRA_DATA_Q, Dictionary.BookQ.class);
+        condition = IntentCompat.getSerializableExtra(intent, PLAYERSERVICE_EXTRA_SKIP_COND, SkipContidion.class);
+        comparison = IntentCompat.getSerializableExtra(intent, PLAYERSERVICE_EXTRA_SKIP_THRES_COMP, SkipThreshold.class);
         showBeforeReading = MyLibrary.PreferenceManager.getSetting(this, "id" + R.id.switchHyojiYakuBeforeRead, true);
         threshold = intent.getDoubleExtra(PLAYERSERVICE_EXTRA_SKIP_THRES_NUM, 0);
         if (mode == null || book == null || grade == null || condition == null || comparison == null
@@ -341,8 +343,9 @@ public class PlayerService extends Service {
         var pip = PendingIntent.getBroadcast(this, 10, new Intent(this, StartPipBroadcastReceiver.class), PendingIntent.FLAG_IMMUTABLE);
         var notification = new Notification.Builder(this, channel).setContentTitle(getString(R.string.app_name))
                 .setSmallIcon(android.R.drawable.ic_media_play).setContentText("英単語を再生中")
-                .setOngoing(true).setContentIntent(open).addAction(android.R.drawable.ic_media_pause, "停止", stop)
-                .addAction(R.mipmap.launcher_new_icon, "小窓で表示", pip).build();
+                .setOngoing(true).setContentIntent(open)
+                .addAction(new Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_pause), "停止", stop).build())
+                .addAction(new Notification.Action.Builder(Icon.createWithResource(this, R.mipmap.launcher_new_icon), "小窓で表示", pip).build()).build();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
         else startForeground(1, notification);
     }

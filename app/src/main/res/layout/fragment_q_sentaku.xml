@@ -45,45 +45,50 @@
 					android:id="@+id/textViewManageSettings"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="設定を管理" />
+					android:text="@string/manage_settings" />
 
 				<LinearLayout
+					style="?android:attr/buttonBarStyle"
 					android:id="@+id/linearLayoutManageSettings"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:orientation="horizontal">
 
 					<Button
+						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonWriteTest"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/writecheck"
-						android:textColor="@color/buttontext" />
+						android:textColor="@color/textcolor" />
 
 					<Button
+						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonPrefExport"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/settingshozon"
-						android:textColor="@color/buttontext" />
+						android:textColor="@color/textcolor" />
 
 					<Button
+						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonPrefImp"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/readsettingsfromfile"
-						android:textColor="@color/buttontext" />
+						android:textColor="@color/textcolor" />
 
 					<Button
+						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonShowSettingNew"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="設定を表示(新)"
-						android:textColor="@color/buttontext" />
+						android:text="@string/show_settings"
+						android:textColor="@color/textcolor" />
 				</LinearLayout>
 
                 <Button android:id="@+id/buttonImportZip" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/import_private_zip" />
@@ -101,44 +106,49 @@
 					android:id="@+id/textViewModeSelect"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="モードを選択(開始)" />
+					android:text="@string/choose_mode" />
 
 				<LinearLayout
+					style="?android:attr/buttonBarStyle"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:orientation="horizontal">
 
 					<Button
+						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonWord"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="単語"
-						android:textColor="@color/buttontext" />
+						android:text="@string/word_mode"
+						android:textColor="@color/textcolor" />
 
 					<Button
+						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonPhrase"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="文"
-						android:textColor="@color/buttontext" />
+						android:text="@string/phrase_mode"
+						android:textColor="@color/textcolor" />
 
 					<Button
+						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonWP"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="単語+文"
-						android:textColor="@color/buttontext" />
+						android:text="@string/word_phrase_mode"
+						android:textColor="@color/textcolor" />
 
 					<Button
+						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonQuiz"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="テスト"
-						android:textColor="@color/buttontext" />
+						android:text="@string/quiz_mode"
+						android:textColor="@color/textcolor" />
 				</LinearLayout>
 
 				<LinearLayout
@@ -156,7 +166,7 @@
 						android:id="@+id/editTextNumber"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:autofillHints="no"
+						android:importantForAutofill="no"
 						android:ems="10"
 						android:hint="@string/editNumberText"
 						android:inputType="number"
@@ -168,7 +178,7 @@
 					android:id="@+id/textViewSkipPlayCond"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:text="再生を飛ばす条件" />
+					android:text="@string/skip_playback_condition" />
 
 				<RadioGroup
 					android:id="@+id/radioGroupSkipCondition"
@@ -181,7 +191,7 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="全再生"
+						android:text="@string/play_all"
 						android:textColor="@color/textcolor" />
 
 					<RadioButton
@@ -189,7 +199,7 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="正解数"
+						android:text="@string/correct_count"
 						android:textColor="@color/textcolor" />
 
 					<RadioButton
@@ -197,7 +207,7 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="不正解数"
+						android:text="@string/incorrect_count"
 						android:textColor="@color/textcolor" />
 
 					<RadioButton
@@ -205,7 +215,7 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="正解率"
+						android:text="@string/correct_rate"
 						android:textColor="@color/textcolor" />
 
 				</RadioGroup>
@@ -217,11 +227,12 @@
 
 					<EditText
 						android:id="@+id/editNumberThreshold"
+						android:importantForAutofill="no"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:ems="10"
-						android:hint="しきい値"
+						android:hint="@string/skip_threshold"
 						android:inputType="number|numberDecimal"
 						android:minHeight="48dp"
 						android:textColor="@color/textcolor" />
@@ -238,7 +249,7 @@
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_weight="1"
-							android:text="以上"
+							android:text="@string/at_least"
 							android:textColor="@color/textcolor" />
 
 						<RadioButton
@@ -246,7 +257,7 @@
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_weight="1"
-							android:text="未満"
+							android:text="@string/less_than"
 							android:textColor="@color/textcolor" />
 					</RadioGroup>
 				</LinearLayout>
@@ -255,7 +266,7 @@
 					android:id="@+id/textViewSpaceOptions"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="空白" />
+					android:text="@string/audio_gap" />
 
 				<Spinner
 					android:id="@+id/spinnerSpace"
@@ -268,7 +279,7 @@
 					android:id="@+id/textViewHyojijun"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="表示順" />
+					android:text="@string/display_order" />
 
 				<Spinner
 					android:id="@+id/spinnerHyojijun"
@@ -353,10 +364,11 @@
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="PIP縦横比" />
+						android:text="@string/pip_aspect_ratio" />
 
 					<EditText
 						android:id="@+id/editTextPipYoko"
+						android:importantForAutofill="no"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
@@ -367,6 +379,7 @@
 
 					<EditText
 						android:id="@+id/editTextPipTate"
+						android:importantForAutofill="no"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
@@ -394,7 +407,8 @@
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
-				android:text="@string/privacy_policy" />
+				android:text="@string/privacy_policy"
+				android:textColor="@color/textcolor" />
 
 			<TextView
 				android:id="@+id/textViewVersion"

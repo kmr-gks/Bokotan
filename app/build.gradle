@@ -14,17 +14,19 @@ if (signingValues.values().any { it != null && !it.isEmpty() } && !hasReleaseSig
 }
 
 android {
-	namespace 'com.gukos.bokotan'
-	compileSdk 36
+	namespace = 'com.gukos.bokotan'
+	// This module contains Java sources only.
+	enableKotlin = false
+	compileSdk = 36
 
 	defaultConfig {
-		applicationId "com.gukos.bokotan"
-		minSdk 26
-		targetSdk 36
-		versionCode appVersion.getProperty('VERSION_CODE').toInteger()
-		versionName appVersion.getProperty('VERSION_NAME')
+		applicationId = "com.gukos.bokotan"
+		minSdk = 26
+		targetSdk = 36
+		versionCode = appVersion.getProperty('VERSION_CODE').toInteger()
+		versionName = appVersion.getProperty('VERSION_NAME')
 
-		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 		//https://takusan.negitoro.dev/posts/android_build_date_resource/
 		// ビルド日時を Context#getString で参照できるようにする
@@ -34,18 +36,18 @@ android {
 	signingConfigs {
 		if (hasReleaseSigning) {
 			release {
-				storeFile file(signingValues.ANDROID_KEYSTORE_PATH)
-				storePassword signingValues.ANDROID_KEYSTORE_PASSWORD
-				keyAlias signingValues.ANDROID_KEY_ALIAS
-				keyPassword signingValues.ANDROID_KEY_PASSWORD
+				storeFile = file(signingValues.ANDROID_KEYSTORE_PATH)
+				storePassword = signingValues.ANDROID_KEYSTORE_PASSWORD
+				keyAlias = signingValues.ANDROID_KEY_ALIAS
+				keyPassword = signingValues.ANDROID_KEY_PASSWORD
 			}
 		}
 	}
 
 	buildTypes {
 		release {
-			if (hasReleaseSigning) signingConfig signingConfigs.release
-			minifyEnabled false
+			if (hasReleaseSigning) signingConfig = signingConfigs.release
+			minifyEnabled = false
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 		}
 	}
@@ -58,25 +60,15 @@ android {
 		targetCompatibility JavaVersion.VERSION_11
 	}
 
-	//これがないとapkが生成できない
-	lint {
-		baseline = file("lint-baseline.xml")
-	}
 
 	//bindingを使うため
 	buildFeatures {
-		dataBinding true
-		buildConfig true
+		dataBinding = true
+		buildConfig = true
+		resValues = true
 	}
 
-	//レイアウトフォルダーを分ける
 	sourceSets {
-		main {
-			res.srcDirs = [
-					'src/main/res',
-					'src/main/res/uiobject',
-			]
-		}
 		// Licensed sample vocabulary and recordings are available in every APK/AAB.
 		main.assets.srcDirs = [rootProject.file('samples/free-vocabulary/assets')]
 	}
@@ -90,9 +82,7 @@ dependencies {
 	androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 }
 
-//Duplicate class kotlin.collections.jdk8.CollectionsJDK8Kt...と表示されるエラーの対策
-//https://qiita.com/YuukiYoshida/items/37dd7cea0918fe8a03d6
-configurations.implementation {
-	exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
-	exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+// Keep compiler diagnostics visible so new deprecated or unsafe calls are caught in CI.
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }

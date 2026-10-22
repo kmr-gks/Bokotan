@@ -3,6 +3,7 @@ package com.gukos.bokotan;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.TextView;
+import androidx.core.content.IntentCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -137,7 +138,7 @@ public class StudyFlowInstrumentedTest {
             var seen = java.util.Collections.synchronizedSet(new java.util.HashSet<String>());
             var receiver = new android.content.BroadcastReceiver() {
                 @Override public void onReceive(Context ignored, Intent intent) {
-                    if (intent.getSerializableExtra(PlayerFragment.PLAYER_VIEW_NAME) == PlayerFragment.PlayerViewName.eng) {
+                    if (IntentCompat.getSerializableExtra(intent, PlayerFragment.PLAYER_VIEW_NAME, PlayerFragment.PlayerViewName.class) == PlayerFragment.PlayerViewName.eng) {
                         String value = intent.getStringExtra(PlayerFragment.PLAYER_VIEW_TEXT);
                         if (Dictionary.allData.stream().anyMatch(entry -> entry.e.equals(value))) seen.add(value);
                     }
@@ -162,9 +163,7 @@ public class StudyFlowInstrumentedTest {
                 await(() -> !text(scenario, R.id.textViewEng).isEmpty());
                 main(() -> context.sendBroadcast(new Intent(PlayerService.PLAYERSERVICE_ACTION).setPackage(context.getPackageName())
                         .putExtra(PlayerService.PLAYERSERVICE_MESSAGE_TYPE, PlayerService.PLAYERSERVICE_MESSAGE_STOP)));
-                var manager = (android.app.ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-                await(() -> manager.getRunningServices(Integer.MAX_VALUE).stream()
-                        .noneMatch(service -> service.service.getClassName().equals(PlayerService.class.getName())));
+                await(() -> !isPlaybackServiceRunning());
             } finally {
                 main(() -> { context.stopService(new Intent(context, PlayerService.class)); context.unregisterReceiver(receiver); });
             }
@@ -226,7 +225,7 @@ public class StudyFlowInstrumentedTest {
             var events = java.util.Collections.synchronizedList(new ArrayList<String>());
             var receiver = new android.content.BroadcastReceiver() {
                 @Override public void onReceive(Context ignored, Intent intent) {
-                    var name = intent.getSerializableExtra(PlayerFragment.PLAYER_VIEW_NAME);
+                    var name = IntentCompat.getSerializableExtra(intent, PlayerFragment.PLAYER_VIEW_NAME, PlayerFragment.PlayerViewName.class);
                     if (name == PlayerFragment.PlayerViewName.eng || name == PlayerFragment.PlayerViewName.jpn)
                         events.add(name + ":" + intent.getStringExtra(PlayerFragment.PLAYER_VIEW_TEXT));
                 }
@@ -269,9 +268,7 @@ public class StudyFlowInstrumentedTest {
                 TabActivity.setTabPageNum(1);
                 context.startForegroundService(samplePlaybackIntent());
             });
-            var manager = (android.app.ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-            java.util.function.BooleanSupplier running = () -> manager.getRunningServices(Integer.MAX_VALUE).stream()
-                    .anyMatch(service -> service.service.getClassName().equals(PlayerService.class.getName()));
+            BooleanSupplier running = this::isPlaybackServiceRunning;
             // Android protects this system broadcast: invoke the same receiver with a simulated event.
             var disconnect = new AudioDisconnectReceiver(
                     () -> MyLibrary.PreferenceManager.getSetting(context, "id" + R.id.checkBoxAutoStop, false),
@@ -296,6 +293,15 @@ public class StudyFlowInstrumentedTest {
                 });
             }
         }
+    }
+
+    // Check actual service destruction rather than the app's cached running flag.
+    // Android still exposes the calling app's own services through this API.
+    @SuppressWarnings("deprecation")
+    private boolean isPlaybackServiceRunning() {
+        var manager = (android.app.ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        return manager.getRunningServices(Integer.MAX_VALUE).stream()
+                .anyMatch(service -> service.service.getClassName().equals(PlayerService.class.getName()));
     }
 
     private Intent samplePlaybackIntent() {

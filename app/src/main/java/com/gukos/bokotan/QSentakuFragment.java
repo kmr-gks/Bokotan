@@ -115,30 +115,30 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 		try {
 			//バージョン表記
 			binding.textViewVersion.setText(getBuildDate(context));
-            binding.buttonPrivacyPolicy.setOnClickListener(v -> {
-                String url = getString(R.string.privacy_policy_url);
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
-                            .addCategory(Intent.CATEGORY_BROWSABLE));
-                } catch (android.content.ActivityNotFoundException error) {
-                    new AlertDialog.Builder(requireContext())
-                            .setTitle(R.string.privacy_policy)
-                            .setMessage(getString(R.string.privacy_browser_unavailable, url))
-                            .setPositiveButton(android.R.string.ok, null).show();
-                }
-            });
+			binding.buttonPrivacyPolicy.setOnClickListener(v -> {
+				String url = getString(R.string.privacy_policy_url);
+				try {
+					startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
+							.addCategory(Intent.CATEGORY_BROWSABLE));
+				} catch (android.content.ActivityNotFoundException error) {
+					new AlertDialog.Builder(requireContext())
+							.setTitle(R.string.privacy_policy)
+							.setMessage(getString(R.string.privacy_browser_unavailable, url))
+							.setPositiveButton(android.R.string.ok, null).show();
+				}
+			});
 
 
 			binding.buttonPrefExport.setOnClickListener(this::onExportPrefsButton);
 			binding.buttonPrefImp.setOnClickListener(this::onImportPrefsButton);
 			binding.buttonWriteTest.setVisibility(View.GONE);
-            binding.buttonImportZip.setOnClickListener(v -> new AlertDialog.Builder(context)
-                    .setTitle("個人データを取り込む")
-                    .setMessage("端末またはクラウドからZIPを選択します。取得には通信が発生する場合があります。取り込み成功後は既存の個人データを置き換えます。")
-                    .setPositiveButton("ZIPを選択", (dialog, which) -> zipPicker.launch(new String[]{"*/*"}))
-                    .setNegativeButton("キャンセル", null).show());
-            binding.buttonCancelImport.setOnClickListener(v -> context.startService(new Intent(context, ImportService.class).setAction("cancel")));
-            importHandler.post(showImportStatus);
+			binding.buttonImportZip.setOnClickListener(v -> new AlertDialog.Builder(context)
+					.setTitle("個人データを取り込む")
+					.setMessage("端末またはクラウドからZIPを選択します。取得には通信が発生する場合があります。取り込み成功後は既存の個人データを置き換えます。")
+					.setPositiveButton("ZIPを選択", (dialog, which) -> zipPicker.launch(new String[]{"*/*"}))
+					.setNegativeButton("キャンセル", null).show());
+			binding.buttonCancelImport.setOnClickListener(v -> context.startService(new Intent(context, ImportService.class).setAction("cancel")));
+			importHandler.post(showImportStatus);
 			binding.buttonShowSettingNew.setOnClickListener(this::onShowSettingNew);
 
 
@@ -318,35 +318,20 @@ public class QSentakuFragment extends UiManager.FragmentBinding<FragmentQSentaku
 			makeToastForShort(context, "このデータには単語のみ収録しています。"); return;
 		}
 
-		switch (binding.radioGroupSkipCondition.getCheckedRadioButtonId()) {
-			default:
-			case R.id.radioButtonPlayAll: {
-				skipContidion = PlayerService.SkipContidion.all;
-				break;
-			}
-			case R.id.radioButtonSeikai: {
-				skipContidion = PlayerService.SkipContidion.seikaisu;
-				break;
-			}
-			case R.id.radioButtonHuseikai: {
-				skipContidion = PlayerService.SkipContidion.huseikai;
-				break;
-			}
-			case R.id.radioButtonSeikaiRate: {
-				skipContidion = PlayerService.SkipContidion.seikairate;
-				break;
-			}
+		int conditionId = binding.radioGroupSkipCondition.getCheckedRadioButtonId();
+		if (conditionId == R.id.radioButtonSeikai) {
+			skipContidion = PlayerService.SkipContidion.seikaisu;
+		} else if (conditionId == R.id.radioButtonHuseikai) {
+			skipContidion = PlayerService.SkipContidion.huseikai;
+		} else if (conditionId == R.id.radioButtonSeikaiRate) {
+			skipContidion = PlayerService.SkipContidion.seikairate;
+		} else {
+			skipContidion = PlayerService.SkipContidion.all;
 		}
-		switch (binding.radioGroupSkipCompare.getCheckedRadioButtonId()) {
-			default:
-			case R.id.radioButtonEqOrMore: {
-				skipThreshold = PlayerService.SkipThreshold.eqormore;
-				break;
-			}
-			case R.id.radioButtonEqOrLess: {
-				skipThreshold = PlayerService.SkipThreshold.eqorless;
-				break;
-			}
+		if (binding.radioGroupSkipCompare.getCheckedRadioButtonId() == R.id.radioButtonEqOrLess) {
+			skipThreshold = PlayerService.SkipThreshold.eqorless;
+		} else {
+			skipThreshold = PlayerService.SkipThreshold.eqormore;
 		}
 		//しきい値が設定されている場合
 		if (binding.editNumberThreshold.length() > 0) {

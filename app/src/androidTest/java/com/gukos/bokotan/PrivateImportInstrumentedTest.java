@@ -54,10 +54,19 @@ public class PrivateImportInstrumentedTest {
             pickerFilter.addCategory(Intent.CATEGORY_OPENABLE); pickerFilter.addDataType("*/*");
             var monitor = instrumentation.addMonitor(pickerFilter,
                     new Instrumentation.ActivityResult(Activity.RESULT_OK, new Intent().setData(Uri.fromFile(good))), true);
-            scenario.onActivity(activity -> activity.findViewById(R.id.buttonImportZip).performClick());
+            // Dictionary readiness and the polling UI update are asynchronous.
+            // Wait for the actual control before opening the confirmation dialog.
+            await(() -> {
+                var enabled = new java.util.concurrent.atomic.AtomicBoolean();
+                scenario.onActivity(activity -> enabled.set(activity.hasWindowFocus()
+                        && activity.findViewById(R.id.buttonImportZip).isEnabled()));
+                return enabled.get();
+            });
+            scenario.onActivity(activity -> assertTrue(activity.findViewById(R.id.buttonImportZip).performClick()));
             {
                 androidx.test.espresso.Espresso.onView(
-                        androidx.test.espresso.matcher.ViewMatchers.withText("ZIPを選択")).perform(
+                        androidx.test.espresso.matcher.ViewMatchers.withText("ZIPを選択"))
+                        .inRoot(androidx.test.espresso.matcher.RootMatchers.isDialog()).perform(
                         androidx.test.espresso.action.ViewActions.click());
             }
             instrumentation.removeMonitor(monitor);

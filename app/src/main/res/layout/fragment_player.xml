@@ -17,7 +17,7 @@
 			android:id="@+id/textViewGenzai"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="No.0000"
+			android:text="@string/player_number_placeholder"
 			android:textColor="#F44336"
 			android:textSize="20sp"
 			app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +27,7 @@
 			android:id="@+id/textViewCount"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="再生回数"
+			android:text="@string/play_count"
 			android:textColor="@color/textcolor"
 			android:textAlignment="textEnd"
 			android:textSize="20sp"
@@ -75,6 +75,7 @@
 			app:layout_constraintStart_toStartOf="parent" />
 
 		<LinearLayout
+			style="?android:attr/buttonBarStyle"
 			android:id="@+id/linearLayoutPlayerButtons"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
@@ -84,39 +85,43 @@
 			app:layout_constraintStart_toStartOf="parent">
 
 			<Button
+				style="?android:attr/buttonBarButtonStyle"
 				android:id="@+id/buttonToBegin"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:text="@string/fromstart"
-				android:textColor="@color/buttontext"
+				android:textColor="@color/textcolor"
 				android:textSize="16sp" />
 
 			<Button
+				style="?android:attr/buttonBarButtonStyle"
 				android:id="@+id/buttonNowChange"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:text="@string/bangouhenkou"
-				android:textColor="@color/buttontext"
+				android:textColor="@color/textcolor"
 				android:textSize="16sp" />
 
 			<Button
+				style="?android:attr/buttonBarButtonStyle"
 				android:id="@+id/buttonPip"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:text="@string/pipb"
-				android:textColor="@color/buttontext"
+				android:textColor="@color/textcolor"
 				android:textSize="16sp" />
 
 			<Button
+				style="?android:attr/buttonBarButtonStyle"
 				android:id="@+id/buttonStopService"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="5dp"
-				android:text="stop"
-				android:textColor="@color/buttontext" />
+				android:text="@string/stop_playback"
+				android:textColor="@color/textcolor" />
 
 		</LinearLayout>
 
@@ -184,7 +189,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="0.5"
-				android:text="英語 x1.5"
+				android:text="@string/english_speed_initial"
 				android:textColor="@color/textcolor" />
 
 			<TextView
@@ -192,7 +197,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_weight="0.5"
-				android:text="日本語 x1.5"
+				android:text="@string/japanese_speed_initial"
 				android:textColor="@color/textcolor" />
 		</LinearLayout>
 
@@ -213,7 +218,7 @@
 				android:layout_weight="1"
 				android:autoSizeMaxTextSize="60sp"
 				android:autoSizeTextType="uniform"
-				android:text="再生停止"
+				android:text="@string/playback_stopped"
 				android:textAlignment="center"
 				android:textColor="@color/textcolor"
 				android:textStyle="bold" />
@@ -236,7 +241,7 @@
 				android:layout_weight="1"
 				android:autoSizeMaxTextSize="60sp"
 				android:autoSizeTextType="uniform"
-				android:text="再生停止"
+				android:text="@string/playback_stopped"
 				android:textAlignment="center"
 				android:textColor="@color/textcolor"
 				android:textStyle="bold" />

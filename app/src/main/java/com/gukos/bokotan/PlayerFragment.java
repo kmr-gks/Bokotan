@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.BundleCompat;
 
 import com.gukos.bokotan.databinding.FragmentPlayerBinding;
 
@@ -52,7 +53,7 @@ public class PlayerFragment extends UiManager.FragmentBinding<FragmentPlayerBind
 				renderState();
 				return;
 			}
-			PlayerViewName viewName = (PlayerViewName) bundle.getSerializable(PLAYER_VIEW_NAME);
+			PlayerViewName viewName = BundleCompat.getSerializable(bundle, PLAYER_VIEW_NAME, PlayerViewName.class);
 			final TextView textViewToHandle;
 			switch (Objects.requireNonNull(viewName)) {
 				case genzai: {
