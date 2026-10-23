@@ -7,7 +7,6 @@ import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnQSentakuA
 import static com.gukos.bokotan.MyLibrary.PreferenceManager.DataName.dnTestActivity;
 import static java.lang.Math.min;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -16,20 +15,11 @@ import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -37,9 +27,7 @@ public final class MyLibrary {
 
 	public static final String
 			stringDownloadPath = "/storage/emulated/0/Download/",
-			stringBokotanDirPath = stringDownloadPath + "bokotan/",
 			strGaibuDataDirectory = stringDownloadPath + "data/",
-			strExceptionFIlePath = stringBokotanDirPath + "exceptions.txt",
 			packageName = Objects.requireNonNull(MyLibrary.class.getPackage()).getName();
 
 	public static final class ExceptionManager {
@@ -103,51 +91,12 @@ public final class MyLibrary {
 			} else return arrayList.toArray(new String[0]);
 		}
 
-		public static JSONObject getAllPreferenceJson(Context context, String strFileName) {
-			try {
-				var data = context.getSharedPreferences(strFileName, MODE_PRIVATE).getAll();
-				JSONObject jsonObject = new JSONObject();
-				for (var entry : data.entrySet()) {
-					//前の保存方式 nWordSeikaisu,nWordHuseikaisuを排除
-					if (!entry.getKey().startsWith("nWord"))
-						jsonObject.put(entry.getKey(), entry.getValue());
-				}
-				return jsonObject;
-			} catch (Exception e) {
-				ExceptionManager.showException(e);
-				return null;
-			}
-		}
-
-		public static String getAllPreferenceData(Context context, String strFileName) {
-			try {
-				return Objects.requireNonNull(PreferenceManager.getAllPreferenceJson(context, strFileName)).toString(4);
-			} catch (Exception e) {
-				ExceptionManager.showException(e);
-				return "共有プリファレンスのデータの取得に失敗";
-			}
-		}
-
 		public static void putSetting(Context context, String strKey, boolean value) {
 			MyLibrary.PreferenceManager.putBoolData(context, fnAppSettings, strKey, value);
 		}
 
 		public static boolean getSetting(Context context, String strKey, boolean defaultvalue) {
 			return MyLibrary.PreferenceManager.getBoolData(context, fnAppSettings, strKey, defaultvalue);
-		}
-
-		public static void putAllSetting(Context context, String stringJson) {
-			try {
-				JSONObject jsonObject = new JSONObject(stringJson);
-				Iterator<String> iterator = jsonObject.keys();
-				while (iterator.hasNext()) {
-					String key = iterator.next();
-					putSetting(context, key, jsonObject.getBoolean(key));
-					//DisplayOutput.puts(DisplayOutput.getMethodName()+"key="+key+"value="+jsonObject.getBoolean(key));
-				}
-			} catch (Exception exception) {
-				ExceptionManager.showException(context, exception);
-			}
 		}
 
 		public static void putBoolData(Context context, String strFileName, String strKey, boolean value) {
@@ -186,36 +135,6 @@ public final class MyLibrary {
 			return context.getSharedPreferences(strFileName, MODE_PRIVATE).getString(strKey, defaultvalue);
 		}
 
-		@SuppressLint("CommitPrefEdits")
-		public static void putAllData(Context context, String strFileName, String stringJson) {
-			try {
-				//リセット
-				context.getSharedPreferences(strFileName, MODE_PRIVATE).edit().clear();
-
-				JSONObject jsonObject = new JSONObject(stringJson);
-				Iterator<String> iterator = jsonObject.keys();
-				while (iterator.hasNext()) {
-					String key = iterator.next();
-					//DebugManager.puts("filename="+strFileName+",key="+key);
-					Object value = jsonObject.get(key);
-					if (value instanceof Boolean) {
-						//DisplayOutput.puts("file="+strFileName+" ,key="+key+" ,bool
-						// value="+value);
-						putBoolData(context, strFileName, key, (boolean) value);
-					} else if (value instanceof Integer) {
-						//DisplayOutput.puts("file="+strFileName+" ,key="+key+" ,int value="+value);
-						//前の保存方式 nWordSeikaisu,nWordHuseikaisuを排除
-						if (!key.startsWith("nWord"))
-							putIntData(context, strFileName, key, (int) value);
-					} else if (value instanceof String) {
-						putStringData(context, strFileName, key, (String) value);
-					}
-				}
-			} catch (Exception exception) {
-				ExceptionManager.showException(context, exception);
-			}
-		}
-
 		public static void initializeSettingItem(SwitchMaterial view, boolean defaultvalue) {
 			try {
 				view.setChecked(MyLibrary.PreferenceManager.getSetting(view.getContext(), "id" + view.getId(), defaultvalue));
@@ -249,37 +168,6 @@ public final class MyLibrary {
 		 * .mp3にすると音楽アプリが大量の単語の音声データ楽曲と認識してしまうため。
 		 */
 		public static final String fileExtension = ".btv";
-
-		public static FileWriter openWriteFileWithExistCheck(Context context, String stringFileName, boolean append) {
-			try {
-				if (Files.notExists(Paths.get(stringBokotanDirPath))) {
-					//フォルダがなければ作成
-					new File(stringBokotanDirPath).mkdirs();
-				}
-				if (Files.notExists(Paths.get(stringFileName))) {
-					//ファイルがなければ新規作成
-					new File(stringFileName).createNewFile();
-				}
-				return new FileWriter(stringFileName, append);
-			} catch (Exception exception) {
-				ExceptionManager.showException(context, exception);
-				return null;
-			}
-		}
-
-		public static String readFromFile(Context context, String strFileName) {
-			StringBuilder content = new StringBuilder();
-			try {
-				BufferedReader bufferedReader = new BufferedReader(new FileReader(strFileName));
-				String line;
-				while ((line = bufferedReader.readLine()) != null) {
-					content.append(line).append('\n');
-				}
-			} catch (Exception exception) {
-				ExceptionManager.showException(context, exception);
-			}
-			return content.toString();
-		}
 
 		public static String getPathPs(Dictionary.Folder dataBook, BookQ dataQ, Datatype mode, Dictionary.DataLang dataLang, int tangoNum) {
 			try {
@@ -454,14 +342,6 @@ public final class MyLibrary {
 		public static void puts(String str) {
 			try {
 				Log.d(ExceptionManager.debug_tag + " " + getDeviceName(), str);
-			} catch (Exception e) {
-				//showException(e);
-			}
-		}
-
-		public static void putsE(String str) {
-			try {
-				Log.e(ExceptionManager.debug_tag + " " + getDeviceName(), str);
 			} catch (Exception e) {
 				//showException(e);
 			}

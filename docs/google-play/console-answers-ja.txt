@@ -79,8 +79,8 @@ Foreground Service申告（Android 14以上）
 ・政府機関のアプリ: いいえ。
 ・VPN／アクセシビリティサービス／全画面通知: なし。
 ・全ファイルアクセス: 権限なし。
-・現在は未使用のSCHEDULE_EXACT_ALARM、Bluetooth権限がManifestに残る。
-  使用していない機能を申告せず、公開用ビルドから削除することを推奨。
+・未使用だったSCHEDULE_EXACT_ALARM、WAKE_LOCK、Bluetooth権限はManifestから削除した。
+  使用していない機能は申告しない。提出するビルドに残っていないことを確認する。
 
 公式資料
 データセーフティ:
