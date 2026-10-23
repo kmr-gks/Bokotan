@@ -9,7 +9,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class PreferenceBackupValidatorTest {
-    private static final PreferenceBackupValidator.Limits LIMITS = new PreferenceBackupValidator.Limits(10, 3, 4, 10, 10);
+    private static final PreferenceBackupValidator.Limits LIMITS = new PreferenceBackupValidator.Limits(10, 3, 4);
     private static final Set<String> ALLOWED = new HashSet<>(Arrays.asList("qSentakuActivity", "appsettings", "uisetting",
             "spinnerBookQ", "spinnerKuuhaku", "spinnerHyojijun", "SeekBar", "editText",
             "testActivity1qTest", "testActivitysampleTest", "testActivityprivate-my-bookTest"));
@@ -105,9 +105,13 @@ public class PreferenceBackupValidatorTest {
         assertRejected("spinnerKuuhaku", "selected", 3);
         assertAccepted("spinnerHyojijun", "selected", 3);
         assertRejected("spinnerHyojijun", "selected", 4);
-        assertAccepted("SeekBar", "english", 10);
-        assertRejected("SeekBar", "english", 11);
-        assertRejected("SeekBar", "japanese", -1);
+    }
+    @Test public void seekBarAcceptsAnyIntBecauseSetProgressClamps() {
+        for (int value : new int[]{0, 10, 11, -1}) {
+            assertAccepted("SeekBar", "english", value);
+            assertAccepted("SeekBar", "japanese", value);
+        }
+        assertRejected("SeekBar", "japanese", "5");
     }
     @Test public void rejectsUnparseableNumbers() {
         for (String threshold : new String[]{"0", "0.5", "10"}) assertAccepted("uisetting", "skipThresholdNum", threshold);

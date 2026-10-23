@@ -30,7 +30,8 @@ public class PreferenceBackupInstrumentedTest {
     }
     private void assertImportFails(String preferences) {
         try { importJson(preferences); fail("Imported " + preferences); }
-        catch (Exception expected) { }
+        catch (IllegalArgumentException expected) { }
+        catch (Exception unexpected) { throw new AssertionError("Unexpected failure for " + preferences, unexpected); }
     }
 
     @Before public void save() {
@@ -60,7 +61,7 @@ public class PreferenceBackupInstrumentedTest {
             assertImportFails("{\"uisetting\":{\"skipThresholdNum\":\"9\"},\"spinnerKuuhaku\":" + invalid + "}");
         assertImportFails("{\"uisetting\":{\"skipThresholdNum\":\"abc\"}}");
         assertImportFails("{\"uisetting\":{\"skipThresholdNum\":2}}");
-        assertImportFails("{\"SeekBar\":{\"english\":11}}");
+        assertImportFails("{\"SeekBar\":{\"english\":\"fast\"}}");
         assertImportFails("{\"privateImport\":{\"directory\":\"x\"}}");
         assertEquals(1, prefs("spinnerKuuhaku").getInt("selected", -1));
         assertEquals("3", prefs("uisetting").getString("skipThresholdNum", null));

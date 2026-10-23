@@ -5,7 +5,6 @@ import android.net.Uri;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -51,21 +50,10 @@ final class PreferenceBackup {
         }
         for (var editor : editors) editor.apply();
     }
-    private static PreferenceBackupValidator.Limits limits(Context context) throws Exception {
+    private static PreferenceBackupValidator.Limits limits(Context context) {
         var resources = context.getResources();
         return new PreferenceBackupValidator.Limits(resources.getStringArray(R.array.spinner_book_q).length,
-                resources.getStringArray(R.array.spinner_kuuhaku).length, resources.getStringArray(R.array.spinner_hyojijun).length,
-                seekBarMax(context, R.id.seekBarEng), seekBarMax(context, R.id.seekBarJpn));
-    }
-    /** 再生画面のレイアウトで宣言したandroid:max。省略時はProgressBarの既定値100。 */
-    private static int seekBarMax(Context context, int id) throws Exception {
-        String namespace = "http://schemas.android.com/apk/res/android";
-        try (var parser = context.getResources().getLayout(R.layout.fragment_player)) {
-            for (int event = parser.getEventType(); event != XmlPullParser.END_DOCUMENT; event = parser.next())
-                if (event == XmlPullParser.START_TAG && parser.getAttributeResourceValue(namespace, "id", 0) == id)
-                    return parser.getAttributeIntValue(namespace, "max", 100);
-        }
-        throw new IOException();
+                resources.getStringArray(R.array.spinner_kuuhaku).length, resources.getStringArray(R.array.spinner_hyojijun).length);
     }
     /** org.jsonの値をMap・List・nullとJDKの値に置き換える。 */
     private static Map<String, Object> plain(JSONObject object) throws JSONException {

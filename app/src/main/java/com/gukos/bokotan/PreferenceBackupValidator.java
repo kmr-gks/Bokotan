@@ -10,12 +10,11 @@ final class PreferenceBackupValidator {
     /** ACCEPT:そのまま保存 DROP:現在のコードが読まないキー REJECT:読むキーなのに型か値が不正 */
     enum Decision { ACCEPT, DROP, REJECT }
 
-    /** リソースで決まる上限。スピナーは項目数、SeekBarは最大値。 */
+    /** リソースで決まるスピナーの項目数。 */
     static final class Limits {
-        final int bookQ, kuuhaku, hyojijun, english, japanese;
-        Limits(int bookQ, int kuuhaku, int hyojijun, int english, int japanese) {
+        final int bookQ, kuuhaku, hyojijun;
+        Limits(int bookQ, int kuuhaku, int hyojijun) {
             this.bookQ = bookQ; this.kuuhaku = kuuhaku; this.hyojijun = hyojijun;
-            this.english = english; this.japanese = japanese;
         }
     }
 
@@ -62,8 +61,8 @@ final class PreferenceBackupValidator {
             case "spinnerHyojijun":
                 return key.equals("selected") ? value -> inRange(value, limits.hyojijun - 1) : null;
             case "SeekBar":
-                if (key.equals("english")) return value -> inRange(value, limits.english);
-                return key.equals("japanese") ? value -> inRange(value, limits.japanese) : null;
+                // SeekBar.setProgressが範囲内に丸めるため、型だけを確認する。
+                return key.equals("english") || key.equals("japanese") ? Integer.class::isInstance : null;
             case "editText":
                 // 画面から0以下も保存できるが、PipActivityが縦横比を確認してから使う。
                 return key.equals("editTextPipYoko") || key.equals("editTextPipTate") ? Integer.class::isInstance : null;
