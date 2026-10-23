@@ -5,10 +5,6 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
-    ignore:
-      # androidx.core 1.19+ requires compileSdk 37. Remove this rule when compileSdk is raised.
-      - dependency-name: 'androidx.core:core'
-        versions: ['>= 1.19.0']
     groups:
       androidx-material-test:
         patterns:
