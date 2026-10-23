@@ -17,12 +17,12 @@ android {
 	namespace = 'com.gukos.bokotan'
 	// This module contains Java sources only.
 	enableKotlin = false
-	compileSdk = 36
+	compileSdk = 37
 
 	defaultConfig {
 		applicationId = "com.gukos.bokotan"
 		minSdk = 26
-		targetSdk = 36
+		targetSdk = 37
 		versionCode = appVersion.getProperty('VERSION_CODE').toInteger()
 		versionName = appVersion.getProperty('VERSION_NAME')
 
