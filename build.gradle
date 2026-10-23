@@ -1,4 +1,34 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    dependencies {
+        // Security pins for libraries that AGP puts on the build classpath only (not in the APK/AAB).
+        // Remove them once an AGP release ships these or newer versions.
+        constraints {
+            classpath('org.bouncycastle:bcprov-jdk18on:1.86') {
+                because 'CVE-2026-8763, CVE-2026-13506, CVE-2026-0636'
+            }
+            classpath('org.bouncycastle:bcpkix-jdk18on:1.86') {
+                because 'CVE-2026-5588'
+            }
+            classpath('org.bouncycastle:bcutil-jdk18on:1.86') {
+                because 'keep Bouncy Castle modules on the same version'
+            }
+            classpath('org.bitbucket.b_c:jose4j:0.9.7') {
+                because 'CVE-2024-29371'
+            }
+            classpath('org.jdom:jdom2:2.0.6.1') {
+                because 'CVE-2021-33813'
+            }
+            classpath('org.apache.commons:commons-lang3:3.21.0') {
+                because 'CVE-2025-48924'
+            }
+            classpath('org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21') {
+                because 'CVE-2026-53914'
+            }
+        }
+    }
+}
+
 plugins {
     id 'com.android.application' version '9.4.1' apply false
     id 'com.android.library' version '9.4.1' apply false
