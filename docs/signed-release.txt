@@ -23,7 +23,8 @@ GITHUB_TOKENはActionsが自動で提供するため、追加のPAT Secretは不
 既存のタグやReleaseは上書きしない。同じ名前で再公開する場合はバージョンを上げる。
 
 release.ymlがデフォルトブランチに反映された後は、Actions > Signed Release > Run workflow
-からも公開できる。手動実行では選択したブランチのコミットにバージョンタグを作成する。
+からも公開できる。手動実行ではmainを選択し、mainのコミットにバージョンタグを作成する。
+mainとv*タグ以外を選んだ場合、署名ジョブは実行されずskippedになる。
 署名用Secretsはpull_requestや通常CIには渡さず、Signed Releaseだけで利用する。
 通常CIのrelease成果物は引き続き未署名。正式な署名付き公開はSigned Releaseで実施する。
 1.03以降、releaseにも5語の辞書と英日音声・ライセンスを同梱する。
