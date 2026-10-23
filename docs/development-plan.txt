@@ -69,8 +69,8 @@ https://github.com/kmr-gks/Bokotan/issues/6
 単語・音声の秘密データをGitHubやAIに渡して確認しないこと。
 
 [ ] 2-2. 未使用の権限を整理する
-SCHEDULE_EXACT_ALARMとBluetooth関連の権限がManifestに残っています。
-実際の使用箇所を確認し、不要な宣言を削除する。
+未使用のSCHEDULE_EXACT_ALARM、WAKE_LOCK、Bluetooth関連の権限はManifestから削除しました。
+残りは、公開用ビルドでの次の完了条件の確認です。
 完了条件は、再生通知・イヤホン切断時の停止・ZIP取り込みが正常に動作し、
 不要な権限を求めないこと。全ファイルアクセス権限は追加しないこと。
 
