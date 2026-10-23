@@ -47,7 +47,7 @@ public class PlayerService extends Service {
             PLAYERSERVICE_EXTRA_NOW = "ps_en", PLAYERSERVICE_EXTRA_SHOW_APPEARED = "ps_esa",
             PLAYERSERVICE_ACTION = "playerservice_action", PLAYERSERVICE_MESSAGE_TYPE = "playerservice_message_type",
             PLAYERSERVICE_MESSAGE_STOP = "playerservice_message_stop", PLAYERSERVICE_MESSAGE_NOW = "ps_mn",
-            PLAYERSERVICE_MESSAGE_REFRESH = "ps_refresh";
+            PLAYERSERVICE_MESSAGE_REFRESH = "ps_refresh", PLAYERSERVICE_MESSAGE_NOTIFICATION = "ps_notification";
     public enum SkipContidion { all, seikaisu, huseikai, seikairate }
     public enum SkipThreshold { eqormore, eqorless }
     public static float dPlaySpeedEng = 1.5f, dPlaySpeedJpn = 2f;
@@ -79,6 +79,8 @@ public class PlayerService extends Service {
                 for (var item : new ArrayList<>(displayed.entrySet())) sendText(item.getKey(), item.getValue());
                 for (var item : new ArrayList<>(pipDisplayed.entrySet())) sendPip(item.getKey(), item.getValue());
             } else if (PLAYERSERVICE_MESSAGE_STOP.equals(type)) stopPlayback();
+            else if (PLAYERSERVICE_MESSAGE_NOTIFICATION.equals(type) && active)
+                getSystemService(NotificationManager.class).notify(1, buildNotification());
             else if (PLAYERSERVICE_MESSAGE_NOW.equals(type) && active) {
                 int requested = intent.getIntExtra(PLAYERSERVICE_MESSAGE_NOW, -1);
                 if (requested < 0 || requested >= words.size()) { report("範囲内の番号を指定してください。"); return; }
@@ -334,20 +336,28 @@ public class PlayerService extends Service {
     @Override public IBinder onBind(Intent intent) { return null; }
 
     private void startNotification() {
-        String channel = "default";
         var manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.createNotificationChannel(new NotificationChannel(channel, getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW));
+        manager.createNotificationChannel(new NotificationChannel("default", getString(R.string.app_name), NotificationManager.IMPORTANCE_LOW));
+        var notification = buildNotification();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+        else startForeground(1, notification);
+    }
+
+    private Notification buildNotification() {
         var open = PendingIntent.getActivity(this, 101, new Intent(this, TabActivity.class), PendingIntent.FLAG_IMMUTABLE);
         var stop = PendingIntent.getBroadcast(this, 0, new Intent(PLAYERSERVICE_ACTION).setPackage(getPackageName())
                 .putExtra(PLAYERSERVICE_MESSAGE_TYPE, PLAYERSERVICE_MESSAGE_STOP), PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-        var pip = PendingIntent.getBroadcast(this, 10, new Intent(this, StartPipBroadcastReceiver.class), PendingIntent.FLAG_IMMUTABLE);
-        var notification = new Notification.Builder(this, channel).setContentTitle(getString(R.string.app_name))
+        var builder = new Notification.Builder(this, "default").setContentTitle(getString(R.string.app_name))
                 .setSmallIcon(android.R.drawable.ic_media_play).setContentText("英単語を再生中")
                 .setOngoing(true).setContentIntent(open)
-                .addAction(new Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_pause), "停止", stop).build())
-                .addAction(new Notification.Action.Builder(Icon.createWithResource(this, R.mipmap.launcher_new_icon), "小窓で表示", pip).build()).build();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-        else startForeground(1, notification);
+                .addAction(new Notification.Action.Builder(Icon.createWithResource(this, android.R.drawable.ic_media_pause), "停止", stop).build());
+        // 小窓の表示中に開き直すとシステムが全画面へ戻すため、表示中は出さない。
+        if (!PipActivity.isPipShown()) {
+            // Android 12以降は通知から起動したレシーバー経由のActivity起動が阻止されるため、直接PIP画面を開く。
+            var pip = PendingIntent.getActivity(this, 10, new Intent(this, PipActivity.class), PendingIntent.FLAG_IMMUTABLE);
+            builder.addAction(new Notification.Action.Builder(Icon.createWithResource(this, R.mipmap.launcher_new_icon), "小窓で表示", pip).build());
+        }
+        return builder.build();
     }
 
     private void sendText(PlayerFragment.PlayerViewName name, String text) {

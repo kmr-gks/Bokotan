@@ -11,6 +11,7 @@ import android.app.PictureInPictureParams;
 import android.app.RemoteAction;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.drawable.Icon;
 import android.os.Build;
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class PipActivity extends Activity {
-	static boolean startPIP = false;
+	private static boolean pipShown;
 	public static int pipYoko = 16;
 	public static int pipTate = 9;
 	private ActivityPipBinding binding;
@@ -103,10 +104,11 @@ public class PipActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		try {
 			super.onCreate(savedInstanceState);
-			startPIP = true;
 			binding = DataBindingUtil.setContentView(this, R.layout.activity_pip);
 			receiver = new DrawReceiver(drawHandler);
 			ContextCompat.registerReceiver(this, receiver, new IntentFilter(PIP_ACTION_UI), ContextCompat.RECEIVER_NOT_EXPORTED);
+			// 小窓のまま再生成された場合は、モード変更の通知が来ないためここで合わせる。
+			setPipShown(isInPictureInPictureMode());
 
 			sendBroadcast(new Intent(PLAYERSERVICE_ACTION).setPackage(getPackageName())
 					.putExtra(PLAYERSERVICE_MESSAGE_TYPE, PlayerService.PLAYERSERVICE_MESSAGE_REFRESH));
@@ -122,6 +124,34 @@ public class PipActivity extends Activity {
 		} catch (Exception e) {
 			showException(this, e);
 		}
+	}
+
+	/** 小窓として表示中か。実際に小窓へ入った時だけtrueになり、閉じれば戻る。 */
+	static boolean isPipShown() {
+		return pipShown;
+	}
+
+	private void setPipShown(boolean shown) {
+		if (pipShown == shown) return;
+		pipShown = shown;
+		sendBroadcast(new Intent(PLAYERSERVICE_ACTION).setPackage(getPackageName())
+				.putExtra(PLAYERSERVICE_MESSAGE_TYPE, PlayerService.PLAYERSERVICE_MESSAGE_NOTIFICATION));
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		// singleTaskで再度開かれた時、全画面に戻っていれば小窓へ入り直す。
+		if (!isInPictureInPictureMode()) {
+			initialPipScheduled = false;
+			updatePipParams();
+		}
+	}
+
+	@Override
+	public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
+		super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+		setPipShown(isInPictureInPictureMode);
 	}
 
 	private void updatePipParams() {
@@ -169,7 +199,8 @@ public class PipActivity extends Activity {
 	@Override protected void onDestroy() {
 		if (receiver != null) { unregisterReceiver(receiver); receiver = null; }
 		drawHandler.removeCallbacksAndMessages(null);
-		binding = null; startPIP = false;
+		binding = null;
+		setPipShown(false);
 		super.onDestroy();
 	}
 

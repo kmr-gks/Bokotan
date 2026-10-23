@@ -25,15 +25,6 @@
 			android:name=".PlayerService"
 			android:exported="false"
 			android:foregroundServiceType="mediaPlayback" />
-		<receiver
-			android:name=".StartPipBroadcastReceiver"
-			android:exported="false">
-			<intent-filter>
-				<action android:name="com.gukos.bokotan" />
-
-				<category android:name="android.intent.category.DEFAULT" />
-			</intent-filter>
-		</receiver>
 
 		<activity
 			android:name=".PipActivity"
