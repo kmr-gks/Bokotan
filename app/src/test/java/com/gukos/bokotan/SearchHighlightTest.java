@@ -12,6 +12,10 @@ public class SearchHighlightTest {
         assertEquals(0, SearchHighlight.indexOfIgnoreCase("Apple", "apple"));
         assertEquals(6, SearchHighlight.indexOfIgnoreCase("1 : I APPLE", "apple"));
     }
+    @Test public void indexIsNotShiftedByCaseFoldingThatChangesLength() {
+        // "İ".toLowerCase(Locale.ROOT) has two chars, so lower-casing the source would return 2.
+        assertEquals(1, SearchHighlight.indexOfIgnoreCase("İab", "ab"));
+    }
     @Test public void returnsFirstOccurrence() {
         assertEquals(2, SearchHighlight.indexOfIgnoreCase("a Cat cat", "cat"));
     }

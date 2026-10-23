@@ -36,6 +36,12 @@ public class SearchHighlightInstrumentedTest {
         assertEquals(5, text.getSpanStart(span));
         assertEquals(12, text.getSpanEnd(span));
     }
+    @Test public void spanStaysInsideTextWhenCaseFoldingChangesLength() {
+        SpannableString text = SearchHighlight.highlight("İab", "ab");
+        var span = onlySpan(text);
+        assertEquals(1, text.getSpanStart(span));
+        assertEquals(3, text.getSpanEnd(span));
+    }
     @Test public void missingOrEmptyKeyLeavesPlainText() {
         String source = "<i>犬</i>\n&lt;";
         for (String key : new String[]{null, "", "cat"}) {
