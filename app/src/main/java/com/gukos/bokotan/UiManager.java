@@ -19,8 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 
-import kotlin.jvm.functions.Function3;
-
 public class UiManager {
 
 	public static ArrayAdapter<String> getAdapterForSpinner(Context context, int stringResourceId) {
@@ -88,14 +86,19 @@ public class UiManager {
 	}
 
 	public static abstract class FragmentBinding<TBinding extends ViewDataBinding> extends Fragment {
+		//生成されたBindingクラスのinflate(LayoutInflater, ViewGroup, boolean)を受け取る
+		public interface BindingInflater<T> {
+			T inflate(LayoutInflater inflater, ViewGroup parent, boolean attachToParent);
+		}
+
 		public TBinding binding;
-		public final Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate;
+		public final BindingInflater<TBinding> methodInflate;
 
 		Context context;
 		Activity activity;
 		View viewFragment;
 
-		public FragmentBinding(Function3<LayoutInflater, ViewGroup, Boolean, TBinding> methodInflate) {
+		public FragmentBinding(BindingInflater<TBinding> methodInflate) {
 			this.methodInflate = methodInflate;
 		}
 
@@ -103,7 +106,7 @@ public class UiManager {
 		public final View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			//こう書きたいが、javaではできない？
 			//binding= Binding.inflate(inflater, container, false);
-			binding = methodInflate.invoke(inflater, container, false);
+			binding = methodInflate.inflate(inflater, container, false);
 			return binding.getRoot();
 		}
 
