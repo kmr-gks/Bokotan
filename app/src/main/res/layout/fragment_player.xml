@@ -85,43 +85,35 @@
 			app:layout_constraintStart_toStartOf="parent">
 
 			<Button
-				style="?android:attr/buttonBarButtonStyle"
 				android:id="@+id/buttonToBegin"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:text="@string/fromstart"
-				android:textColor="@color/textcolor"
 				android:textSize="16sp" />
 
 			<Button
-				style="?android:attr/buttonBarButtonStyle"
 				android:id="@+id/buttonNowChange"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:text="@string/bangouhenkou"
-				android:textColor="@color/textcolor"
 				android:textSize="16sp" />
 
 			<Button
-				style="?android:attr/buttonBarButtonStyle"
 				android:id="@+id/buttonPip"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
 				android:text="@string/pipb"
-				android:textColor="@color/textcolor"
 				android:textSize="16sp" />
 
 			<Button
-				style="?android:attr/buttonBarButtonStyle"
 				android:id="@+id/buttonStopService"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="5dp"
-				android:text="@string/stop_playback"
-				android:textColor="@color/textcolor" />
+				android:text="@string/stop_playback"/>
 
 		</LinearLayout>
 

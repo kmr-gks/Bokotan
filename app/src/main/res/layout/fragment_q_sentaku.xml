@@ -48,52 +48,59 @@
 					android:text="@string/manage_settings" />
 
 				<LinearLayout
-					style="?android:attr/buttonBarStyle"
 					android:id="@+id/linearLayoutManageSettings"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:orientation="horizontal">
 
 					<Button
-						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonWriteTest"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/writecheck"
-						android:textColor="@color/textcolor" />
+						android:text="@string/writecheck" />
 
 					<Button
-						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonPrefExport"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/settingshozon"
-						android:textColor="@color/textcolor" />
+						android:text="@string/settingshozon" />
 
 					<Button
-						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonPrefImp"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/readsettingsfromfile"
-						android:textColor="@color/textcolor" />
+						android:text="@string/readsettingsfromfile" />
 
 					<Button
-						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonShowSettingNew"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/show_settings"
-						android:textColor="@color/textcolor" />
+						android:text="@string/show_settings" />
 				</LinearLayout>
 
-                <Button android:id="@+id/buttonImportZip" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/import_private_zip" />
-                <TextView android:id="@+id/textImportStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:accessibilityLiveRegion="polite" />
-                <Button android:id="@+id/buttonCancelImport" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/cancel_private_import" android:visibility="gone" />
+				<Button
+					android:id="@+id/buttonImportZip"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/import_private_zip" />
+
+				<TextView
+					android:id="@+id/textImportStatus"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:accessibilityLiveRegion="polite" />
+
+				<Button
+					android:id="@+id/buttonCancelImport"
+					style="?android:attr/buttonBarButtonStyle"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/cancel_private_import"
+					android:visibility="gone" />
 
 				<Spinner
 					android:id="@+id/spinnerBookQ"
@@ -115,40 +122,32 @@
 					android:orientation="horizontal">
 
 					<Button
-						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonWord"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/word_mode"
-						android:textColor="@color/textcolor" />
+						android:text="@string/word_mode" />
 
 					<Button
-						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonPhrase"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/phrase_mode"
-						android:textColor="@color/textcolor" />
+						android:text="@string/phrase_mode" />
 
 					<Button
-						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonWP"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/word_phrase_mode"
-						android:textColor="@color/textcolor" />
+						android:text="@string/word_phrase_mode" />
 
 					<Button
-						style="?android:attr/buttonBarButtonStyle"
 						android:id="@+id/buttonQuiz"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/quiz_mode"
-						android:textColor="@color/textcolor" />
+						android:text="@string/quiz_mode" />
 				</LinearLayout>
 
 				<LinearLayout
@@ -401,14 +400,13 @@
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent">
 
-			<com.google.android.material.button.MaterialButton
+			<Button
+				style="?android:buttonBarButtonStyle"
 				android:id="@+id/buttonPrivacyPolicy"
-				style="@style/Widget.MaterialComponents.Button.TextButton"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
-				android:text="@string/privacy_policy"
-				android:textColor="@color/textcolor" />
+				android:text="@string/privacy_policy" />
 
 			<TextView
 				android:id="@+id/textViewVersion"

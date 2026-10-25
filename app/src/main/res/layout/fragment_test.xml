@@ -67,7 +67,6 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/hint"
-			android:textColor="@color/buttontext"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect1"
 			app:layout_constraintEnd_toEndOf="parent" />
 
@@ -79,7 +78,6 @@
 			android:contentDescription="@string/choice"
 			android:lines="1"
 			android:textAlignment="center"
-			android:textColor="@color/buttontext"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect2"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />
@@ -92,7 +90,6 @@
 			android:contentDescription="@string/choice"
 			android:lines="1"
 			android:textAlignment="center"
-			android:textColor="@color/buttontext"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect3"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />
@@ -105,7 +102,6 @@
 			android:contentDescription="@string/choice"
 			android:lines="1"
 			android:textAlignment="center"
-			android:textColor="@color/buttontext"
 			app:layout_constraintBottom_toTopOf="@+id/buttonSelect4"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />
@@ -118,7 +114,6 @@
 			android:contentDescription="@string/choice"
 			android:lines="1"
 			android:textAlignment="center"
-			android:textColor="@color/buttontext"
 			app:layout_constraintBottom_toTopOf="@+id/buttonIdontKnow"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />
@@ -128,7 +123,6 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/idonknow"
-			android:textColor="@color/buttontext"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent" />
