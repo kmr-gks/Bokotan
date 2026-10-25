@@ -9,12 +9,4 @@
 	<color name="background">#FFFFFFFF</color>
 	<color name="buttontext">#FFFFFFFF</color>
 	<color name="textcolor">#FF000000</color>
-	<color name="selection_button_fill">#A44600</color>
-	<color name="selection_button_foreground">#FFFFFF</color>
-	<color name="selection_button_secondary_fill">#F2F2F2</color>
-	<color name="selection_button_secondary_foreground">#323232</color>
-	<color name="selection_button_border">#757575</color>
-	<color name="selection_button_disabled_background">#E0E0E0</color>
-	<color name="selection_button_disabled_text">#686868</color>
-	<color name="selection_button_disabled_outline">#9E9E9E</color>
 </resources>
