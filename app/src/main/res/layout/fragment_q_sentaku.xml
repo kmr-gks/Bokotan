@@ -54,46 +54,59 @@
 					android:layout_height="wrap_content"
 					android:orientation="horizontal">
 
-					<Button
-						style="?android:attr/buttonBarButtonStyle"
+					<com.google.android.material.button.MaterialButton
+						style="@style/Widget.Bokotan.SelectionButton.Secondary"
 						android:id="@+id/buttonWriteTest"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/writecheck"
-						android:textColor="@color/textcolor" />
+						android:text="@string/writecheck" />
 
-					<Button
-						style="?android:attr/buttonBarButtonStyle"
+					<com.google.android.material.button.MaterialButton
+						style="@style/Widget.Bokotan.SelectionButton.Secondary"
 						android:id="@+id/buttonPrefExport"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/settingshozon"
-						android:textColor="@color/textcolor" />
+						android:text="@string/settingshozon" />
 
-					<Button
-						style="?android:attr/buttonBarButtonStyle"
+					<com.google.android.material.button.MaterialButton
+						style="@style/Widget.Bokotan.SelectionButton.Secondary"
 						android:id="@+id/buttonPrefImp"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/readsettingsfromfile"
-						android:textColor="@color/textcolor" />
+						android:text="@string/readsettingsfromfile" />
 
-					<Button
-						style="?android:attr/buttonBarButtonStyle"
+					<com.google.android.material.button.MaterialButton
+						style="@style/Widget.Bokotan.SelectionButton.Secondary"
 						android:id="@+id/buttonShowSettingNew"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/show_settings"
-						android:textColor="@color/textcolor" />
+						android:text="@string/show_settings" />
 				</LinearLayout>
 
-                <Button android:id="@+id/buttonImportZip" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/import_private_zip" />
-                <TextView android:id="@+id/textImportStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:accessibilityLiveRegion="polite" />
-                <Button android:id="@+id/buttonCancelImport" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/cancel_private_import" android:visibility="gone" />
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/buttonImportZip"
+					style="@style/Widget.Bokotan.SelectionButton.Secondary"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/import_private_zip" />
+
+				<TextView
+					android:id="@+id/textImportStatus"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:accessibilityLiveRegion="polite" />
+
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/buttonCancelImport"
+					style="@style/Widget.Bokotan.SelectionButton.Secondary"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/cancel_private_import"
+					android:visibility="gone" />
 
 				<Spinner
 					android:id="@+id/spinnerBookQ"
@@ -114,41 +127,37 @@
 					android:layout_height="match_parent"
 					android:orientation="horizontal">
 
-					<Button
-						style="?android:attr/buttonBarButtonStyle"
+					<com.google.android.material.button.MaterialButton
+						style="@style/Widget.Bokotan.SelectionButton"
 						android:id="@+id/buttonWord"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/word_mode"
-						android:textColor="@color/textcolor" />
+						android:text="@string/word_mode" />
 
-					<Button
-						style="?android:attr/buttonBarButtonStyle"
+					<com.google.android.material.button.MaterialButton
+						style="@style/Widget.Bokotan.SelectionButton"
 						android:id="@+id/buttonPhrase"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/phrase_mode"
-						android:textColor="@color/textcolor" />
+						android:text="@string/phrase_mode" />
 
-					<Button
-						style="?android:attr/buttonBarButtonStyle"
+					<com.google.android.material.button.MaterialButton
+						style="@style/Widget.Bokotan.SelectionButton"
 						android:id="@+id/buttonWP"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/word_phrase_mode"
-						android:textColor="@color/textcolor" />
+						android:text="@string/word_phrase_mode" />
 
-					<Button
-						style="?android:attr/buttonBarButtonStyle"
+					<com.google.android.material.button.MaterialButton
+						style="@style/Widget.Bokotan.SelectionButton"
 						android:id="@+id/buttonQuiz"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
-						android:text="@string/quiz_mode"
-						android:textColor="@color/textcolor" />
+						android:text="@string/quiz_mode" />
 				</LinearLayout>
 
 				<LinearLayout
@@ -403,12 +412,11 @@
 
 			<com.google.android.material.button.MaterialButton
 				android:id="@+id/buttonPrivacyPolicy"
-				style="@style/Widget.MaterialComponents.Button.TextButton"
+				style="@style/Widget.Bokotan.SelectionButton.Secondary"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
-				android:text="@string/privacy_policy"
-				android:textColor="@color/textcolor" />
+				android:text="@string/privacy_policy" />
 
 			<TextView
 				android:id="@+id/textViewVersion"
