@@ -48,38 +48,33 @@
 					android:text="@string/manage_settings" />
 
 				<LinearLayout
-					style="?android:attr/buttonBarStyle"
 					android:id="@+id/linearLayoutManageSettings"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:orientation="horizontal">
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Widget.Bokotan.SelectionButton.Secondary"
+					<Button
 						android:id="@+id/buttonWriteTest"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/writecheck" />
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Widget.Bokotan.SelectionButton.Secondary"
+					<Button
 						android:id="@+id/buttonPrefExport"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/settingshozon" />
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Widget.Bokotan.SelectionButton.Secondary"
+					<Button
 						android:id="@+id/buttonPrefImp"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/readsettingsfromfile" />
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Widget.Bokotan.SelectionButton.Secondary"
+					<Button
 						android:id="@+id/buttonShowSettingNew"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
@@ -87,9 +82,8 @@
 						android:text="@string/show_settings" />
 				</LinearLayout>
 
-				<com.google.android.material.button.MaterialButton
+				<Button
 					android:id="@+id/buttonImportZip"
-					style="@style/Widget.Bokotan.SelectionButton.Secondary"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:text="@string/import_private_zip" />
@@ -100,9 +94,9 @@
 					android:layout_height="wrap_content"
 					android:accessibilityLiveRegion="polite" />
 
-				<com.google.android.material.button.MaterialButton
+				<Button
 					android:id="@+id/buttonCancelImport"
-					style="@style/Widget.Bokotan.SelectionButton.Secondary"
+					style="?android:attr/buttonBarButtonStyle"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:text="@string/cancel_private_import"
@@ -127,32 +121,28 @@
 					android:layout_height="match_parent"
 					android:orientation="horizontal">
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Widget.Bokotan.SelectionButton"
+					<Button
 						android:id="@+id/buttonWord"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/word_mode" />
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Widget.Bokotan.SelectionButton"
+					<Button
 						android:id="@+id/buttonPhrase"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/phrase_mode" />
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Widget.Bokotan.SelectionButton"
+					<Button
 						android:id="@+id/buttonWP"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
 						android:text="@string/word_phrase_mode" />
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Widget.Bokotan.SelectionButton"
+					<Button
 						android:id="@+id/buttonQuiz"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
@@ -410,9 +400,9 @@
 			app:layout_constraintEnd_toEndOf="parent"
 			app:layout_constraintStart_toStartOf="parent">
 
-			<com.google.android.material.button.MaterialButton
+			<Button
+				style="?android:buttonBarButtonStyle"
 				android:id="@+id/buttonPrivacyPolicy"
-				style="@style/Widget.Bokotan.SelectionButton.Secondary"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="1"
