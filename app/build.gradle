@@ -75,6 +75,20 @@ android {
 }
 
 dependencies {
+	constraints {
+		// Lint resolves its tools separately from the root buildscript classpath.
+		// Keep these security pins aligned with build.gradle until AGP updates them.
+		add('androidLintTool', 'org.bouncycastle:bcprov-jdk18on:1.86') {
+			because 'CVE-2026-8763, CVE-2026-13506, CVE-2026-0636'
+		}
+		add('androidLintTool', 'org.bouncycastle:bcpkix-jdk18on:1.86') {
+			because 'CVE-2026-5588'
+		}
+		add('androidLintTool', 'org.bouncycastle:bcutil-jdk18on:1.86') {
+			because 'keep Bouncy Castle modules on the same patched version'
+		}
+	}
+
 	implementation 'androidx.appcompat:appcompat:1.8.0'
 	implementation 'com.google.android.material:material:1.14.0'
 	// Declared explicitly because app code and layouts use these libraries directly.
