@@ -3,7 +3,7 @@
 	<style name="Theme.Bokotan" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 		<!-- Primary brand color. -->
 		<!--colorPrimaryはボタンの色-->
-		<item name="colorPrimary">@color/black</item>
+		<item name="colorPrimary">@color/orange</item>
 		<!--一番上の通知バーの色-->
 		<item name="colorPrimaryVariant">@color/black</item>
 		<item name="colorOnPrimary">@color/white</item>
