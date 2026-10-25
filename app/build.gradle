@@ -87,6 +87,9 @@ dependencies {
 		add('androidLintTool', 'org.bouncycastle:bcutil-jdk18on:1.86') {
 			because 'keep Bouncy Castle modules on the same patched version'
 		}
+		add('androidLintTool', 'org.apache.commons:commons-lang3:3.21.0') {
+			because 'CVE-2025-48924'
+		}
 	}
 
 	implementation 'androidx.appcompat:appcompat:1.8.0'
