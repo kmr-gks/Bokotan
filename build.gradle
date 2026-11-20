@@ -10,7 +10,7 @@ buildscript {
             classpath('org.bouncycastle:bcpkix-jdk18on:1.86') {
                 because 'CVE-2026-5588'
             }
-            classpath('org.bouncycastle:bcutil-jdk18on:1.86') {
+            classpath('org.bouncycastle:bcutil-jdk18on:1.87') {
                 because 'keep Bouncy Castle modules on the same version'
             }
             classpath('org.bitbucket.b_c:jose4j:0.9.7') {
