@@ -19,7 +19,7 @@ buildscript {
             classpath('org.jdom:jdom2:2.0.6.1') {
                 because 'CVE-2021-33813'
             }
-            classpath('org.apache.commons:commons-lang3:3.21.0') {
+            classpath('org.apache.commons:commons-lang3:3.22.0') {
                 because 'CVE-2025-48924'
             }
             classpath('org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21') {
